@@ -1,4 +1,4 @@
-import { css, html } from "lit";
+import { html  } from 'lit';
 import { customElement, property } from "lit/decorators.js";
 import { convertReact } from "../../utils";
 
@@ -6,6 +6,7 @@ import { t } from '../../localization/ULocalizer';
 import { UEditorInputModel } from "./UEditorInput.model";
 import { UBaseInput } from "../input-parts/UBaseInput";
 import "../editor/MonacoEditor";
+import { styles } from './UEditorInput.styles';
 
 @customElement('u-editor-input')
 export class UEditorInputElement extends UBaseInput implements UEditorInputModel {
@@ -48,19 +49,7 @@ export class UEditorInputElement extends UBaseInput implements UEditorInputModel
     this.dispatchEvent(new CustomEvent('change', { detail: this.value }));
   }
 
-  static styles = css`
-    :host {
-      width: 100%;
-      font-size: 14px;
-    }
-
-    u-input-border {
-      height: 10em;
-      overflow: hidden;
-      resize: vertical;
-    }
-
-  `;
+  static styles = [styles];
 }
 
 export const UEditorInput = convertReact({

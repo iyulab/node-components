@@ -1,4 +1,4 @@
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing  } from 'lit';
 import { customElement, property, } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { until } from "lit/directives/until.js";
@@ -7,6 +7,7 @@ import { convertReact } from "../../utils";
 import { UIconModel, type UIconType } from "./UIcon.model";
 import { UIconController } from "./UIconController";
 import { SystemIcon } from "./UIcon.resource";
+import { styles } from './UIcon.styles';
 
 @customElement('u-icon')
 export class UIconElement extends LitElement implements UIconModel {
@@ -61,18 +62,7 @@ export class UIconElement extends LitElement implements UIconModel {
     return content.startsWith('<svg') ? unsafeHTML(content) : nothing;
   }
   
-  static styles = css`
-    :host {
-      display: inline-flex;
-      font-size: 16px;
-    }
-
-    svg {
-      width: 1em;
-      height: 1em;
-      fill: currentColor;
-    }
-  `;
+  static styles = [styles];
 
 }
 

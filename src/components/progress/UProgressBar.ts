@@ -1,6 +1,7 @@
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { convertReact } from "../../utils";
+import { styles } from './UProgressBar.styles';
 
 import SlProgressBar from '@shoelace-style/shoelace/dist/components/progress-bar/progress-bar.component.js';
 SlProgressBar.define('sl-progress-bar');
@@ -32,19 +33,7 @@ export class UProgressBarElement extends LitElement implements UProgressBarModel
     `;
   }
 
-  static styles = css`
-    :host {
-      display: inline-flex;
-      width: 100%;
-
-      --bar-thickness: 4px;
-    }
-
-    sl-progress-bar {
-      width: 100%;
-      --height: var(--bar-thickness);
-    }
-  `;
+  static styles = [styles];
 }
 
 export const UProgressBar = convertReact({

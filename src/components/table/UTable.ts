@@ -1,6 +1,7 @@
-import { LitElement, TemplateResult, html, unsafeCSS } from "lit";
+import { LitElement, TemplateResult, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { convertReact } from "../../utils";
+import { styles as componentStyles } from './UTable.styles';
 
 import { TableTooltip } from "./TableTooltip";
 import { TableSearchMenu } from "./TableSearchMenu";
@@ -20,9 +21,6 @@ import type {
 } from "./UTableModel";
 import { UTableIcons } from "./UTableModel";
 
-// @ts-ignore
-import styles from "./UTable.scss?inline";
-
 /*
 - 올려야할 이벤트
 select: 선택된 아이템(외부 액션 활용)
@@ -32,7 +30,7 @@ sort: 정렬 이벤트(오름차순, 내림차순)
 */
 @customElement("u-table")
 export class UTableElement extends LitElement implements UTableModel {
-  static styles = unsafeCSS(styles);
+  static styles = [componentStyles];
 
   private tooltip = new TableTooltip();
   private searchMenu = new TableSearchMenu();

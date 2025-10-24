@@ -1,19 +1,25 @@
-import { css, html, LitElement, nothing, unsafeCSS } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { createRef, Ref, ref } from "lit/directives/ref.js";
 import { convertReact } from "../../utils";
+import { styles as componentStyles } from './MonacoEditor.styles';
 
 import SlCopyButton from "@shoelace-style/shoelace/dist/components/copy-button/copy-button.component.js";
 SlCopyButton.define('sl-copy-button');
 
 import "./MonacoEditor.worker";
 import * as monaco from "monaco-editor";
-import styles from "monaco-editor/min/vs/editor/editor.main.css?inline";
+// import styles from "monaco-editor/min/vs/editor/editor.main.css?inline";
 
 import { MonacoEditorModel, type EditorTheme } from "./MonacoEditor.model";
 
 @customElement("monaco-editor")
 export class MonacoEditorElement extends LitElement implements MonacoEditorModel {
+  static styles = [
+    // unsafeCSS(styles),
+    componentStyles
+  ];
+
   private container: Ref<HTMLElement> = createRef();
   private editor!: monaco.editor.IStandaloneCodeEditor;
   private observer: MutationObserver = new MutationObserver(() => {
@@ -109,58 +115,6 @@ export class MonacoEditorElement extends LitElement implements MonacoEditorModel
       </div>
     `;
   }
-
-  static styles = [
-    unsafeCSS(styles),
-    css`
-    :host {
-      position: relative;
-      display: block;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      --header-height: 32px;
-    }
-    :host([noHeader]) {
-      --header-height: 0px;
-    }
-
-    .header {
-      position: relative;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      height: 24px;
-      gap: 4px;
-      padding: 4px;
-
-      .title {
-        font-size: 16px;
-        line-height: 20px;
-        font-weight: 600;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .flex {
-        flex: 1;
-      }
-    }
-
-    .editor {
-      position: absolute;
-      width: 100%;
-      height: calc(100% - var(--header-height));
-      overflow: hidden;
-
-      main {
-        width: 100%;
-        height: 100%;
-      }
-    }
-  `];
 }
 
 export const MonacoEditor = convertReact({

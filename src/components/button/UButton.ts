@@ -1,7 +1,8 @@
-import { css, html, LitElement } from 'lit'
+import { html, LitElement } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { convertReact } from '../../utils';
+import { styles } from './UButton.styles';
 
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 
@@ -99,19 +100,7 @@ export class UButtonElement extends LitElement implements UButtonModel {
     }));
   }
 
-  static styles = css`
-    :host {
-      display: inline-flex;
-    }
-    :host([loading]) {
-      pointer-events: none;
-      cursor: progress;
-    }
-
-    sl-button {
-      width: inherit;
-    }
-  `;
+  static styles = [styles];
 }
 
 export const UButton = convertReact({

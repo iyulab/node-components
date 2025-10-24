@@ -1,8 +1,9 @@
-import { html, css } from "lit";
+import { html,  } from 'lit';
 import { customElement, property } from "lit/decorators.js";
 
 import { UFlyout, UFlyoutPosition } from "../flyout";
 import type { SearchColumn } from "./UTableModel";
+import { styles } from './TableSortMenu.styles';
 
 @customElement("table-sort-menu")
 export class TableSortMenu extends UFlyout {
@@ -51,27 +52,5 @@ export class TableSortMenu extends UFlyout {
     this.hideClickAsync();
   }
 
-  static styles = css`
-      .container {
-        margin-top: 13px;
-        width: 80px;
-        background-color: var(--sl-color-neutral-0);
-        border: 1px solid var(--sl-color-gray-200);
-      }
-
-      .row {
-        text-align: right;
-        padding: 5px;
-        font-size: 14px;
-        cursor: pointer;
-
-        &:hover {
-          background-color: var(--sl-color-gray-100);
-        }
-
-        &.selected {
-          background-color: var(--sl-color-gray-200);
-        }
-      }
-    `;
+  static styles = [styles];
 }

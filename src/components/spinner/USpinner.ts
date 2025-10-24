@@ -1,6 +1,7 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { convertReact } from "../../utils";
+import { styles } from './USpinner.styles';
 
 import SlSpinner from "@shoelace-style/shoelace/dist/components/spinner/spinner.component.js";
 SlSpinner.define('sl-spinner');
@@ -41,16 +42,7 @@ export class USpinnerElement extends LitElement implements USpinnerModel {
     `;
   }
 
-  static styles = css`
-    :host {
-      display: inline-flex;
-      font-size: 32px;
-    }
-
-    sl-spinner {
-      font-size: inherit;
-    }
-  `;
+  static styles = [styles];
 
 }
 

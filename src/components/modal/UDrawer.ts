@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html  } from 'lit';
 import { customElement, property, query, state } from "lit/decorators.js";
 import { convertReact } from "../../utils";
 
@@ -8,6 +8,7 @@ SlDrawer.define('sl-drawer');
 import { UDrawerModel, type DrawerPosition } from "./UDrawer.model";
 import { UModalContent } from "./UModalContent";
 import type { UModalResult } from "./UModalContent.model";
+import { styles } from './UDrawer.styles';
 
 @customElement('u-drawer')
 export class UDrawerElement extends LitElement implements UDrawerModel {
@@ -79,13 +80,7 @@ export class UDrawerElement extends LitElement implements UDrawerModel {
     this.content = undefined;
   }
 
-  static styles = css`
-    sl-drawer {
-      --header-spacing: var(--sl-spacing-small);
-      --body-spacing: var(--sl-spacing-small);
-      --footer-spacing: var(--sl-spacing-small);
-    }
-  `;
+  static styles = [styles];
 
 }
 

@@ -1,4 +1,4 @@
-import { css, html } from "lit";
+import { html  } from 'lit';
 import { customElement, property, query } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { convertReact } from "../../utils";
@@ -6,6 +6,7 @@ import { convertReact } from "../../utils";
 import { UTextInputModel } from "./UTextInput.model";
 import { UBaseInput } from "../input-parts/UBaseInput";
 import { t } from "../../localization/ULocalizer";
+import { styles } from './UTextInput.styles';
 
 @customElement('u-text-input')
 export class UTextInputElement extends UBaseInput implements UTextInputModel {
@@ -87,39 +88,7 @@ export class UTextInputElement extends UBaseInput implements UTextInputModel {
     this.inputEl.focus();
   }
 
-  static styles = css`
-    :host {
-      display: block;
-      width: 100%;
-      font-size: 14px;
-    }
-    :host slot::slotted(*) {
-      font-size: inherit;
-    }
-    :host([clearable]) .clear {
-      display: inline-flex;
-    }
-
-    input {
-      flex: 1;
-      border: none;
-      outline: none;
-      padding: 0;
-      background-color: transparent;
-      font-size: inherit;
-      line-height: 1.5;
-    }
-
-    .clear {
-      display: none;
-      font-size: inherit;
-      color: var(--sl-color-gray-500);
-      cursor: pointer;
-    }
-    .clear:hover {
-      color: var(--sl-color-gray-800);
-    }
-  `;
+  static styles = [styles];
 }
 
 export const UTextInput = convertReact({

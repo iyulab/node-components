@@ -1,4 +1,4 @@
-import { css, html } from "lit";
+import { html  } from 'lit';
 import { customElement, property, query, state } from "lit/decorators.js";
 import { convertReact } from "../../utils";
 import { t } from "../../localization/ULocalizer";
@@ -6,6 +6,7 @@ import { t } from "../../localization/ULocalizer";
 import { UEmailInputModel } from "./UEmailInput.model";
 import { UBaseInput } from "../input-parts/UBaseInput";
 import "./USelectInput";
+import { styles } from './UEmailInput.styles';
 
 @customElement('u-email-input')
 export class UEmailInputElement extends UBaseInput implements UEmailInputModel {
@@ -147,54 +148,7 @@ export class UEmailInputElement extends UBaseInput implements UEmailInputModel {
     this.nameInputEl.focus();
   }
 
-  static styles = css`
-    :host {
-      width: 100%;
-      font-size: 14px;
-    }
-    :host(:focus-within) .at {
-      color: var(--sl-color-gray-800);
-    }
-    :host slot::slotted(*) {
-      font-size: inherit;
-    }
-    :host([clearable]) .clear {
-      display: inline-flex;
-    }
-
-    input {
-      flex: 1;
-      border: none;
-      outline: none;
-      padding: 0;
-      background-color: transparent;
-      font-size: inherit;
-      line-height: 1.5;
-    }
-
-    .at {
-      font-size: inherit;
-      color: var(--sl-color-gray-500);
-    }
-
-    u-select-input {
-      width: 10em;
-      font-size: 0.9em;
-      --vertical-padding: 2px;
-    }
-
-    .clear {
-      display: none;
-      font-size: inherit;
-      color: var(--sl-color-gray-500);
-      margin-left: 5px;
-      box-sizing: border-box;
-      cursor: pointer;
-    }
-    .clear:hover {
-      color: var(--sl-color-gray-800);
-    }
-  `;
+  static styles = [styles];
 }
 
 export const UEmailInput = convertReact({

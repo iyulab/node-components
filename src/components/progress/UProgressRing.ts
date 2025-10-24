@@ -1,6 +1,7 @@
-import { LitElement, css, html, } from "lit";
+import { LitElement, html, } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { convertReact } from "../../utils";
+import { styles } from './UProgressRing.styles';
 
 import SlProgressRing from '@shoelace-style/shoelace/dist/components/progress-ring/progress-ring.component.js';
 SlProgressRing.define('sl-progress-ring');
@@ -34,20 +35,7 @@ export class UProgressRingElement extends LitElement implements UProgressRingMod
     `;
   }
 
-  static styles = css`
-    :host {
-      display: inline-flex;
-
-      --ring-size: 48px;
-      --ring-thickness: 4px;
-    }
-
-    sl-progress-ring {
-      --size: var(--ring-size);
-      --track-width: var(--ring-thickness);
-      --indicator-width: calc(var(--ring-thickness) + 1px);
-    }
-  `;
+  static styles = [styles];
 }
 
 export const UProgressRing = convertReact({

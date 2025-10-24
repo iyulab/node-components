@@ -1,4 +1,4 @@
-import { css, html } from "lit";
+import { html  } from 'lit';
 import { customElement, property, queryAll } from "lit/decorators.js";
 import { repeat } from 'lit/directives/repeat.js';
 import { convertReact } from "../../utils";
@@ -7,6 +7,7 @@ import type { UTextInputElement } from "../input/UTextInput";
 import { UArrayInputModel } from "./UArrayInput.model";
 import { UBaseInput } from "../input-parts/UBaseInput";
 import { t } from "../../localization";
+import { styles } from './UArrayInput.styles';
 
 @customElement('u-array-input')
 export class UArrayInputElement extends UBaseInput implements UArrayInputModel {
@@ -101,76 +102,7 @@ export class UArrayInputElement extends UBaseInput implements UArrayInputModel {
     this.dispatchEvent(new CustomEvent('change', { detail: this.value }));
   }
 
-  static styles = css`
-    :host {
-      width: 100%;
-      font-size: 14px;
-    }
-
-    .container {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .value {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 5px;
-
-      u-text-input {
-        font-size: inherit;
-      }
-
-      u-icon {
-        font-size: calc(1.5em + 10px);
-        color: var(--sl-color-gray-300);
-        cursor: pointer;
-      }
-      u-icon:hover {
-        color: var(--sl-color-gray-600);
-      }
-    }
-
-    .create {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      width: 100%;
-      margin-top: 5px;
-      padding: 5px 0px;
-      border: 1px dashed var(--sl-color-gray-300);
-      box-sizing: border-box;
-      cursor: pointer;
-
-      u-icon {
-        font-size: inherit;
-        color: var(--sl-color-gray-300);
-      }
-      label {
-        font-size: inherit;
-        color: var(--sl-color-gray-300);
-        cursor: pointer;
-      }
-    }
-    .create:hover {
-      border-color: var(--sl-color-gray-600);
-      background-color: var(--sl-color-gray-100);
-
-      u-icon {
-        color: var(--sl-color-gray-600);
-      }
-      label {
-        color: var(--sl-color-gray-600);
-      }
-    }
-  `;
+  static styles = [styles];
 }
 
 export const UArrayInput = convertReact({

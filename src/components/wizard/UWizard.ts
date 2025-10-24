@@ -1,8 +1,9 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html  } from 'lit';
 import { customElement, property, state } from "lit/decorators.js";
 
 import { t } from '../../localization/ULocalizer';
 import '../button/UButton';
+import { styles } from './UWizard.styles';
 
 export type WizardState = "init" | "inProgress" | "completed";
 
@@ -111,39 +112,6 @@ export class UWizard extends LitElement {
     : "inProgress";
   }
 
-  static styles = css`
-    :host {
-      position: relative;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-    :host([state="init"]) .footer {
-      justify-content: flex-end;
-      u-button[theme="default"], u-button[theme="success"] { display: none; }
-    }
-    :host([state="inProgress"]) .footer u-button[theme="success"] {
-      display: none;
-    }
-    :host([state="completed"]) .footer u-button[theme="primary"] {
-      display: none;
-    }
-
-    .header {
-      width: 100%;
-    }
-
-    .content {
-      width: 100%;
-    }
-
-    .footer {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
-  `;
+  static styles = [styles];
 
 }

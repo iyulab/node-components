@@ -1,10 +1,11 @@
-import { css, html } from "lit";
+import { html  } from 'lit';
 import { customElement, property, query } from "lit/decorators.js";
 import { convertReact } from "../../utils";
 import { t } from "../../localization/ULocalizer";
 
 import { UCheckboxInputModel } from "./UCheckboxInput.model";
 import { UBaseInput } from "../input-parts/UBaseInput";
+import { styles } from './UCheckboxInput.styles';
 
 @customElement('u-checkbox-input')
 export class UCheckboxInputElement extends UBaseInput implements UCheckboxInputModel {
@@ -17,7 +18,8 @@ export class UCheckboxInputElement extends UBaseInput implements UCheckboxInputM
 
   render() {
     return html`
-      <input type="checkbox"
+      <input 
+        type="checkbox"
         ?checked=${this.value || false}
         ?required=${this.requiredCheck}
         @change=${this.onChage}
@@ -52,40 +54,7 @@ export class UCheckboxInputElement extends UBaseInput implements UCheckboxInputM
     this.dispatchEvent(new CustomEvent('change', { detail: this.value }));
   }
 
-  static styles = css`
-    :host {
-      width: 100%;
-      display: grid;
-      grid-template-columns: auto 1fr;
-      align-items: center;
-      grid-column-gap: 8px;
-      font-size: 14px;
-    }
-    :host([disabled]) {
-      pointer-events: none;
-      opacity: 0.5;
-    }
-    :host([readonly]) {
-      pointer-events: none;
-    }
-
-    input {
-      grid-column: 1;
-      font-size: inherit;
-      width: 1.275em;
-      height: 1.275em;
-      margin: 0;
-      padding: 0;
-    }
-
-    u-input-label {
-      grid-column: 2;
-    }
-
-    u-input-error {
-      grid-column: 2;
-    }
-  `;
+  static styles = [styles];
 }
 
 export const UCheckboxInput = convertReact({

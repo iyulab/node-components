@@ -1,5 +1,6 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html  } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js'
+import { styles } from './XSplitter.styles';
 
 @customElement('x-splitter')
 export class XSplitter extends LitElement {
@@ -119,37 +120,5 @@ export class XSplitter extends LitElement {
     }
   }
 
-  static styles = css`
-    :host {
-      background: transparent;
-      position: relative;
-    }
-
-    #host {
-      visibility: hidden;
-      background: #7a7a7a;
-
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-
-      z-index: 9999;
-    }
-
-    #thumb {
-      background: red;
-      border-radius: 4px;
-      visibility: hidden;
-      position: absolute;
-    }
-
-    :host(:hover) #thumb {
-      visibility: visible;
-    }
-
-    :host(.dragging) #thumb,:host(.dragging) #host {
-      visibility: visible;
-    }
-  `;
+  static styles = [styles];
 }

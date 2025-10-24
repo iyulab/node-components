@@ -1,9 +1,10 @@
-import { css, html } from "lit";
+import { html  } from 'lit';
 import { customElement, property, query } from "lit/decorators.js";
 import { convertReact } from "../../utils";
 
 import { UTextareaInputModel } from "./UTextareaInput.model";
 import { UBaseInput } from "../input-parts/UBaseInput";
+import { styles } from './UTextareaInput.styles';
 
 @customElement('u-textarea-input')
 export class UTextareaInputElement extends UBaseInput implements UTextareaInputModel {
@@ -89,51 +90,7 @@ export class UTextareaInputElement extends UBaseInput implements UTextareaInputM
     }
   }
 
-  static styles = css`
-    :host {
-      width: 100%;
-      font-size: 14px;
-    }
-    :host([clearable]) .clear {
-      display: inline-flex;
-    }
-
-    textarea {
-      width: 100%;
-      border: none;
-      outline: none;
-      resize: none;
-      padding: 0;
-      background-color: transparent;
-      font-family: var(--sl-font-sans);
-      font-size: inherit;
-      line-height: 1.5;
-      -webkit-appearance: none;
-    }
-    textarea::-webkit-scrollbar {
-      width: 5px;
-    }
-    textarea::-webkit-scrollbar-thumb {
-      background-color: var(--sl-color-gray-300);
-    }
-    textarea::-webkit-scrollbar-track {
-      background-color: transparent;
-    }
-
-    .clear {
-      position: absolute;
-      z-index: 1;
-      right: 10px;
-      top: 10px;
-      display: none;
-      font-size: inherit;
-      color: var(--sl-color-gray-500);
-      cursor: pointer;
-    }
-    .clear:hover {
-      color: var(--sl-color-gray-800);
-    }
-  `;
+  static styles = [styles];
 }
 
 export const UTextareaInput = convertReact({

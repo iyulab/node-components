@@ -1,7 +1,8 @@
-import { LitElement, css, nothing } from 'lit';
+import { LitElement, nothing } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { unsafeStatic, html } from 'lit/static-html.js';
 import { convertReact } from "../../utils";
+import { styles } from './UInput.styles';
 
 import "./index";
 import { UInputModel } from './UInput.model';
@@ -72,12 +73,7 @@ export class UInputElement extends LitElement implements UInputModel {
     }));
   }
 
-  static styles = css`
-    :host {
-      display: inline-block;
-      width: 100%;
-    }
-  `
+  static styles = [styles];
 }
 
 export const UInput = convertReact({

@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html  } from 'lit';
 import { customElement, property, query } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { convertReact } from "../../utils";
@@ -7,6 +7,7 @@ import SlTooltip from '@shoelace-style/shoelace/dist/components/tooltip/tooltip.
 SlTooltip.define('sl-tooltip');
 
 import type { UTooltipModel, UTooltipPosition } from "./UTooltip.model";
+import { styles } from './UTooltip.styles';
 
 @customElement('u-tooltip')
 export class UTooltipElement extends LitElement implements UTooltipModel {
@@ -48,18 +49,7 @@ export class UTooltipElement extends LitElement implements UTooltipModel {
       : html`<slot slot="content" name="content"></slot>`;
   }
 
-  static styles = css`
-    :host {
-      display: inline-flex;
-    }
-    :host([arrow]) sl-tooltip {
-      --sl-tooltip-arrow-size: 6px;
-    }
-
-    sl-tooltip {
-      --sl-tooltip-arrow-size: 0;
-    }
-  `;
+  static styles = [styles];
 
 }
 

@@ -1,11 +1,11 @@
-import { LitElement, html, css, unsafeCSS } from "lit";
+import { LitElement, html } from 'lit';
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from 'lit/directives/style-map.js';
 
 import { convertReact } from "../../utils";
 import '../icon/UIcon'; 
 import type { DataViewColumnDefinition, UDataViewModel } from "./UDataView.model";
-import styles from './UDataView.scss?inline';
+import { styles } from './UDataView.styles';
 
 // 이미지 사이즈 변수 정의
 const IMAGE_SIZE_LIST = 128;
@@ -282,7 +282,7 @@ export class UDataViewElement extends LitElement implements UDataViewModel {
     }
   }
 
-  static styles = css`${unsafeCSS(styles)}`;
+  static styles = [styles];
 }
 
 export const UDataView = convertReact({

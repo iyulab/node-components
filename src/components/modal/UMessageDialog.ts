@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html  } from 'lit';
 import { customElement, property, query } from "lit/decorators.js";
 import { convertReact } from "../../utils";
 import { t } from "../../localization/ULocalizer";
@@ -7,6 +7,7 @@ import { UMessageDialogModel } from './UMessageDialog.model';
 import "./UDialog";
 import "../button/UButtonGroup";
 import "../button/UButton";
+import { styles } from './UMessageDialog.styles';
 
 @customElement("u-message-dialog")
 export class UMessageDialogElement extends LitElement implements UMessageDialogModel {
@@ -91,16 +92,7 @@ export class UMessageDialogElement extends LitElement implements UMessageDialogM
     this.resolveHandler = undefined;
   };
 
-  static styles = css`
-    .message {
-      margin: 0;
-      margin-bottom: 20px;
-      font-size: 14px;
-      line-height: 1;
-      font-weight: 300;
-      font-family: var(--sl-font-sans);
-    }
-  `;
+  static styles = [styles];
   
 }
 

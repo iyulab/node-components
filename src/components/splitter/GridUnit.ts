@@ -1,7 +1,8 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html  } from 'lit';
 import { customElement, property, query } from "lit/decorators.js";
 
 import './XSplitter';
+import { styles } from './GridUnit.styles';
 
 @customElement("grid-unit")
 export class GridUnit extends LitElement {
@@ -127,17 +128,5 @@ export class GridUnit extends LitElement {
     }
   }
 
-  static styles = css`
-    :host {
-      position: relative;
-      display: flex;
-      flex-direction: var(--flex-direction, row);
-      width: 100%;
-      height: 100%;
-    }
-
-    #item1, #item2 {
-      flex-grow: 1;
-    }
-  `;
+  static styles = [styles];
 }

@@ -1,7 +1,8 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html  } from 'lit';
 import { customElement, property } from "lit/decorators.js";
 
 import { UInputContainerModel, type LabelPosition } from "./UInputContainer.model";
+import { styles } from './UInputContainer.styles';
 
 @customElement('u-input-container')
 export class UInputContainer extends LitElement implements UInputContainerModel {
@@ -30,39 +31,5 @@ export class UInputContainer extends LitElement implements UInputContainerModel 
     `;
   }
 
-  static styles = css`
-    :host {
-      position: relative;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-
-      --label-width: auto;
-    }
-    :host([labelPosition="top"]) .label-position{
-      flex-direction: column;
-    }
-    :host([labelPosition="left"]) .label-position {
-      flex-direction: row;
-      --label-width: 20%;
-    }
-    :host([disabled]) .label-position slot::slotted(*) {
-      pointer-events: none;
-      opacity: 0.5;
-    }
-    :host([readonly]) .label-position slot::slotted(*) {
-      pointer-events: none;
-    }
-
-    .label-position {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-
-      u-input-label {
-        width: var(--label-width);
-      }
-    }
-  `;
+  static styles = [styles];
 }

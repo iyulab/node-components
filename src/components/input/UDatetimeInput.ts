@@ -1,9 +1,10 @@
-import { css, html } from "lit";
+import { html  } from 'lit';
 import { customElement, property, query } from "lit/decorators.js";
 import { convertReact } from "../../utils";
 
 import { UDatetimeInputModel, type DatetimeInputFormat } from "./UDatetimeInput.model";
 import { UBaseInput } from "../input-parts/UBaseInput";
+import { styles } from './UDatetimeInput.styles';
 
 @customElement('u-datetime-input')
 export class UDatetimeInputElement extends UBaseInput implements UDatetimeInputModel {
@@ -74,38 +75,7 @@ export class UDatetimeInputElement extends UBaseInput implements UDatetimeInputM
     this.inputEl.focus();
   }
 
-  static styles = css`
-    :host {
-      width: 100%;
-      font-size: 14px;
-    }
-    :host slot::slotted(*) {
-      font-size: inherit;
-    }
-    :host([clearable]) .clear {
-      display: inline-flex;
-    }
-
-    input {
-      flex: 1;
-      border: none;
-      outline: none;
-      padding: 0;
-      background-color: transparent;
-      font-size: inherit;
-      line-height: 1.5;
-    }
-
-    .clear {
-      display: none;
-      font-size: inherit;
-      color: var(--sl-color-gray-500);
-      cursor: pointer;
-    }
-    .clear:hover {
-      color: var(--sl-color-gray-800);
-    }
-  `;
+  static styles = [styles];
 }
 
 export const UDatetimeInput = convertReact({

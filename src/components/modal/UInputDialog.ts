@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html  } from 'lit';
 import { customElement, property } from "lit/decorators.js";
 import { convertReact } from "../../utils";
 import { t } from "../../localization/ULocalizer";
@@ -9,6 +9,7 @@ import "./UDialog";
 import "../input/UInput";
 import "../button/UButtonGroup";
 import "../button/UButton";
+import { styles } from './UInputDialog.styles';
 
 @customElement("u-input-dialog")
 export class UInputDialogElement extends LitElement implements UInputDialogModel {
@@ -92,11 +93,7 @@ export class UInputDialogElement extends LitElement implements UInputDialogModel
     this.value = e.target?.value;
   }
 
-  static styles = css`
-    u-input {
-      margin-bottom: 20px;
-    }
-  `;
+  static styles = [styles];
   
 }
 

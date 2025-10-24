@@ -1,5 +1,6 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html  } from 'lit';
 import { customElement, property } from "lit/decorators.js";
+import { styles } from './UWizardContent.styles';
 
 @customElement("u-wizard-content")
 export class UWizardContent extends LitElement {
@@ -12,8 +13,6 @@ export class UWizardContent extends LitElement {
     `;
   }
 
-  static styles = css`
-    
-  `;
+  static styles = [styles];
 
 }

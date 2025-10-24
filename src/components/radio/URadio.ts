@@ -1,7 +1,8 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { convertReact } from "../../utils";
+import { styles } from './URadio.styles';
 
 import SlRadio from "@shoelace-style/shoelace/dist/components/radio/radio.component.js";
 import SlRadioButton from "@shoelace-style/shoelace/dist/components/radio-button/radio-button.component.js";
@@ -74,9 +75,7 @@ export class URadioElement extends LitElement implements URadioModel {
     }));
   }
 
-  static styles = css`
-    
-  `;
+  static styles = [styles];
 }
 
 export const URadio = convertReact({

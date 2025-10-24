@@ -1,8 +1,11 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html  } from 'lit';
 import { customElement, property } from "lit/decorators.js";
+
+import { styles } from './UWizardStep.styles';
 
 @customElement("u-wizard-step")
 export class UWizardStep extends LitElement {
+  static styles = [styles];
   
   @property({ type: Boolean }) active?: boolean;
   @property({ type: Boolean }) disabled?: boolean;
@@ -14,23 +17,5 @@ export class UWizardStep extends LitElement {
       <slot></slot>
     `;
   }
-
-  static styles = css`
-    :host {
-      position: relative;
-      display: inline-flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-    }
-    :host([disabled]) {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-    :host([active]) {
-      font-weight: bold;
-      color: var(--sl-color-primary-500);
-    }
-  `;
 
 }

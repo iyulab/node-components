@@ -1,10 +1,11 @@
-import { css, html } from "lit";
+import { html  } from 'lit';
 import { customElement, property, query } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { convertReact } from "../../utils";
 
 import { UNumberInputModel, type NumberInputFormat } from "./UNumberInput.model";
 import { UBaseInput } from "../input-parts/UBaseInput";
+import { styles } from './UNumberInput.styles';
 
 @customElement('u-number-input')
 export class UNumberInputElement extends UBaseInput implements UNumberInputModel {
@@ -93,44 +94,7 @@ export class UNumberInputElement extends UBaseInput implements UNumberInputModel
     this.inputEl.focus();
   }
 
-  static styles = css`
-    :host {
-      width: 100%;
-      font-size: 14px;
-    }
-    :host slot::slotted(*) {
-      font-size: inherit;
-    }
-    :host([clearable]) .clear {
-      display: inline-flex;
-    }
-
-    input {
-      flex: 1;
-      border: none;
-      outline: none;
-      padding: 0;
-      background-color: transparent;
-      font-size: inherit;
-      line-height: 1.5;
-    }
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      -moz-appearance: textfield;
-      margin: 0;
-    }
-
-    .clear {
-      display: none;
-      font-size: inherit;
-      color: var(--sl-color-gray-500);
-      cursor: pointer;
-    }
-    .clear:hover {
-      color: var(--sl-color-gray-800);
-    }
-  `;
+  static styles = [styles];
 }
 
 export const UNumberInput = convertReact({

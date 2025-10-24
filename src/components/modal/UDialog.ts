@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit'
+import { html, LitElement  } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js'
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { DirectiveResult } from 'lit/async-directive.js';
@@ -10,6 +10,7 @@ SlDialog.define('sl-dialog');
 import { UDialogModel } from './UDialog.model';
 import { UModalContent } from './UModalContent';
 import type { UModalResult } from './UModalContent.model';
+import { styles } from './UDialog.styles';
 
 @customElement('u-dialog')
 export class UDialogElement extends LitElement implements UDialogModel {
@@ -77,14 +78,7 @@ export class UDialogElement extends LitElement implements UDialogModel {
     this.content = undefined;
   }
 
-  static styles = css`
-    sl-dialog {
-      --width: "auto";
-      --header-spacing: var(--sl-spacing-medium);
-      --body-spacing: var(--sl-spacing-medium);
-      --footer-spacing: var(--sl-spacing-medium);
-    }
-  `;
+  static styles = [styles];
 
 }
 
