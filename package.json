@@ -10,12 +10,11 @@
   "type": "module",
   "types": "./src/index.d.ts",
   "scripts": {
-    "test": "vite --force",
-    "scan": "i18next -c i18next.config.js",
-    "build": "iyulab build -d dist -b vite",
-    "deploy": "iyulab publish",
     "lint": "eslint src",
-    "lint:fix": "eslint src --fix"
+    "lint:fix": "eslint src --fix",
+    "scan": "i18next -c i18next.config.js",
+    "start": "vite --force",
+    "build": "vite build"
   },
   "exports": {
     ".": {
@@ -85,8 +84,8 @@
   "dependencies": {
     "@lit/react": "^1.0.8",
     "lit": "^3.3.1",
-    "mobx": "^6.15.0",
     "react": "^19.2.0",
+    "mobx": "^6.15.0",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
@@ -101,7 +100,7 @@
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-http-backend": "^3.0.2",
     "i18next-parser": "^9.3.0",
-    "monaco-editor": "^0.53.0",
+    "lit-i18n": "^4.1.0",
     "react-i18next": "^16.2.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.2",

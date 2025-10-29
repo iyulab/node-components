@@ -13,7 +13,6 @@ import type { UUrlInputModel } from '../components/input/UUrlInput.model';
 import type { UObjectInputModel } from '../components/input-extension/UObjectInput.model';
 import type { URestURLInputModel } from '../components/input-extension/URestURLInput.model';
 import type { UArrayInputModel } from '../components/input-extension/UArrayInput.model';
-import type { UEditorInputModel } from '../components/input-advanced/UEditorInput.model';
 
 export type PropertyMetaType = (
   'text' | 'textarea' | 'number' | 'checkbox' | 
@@ -38,6 +37,5 @@ export type PropertyMetaData = (
   ({ type: 'select' } & USelectInputModel) | 
   ({ type: 'object' } & UObjectInputModel) | 
   ({ type: 'rest-url' } & URestURLInputModel) |
-  ({ type: 'editor' } & UEditorInputModel) |
   ({ type: 'array' } & UArrayInputModel)
 );
