@@ -9,12 +9,12 @@ Components use [shoelace](https://www.npmjs.com/package/@shoelace-style/shoelace
 
 ## Install
 ```bash
-npm install @iyulab/u-components
+npm install @iyulab/components
 ```
 
 ## Usage
 ```js
-import "@iyulab/u-components";
+import "@iyulab/components";
 ```
 
 ## Dependencies
