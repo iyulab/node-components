@@ -3,7 +3,7 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import liteslint from "eslint-plugin-lit";
 import globals from "globals";
-import { resolve } from "path";
+import path from "path";
 
 export default defineConfig([
   {
@@ -20,7 +20,7 @@ export default defineConfig([
       parserOptions: {
         ecmaVersion: 2020,
         project: "./tsconfig.json",
-        tsconfigRootDir: resolve(__dirname),
+        tsconfigRootDir: path.resolve(__dirname),
       }
     },
     plugins: {

@@ -1,5 +1,17 @@
-export * from './UAlert';
+import { convertReact } from '../../internals';
+import { Alert } from './Alert';
 
-export * from './UAlert.model';
+Alert.define("u-alert");
 
-export * from './UAlertController';
+declare global {
+  interface HTMLElementTagNameMap {
+    'u-alert': Alert;
+  }
+}
+
+const UAlert = convertReact({
+  tagName: 'u-alert',
+  elementClass: Alert
+})
+
+export { Alert, UAlert };

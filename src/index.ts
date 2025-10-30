@@ -1,4 +1,3 @@
 export * from './components';
-export * from './decorators';
-export * from './localization';
-export * from './utils';
+export * from './utilities';
+export { UElement } from './internals/UElement';

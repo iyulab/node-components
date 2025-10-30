@@ -18,6 +18,11 @@ glob.sync(['src/**/*.ts']).map((path: string) => {
 
 export default () => {
   return defineConfig({
+    server: {
+      host: "localhost",
+      port: 5173,
+      open: "./tests/index.html",
+    },
     publicDir: resolve(__dirname, 'static'),
     build: {
       target: 'esnext',

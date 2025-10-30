@@ -1,91 +1,45 @@
 {
   "name": "@iyulab/components",
   "description": "iyulab ui components",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": {
     "name": "iyulab",
     "url": "https://www.iyulab.com"
   },
   "license": "MIT",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+    "package.json"
+  ],
   "type": "module",
   "types": "./src/index.d.ts",
-  "scripts": {
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "scan": "i18next -c i18next.config.js",
-    "start": "vite --force",
-    "build": "vite build"
-  },
   "exports": {
     ".": {
       "types": "./src/index.d.ts",
-      "import": "./src/index.js",
-      "require": "./src/index.js"
+      "import": "./src/index.js"
     },
     "./*": {
       "types": "./src/*/index.d.ts",
-      "import": "./src/*/index.js",
-      "require": "./src/*/index.js"
+      "import": "./src/*/index.js"
     },
     "./styles/*": {
       "import": "./static/styles/*.css"
-    },
-    "./decorators": {
-      "types": "./src/decorators/index.d.ts",
-      "import": "./src/decorators/index.js",
-      "require": "./src/decorators/index.js"
-    },
-    "./localization": {
-      "types": "./src/localization/index.d.ts",
-      "import": "./src/localization/index.js",
-      "require": "./src/localization/index.js"
-    },
-    "./utils": {
-      "types": "./src/utils/index.d.ts",
-      "import": "./src/utils/index.js",
-      "require": "./src/utils/index.js"
-    },
-    "./components/*": {
-      "types": "./src/components/*/index.d.ts",
-      "import": "./src/components/*/index.js",
-      "require": "./src/components/*/index.js"
-    },
-    "./components/modal/*": {
-      "types": "./src/components/modal/*.d.ts",
-      "import": "./src/components/modal/*.js",
-      "require": "./src/components/modal/*.js"
-    },
-    "./components/button/*": {
-      "types": "./src/components/button/*.d.ts",
-      "import": "./src/components/button/*.js",
-      "require": "./src/components/button/*.js"
-    },
-    "./components/input/*": {
-      "types": "./src/components/input/*.d.ts",
-      "import": "./src/components/input/*.js",
-      "require": "./src/components/input/*.js"
-    },
-    "./components/input-parts/*": {
-      "types": "./src/components/input-parts/*.d.ts",
-      "import": "./src/components/input-parts/*.js",
-      "require": "./src/components/input-parts/*.js"
-    },
-    "./components/input-extension/*": {
-      "types": "./src/components/input-extension/*.d.ts",
-      "import": "./src/components/input-extension/*.js",
-      "require": "./src/components/input-extension/*.js"
-    },
-    "./components/input-advanced/*": {
-      "types": "./src/components/input-advanced/*.d.ts",
-      "import": "./src/components/input-advanced/*.js",
-      "require": "./src/components/input-advanced/*.js"
     }
   },
+  "scripts": {
+    "scan": "i18next -c i18next.config.js",
+    "start": "vite --force",
+    "build": "eslint src && vite build"
+  },
   "dependencies": {
+    "@floating-ui/dom": "^1.7.4",
     "@lit/react": "^1.0.8",
     "lit": "^3.3.1",
-    "react": "^19.2.0",
     "mobx": "^6.15.0",
+    "react": "^19.2.0",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {

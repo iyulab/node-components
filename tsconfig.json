@@ -46,8 +46,7 @@
     "vite-env.d.ts",
     "src/**/*",
 
-    // Test files
-    "app.ts",
-    "react.tsx",
+    // 테스트 파일 포함
+    "tests/**/*",
   ]
 }

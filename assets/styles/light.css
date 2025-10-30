@@ -1,0 +1,38 @@
+:root {
+  color-scheme: light;
+
+  /* neutral: 일반 텍스트/아이콘 기준 */
+  --u-neutral-color-weaker:   #A0A0A0;
+  --u-neutral-color-weak:     #777777;
+  --u-neutral-color-normal:   #555555;
+  --u-neutral-color-strong:   #2F2F2F;
+  --u-neutral-color-stronger: #111111;
+
+  /* blue */
+  --u-blue-color-weaker:      #B3D1FF;
+  --u-blue-color-weak:        #80B3FF;
+  --u-blue-color-normal:      #3366FF;
+  --u-blue-color-strong:      #254CB3;
+  --u-blue-color-stronger:    #1B3A8A;
+
+  /* green */
+  --u-green-color-weaker:     #BEE8CC;
+  --u-green-color-weak:       #7FD6A0;
+  --u-green-color-normal:     #33AA55;
+  --u-green-color-strong:     #2B8646;
+  --u-green-color-stronger:   #206538;
+
+  /* yellow */
+  --u-yellow-color-weaker:    #FFE8A6;
+  --u-yellow-color-weak:      #FFDA66;
+  --u-yellow-color-normal:    #FFC107;
+  --u-yellow-color-strong:    #CC9A06;
+  --u-yellow-color-stronger:  #996F05;
+
+  /* red */
+  --u-red-color-weaker:       #FFB3B3;
+  --u-red-color-weak:         #FF7A7A;
+  --u-red-color-normal:       #FF3333;
+  --u-red-color-strong:       #CC2929;
+  --u-red-color-stronger:     #991F1F;
+}

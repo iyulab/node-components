@@ -1,10 +1,9 @@
 import { html, nothing  } from 'lit';
 import { customElement, property, queryAll } from "lit/decorators.js";
-import { convertReact } from "../../utils";
 
 import { USelectInputModel, type USelectOption } from "./USelectInput.model";
 import { UBaseInput } from "../input-parts/UBaseInput";
-import { t } from "../../localization/ULocalizer";
+import { t, convertReact } from "../../utilities";
 import { styles } from './USelectInput.styles';
 
 @customElement('u-select-input')
@@ -27,7 +26,11 @@ export class USelectInputElement extends UBaseInput implements USelectInputModel
       this.value = this.default;
     }
     if (changedProperties.has('open') && this.open) {
-      this.open === true ? this.showPopover() : this.hidePopover();
+      if (this.open) {
+        this.showPopover();
+      } else {
+        this.hidePopover();
+      }
     }
   }
 
@@ -111,7 +114,10 @@ export class USelectInputElement extends UBaseInput implements USelectInputModel
     if(this.value) {
       this.optionEl.forEach((el) => {
         const isSelected = el.getAttribute('data-value') === this.value;
-        isSelected ? el.focus() : el.blur();
+        if (isSelected)
+          el.focus()
+        else
+          el.blur();
       });
     } else if(!this.required && !this.value) {
       this.optionEl[0].focus();
