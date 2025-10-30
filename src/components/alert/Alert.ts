@@ -67,9 +67,9 @@ export class Alert extends UElement {
     return html`
       <div class="container">
         <div class="header">
-          <u-icon name=${this.type === 'warning' ? 'exclamation-triangle-fill' :
+          <u-icon name=${this.type === 'warning' ? 'mic' :
             this.type === 'danger' ? 'x-circle-fill' :
-            this.type === 'info' ? 'info-circle-fill' :
+            this.type === 'info' ? 'pause' :
             this.type === 'success' ? 'check-circle-fill' :
             'info-circle-fill'}
           ></u-icon>

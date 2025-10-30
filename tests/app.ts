@@ -1,8 +1,9 @@
 import { LitElement, css, html } from "lit";
-import { customElement, query, state } from "lit/decorators.js";
+import { customElement, query } from "lit/decorators.js";
 
 import '../src';
-import { propertyMeta, localizer, t } from "../src/utilities";
+import { getTheme, localizer, setTheme, t } from "../src/utilities";
+import { Alert } from "../src/components/alert/Alert.js";
 
 @customElement('preview-app')
 export class PreviewApp extends LitElement {
@@ -21,13 +22,24 @@ export class PreviewApp extends LitElement {
           <u-button @click=${this.toggleTheme}>
             ${t('Toggle Theme')}
           </u-button>
+          <u-button @click=${this.alert}>
+            ${t('Show Alert')}
+          </u-button>
         </div>
       </div>
     `;
   }
 
   toggleTheme() {
-    document.documentElement.classList.toggle('sl-theme-dark');
+    setTheme(getTheme() === 'light' ? 'dark' : 'light');
+  }
+
+  alert() {
+    Alert.toast({
+      type: 'success',
+      content: t('This is a toast alert!'),
+      duration: 3000,
+    });
   }
 
   static styles = css`

@@ -4,6 +4,7 @@ import tseslint from "typescript-eslint";
 import liteslint from "eslint-plugin-lit";
 import globals from "globals";
 import path from "path";
+import { fileURLToPath } from "url";
 
 export default defineConfig([
   {
@@ -20,7 +21,7 @@ export default defineConfig([
       parserOptions: {
         ecmaVersion: 2020,
         project: "./tsconfig.json",
-        tsconfigRootDir: path.resolve(__dirname),
+        tsconfigRootDir: path.dirname(fileURLToPath(import.meta.url))
       }
     },
     plugins: {

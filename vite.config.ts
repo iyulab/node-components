@@ -1,5 +1,6 @@
-import { defineConfig } from 'vite';
+import { defineConfig, normalizePath } from 'vite';
 import dts from "vite-plugin-dts";
+import { viteStaticCopy as copy } from 'vite-plugin-static-copy';
 import { resolve } from 'path';
 import glob from "fast-glob";
 
@@ -19,11 +20,10 @@ glob.sync(['src/**/*.ts']).map((path: string) => {
 export default () => {
   return defineConfig({
     server: {
-      host: "localhost",
       port: 5173,
       open: "./tests/index.html",
     },
-    publicDir: resolve(__dirname, 'static'),
+    publicDir: resolve(__dirname, 'assets'),
     build: {
       target: 'esnext',
       copyPublicDir: true,
@@ -42,6 +42,7 @@ export default () => {
         external: [
           /^lit.*/,
           /^@lit.*/,
+          /^@floating-ui.*/,
           'react',
           'mobx',
           'reflect-metadata',
@@ -56,6 +57,14 @@ export default () => {
       dts({
         include: [ "src/**/*"] 
       }),
+      copy({
+        targets: [
+          {
+            src: normalizePath(resolve(__dirname, './src/assets/styles')),
+            dest: 'assets'
+          }
+        ]
+      })
     ]
   })
 }

@@ -1,0 +1,130 @@
+:root[theme="dark"] {
+  color-scheme: dark;
+
+  /* Neutral Colors */
+  --u-neutral-0:     #000000;
+  --u-neutral-50:    #0A0A0A;
+  --u-neutral-100:   #121212;
+  --u-neutral-200:   #1E1E1E;
+  --u-neutral-300:   #2A2A2A;
+  --u-neutral-400:   #3D3D3D;
+  --u-neutral-500:   #525252;
+  --u-neutral-600:   #6E6E6E;
+  --u-neutral-700:   #8A8A8A;
+  --u-neutral-800:   #B0B0B0;
+  --u-neutral-900:   #D4D4D4;
+  --u-neutral-1000:  #FFFFFF;
+
+  /* Blue Colors */
+  --u-blue-0:        #0A1E3D;
+  --u-blue-100:      #1E3A5F;
+  --u-blue-200:      #2B4F7E;
+  --u-blue-300:      #3D6B9E;
+  --u-blue-400:      #5284BE;
+  --u-blue-500:      #6BA3E3;
+  --u-blue-600:      #87B8F5;
+  --u-blue-700:      #A5CDFF;
+  --u-blue-800:      #C2DEFF;
+  --u-blue-900:      #DDEEFF;
+  --u-blue-1000:     #F0F7FF;
+
+  /* Green Colors */
+  --u-green-0:       #0D2818;
+  --u-green-100:     #1A3F2A;
+  --u-green-200:     #285639;
+  --u-green-300:     #3A7450;
+  --u-green-400:     #4E9268;
+  --u-green-500:     #66B584;
+  --u-green-600:     #81D19D;
+  --u-green-700:     #9FE5B5;
+  --u-green-800:     #BEF2CD;
+  --u-green-900:     #DDF9E5;
+  --u-green-1000:    #F0FDF5;
+
+  /* Yellow Colors */
+  --u-yellow-0:      #2E2200;
+  --u-yellow-100:    #4D3A00;
+  --u-yellow-200:    #6B5200;
+  --u-yellow-300:    #8A6B00;
+  --u-yellow-400:    #B08900;
+  --u-yellow-500:    #D4A712;
+  --u-yellow-600:    #F5C842;
+  --u-yellow-700:    #FFE066;
+  --u-yellow-800:    #FFED99;
+  --u-yellow-900:    #FFF5CC;
+  --u-yellow-1000:   #FFFBE6;
+
+  /* Red Colors */
+  --u-red-0:         #2E0A0A;
+  --u-red-100:       #4D1717;
+  --u-red-200:       #6B2424;
+  --u-red-300:       #8F3535;
+  --u-red-400:       #B24848;
+  --u-red-500:       #D66060;
+  --u-red-600:       #F57878;
+  --u-red-700:       #FF9494;
+  --u-red-800:       #FFB3B3;
+  --u-red-900:       #FFD2D2;
+  --u-red-1000:      #FFF0F0;
+
+  /* Shadow Colors */
+  --u-shadow-weak:   rgba(0, 0, 0, 0.15);
+  --u-shadow-normal: rgba(0, 0, 0, 0.25);
+  --u-shadow-medium: rgba(0, 0, 0, 0.35);
+  --u-shadow-strong: rgba(0, 0, 0, 0.45);
+  --u-shadow-heavy:  rgba(0, 0, 0, 0.60);
+
+  /* background Colors */
+  --u-bg-color:              var(--u-neutral-100);
+  --u-bg-color-inverse:      var(--u-neutral-0);
+  --u-bg-color-hover:        var(--u-neutral-300);
+  --u-bg-color-active:       var(--u-neutral-400);
+  --u-bg-color-disabled:     var(--u-neutral-200);
+  
+  --u-overlay-bg-color:      rgba(0, 0, 0, 0.7);
+  --u-panel-bg-color:        var(--u-neutral-200);
+  --u-tooltip-bg-color:      var(--u-neutral-800);
+
+  /* border Colors */
+  --u-border-color:          var(--u-neutral-400);
+  --u-border-color-weak:     var(--u-neutral-300);
+  --u-border-color-strong:   var(--u-neutral-500);
+
+  --u-input-border-color:    var(--u-neutral-400);
+  --u-input-border-hover:    var(--u-neutral-500);
+  --u-input-border-focus:    var(--u-blue-600);
+
+  /* text Colors */
+  --u-text-color:            var(--u-neutral-900);
+  --u-text-color-inverse:    var(--u-neutral-100);
+  --u-text-color-disabled:   var(--u-neutral-500);
+
+  --u-link-text-color:       var(--u-blue-700);
+  --u-tooltip-text-color:    var(--u-neutral-100);
+
+  /* Icon Colors */
+  --u-icon-color:            var(--u-neutral-800);
+  --u-icon-color-inverse:    var(--u-neutral-100);
+  --u-icon-color-hover:      var(--u-neutral-1000);
+  --u-icon-color-active:     var(--u-blue-600);
+  --u-icon-color-disabled:   var(--u-neutral-500);
+
+  /* Scrollbar Colors */
+  --u-scrollbar-color:       var(--u-neutral-500);
+  --u-scrollbar-color-hover: var(--u-neutral-600);
+  --u-scrollbar-track-color: transparent;
+  
+  /* State Colors */
+  --u-info-color:      var(--u-blue-700);
+  --u-success-color:   var(--u-green-700);
+  --u-warning-color:   var(--u-yellow-700);
+  --u-error-color:     var(--u-red-700);
+
+  /* Font Styles */
+  --u-font-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --u-font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace;
+  --u-font-serif: 'Georgia', 'Times New Roman', Times, serif;
+  --u-font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  --u-font-modern: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --u-font-rounded: 'Nunito', 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}

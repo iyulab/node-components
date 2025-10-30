@@ -1,0 +1,130 @@
+:root {
+  color-scheme: light;
+
+  /* Neutral Colors */
+  --u-neutral-0:     #FFFFFF;
+  --u-neutral-50:    #FAFAFA;
+  --u-neutral-100:   #F5F5F5;
+  --u-neutral-200:   #EEEEEE;
+  --u-neutral-300:   #E0E0E0;
+  --u-neutral-400:   #BDBDBD;
+  --u-neutral-500:   #9E9E9E;
+  --u-neutral-600:   #757575;
+  --u-neutral-700:   #616161;
+  --u-neutral-800:   #424242;
+  --u-neutral-900:   #212121;
+  --u-neutral-1000:  #000000;
+
+  /* Blue Colors */
+  --u-blue-0:        #E3F2FD;
+  --u-blue-100:      #BBDEFB;
+  --u-blue-200:      #90CAF9;
+  --u-blue-300:      #64B5F6;
+  --u-blue-400:      #42A5F5;
+  --u-blue-500:      #2196F3;
+  --u-blue-600:      #1E88E5;
+  --u-blue-700:      #1976D2;
+  --u-blue-800:      #1565C0;
+  --u-blue-900:      #0D47A1;
+  --u-blue-1000:     #062A5E;
+
+  /* Green Colors */
+  --u-green-0:       #E8F5E9;
+  --u-green-100:     #C8E6C9;
+  --u-green-200:     #A5D6A7;
+  --u-green-300:     #81C784;
+  --u-green-400:     #66BB6A;
+  --u-green-500:     #4CAF50;
+  --u-green-600:     #43A047;
+  --u-green-700:     #388E3C;
+  --u-green-800:     #2E7D32;
+  --u-green-900:     #1B5E20;
+  --u-green-1000:    #0F3A12;
+
+  /* Yellow Colors */
+  --u-yellow-0:      #FFFDE7;
+  --u-yellow-100:    #FFF9C4;
+  --u-yellow-200:    #FFF59D;
+  --u-yellow-300:    #FFF176;
+  --u-yellow-400:    #FFEE58;
+  --u-yellow-500:    #FFEB3B;
+  --u-yellow-600:    #FDD835;
+  --u-yellow-700:    #FBC02D;
+  --u-yellow-800:    #F9A825;
+  --u-yellow-900:    #F57F17;
+  --u-yellow-1000:   #8A4A00;
+
+  /* Red Colors */
+  --u-red-0:         #FFEBEE;
+  --u-red-100:       #FFCDD2;
+  --u-red-200:       #EF9A9A;
+  --u-red-300:       #E57373;
+  --u-red-400:       #EF5350;
+  --u-red-500:       #F44336;
+  --u-red-600:       #E53935;
+  --u-red-700:       #D32F2F;
+  --u-red-800:       #C62828;
+  --u-red-900:       #B71C1C;
+  --u-red-1000:      #6B0F0F;
+
+  /* Shadow Colors */
+  --u-shadow-weak:   rgba(0, 0, 0, 0.04);
+  --u-shadow-normal: rgba(0, 0, 0, 0.08);
+  --u-shadow-medium: rgba(0, 0, 0, 0.12);
+  --u-shadow-strong: rgba(0, 0, 0, 0.16);
+  --u-shadow-heavy:  rgba(0, 0, 0, 0.24);
+
+  /* background Colors */
+  --u-bg-color:              var(--u-neutral-0);
+  --u-bg-color-inverse:      var(--u-neutral-900);
+  --u-bg-color-hover:        var(--u-neutral-100);
+  --u-bg-color-active:       var(--u-neutral-200);
+  --u-bg-color-disabled:    var(--u-neutral-50);
+  
+  --u-overlay-bg-color:      rgba(0, 0, 0, 0.5);
+  --u-panel-bg-color:        var(--u-neutral-0);
+  --u-tooltip-bg-color:      var(--u-neutral-900);
+
+  /* border Colors */
+  --u-border-color:          var(--u-neutral-300);
+  --u-border-color-weak:     var(--u-neutral-200);
+  --u-border-color-strong:   var(--u-neutral-400);
+
+  --u-input-border-color:    var(--u-neutral-300);
+  --u-input-border-hover:    var(--u-neutral-400);
+  --u-input-border-focus:    var(--u-blue-600);
+
+  /* text Colors */
+  --u-text-color:            var(--u-neutral-900);
+  --u-text-color-inverse:    var(--u-neutral-0);
+  --u-text-color-disabled:   var(--u-neutral-400);
+
+  --u-link-text-color:       var(--u-blue-700);
+  --u-tooltip-text-color:    var(--u-neutral-0);
+
+  /* Icon Colors */
+  --u-icon-color:            var(--u-neutral-700);
+  --u-icon-color-inverse:    var(--u-neutral-0);
+  --u-icon-color-hover:      var(--u-neutral-900);
+  --u-icon-color-active:     var(--u-blue-600);
+  --u-icon-color-disabled:   var(--u-neutral-400);
+
+  /* Scrollbar Colors */
+  --u-scrollbar-color:       var(--u-neutral-400);
+  --u-scrollbar-color-hover: var(--u-neutral-500);
+  --u-scrollbar-track-color: transparent;
+  
+  /* State Colors */
+  --u-info-color:      var(--u-blue-600);
+  --u-success-color:   var(--u-green-700);
+  --u-warning-color:   var(--u-yellow-900);
+  --u-error-color:     var(--u-red-700);
+
+  /* Font Styles */
+  --u-font-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --u-font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace;
+  --u-font-serif: 'Georgia', 'Times New Roman', Times, serif;
+  --u-font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  --u-font-modern: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --u-font-rounded: 'Nunito', 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}

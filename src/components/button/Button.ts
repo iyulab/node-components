@@ -14,7 +14,7 @@ import { styles } from "./Button.styles.js";
 export class Button extends UElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof UElement> = {
-    'uc-tooltip': Tooltip 
+    'u-tooltip': Tooltip 
   };
 
   /** 버튼이 비활성화 상태인지 여부를 설정합니다. 비활성화된 버튼은 클릭할 수 없습니다. */
