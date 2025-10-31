@@ -4,6 +4,8 @@ export const styles = css`
   :host {
     box-sizing: border-box;
     overflow-wrap: anywhere;
+    color: var(--u-text-color, inherit);
+    font-family: var(--u-font-base, inherit);
   }
 
   :host *,
@@ -19,7 +21,7 @@ export const styles = css`
 
   .scrollable {
     scrollbar-width: thin;
-    scrollbar-color: var(--uc-scrollbar-color) transparent;
-    scrollbar-gutter: stable both-edges;
+    scrollbar-color: var(--u-scrollbar-color) var(--u-scrollbar-track-color);
+    scrollbar-gutter: stable;
   }
 `;

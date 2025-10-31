@@ -5,10 +5,9 @@ export const styles = css`
     position: relative;
     display: inline-flex;
     
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 1.5;
-    padding: 0.5em 1em;
+    font-size: 16px;
+    color: var(--u-icon-color);
+    padding: 0.5em;
     background-color: var(--u-bg-color);
     border: 1px solid var(--u-border-color);
     border-radius: 6px;
@@ -17,65 +16,52 @@ export const styles = css`
     user-select: none;
     cursor: pointer;
   }
+  :host([borderless]) {
+    border: none;
+    background-color: transparent;
+  }
+  :host([borderless]:hover) {
+    border: none;
+    background-color: transparent;
+  }
+  :host([borderless]:active) {
+    border: none;
+    background-color: transparent;
+  }
   :host([loading]),
   :host([disabled]) {
     pointer-events: none;
   }
   :host([disabled]) {
-    color: var(--u-text-color-disabled);
+    opacity: 0.6;
+    color: var(--u-icon-color-disabled);
   }
   :host(:hover) {
-    color: var(--u-text-color-hover);
+    color: var(--u-icon-color-hover);
     background-color: var(--u-bg-color-hover);
     border-color: var(--u-border-color-strong);
   }
   :host(:active) {
-    color: var(--u-text-color-active);
+    color: var(--u-icon-color-active);
     background-color: var(--u-bg-color-active);
     transform: translateY(1px);
   }
 
   button {
     all: unset;
-    width: 100%;
     display: inline-flex;
-    flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 0.5em;
   }
   button:focus-visible {
     outline: 2px solid var(--u-blue-500, #3b82f6);
     outline-offset: 2px;
-  }
-
-  slot {
-    flex: 1 1 auto;
-    min-width: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  slot[name="prefix"],
-  slot[name="suffix"] {
-    flex: 0 0 auto;
-  }
-
-  .overlay {
-    position: absolute;
-    z-index: 100;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: inherit;
-    font-size: inherit;
     border-radius: inherit;
-    background-color: inherit;
+  }
+
+  u-icon,
+  u-spinner {
+    font-size: inherit;
+    color: inherit;
   }
 `;

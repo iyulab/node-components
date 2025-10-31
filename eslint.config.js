@@ -14,7 +14,7 @@ export default defineConfig([
   ...tseslint.configs.recommended,
   liteslint.configs["flat/recommended"],
   {
-    files: ["src/**/*.{js,mjs,cjs,ts}"],
+    files: ["src/**/*.{js,mjs,cjs,ts}", "tests/**/*.{js,mjs,cjs,ts}"],
     languageOptions: {
       sourceType: "module",
       globals: globals.browser,

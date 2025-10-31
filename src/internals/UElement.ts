@@ -49,13 +49,13 @@ export class UElement extends LitElement {
    * @param options - 추가 이벤트 옵션 (예: bubbles, composed 등)
    * @returns 이벤트가 성공적으로 디스패치되었는지 여부
    */
-  protected dispatch(name: string, value?: any, options?: any): boolean {
+  protected emit(name: string, value?: any, options?: CustomEventInit): boolean {
     const event = new CustomEvent(name, {
       bubbles: true,
       composed: true,
       cancelable: false,
       detail: value,
-      ...options
+      ...options,
     });
 
     return this.dispatchEvent(event);

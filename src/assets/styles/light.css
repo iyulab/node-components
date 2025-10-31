@@ -81,9 +81,9 @@
   --u-bg-color-active:       var(--u-neutral-200);
   --u-bg-color-disabled:    var(--u-neutral-50);
   
-  --u-overlay-bg-color:      rgba(0, 0, 0, 0.5);
   --u-panel-bg-color:        var(--u-neutral-0);
-  --u-tooltip-bg-color:      var(--u-neutral-900);
+  --u-overlay-bg-color:      rgba(0, 0, 0, 0.5);
+  --u-tooltip-bg-color:      rgba(0, 0, 0, 0.75);
 
   /* border Colors */
   --u-border-color:          var(--u-neutral-300);
@@ -97,15 +97,18 @@
   /* text Colors */
   --u-text-color:            var(--u-neutral-900);
   --u-text-color-inverse:    var(--u-neutral-0);
+  --u-text-color-hover:      var(--u-blue-600);
+  --u-text-color-active:     var(--u-blue-600);
   --u-text-color-disabled:   var(--u-neutral-400);
-
+  
+  --u-soft-text-color:       var(--u-neutral-700);
   --u-link-text-color:       var(--u-blue-700);
   --u-tooltip-text-color:    var(--u-neutral-0);
 
   /* Icon Colors */
   --u-icon-color:            var(--u-neutral-700);
   --u-icon-color-inverse:    var(--u-neutral-0);
-  --u-icon-color-hover:      var(--u-neutral-900);
+  --u-icon-color-hover:      var(--u-blue-600);
   --u-icon-color-active:     var(--u-blue-600);
   --u-icon-color-disabled:   var(--u-neutral-400);
 
@@ -113,12 +116,6 @@
   --u-scrollbar-color:       var(--u-neutral-400);
   --u-scrollbar-color-hover: var(--u-neutral-500);
   --u-scrollbar-track-color: transparent;
-  
-  /* State Colors */
-  --u-info-color:      var(--u-blue-600);
-  --u-success-color:   var(--u-green-700);
-  --u-warning-color:   var(--u-yellow-900);
-  --u-error-color:     var(--u-red-700);
 
   /* Font Styles */
   --u-font-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';

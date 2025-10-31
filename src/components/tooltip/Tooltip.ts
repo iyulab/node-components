@@ -11,21 +11,22 @@ import { styles } from "./Tooltip.styles.js";
  * Tooltip 컴포넌트는 대상 엘리먼트에 툴팁을 표시하는 기능을 제공합니다.
  */
 export class Tooltip extends UElement {
-  static styles = [super.styles, styles];
+  static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof UElement> = {};
 
+  /** 슬롯이 비어있는지 여부를 나타냅니다. */
   private isSlotEmpty: boolean = true;
 
-  /** 툴팁 대상 엘리먼트 (일반적으로 부모 엘리먼트) */
+  /** 툴팁이 연결될 대상 엘리먼트입니다. 지정하지 않으면 부모 엘리먼트가 대상이 됩니다. */
   @property({ attribute: false }) trigger?: HTMLElement;
-  /** 툴팁의 가시성 상태를 나타냅니다. */
-  @property({ type: Boolean, reflect: true }) visible: boolean = false;
-  /** 툴팁을 'fixed' 위치로 정의할지 여부를 설정합니다. 기본값은 false입니다. */
+  /** 현재 툴팁이 열려있는지 여부를 나타냅니다. */
+  @property({ type: Boolean, reflect: true }) open: boolean = false;
+  /** 'fixed' 위치에서 포지션을 계산할지 여부를 설정합니다. 기본값은 false입니다. */
   @property({ type: Boolean, reflect: true }) hoist: boolean = false;
-  /** 툴팁의 위치를 설정합니다. */
+  /** 툴팁이 나타날 위치를 설정합니다. */
   @property({ type: String }) placement?: Placement;
-  /** 툴팁의 위치에서 대상 엘리먼트까지의 거리를 설정합니다. 기본값은 4입니다. */
-  @property({ type: Number }) distance: number = 4;
+  /** 툴팁의 위치에서 대상 엘리먼트까지의 거리를 픽셀단위로 설정합니다. 기본값은 8입니다. */
+  @property({ type: Number }) distance: number = 8;
   
   connectedCallback(): void {
     super.connectedCallback();
@@ -39,6 +40,8 @@ export class Tooltip extends UElement {
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
+
+    // trigger 프로퍼티가 변경된 경우, 이전 트리거에서 새로운 트리거로 이벤트를 추가합니다.
     if (changedProperties.has('trigger') && this.trigger) {
       const oldTrigger = changedProperties.get('trigger');
       this.detachTrigger(oldTrigger);
@@ -52,19 +55,16 @@ export class Tooltip extends UElement {
     `;
   }
 
-  /**
-   * 툴팁을 표시합니다.
-   */
+  /** 툴팁을 표시합니다. */
   public show = async () => {
     // DOM 업데이트 후 위치 계산
     await this.updateComplete;
     if (!this.trigger || this.isSlotEmpty) return;
     
     const middleware = [
-      offset(this.distance),
+      offset({ mainAxis: this.distance }),
       shift(),
       flip(),
-      // arrow({ element: this.arrowEl }),
     ]
     // 자동 배치가 필요한 경우
     if (!this.placement)
@@ -76,57 +76,37 @@ export class Tooltip extends UElement {
       strategy: this.hoist ? 'fixed' : 'absolute',
     });
 
-    // if (this.arrow) {
-    //   const x = position.middlewareData.arrow?.x;
-    //   const y = position.middlewareData.arrow?.y;
-    //   this.arrowEl.style.left = x ? `${x}px` : '';
-    //   this.arrowEl.style.top = y ? `${y}px` : '';
-    // }
     Object.assign(this.style, {
       left: `${position.x}px`,
       top: `${position.y}px`,
       transformOrigin: this.getTransformOrigin(position.placement),
     });
-    await this.updateComplete; // style 업데이트 후 다시 렌더링
-    this.visible = true;
-  }
 
-  /**
-   * 툴팁을 숨깁니다.
-   */
-  public hide = () => {
-    this.visible = false;
-  }
-
-  /**
-   * slot에 콘텐츠가 존재하는지 확인합니다.
-   */
-  private checkEmptySlot = (e: Event) => {
-    const slot = e.target as HTMLSlotElement;
-    const nodes = slot.assignedNodes({ flatten: true }) ?? [];
-    this.isSlotEmpty = !nodes.some(node => {
-      // 요소 노드인 경우, 항상 true
-      if (node.nodeType === Node.ELEMENT_NODE) return true;
-      // 텍스트 노드의 경우, 공백이 아닌 내용이 있는 경우 true
-      if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) return true;
-      // 그 외 모두 false
-      return false;
+    // style 업데이트 후 Open
+    await this.updateComplete;
+    requestAnimationFrame(() => {
+      this.open = true;
     });
   }
 
-  /**
-   * 대상 엘리먼트에 툴팁 이벤트를 바인딩 합니다.
-   */
-  private attachTrigger(trigger: HTMLElement): void {
+  /** 툴팁을 숨깁니다. */
+  public hide = async () => {
+    await this.updateComplete;
+    requestAnimationFrame(() => {
+      this.open = false;
+    });
+  }
+
+  /** 대상 엘리먼트에 툴팁 이벤트를 바인딩 합니다. */
+  private attachTrigger(trigger?: HTMLElement): void {
+    if (!trigger) return;
     trigger.addEventListener('mouseenter', this.show);
     trigger.addEventListener('mouseleave', this.hide);
     trigger.addEventListener('focusin', this.show);
     trigger.addEventListener('focusout', this.hide);
   }
 
-  /**
-   * 대상 엘리먼트에 바인딩된 툴팁 이벤트를 제거합니다.
-   */
+  /** 대상 엘리먼트에 바인딩된 툴팁 이벤트를 제거합니다. */
   private detachTrigger(trigger?: HTMLElement): void {
     if (!trigger) return;
     trigger.removeEventListener('mouseenter', this.show);
@@ -154,6 +134,22 @@ export class Tooltip extends UElement {
         ? root  // 일반 DOM 엘리먼트
         : undefined;  // 찾을 수 없는 경우
     }
+  }
+
+  /** 
+   * slot에 콘텐츠가 존재하는지 확인합니다. 
+   */
+  private checkEmptySlot = (e: Event) => {
+    const slot = e.target as HTMLSlotElement;
+    const nodes = slot.assignedNodes({ flatten: true }) ?? [];
+    this.isSlotEmpty = !nodes.some(node => {
+      // 요소 노드인 경우, 항상 true
+      if (node.nodeType === Node.ELEMENT_NODE) return true;
+      // 텍스트 노드의 경우, 공백이 아닌 내용이 있는 경우 true
+      if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) return true;
+      // 그 외 모두 false
+      return false;
+    });
   }
 
   /**
