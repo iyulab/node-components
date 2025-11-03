@@ -12,8 +12,8 @@ export const styles = css`
 
   .spinner {
     flex: 1 1 auto;
-    height: 1em;
     width: 1em;
+    height: 1em;
   }
   .spinner circle {
     fill: none;
@@ -21,7 +21,6 @@ export const styles = css`
     r: calc(0.5em - var(--track-width) / 2);
     cx: 0.5em;
     cy: 0.5em;
-    transform-origin: 50% 50%;
   }
 
   .track {
@@ -33,6 +32,7 @@ export const styles = css`
     stroke: var(--indicator-color);
     stroke-linecap: round;
     stroke-dasharray: 150% 75%;
+    transform-origin: 50% 50%;
     animation: spin 2s linear infinite;
   }
 

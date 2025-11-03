@@ -1,22 +1,22 @@
-import { LitElement, html  } from 'lit';
+import { html  } from 'lit';
 import { unsafeStatic, html as staticHtml } from 'lit/static-html.js';
-import { customElement, property, queryAll, state } from 'lit/decorators.js';
-import { convertReact } from "../../utils";
+import { property, queryAll, state } from 'lit/decorators.js';
 
-import { t } from "../../localization/ULocalizer";
-import { UFormModel } from "./UForm.model";
-import { getPropertyMeta, type PropertyMetaData } from "../../decorators";
-import type { LabelPosition } from '../input-parts/UInputContainer.model';
-import type { UBaseInput } from "../input-parts/UBaseInput";
-import type { UButtonSize } from "../button/UButton.model";
-import "../input";
-import "../button/UButton";
-import { styles } from './UForm.styles';
+import { getPropertyMeta, type PropertyMetaData } from "../../utilities/decorators";
+import { t } from '../../utilities/localizer';
+import { UElement } from '../../internals/UElement.js';
+import { Input } from '../input/Input.js';
+import { Button } from '../button/Button.js';
+import { styles } from './Form.styles.js';
 
-@customElement('u-form')
-export class UFormElement extends LitElement implements UFormModel {
+export class Form extends UElement {
+  static styles = [ super.styles, styles ];
+  static dependencies: Record<string, typeof UElement> = {
+    'u-input': Input,
+    'u-button': Button,
+  };
 
-  @queryAll('.input') inputs!: NodeListOf<UBaseInput>;
+  @queryAll('.input') inputs!: NodeListOf<Input>;
   
   @state() keys: string[] = [];
   @state() loading: boolean = false;
@@ -25,9 +25,7 @@ export class UFormElement extends LitElement implements UFormModel {
   @property({ type: Boolean, reflect: true }) noHeader?: boolean;
   @property({ type: Boolean, reflect: true }) noFooter?: boolean;
   @property({ type: String }) size?: string;
-  @property({ type: String }) buttonSize?: UButtonSize;
   @property({ type: String }) headLine?: string;
-  @property({ type: String }) labelPosition?: LabelPosition;
 
   @property({ type: Object }) context?: any;
   @property({ type: Array }) meta?: PropertyMetaData[];
@@ -99,7 +97,6 @@ export class UFormElement extends LitElement implements UFormModel {
     return staticHtml`
       <${unsafeStatic(tag)}
         class="input"
-        .labelPosition=${this.labelPosition}
         .meta=${rest}
         .context=${this.context}
       ></${unsafeStatic(tag)}>
@@ -124,12 +121,10 @@ export class UFormElement extends LitElement implements UFormModel {
     return this.hasCustomActions ? null : html`
       <u-button
         theme="default"
-        .size=${this.buttonSize || 'small'}
         @click=${this.handleCancel}
       >${t('cancel', { ns: 'component', defaultValue: 'Cancel' })}</u-button>
       <u-button
         theme="primary"
-        .size=${this.buttonSize || 'small'}
         .loading=${this.loading || false}
         @click=${this.handleSubmit}
       >${t('confirm', { ns: 'component', defaultValue: 'Confirm' })}</u-button>
@@ -167,15 +162,4 @@ export class UFormElement extends LitElement implements UFormModel {
       detail: this.context
     }));
   }
-
-  static styles = [styles];
 }
-
-export const UForm = convertReact({
-  elementClass: UFormElement,
-  tagName: 'u-form',
-  events: {
-    onSubmit: 'submit',
-    onCancel: 'cancel'
-  }
-});

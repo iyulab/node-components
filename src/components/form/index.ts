@@ -1,3 +1,17 @@
-export * from './UForm';
+import { convertReact } from '../../internals/converter.js';
+import { Form } from './Form.js';
 
-export * from './UForm.model';
+Form.define('u-form');
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'u-form': Form;
+  }
+}
+
+const UForm = convertReact({
+  tagName: 'u-form',
+  elementClass: Form,
+});
+
+export { Form, UForm };

@@ -2,10 +2,6 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    position: absolute;
-    z-index: 1000;
-    top: 0;
-    left: 0;
     display: block;
     box-sizing: border-box;
     width: max-content;
@@ -14,6 +10,7 @@ export const styles = css`
     opacity: 0;
     pointer-events: none;
     transform: scale(0.95);
+    transform-origin: top left;
     transition: opacity 0.2s ease, transform 0.2s ease;
   }
   :host([open]) {
@@ -21,18 +18,15 @@ export const styles = css`
     transform: scale(1);
     pointer-events: auto;
   }
-  :host([hoist]) {
-    position: fixed;
-  }
 
   .container {
     display: flex;
     flex-direction: column;
     padding: 4px;
-    background-color: var(--u-context-menu-bg-color, #fff);
-    border: 1px solid var(--u-context-menu-border-color, #ddd);
+    background-color: var(--u-menu-bg-color, #fff);
+    border: 1px solid var(--u-menu-border-color, #ddd);
     border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     overflow: hidden;
   }
 

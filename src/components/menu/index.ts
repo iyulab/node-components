@@ -1,5 +1,17 @@
-import SlMenu from '@shoelace-style/shoelace/dist/components/menu/menu.component.js';
-import SlMenuItem from '@shoelace-style/shoelace/dist/components/menu-item/menu-item.component.js';
+import { convertReact } from '../../internals';
+import { Menu } from './Menu';
 
-SlMenu.define('u-menu');
-SlMenuItem.define('u-menu-item');
+Menu.define('u-menu');
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'u-menu': Menu;
+  }
+}
+
+const UMenu = convertReact({
+  tagName: 'u-menu',
+  elementClass: Menu
+});
+
+export { Menu, UMenu };
