@@ -1,4 +1,5 @@
-export * from './converter.js';
+export * from './converters.js';
 export * from './icons.js';
+export * from './react.js';
 
 export * from './UElement';

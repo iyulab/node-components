@@ -3,64 +3,57 @@ import { css } from "lit";
 export const styles = css`
   :host {
     display: block;
-    box-sizing: border-box;
-  }
 
+    --selected-color: var(--u-blue-600, #0066cc);
+    --selected-bg-color: var(--u-blue-50, #e8f4f8);
+  }
   :host([disabled]) {
     opacity: 0.5;
+    pointer-events: none;
     cursor: not-allowed;
   }
-
-  .menu-item-content {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    cursor: pointer;
-    user-select: none;
-    font-family: var(--u-font-modern, inherit);
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--u-menu-item-text-color, #333);
-    background-color: transparent;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-  }
-
-  :host(:not([disabled])) .menu-item-content:hover {
-    background-color: var(--u-menu-item-hover-bg-color, #f0f0f0);
-  }
-
-  :host([selected]) .menu-item-content {
-    background-color: var(--u-menu-item-selected-bg-color, #e8f4f8);
-    color: var(--u-menu-item-selected-text-color, #0066cc);
-  }
-
-  :host([disabled]) .menu-item-content {
+  :host([disabled]) .container {
     cursor: not-allowed;
     pointer-events: none;
   }
+  :host(:not([disabled])) .container:hover {
+    background-color: var(--u-bg-color-hover, #f5f5f5);
+  }
+  :host([selected]) .container {
+    color: var(--selected-color, #0066cc);
+    background-color: var(--selected-bg-color, #e8f4f8);
+  }
 
-  .menu-item-prefix {
+  .container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    line-height: 1.5;
+    border-radius: 4px;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .checker {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 16px;
-  }
-
-  .menu-item-check {
     opacity: 0;
-    font-size: 12px;
+    width: 1em;
+    font-size: 0.75em;
     font-weight: bold;
-    color: var(--u-menu-item-check-color, #0066cc);
+    color: var(--u-blue-600, #0066cc);
     transition: opacity 0.2s ease;
   }
-
-  .menu-item-check.checked {
+  .checker[checked] {
     opacity: 1;
   }
 
-  .menu-item-label {
+  .content {
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;

@@ -1,5 +1,5 @@
-import { convertReact } from '../../internals';
-import { Menu } from './Menu';
+import { convertReact } from '../../internals/react.js';
+import { Menu } from './Menu.js';
 
 Menu.define('u-menu');
 

@@ -3,30 +3,6 @@
  * @param parser - 문자열을 파싱하는 함수 (기본값: parseFloat)
  * @param separator - 구분자 (기본값: ',')
  * @returns Lit 속성 컨버터 객체
- * 
- * @example
- * ```ts
- * // 숫자 배열 컨버터
- * @property({ 
- *   type: Array,
- *   converter: arrayAttrConverter()
- * }) 
- * numbers?: number[];
- * 
- * // 문자열 배열 컨버터
- * @property({ 
- *   type: Array,
- *   converter: arrayAttrConverter(v => v)
- * }) 
- * strings?: string[];
- * 
- * // 정수 배열 컨버터
- * @property({ 
- *   type: Array,
- *   converter: arrayAttrConverter(parseInt)
- * }) 
- * integers?: number[];
- * ```
  */
 export function arrayAttrConverter<T = number>(
   parser: (value: string) => T = parseFloat as any,

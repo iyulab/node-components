@@ -2,92 +2,67 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    display: block;
+    display: flex;
     width: 100%;
     height: 100%;
     overflow: hidden;
-  }
-  /* Disabled 상태 */
-  :host([disabled]) .divider {
-    pointer-events: none;
-    cursor: default;
+
+    --divider-width: 1px;
+    --divider-color: var(--u-neutral-300, #e0e0e0);
+    --divider-active-width: 6px;
+    --divider-active-color: var(--u-blue-600, #1976d2);
   }
   /* 방향에 따른 컨테이너 레이아웃 */
-  :host([direction="vertical"]) .container {
+  :host([orientation="horizontal"]) {
+    flex-direction: row;
+  }
+  :host([orientation="vertical"]) {
     flex-direction: column;
   }
-  /* Horizontal divider (좌우 분할) */
-  :host([direction="horizontal"]) .divider {
-    width: 10px;
+  /* Horizontal divider - 오른쪽에 표시 */
+  :host([orientation="horizontal"]) ::slotted(u-panel:not(:last-child))::after {
+    top: 0;
+    right: calc(var(--divider-width, 1px) / -2);
+    width: var(--divider-width, 1px);
     height: 100%;
     cursor: col-resize;
-    transform: translateX(-50%);
   }
-  /* Vertical divider (상하 분할) */
-  :host([direction="vertical"]) .divider {
-    height: 10px;
+  /* Vertical divider - 하단에 표시 */
+  :host([orientation="vertical"]) ::slotted(u-panel:not(:last-child))::after {
+    left: 0;
+    bottom: calc(var(--divider-width, 1px) / -2);
+    height: var(--divider-width, 1px);
     width: 100%;
     cursor: row-resize;
-    transform: translateY(-50%);
   }
-  :host([direction="horizontal"]) .divider::before {
-    width: 1px;
-    height: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+  /* Horizontal divider dragging 상태 */
+  :host([orientation="horizontal"]) ::slotted(u-panel:not(:last-child):hover)::after {
+    right: calc(var(--divider-active-width, 1px) / -2);
+    width: var(--divider-active-width, 6px);
+    background-color: var(--divider-active-color, #1976d2);
   }
-  :host([direction="vertical"]) .divider::before {
-    height: 1px;
-    width: 100%;
-    top: 50%;
-    transform: translateY(-50%);
+  /* Vertical divider dragging 상태 */
+  :host([orientation="vertical"]) ::slotted(u-panel:not(:last-child):hover)::after {
+    bottom: calc(var(--divider-active-width, 1px) / -2);
+    height: var(--divider-active-width, 6px);
+    background-color: var(--divider-active-color, #1976d2);
   }
-  :host([direction="horizontal"]) .divider:hover::before,
-  :host([direction="horizontal"]) .divider.dragging::before {
-    width: 6px;
-  }
-  :host([direction="vertical"]) .divider:hover::before,
-  :host([direction="vertical"]) .divider.dragging::before {
-    height: 6px;
+  /* Disabled 상태 */
+  :host([disabled]) ::slotted(u-panel:not(:last-child))::after {
+    cursor: default;
+    pointer-events: none;
   }
 
-  .container {
-    display: flex;
-    width: 100%;
-    height: 100%;
+  /* u-panel 스타일링 */
+  ::slotted(u-panel) {
     position: relative;
   }
-
-  /* 슬롯으로 전달된 자식 요소들 (패널) */
-  ::slotted(*) {
-    flex-shrink: 0;
-    overflow: auto;
-    box-sizing: border-box;
-  }
-
-  /* Divider - 절대 위치로 배치 */
-  .divider {
-    position: absolute;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  /* 실제 보이는 divider 선 */
-  .divider::before {
+  /* 마지막 패널이 아닌 경우 divider 영역 (::after) */
+  ::slotted(u-panel:not(:last-child))::after {
     content: '';
     position: absolute;
-    background-color: var(--u-border-color);
-    transition: all 0.15s ease;
-  }
-  /* Divider hover/dragging 상태 - 선이 굵어짐 */
-  .divider:hover::before,
-  .divider.dragging::before {
-    background-color: var(--u-border-color-strong);
-  }
-
-  /* Dragging 상태에서 선택 방지 */
-  .divider.dragging {
-    user-select: none;
+    z-index: 100;
+    background: var(--divider-color, transparent);
+    transition: background-color 0.15s ease;
   }
 `;

@@ -1,5 +1,5 @@
-import { convertReact } from "../../internals/converter";
-import { IconButton } from "./IconButton";
+import { convertReact } from "../../internals/react.js";
+import { IconButton } from "./IconButton.js";
 
 IconButton.define("u-icon-button");
 

@@ -1,5 +1,5 @@
-import { convertReact } from "../../internals/converter";
-import { Dialog } from "./Dialog";
+import { convertReact } from "../../internals/react.js";
+import { Dialog } from "./Dialog.js";
 
 Dialog.define('u-dialog');
 

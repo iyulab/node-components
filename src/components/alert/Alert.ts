@@ -1,7 +1,7 @@
 import { html, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { UElement } from '../../internals';
+import { UElement } from '../../internals/UElement.js';
 import { Icon } from '../icon/Icon.js';
 import { styles } from './Alert.styles.js';
 

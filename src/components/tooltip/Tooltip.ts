@@ -4,7 +4,7 @@ import { property } from "lit/decorators.js";
 import { computePosition, offset, shift, flip, autoPlacement } from '@floating-ui/dom';
 import type { Placement } from "@floating-ui/dom";
 
-import { UElement } from "../../internals/UElement";
+import { UElement } from "../../internals/UElement.js";
 import { styles } from "./Tooltip.styles.js";
 
 /**

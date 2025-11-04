@@ -7,7 +7,6 @@ export const styles = css`
     top: 0;
     left: 0;
     display: block;
-    box-sizing: border-box;
     width: max-content;
     min-width: 180px;
     
@@ -28,15 +27,12 @@ export const styles = css`
   .container {
     display: flex;
     flex-direction: column;
+    gap: 2px;
     padding: 4px;
-    background-color: var(--u-context-menu-bg-color, #fff);
-    border: 1px solid var(--u-context-menu-border-color, #ddd);
+    border: 1px solid var(--u-border-color, #ddd);
     border-radius: 8px;
+    background-color: var(--u-bg-color, #fff);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-  }
-
-  ::slotted(u-menu-item:not(:last-child)) {
-    margin-bottom: 2px;
   }
 `;

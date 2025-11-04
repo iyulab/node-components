@@ -28,9 +28,6 @@ export const styles = css`
     cy: 3em;
   }
 
-  .mask {
-    stroke: var(--track-color);
-  }
   .track {
     stroke: var(--track-color);
   }

@@ -4,7 +4,7 @@ import { property } from "lit/decorators.js";
 import { computePosition, offset, shift, flip, autoPlacement } from '@floating-ui/dom';
 import type { Placement } from "@floating-ui/dom";
 
-import { UElement } from "../../internals/UElement";
+import { UElement } from "../../internals/UElement.js";
 import { MenuItem } from "../menu-item/MenuItem.js";
 import { styles } from "./ContextMenu.styles.js";
 
@@ -18,6 +18,10 @@ export class ContextMenu extends UElement {
     'u-menu-item': MenuItem,
   };
 
+  /** 마우스 클릭 위치 */
+  private mouseX: number = 0;
+  private mouseY: number = 0;
+
   /** 컨텍스트 메뉴가 연결될 대상 엘리먼트입니다. 지정하지 않으면 부모 엘리먼트가 대상이 됩니다. */
   @property({ attribute: false }) trigger?: HTMLElement;
   /** 현재 메뉴가 열려있는지 여부입니다. */
@@ -28,10 +32,6 @@ export class ContextMenu extends UElement {
   @property({ type: String }) placement?: Placement;
   /** 메뉴의 위치에서 마우스 포인터까지의 거리를 픽셀단위로 설정합니다. 기본값은 2입니다. */
   @property({ type: Number }) distance: number = 2;
-
-  /** 마우스 클릭 위치 */
-  private mouseX: number = 0;
-  private mouseY: number = 0;
 
   connectedCallback(): void {
     super.connectedCallback();

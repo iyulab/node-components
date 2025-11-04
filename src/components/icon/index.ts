@@ -1,5 +1,5 @@
-import { convertReact } from "../../internals";
-import { Icon } from "./Icon";
+import { convertReact } from "../../internals/react.js";
+import { Icon } from "./Icon.js";
 
 Icon.define("u-icon");
 

@@ -1,4 +1,4 @@
-import { convertReact } from '../../internals';
+import { convertReact } from '../../internals/react.js';
 import { ContextMenu } from './ContextMenu.js';
 
 ContextMenu.define('u-context-menu');

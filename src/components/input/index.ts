@@ -1,5 +1,5 @@
-import { convertReact } from "../../internals";
-import { Input } from "./Input";
+import { convertReact } from "../../internals/react.js";
+import { Input } from "./Input.js";
 
 Input.define("u-input");
 

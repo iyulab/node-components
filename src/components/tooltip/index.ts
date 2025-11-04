@@ -1,5 +1,5 @@
-import { convertReact } from '../../internals';
-import { Tooltip } from './Tooltip';
+import { convertReact } from '../../internals/react.js';
+import { Tooltip } from './Tooltip.js';
 
 Tooltip.define('u-tooltip');
 

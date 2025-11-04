@@ -1,5 +1,5 @@
-import { convertReact } from "../../internals/converter.js";
-import { ProgressRing } from "./ProgressRing";
+import { convertReact } from "../../internals/react.js";
+import { ProgressRing } from "./ProgressRing.js";
 
 ProgressRing.define("u-progress-ring");
 

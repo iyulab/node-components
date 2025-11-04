@@ -1,4 +1,4 @@
-import { convertReact } from '../../internals/converter.js';
+import { convertReact } from '../../internals/react.js';
 import { Form } from './Form.js';
 
 Form.define('u-form');

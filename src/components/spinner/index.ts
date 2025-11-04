@@ -1,5 +1,5 @@
-import { convertReact } from "../../internals/converter";
-import { Spinner } from "./Spinner";
+import { convertReact } from "../../internals/react.js";
+import { Spinner } from "./Spinner.js";
 
 Spinner.define('u-spinner');
 

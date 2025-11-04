@@ -1,5 +1,5 @@
-import { convertReact } from "../../internals";
-import { Button } from "./Button";
+import { convertReact } from "../../internals/react.js";
+import { Button } from "./Button.js";
 
 Button.define("u-button");
 

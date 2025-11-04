@@ -1,7 +1,7 @@
 import { html, PropertyValues } from "lit";
 import { property, queryAssignedElements } from "lit/decorators.js";
 
-import { UElement } from "../../internals/UElement";
+import { UElement } from "../../internals/UElement.js";
 import { MenuItem } from "../menu-item/MenuItem.js";
 import { styles } from "./Menu.styles.js";
 
@@ -45,6 +45,9 @@ export class Menu extends UElement {
     if (changedProperties.has('value') && this.selectable) {
       this.updateSelection();
     }
+    if (changedProperties.has('open')) {
+      this.updateOpenState(this.open);
+    }
   }
 
   render() {
@@ -60,7 +63,6 @@ export class Menu extends UElement {
     await this.updateComplete;
     requestAnimationFrame(() => {
       this.open = true;
-      this.emit('u-show');
     });
   }
 
@@ -69,8 +71,30 @@ export class Menu extends UElement {
     await this.updateComplete;
     requestAnimationFrame(() => {
       this.open = false;
-      this.emit('u-hide');
     });
+  }
+
+  /** open 상태가 변경될 때 호출됩니다. */
+  private updateOpenState(open: boolean) {
+    if (open) {
+      this.emit('u-show');
+    } else {
+      this.emit('u-hide');
+    }
+  }
+
+  /** 선택 상태를 업데이트합니다. */
+  private updateSelection() {
+    this.items.forEach(item => {
+      item.selected = item.value === this.value;
+    });
+  }
+
+  /** 슬롯 변경 이벤트를 처리합니다. */
+  private handleSlotChange = () => {
+    if (this.selectable && this.value) {
+      this.updateSelection();
+    }
   }
 
   /** 메뉴 항목 선택 이벤트를 처리합니다. */
@@ -82,23 +106,6 @@ export class Menu extends UElement {
       this.value = menuItem.value || event.detail?.value || '';
       this.updateSelection();
     }
-
-    // 이벤트 버블링
-    this.emit('u-select', event.detail);
-  }
-
-  /** 슬롯 변경 이벤트를 처리합니다. */
-  private handleSlotChange = () => {
-    if (this.selectable && this.value) {
-      this.updateSelection();
-    }
-  }
-
-  /** 선택 상태를 업데이트합니다. */
-  private updateSelection() {
-    this.items.forEach(item => {
-      item.selected = item.value === this.value;
-    });
   }
 
   /** 키보드 네비게이션을 처리합니다. */

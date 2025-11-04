@@ -1,5 +1,5 @@
-import { convertReact } from '../../internals';
-import { Alert } from './Alert';
+import { convertReact } from '../../internals/react.js';
+import { Alert } from './Alert.js';
 
 Alert.define("u-alert");
 
