@@ -1,47 +1,46 @@
-import { html, PropertyValues } from "lit";
-import { property, state, query } from "lit/decorators.js";
+import { html } from "lit";
+import { property } from "lit/decorators.js";
 
 import { UElement } from "../../internals/UElement.js";
-import { arrayAttrConverter } from "../../internals/converters.js";
 import { Panel } from "./Panel.js";
+import { Splitter } from "./Splitter.js";
 import { styles } from "./SplitPanel.styles.js";
 
 type Orientation = 'horizontal' | 'vertical';
 
 /**
  * SplitPanel 컴포넌트는 화면을 여러 개의 패널로 분할하여 표시합니다.
- * u-panel 자식 요소들을 감지하고 그 사이에 자동으로 디바이더를 삽입합니다.
+ * 라이트돔을 사용하여 children 태그들 사이에 Splitter를 주입합니다.
  */
 export class SplitPanel extends UElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof UElement> = {
-    'u-panel': Panel
+    'u-panel': Panel,
+    'u-splitter': Splitter
   };
 
-  private draggingIndex = -1;
+  private panels: Panel[] = [];
+  private splitters: Splitter[] = [];
+  private isDragging = false;
+  private currentSplitter: Splitter | null = null;
   private startPosition = 0;
-  private startFlexes: number[] = [];
-
-  @query('.container') container!: HTMLElement;
-
-  @state() isDragging: boolean = false;
-  @state() ratio: number[] = []; // flex 비율로 저장
-  @state() panels: Panel[] = [];
+  private startSizes: number[] = [];
 
   /** 분할 방향을 설정합니다. 'horizontal'은 좌우 분할, 'vertical'은 상하 분할입니다. */
   @property({ type: String, reflect: true }) orientation: Orientation = 'horizontal';
-  /** 사용자가 드래그를 통해 패널 크기를 조절할 수 없도록 합니다. */
-  @property({ type: Boolean, reflect: true }) disabled = false;
-  /** 초기 패널 크기 비율 배열입니다. 각 값은 flex 비율을 나타냅니다. */
-  @property({ type: Array, attribute: 'initial-sizes', converter: arrayAttrConverter() }) 
-  initialSizes: number[] = [];
 
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
+  disconnectedCallback() {
+    // 컴포넌트 제거 시 이벤트 리스너 정리
+    document.removeEventListener('mousemove', this.handleMouseMove);
+    document.removeEventListener('mouseup', this.handleMouseUp);
+    
+    // splitter 제거
+    this.splitters.forEach(splitter => {
+      splitter.removeEventListener('mousedown', this.handleMouseDown);
+      splitter.remove();
+    });
 
-    if (changedProperties.has('ratio') || changedProperties.has('panels')) {
-      this.updatePanelStyles();
-    }
+    super.disconnectedCallback();
   }
 
   render() {
@@ -50,118 +49,129 @@ export class SplitPanel extends UElement {
     `;
   }
 
-  private handleSlotChange = (event: Event) => {
-    const slot = event.target as HTMLSlotElement;
-    const panels = slot.assignedElements({ flatten: true }).filter(
-      el => el instanceof Panel
-    ) as Panel[];
-    
-    // 패널의 변경이 없으면 무시
-    if (this.panels.length === panels.length && this.panels.every((p, i) => p === panels[i])) {
+  private handleSlotChange = async (e: Event) => {
+    const slot = e.target as HTMLSlotElement;
+    const childrens = slot.assignedElements({ flatten: true });
+    const panels = childrens.filter(el => el instanceof Panel);
+
+    // 패널이 변경되지 않았으면 다시 설정하지 않음
+    if (this.panels.length === panels.length && 
+        this.panels.every((p, i) => p === panels[i])) {
       return;
     }
 
-    // 패널 목록 갱신
-    this.panels = panels;
-    
-    // 각 패널의 size 속성을 기반으로 초기 flex 설정
-    if (this.initialSizes.length === panels.length) {
-      this.ratio = [...this.initialSizes];
-    } else {
-      this.ratio = Array.from({ length: panels.length }, () => 1);
-    }
+    // 기존 splitter 제거
+    this.splitters.forEach(splitter => splitter.remove());
+    this.splitters = [];
 
-    // 각 패널에 이벤트 리스너 추가 (마지막 패널 제외)
-    this.panels.forEach((panel) => {
-      // 기존 리스너 제거 및 새 리스너 추가 (::after 영역에서만 작동하도록)
-      panel.removeEventListener('mousedown', this.handleMouseDown);
-      panel.addEventListener('mousedown', this.handleMouseDown);
+    this.panels = panels as Panel[];
+
+    // 초기 크기 설정 (균등 분할)
+    const size = `${100 / panels.length}%`;
+    panels.forEach((panel) => {
+      (panel as HTMLElement).style.flex = `0 0 ${size}`;
     });
-  };
 
-  private updatePanelStyles() {
-    if (this.panels.length === 0 || this.ratio.length === 0) return;
-    this.panels.forEach((panel, index) => {
-      const totalFlex = this.ratio.reduce((sum, flex) => sum + flex, 0);
-      const percent = (this.ratio[index] / totalFlex) * 100;
-      if (this.orientation === 'horizontal') {
-        panel.style.width = `${percent}%`;
-        panel.style.height = '100%';
-      } else {
-        panel.style.width = '100%';
-        panel.style.height = `${percent}%`;
+    // splitter 추가
+    panels.forEach((panel, index) => {
+      // 마지막 패널 뒤에는 splitter를 추가하지 않음
+      if (index === panels.length - 1) {
+        return;
       }
+
+      const splitter = this.createSplitter();
+      this.splitters.push(splitter);
+      panel.after(splitter);
     });
+
+    this.requestUpdate();
+    await this.updateComplete;
+  }
+
+  private createSplitter() {
+    const splitter = document.createElement('u-splitter') as Splitter;
+    splitter.orientation = this.orientation;
+    splitter.addEventListener('mousedown', this.handleMouseDown);
+    return splitter;
   }
 
   private handleMouseDown = (e: MouseEvent) => {
-    if (this.disabled) return;
-
-    // 양쪽 패널 중 하나라도 fixed면 리사이즈 불가
-    const panel = e.currentTarget as Panel;
-    const index = this.panels.indexOf(panel);
-
     e.preventDefault();
+    
+    const splitter = e.currentTarget as Splitter;
+    this.currentSplitter = splitter;
     this.isDragging = true;
-    this.draggingIndex = index;
-    panel.classList.add('dragging');
-
+    
+    // 드래그 시작 위치 저장
     this.startPosition = this.orientation === 'horizontal' ? e.clientX : e.clientY;
-    this.startFlexes = [...this.ratio];
+    
+    // 현재 패널들의 크기 저장
+    this.startSizes = this.panels.map(panel => {
+      const rect = panel.getBoundingClientRect();
+      return this.orientation === 'horizontal' ? rect.width : rect.height;
+    });
 
+    // Splitter에 dragging 상태 설정
+    splitter.startDrag(e);
+    
+    // 전역 이벤트 리스너 등록
     document.addEventListener('mousemove', this.handleMouseMove);
     document.addEventListener('mouseup', this.handleMouseUp);
     
     // 선택 방지
     document.body.style.userSelect = 'none';
     document.body.style.cursor = this.orientation === 'horizontal' ? 'col-resize' : 'row-resize';
-  };
+  }
 
   private handleMouseMove = (e: MouseEvent) => {
-    if (!this.isDragging || this.draggingIndex === -1) return;
+    if (!this.isDragging || !this.currentSplitter) return;
 
-    const currentPos = this.orientation === 'horizontal' ? e.clientX : e.clientY;
-    const delta = currentPos - this.startPosition;
+    e.preventDefault();
 
-    const prevIndex = this.draggingIndex;
-    const nextIndex = this.draggingIndex + 1;
+    // 현재 위치와 시작 위치의 차이 계산
+    const currentPosition = this.orientation === 'horizontal' ? e.clientX : e.clientY;
+    const delta = currentPosition - this.startPosition;
 
-    // 컨테이너 크기
-    const containerRect = this.getBoundingClientRect();
-    const containerSize = this.orientation === 'horizontal' 
-      ? containerRect.width 
-      : containerRect.height;
+    // splitter의 인덱스 찾기
+    const splitterIndex = this.splitters.indexOf(this.currentSplitter);
+    if (splitterIndex === -1) return;
 
-    // 총 flex
-    const totalFlex = this.startFlexes.reduce((sum, flex) => sum + flex, 0);
-    
-    // 픽셀 delta를 flex 변화량으로 변환
-    const deltaFlex = (delta / containerSize) * totalFlex;
+    // 앞 패널과 뒤 패널
+    const prevPanel = this.panels[splitterIndex];
+    const nextPanel = this.panels[splitterIndex + 1];
 
-    // 새로운 flex 계산
-    const newFlexes = [...this.startFlexes];
-    newFlexes[prevIndex] = Math.max(0.1, this.startFlexes[prevIndex] + deltaFlex);
-    newFlexes[nextIndex] = Math.max(0.1, this.startFlexes[nextIndex] - deltaFlex);
+    if (!prevPanel || !nextPanel) return;
 
-    this.ratio = newFlexes;
-    
-    // 이벤트 발생
-    this.emit('u-resize', {
-      index: this.draggingIndex
-    });
-  };
+    // 새로운 크기 계산
+    const prevSize = this.startSizes[splitterIndex] + delta;
+    const nextSize = this.startSizes[splitterIndex + 1] - delta;
 
-  private handleMouseUp = (_: MouseEvent) => {
+    // 최소 크기 제한 (50px)
+    const minSize = 50;
+    if (prevSize < minSize || nextSize < minSize) return;
+
+    // 크기 적용
+    prevPanel.style.flex = `0 0 ${prevSize}px`;
+    nextPanel.style.flex = `0 0 ${nextSize}px`;
+  }
+
+  private handleMouseUp = (_e: MouseEvent) => {
     if (!this.isDragging) return;
 
-    const panel = this.panels[this.draggingIndex];
     this.isDragging = false;
-    this.draggingIndex = -1;
-    panel.classList.remove('dragging');
+    
+    // Splitter의 dragging 상태 해제
+    if (this.currentSplitter) {
+      this.currentSplitter.endDrag();
+      this.currentSplitter = null;
+    }
+
+    // 전역 이벤트 리스너 제거
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('mouseup', this.handleMouseUp);
     
+    // 선택 복원
     document.body.style.userSelect = '';
     document.body.style.cursor = '';
-  };
+  }
 }

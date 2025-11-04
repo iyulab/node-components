@@ -26,7 +26,7 @@
       "import": "./src/*"
     },
     "./styles/*": {
-      "import": "./static/styles/*.css"
+      "import": "./assets/styles/*.css"
     }
   },
   "scripts": {

@@ -3,7 +3,8 @@ import { css } from "lit";
 export const styles = css`
   :host {
     position: relative;
-    display: flex;
-    overflow: auto;
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 `;
