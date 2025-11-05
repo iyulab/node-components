@@ -5,48 +5,39 @@ export const styles = css`
     position: relative;
     display: block;
     flex-shrink: 0;
-    z-index: 1;
-    /* negative margin을 사용하여 패널 크기에 영향을 주지 않음 */
-  }
+    background-color: var(--u-neutral-200, #e5e7eb);
+    transition: background-color 0.2s ease;
 
+    --splitter-size: 2px;
+    --handler-size: 6px;
+    --handler-color: var(--u-blue-500, #3b82f6);
+  }
   :host([orientation="horizontal"]) {
-    width: var(--divider-size, 2px);
+    width: var(--splitter-size, 2px);
     height: 100%;
     cursor: col-resize;
-    /* 좌우로 hitbox를 확장 */
-    margin-left: calc(var(--divider-hitbox-padding, 4px) * -1);
-    margin-right: calc(var(--divider-hitbox-padding, 4px) * -1);
-    padding-left: var(--divider-hitbox-padding, 4px);
-    padding-right: var(--divider-hitbox-padding, 4px);
   }
-
   :host([orientation="vertical"]) {
     width: 100%;
-    height: var(--divider-size, 2px);
+    height: var(--splitter-size, 2px);
     cursor: row-resize;
-    /* 상하로 hitbox를 확장 */
-    margin-top: calc(var(--divider-hitbox-padding, 4px) * -1);
-    margin-bottom: calc(var(--divider-hitbox-padding, 4px) * -1);
-    padding-top: var(--divider-hitbox-padding, 4px);
-    padding-bottom: var(--divider-hitbox-padding, 4px);
   }
 
-  .divider-line {
-    width: 100%;
-    height: 100%;
-    background-color: var(--divider-color, var(--u-neutral-200, #e0e0e0));
-    transition: background-color 0.2s ease;
+  .handler {
+    position: absolute;
+    z-index: 100;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+    width: 300%;
+    height: 300%;
+    background-color: var(--handler-color, #3b82f6);
+    opacity: 0;
+    transition: opacity 0.2s ease;
   }
-
-  :host([dragging]) .divider-line {
-    background-color: var(--divider-active-color, var(--u-blue-500, #3b82f6));
-  }
-
-  :host(:hover) .divider-line {
-    background-color: var(--divider-hover-color, var(--u-neutral-300, #d4d4d4));
-  }
-
-  :host([dragging]:hover) .divider-line {
-    background-color: var(--divider-active-color, var(--u-blue-500, #3b82f6));
+  .handler[dragging],
+  .handler:hover {
+    opacity: 1;
   }
 `;

@@ -2,7 +2,7 @@
 
 export default {
   input: ['src/**/*.ts'],
-  output: 'src/locales/$LOCALE/$NAMESPACE.json',
+  output: 'src/assets/locales/$LOCALE/$NAMESPACE.json',
   locales: ['en', 'ko'],
   defaultNamespace: 'translation',
   namespaceSeparator: '::',

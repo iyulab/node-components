@@ -1,21 +1,8 @@
+import { resolve } from 'path';
 import { defineConfig, normalizePath } from 'vite';
 import dts from "vite-plugin-dts";
 import { viteStaticCopy as copy } from 'vite-plugin-static-copy';
-import { resolve } from 'path';
-import glob from "fast-glob";
-
-const entries = {} as Record<string, string>;
-glob.sync(['src/**/*.ts']).map((path: string) => {
-  // console.log(path);
-  /**
-   * ex)
-   * name: 'base/u-label/index'
-   * path: 'src/components/base/u-label/index.ts'
-   */
-  if(path.includes('model')) return;
-  const name = path.replace('src/', '').replace('.ts', '');
-  entries[name] = resolve(__dirname, path);
-});
+import wrapper from './plugins/vite-plugin-react-wrapper';
 
 export default () => {
   return defineConfig({
@@ -23,33 +10,36 @@ export default () => {
       port: 5173,
       open: "./tests/index.html",
     },
-    publicDir: resolve(__dirname, 'assets'),
     build: {
       target: 'esnext',
-      copyPublicDir: true,
-      emptyOutDir: true,
       outDir: 'dist',
+      emptyOutDir: true,
       lib: {
-        entry: entries,
+        entry: resolve(__dirname, 'src/index.ts'),
         fileName: (format: string, entry: string): string => {
-          return `${entry}.${format}.js`;
+          return format === 'cjs' ? `${entry}.cjs` : `${entry}.js`;
         },
         formats: ['es', 'cjs']
       },
       rollupOptions: {
-        // Shoelace 외부종속성: lit/*, react, @lit/react
-        // 이외 문제 발생가능성: mobx, reflect-metadata
+        // 외부 종속성 라이브러리
         external: [
+          /^@floating-ui.*/,
           /^lit.*/,
           /^@lit.*/,
-          /^@floating-ui.*/,
-          'react',
-          'mobx',
-          'reflect-metadata',
+          /^react.*/,
+          /^mobx.*/,
+          /^reflect-metadata.*/,
+          /^i18next.*/,
+          /^react-i18.*/,
+          /^lit-i18.*/
         ],
         // 공통 파일
         output: {
-          chunkFileNames: 'shared/[name]-[hash].js',
+          preserveModulesRoot: 'src',
+          preserveModules: true,
+          assetFileNames: 'share/[name]-[hash][extname]',
+          chunkFileNames: 'share/[name]-[hash].js',
         }
       }
     },
@@ -64,6 +54,10 @@ export default () => {
             dest: 'assets'
           }
         ]
+      }),
+      wrapper({
+        componentsDir: 'src/components',  // 컴포넌트 소스 폴더
+        outDir: 'react-components',       // dist/react-components 폴더에 생성
       })
     ]
   })

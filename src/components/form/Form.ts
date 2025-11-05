@@ -1,165 +1,61 @@
 import { html  } from 'lit';
-import { unsafeStatic, html as staticHtml } from 'lit/static-html.js';
-import { property, queryAll, state } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 
-import { getPropertyMeta, type PropertyMetaData } from "../../utilities/decorators";
-import { t } from '../../utilities/localizer';
+import { arrayAttrConverter } from '../../internals/converters.js';
 import { UElement } from '../../internals/UElement.js';
 import { Input } from '../input/Input.js';
-import { Button } from '../button/Button.js';
 import { styles } from './Form.styles.js';
 
+/**
+ * Form 컴포넌트는 여러 입력 요소를 그룹화하고 관리하는 폼 컨테이너입니다.
+ * 폼 내의 입력 요소들의 값 변경을 감지하고, 포함 및 제외 규칙에 따라 폼 컨텍스트에 데이터를 자동으로 업데이트합니다.
+ */
 export class Form extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {
-    'u-input': Input,
-    'u-button': Button,
-  };
+  static dependencies: Record<string, typeof UElement> = {};
 
-  @queryAll('.input') inputs!: NodeListOf<Input>;
-  
-  @state() keys: string[] = [];
-  @state() loading: boolean = false;
-  @state() hasCustomActions: boolean = false;
+  /** 포함할 입력 요소의 name 속성 목록입니다. */
+  @property({ type: Array, converter: arrayAttrConverter(v => v) }) includes: string[] = [];
+  /** 제외할 입력 요소의 name 속성 목록입니다. */
+  @property({ type: Array, converter: arrayAttrConverter(v => v) }) excludes: string[] = [];
+  /** 폼의 컨텍스트 데이터를 설정합니다. */
+  @property({ type: Object, attribute: false }) context?: any;
 
-  @property({ type: Boolean, reflect: true }) noHeader?: boolean;
-  @property({ type: Boolean, reflect: true }) noFooter?: boolean;
-  @property({ type: String }) size?: string;
-  @property({ type: String }) headLine?: string;
-
-  @property({ type: Object }) context?: any;
-  @property({ type: Array }) meta?: PropertyMetaData[];
-  @property({ type: Array }) include?: string[];
-  @property({ type: Array }) exclude?: string[];
-
-  protected async updated(changedProperties: Map<string | number | symbol, unknown>) {
-    super.updated(changedProperties);
-    await this.updateComplete;
-
-    if (changedProperties.has('size') && this.size) {
-      this.style.fontSize = this.size;
-    }
-    if (changedProperties.has('context')) {
-      this.updateContext();
-    }
-    if (changedProperties.has('meta')) {
-      this.updateMetaKeys();
-    }
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener('change', this.handleChange);
   }
 
-  private updateContext() {
-    this.context ||= {};
-    const keys = Object.keys(this.context);
-    this.keys = [...new Set([...this.keys, ...keys])];
-    this.meta = getPropertyMeta(this.context) || this.meta;
-  }
-
-  private updateMetaKeys() {
-    const names = this.meta?.filter(m => m.name != undefined).map(m => m.name!) || [];
-    this.keys = [...new Set([...this.keys, ...names])];
-  }
-
-  private handleSlotChange() {
-    const actionsSlot = this.shadowRoot?.querySelector('slot[name="actions"]') as HTMLSlotElement;
-    this.hasCustomActions = actionsSlot ? actionsSlot.assignedNodes().length > 0 : false;
+  disconnectedCallback(): void {
+    this.removeEventListener('change', this.handleChange);
+    super.disconnectedCallback();
   }
 
   render() {
     return html`
-      ${this.renderHeader()}
-      ${this.renderForm()}
-      ${this.renderFooter()}
+      <slot></slot>
     `;
   }
 
-  private renderHeader() {
-    return this.headLine ? html`
-      <div class="header">
-        ${this.headLine}
-      </div>
-    ` : null;
+  /** 폼 내의 모든 입력 요소를 검증합니다. */
+  public validate() {
+    const slot = this.shadowRoot?.querySelector('slot');
+    const inputEls = slot?.assignedElements({ flatten: true }).filter(el => el instanceof Input) || [];
+    const isValid = Array.from(inputEls).every(input => input.validate());
+    return isValid;
   }
 
-  private renderForm() {
-    const keys = this.filterKeys(this.keys);
-    return html`
-      <div class="form">
-        ${keys.map(key => this.renderInput(key))}
-      </div>
-    `;
-  }
-
-  private renderInput(key: string) {
-    const meta = this.meta?.find(m => m.name === key);
-    if (!meta) return null;
-    const { type, ...rest } = meta;
-    const tag = `u-${type}-input`;
-    return staticHtml`
-      <${unsafeStatic(tag)}
-        class="input"
-        .meta=${rest}
-        .context=${this.context}
-      ></${unsafeStatic(tag)}>
-    `;
-  }
-
-  private renderFooter() {
-    return html`
-      <div class="footer">
-        <div class="special-actions">
-          <slot name="special-actions"></slot>
-        </div>
-        <div class="actions">
-          <slot name="actions" @slotchange=${this.handleSlotChange}></slot>
-          ${this.renderDefaultActions()}
-        </div>
-      </div>
-    `;
-  }
-
-  private renderDefaultActions() {
-    return this.hasCustomActions ? null : html`
-      <u-button
-        theme="default"
-        @click=${this.handleCancel}
-      >${t('cancel', { ns: 'component', defaultValue: 'Cancel' })}</u-button>
-      <u-button
-        theme="primary"
-        .loading=${this.loading || false}
-        @click=${this.handleSubmit}
-      >${t('confirm', { ns: 'component', defaultValue: 'Confirm' })}</u-button>
-    `;
-  }
-
-  public async validate() {
-    const inputs = Array.from(this.inputs);
-    const results = await Promise.all(
-      inputs.map(input => input.validate())
-    );
-    return results.every(result => result);
-  }
-
-  private filterKeys(keys: string[]) {
-    if (this.include && this.include.length > 0) {
-      keys = keys.filter(key => this.include?.includes(key));
+  /** 입력 요소의 변경 이벤트를 처리합니다. */
+  private handleChange = (e: Event) => {
+    const input = e.target as Input;
+    const name = input.name;
+    const value = input.value;
+    if (!name) return;
+    if (!this.includes.includes(name)) return;
+    if (this.excludes.includes(name)) return;
+    
+    if (this.context && typeof this.context === 'object') {
+      this.context[name] = value;
     }
-    if (this.exclude && this.exclude.length > 0) {
-      keys = keys.filter(key => !this.exclude?.includes(key));
-    }
-    return keys;
-  }
-
-  private handleSubmit = async () => {
-    const isValid = await this.validate();
-    if (!isValid) return;
-    this.dispatchEvent(new CustomEvent('submit', { 
-      detail: this.context 
-    }));
-  }
-
-  private handleCancel = () => {
-    this.dispatchEvent(new CustomEvent('cancel', {
-      detail: this.context
-    }));
   }
 }

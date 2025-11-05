@@ -15,18 +15,24 @@
     "package.json"
   ],
   "type": "module",
-  "types": "./src/index.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
-      "import": "./src/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
-    "./*": {
-      "types": "./src/*",
-      "import": "./src/*"
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js"
+    },
+    "./dist/*": {
+      "types": "./dist/*",
+      "import": "./dist/*",
+      "require": "./dist/*.cjs"
     },
     "./styles/*": {
-      "import": "./assets/styles/*.css"
+      "import": "./dist/assets/styles/*.css"
     }
   },
   "scripts": {
@@ -40,7 +46,12 @@
     "lit": "^3.3.1",
     "mobx": "^6.15.0",
     "react": "^19.2.0",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "i18next": "^25.6.0",
+    "i18next-browser-languagedetector": "^8.2.0",
+    "i18next-http-backend": "^3.0.2",
+    "lit-i18n": "^4.1.0",
+    "react-i18next": "^16.2.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
@@ -49,12 +60,7 @@
     "eslint-plugin-lit": "^2.1.1",
     "fast-glob": "^3.3.3",
     "globals": "^16.5.0",
-    "i18next": "^25.6.0",
-    "i18next-browser-languagedetector": "^8.2.0",
-    "i18next-http-backend": "^3.0.2",
     "i18next-parser": "^9.3.0",
-    "lit-i18n": "^4.1.0",
-    "react-i18next": "^16.2.3",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.2",
     "vite": "^7.1.12",

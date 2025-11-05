@@ -4,6 +4,35 @@
 export type UTheme = 'light' | 'dark' | 'system';
 
 /**
+ * 스타일 시트를 동적으로 문서에 추가합니다.
+ * 이 함수는 '../assets/styles/' 디렉토리 내의 CSS 파일을 찾아서 문서의 <head>에 추가합니다.
+ */
+export function importTheme(theme: UTheme | "all" = "all") {
+  Object.entries(import.meta.glob(`../assets/styles/*.css`, { 
+    eager: true,
+    query: "?inline" 
+  })).map(([path, module]) => {
+    path = path.split('/').pop() || path;
+    
+    // 현재 테마와 일치하지 않는 스타일 시트는 건너뜁니다.
+    if (theme === "light" || theme === "dark") {
+      if (!path.includes(theme)) return;
+    }
+
+    // 스타일 시트를 생성합니다.
+    const style = document.createElement('style');
+    style.setAttribute('data-path', path);
+    style.textContent = (module as { default: string }).default;
+    
+    // 이미 추가된 스타일 시트는 건너뜁니다.
+    if (document.head.querySelector(`style[data-path="${path}"]`)) {
+      return; 
+    }
+    document.head.appendChild(style);
+  });
+}
+
+/**
  * 현재 문서 테마를 가져옵니다.
  * @returns 현재 테마, 'light', 'dark' 또는 'system' 중 하나입니다.
  */

@@ -2,7 +2,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, query } from "lit/decorators.js";
 
 import '../src';
-import { getTheme, localizer, setTheme } from "../src/utilities";
+import { getTheme, importTheme, localizer, setTheme } from "../src/utilities";
 
 @customElement('preview-app')
 export class PreviewApp extends LitElement {
@@ -12,6 +12,7 @@ export class PreviewApp extends LitElement {
   firstUpdated(changedProperties: any): void {
     super.firstUpdated(changedProperties);
     localizer.init();
+    importTheme();
   }
 
   render() {
@@ -182,7 +183,7 @@ export class PreviewApp extends LitElement {
 
         <div class="demo-item">
           <h3>Split Panel with Initial Sizes</h3>
-          <u-split-panel orientation="horizontal" .initialSizes=${[1, 2]} style="height: 300px;">
+          <u-split-panel orientation="horizontal" .ratio=${[1, 2]} style="height: 300px;">
             <u-panel>
               <div class="panel-content">작은 패널 (1/3)</div>
             </u-panel>

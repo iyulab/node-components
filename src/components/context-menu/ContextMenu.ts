@@ -4,6 +4,7 @@ import { property } from "lit/decorators.js";
 import { computePosition, offset, shift, flip, autoPlacement } from '@floating-ui/dom';
 import type { Placement } from "@floating-ui/dom";
 
+import { getParentElement } from "../../internals/nodes.js";
 import { UElement } from "../../internals/UElement.js";
 import { MenuItem } from "../menu-item/MenuItem.js";
 import { styles } from "./ContextMenu.styles.js";
@@ -35,7 +36,7 @@ export class ContextMenu extends UElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.trigger ||= this.findParentElement();
+    this.trigger ||= getParentElement(this);
     this.setAttribute('role', 'menu');
   }
 
@@ -125,6 +126,32 @@ export class ContextMenu extends UElement {
     });
   }
 
+  /**
+   * 메뉴가 나타날 위치에 따라 transform-origin 값을 반환합니다.
+   */
+  private getTransformOrigin(placement: Placement): string {
+    switch (placement) {
+      case 'top':
+      case 'top-start':
+      case 'top-end':
+        return 'center bottom';
+      case 'bottom':
+      case 'bottom-start':
+      case 'bottom-end':
+        return 'center top';
+      case 'left':
+      case 'left-start':
+      case 'left-end':
+        return 'right center';
+      case 'right':
+      case 'right-start':
+      case 'right-end':
+        return 'left center';
+      default:
+        return 'top left';
+    }
+  }
+
   /** 대상 엘리먼트에 컨텍스트 메뉴 이벤트를 바인딩 합니다. */
   private attachTrigger(trigger?: HTMLElement): void {
     if (!trigger) return;
@@ -174,52 +201,5 @@ export class ContextMenu extends UElement {
         this.hide();
       });
     });
-  }
-
-  /**
-   * 부모 엘리먼트에서 컨텍스트 메뉴 대상 엘리먼트를 찾습니다.
-   * Shadow DOM을 지원하는 경우, Shadow DOM의 호스트 엘리먼트를 반환합니다.
-   * 일반 DOM 엘리먼트인 경우, 해당 엘리먼트를 반환합니다.
-   * 찾을 수 없는 경우 undefined을 반환합니다.
-   */
-  private findParentElement(): HTMLElement | undefined {
-    if (this.parentElement) {
-      return this.parentElement as HTMLElement;
-    } else {
-      const root = this.getRootNode({ composed: false });
-      return root instanceof Document 
-        ? root.documentElement as HTMLElement 
-        : root instanceof ShadowRoot
-        ? root.host as HTMLElement
-        : root instanceof HTMLElement
-        ? root
-        : undefined;
-    }
-  }
-
-  /**
-   * 메뉴가 나타날 위치에 따라 transform-origin 값을 반환합니다.
-   */
-  private getTransformOrigin(placement: Placement): string {
-    switch (placement) {
-      case 'top':
-      case 'top-start':
-      case 'top-end':
-        return 'center bottom';
-      case 'bottom':
-      case 'bottom-start':
-      case 'bottom-end':
-        return 'center top';
-      case 'left':
-      case 'left-start':
-      case 'left-end':
-        return 'right center';
-      case 'right':
-      case 'right-start':
-      case 'right-end':
-        return 'left center';
-      default:
-        return 'top left';
-    }
   }
 }

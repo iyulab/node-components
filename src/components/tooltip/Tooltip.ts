@@ -4,6 +4,7 @@ import { property } from "lit/decorators.js";
 import { computePosition, offset, shift, flip, autoPlacement } from '@floating-ui/dom';
 import type { Placement } from "@floating-ui/dom";
 
+import { findElementsBy, getParentElement } from "../../internals/nodes.js";
 import { UElement } from "../../internals/UElement.js";
 import { styles } from "./Tooltip.styles.js";
 
@@ -18,7 +19,9 @@ export class Tooltip extends UElement {
   private isSlotEmpty: boolean = true;
 
   /** 툴팁이 연결될 대상 엘리먼트입니다. 지정하지 않으면 부모 엘리먼트가 대상이 됩니다. */
-  @property({ attribute: false }) trigger?: HTMLElement;
+  @property({ attribute: false }) triggers: HTMLElement[] = [];
+  /** 트리거 셀렉터 문자열입니다. 이 속성을 사용하여 트리거 엘리먼트를 지정할 수 있습니다. */
+  @property({ type: String, attribute: "trigger-selectors" }) triggerSelectors?: string;
   /** 현재 툴팁이 열려있는지 여부를 나타냅니다. */
   @property({ type: Boolean, reflect: true }) open: boolean = false;
   /** 'fixed' 위치에서 포지션을 계산할지 여부를 설정합니다. 기본값은 false입니다. */
@@ -30,11 +33,15 @@ export class Tooltip extends UElement {
   
   connectedCallback(): void {
     super.connectedCallback();
-    this.trigger ||= this.findParentElement();
+    // 트리거가 지정되지 않은 경우, 부모 엘리먼트를 트리거로 설정합니다.
+    if (this.triggers.length === 0) {
+      const parent = getParentElement(this);
+      if (parent) this.triggers = [parent];
+    }
   }
 
   disconnectedCallback(): void {
-    this.detachTrigger(this.trigger);
+    this.detachTriggers(this.triggers);
     super.disconnectedCallback();
   }
 
@@ -42,24 +49,30 @@ export class Tooltip extends UElement {
     super.updated(changedProperties);
 
     // trigger 프로퍼티가 변경된 경우, 이전 트리거에서 새로운 트리거로 이벤트를 추가합니다.
-    if (changedProperties.has('trigger') && this.trigger) {
-      const oldTrigger = changedProperties.get('trigger');
-      this.detachTrigger(oldTrigger);
-      this.attachTrigger(this.trigger);
+    if (changedProperties.has('triggers') && this.triggers) {
+      const oldTriggers = changedProperties.get('triggers');
+      this.detachTriggers(oldTriggers);
+      this.attachTriggers(this.triggers);
+    }
+    // triggerSelectors 프로퍼티가 변경된 경우, 셀렉터에 해당하는 엘리먼트를 찾아 트리거로 설정합니다.
+    if (changedProperties.has('triggerSelectors') && this.triggerSelectors) {
+      this.triggers = findElementsBy(this, this.triggerSelectors);
+      console.log('Tooltip triggers updated:', this.triggers);
     }
   }
 
   render() {
     return html`
-      <slot @slotchange=${this.checkEmptySlot}></slot>
+      <slot @slotchange=${this.handleSlotChange}></slot>
     `;
   }
 
   /** 툴팁을 표시합니다. */
-  public show = async () => {
+  public show = async (e?: Event) => {
     // DOM 업데이트 후 위치 계산
     await this.updateComplete;
-    if (!this.trigger || this.isSlotEmpty) return;
+    const trigger = (e?.currentTarget || this.triggers[0] || null) as HTMLElement | null;
+    if (!trigger || this.isSlotEmpty) return;
     
     const middleware = [
       offset({ mainAxis: this.distance }),
@@ -70,7 +83,7 @@ export class Tooltip extends UElement {
     if (!this.placement)
       middleware.push(autoPlacement());
 
-    const position = await computePosition(this.trigger, this, {
+    const position = await computePosition(trigger, this, {
       placement: this.placement,
       middleware: middleware,
       strategy: this.hoist ? 'fixed' : 'absolute',
@@ -90,7 +103,7 @@ export class Tooltip extends UElement {
   }
 
   /** 툴팁을 숨깁니다. */
-  public hide = async () => {
+  public hide = async (_: Event) => {
     await this.updateComplete;
     requestAnimationFrame(() => {
       this.open = false;
@@ -98,61 +111,28 @@ export class Tooltip extends UElement {
   }
 
   /** 대상 엘리먼트에 툴팁 이벤트를 바인딩 합니다. */
-  private attachTrigger(trigger?: HTMLElement): void {
-    if (!trigger) return;
-    trigger.addEventListener('mouseenter', this.show);
-    trigger.addEventListener('mouseleave', this.hide);
-    trigger.addEventListener('focusin', this.show);
-    trigger.addEventListener('focusout', this.hide);
-  }
-
-  /** 대상 엘리먼트에 바인딩된 툴팁 이벤트를 제거합니다. */
-  private detachTrigger(trigger?: HTMLElement): void {
-    if (!trigger) return;
-    trigger.removeEventListener('mouseenter', this.show);
-    trigger.removeEventListener('mouseleave', this.hide);
-    trigger.removeEventListener('focusin', this.show);
-    trigger.removeEventListener('focusout', this.hide);
-  }
-
-  /**
-   * 부모 엘리먼트에서 툴팁 대상 엘리먼트를 찾습니다.
-   * Shadow DOM을 지원하는 경우, Shadow DOM의 호스트 엘리먼트를 반환합니다.
-   * 일반 DOM 엘리먼트인 경우, 해당 엘리먼트를 반환합니다.
-   * 찾을 수 없는 경우 undefined을 반환합니다.
-   */
-  private findParentElement(): HTMLElement | undefined {
-    if (this.parentElement) {
-      return this.parentElement as HTMLElement;  // 일반 DOM 엘리먼트
-    } else {
-      const root = this.getRootNode({ composed: false });
-      return root instanceof Document 
-        ? root.documentElement as HTMLElement 
-        : root instanceof ShadowRoot
-        ? root.host as HTMLElement  // Shadow DOM 호스트 엘리먼트
-        : root instanceof HTMLElement
-        ? root  // 일반 DOM 엘리먼트
-        : undefined;  // 찾을 수 없는 경우
+  private attachTriggers(triggers: HTMLElement[]): void {
+    if (!triggers) return;
+    for (const trigger of triggers) {
+      trigger.addEventListener('mouseenter', this.show);
+      trigger.addEventListener('mouseleave', this.hide);
+      trigger.addEventListener('focusin', this.show);
+      trigger.addEventListener('focusout', this.hide);
     }
   }
 
-  /** 
-   * slot에 콘텐츠가 존재하는지 확인합니다. 
-   */
-  private checkEmptySlot = (e: Event) => {
-    const slot = e.target as HTMLSlotElement;
-    const nodes = slot.assignedNodes({ flatten: true }) ?? [];
-    this.isSlotEmpty = !nodes.some(node => {
-      // 요소 노드인 경우, 항상 true
-      if (node.nodeType === Node.ELEMENT_NODE) return true;
-      // 텍스트 노드의 경우, 공백이 아닌 내용이 있는 경우 true
-      if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) return true;
-      // 그 외 모두 false
-      return false;
-    });
+  /** 대상 엘리먼트에 바인딩된 툴팁 이벤트를 제거합니다. */
+  private detachTriggers(triggers: HTMLElement[]): void {
+    if (!triggers) return;
+    for (const trigger of triggers) {
+      trigger.removeEventListener('mouseenter', this.show);
+      trigger.removeEventListener('mouseleave', this.hide);
+      trigger.removeEventListener('focusin', this.show);
+      trigger.removeEventListener('focusout', this.hide);
+    }
   }
 
-  /**
+    /**
    * 툴팁이 나타날 위치에 따라 transform-origin 값을 반환합니다.
    */
   private getTransformOrigin(placement: Placement): string {
@@ -176,5 +156,21 @@ export class Tooltip extends UElement {
       default:
         return 'center';
     }
+  }
+
+  /** 
+   * slot에 콘텐츠가 존재하는지 확인합니다. 
+   */
+  private handleSlotChange = (e: Event) => {
+    const slot = e.target as HTMLSlotElement;
+    const nodes = slot.assignedNodes({ flatten: true }) ?? [];
+    this.isSlotEmpty = !nodes.some(node => {
+      // 요소 노드인 경우, 항상 true
+      if (node.nodeType === Node.ELEMENT_NODE) return true;
+      // 텍스트 노드의 경우, 공백이 아닌 내용이 있는 경우 true
+      if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) return true;
+      // 그 외 모두 false
+      return false;
+    });
   }
 }

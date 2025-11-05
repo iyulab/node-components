@@ -1,30 +1,51 @@
-# u-components
-Web components library for iyulab company.
-Components use [shoelace](https://www.npmjs.com/package/@shoelace-style/shoelace) for UI components
+# @iyulab/components
 
-## See
-- [GitHub](https://github.com/iyulab-rnd/u-components)
-- [NPM](https://www.npmjs.com/package/@iyulab/u-components)
-- [StoryBook](https://iyulab-rnd.github.io/u-components)
+Modern web components library built with Lit and MobX for building reactive user interfaces.
 
-## Install
+## Installation
+
 ```bash
 npm install @iyulab/components
 ```
 
 ## Usage
+
+### Basic Import
+
 ```js
 import "@iyulab/components";
 ```
 
-## Dependencies
-- [lit](https://www.npmjs.com/package/lit)
-- [mobx](https://www.npmjs.com/package/mobx)
-- [shoelace](https://www.npmjs.com/package/@shoelace-style/shoelace)
+### Importing Styles
+
+```js
+import "@iyulab/components/styles/your-style.css";
+```
+
+### Using with React
+
+```jsx
+import { UButton } from "@iyulab/components";
+
+function App() {
+  return <UButton />;
+}
+```
+
+## Links
+
+- [GitHub Repository](https://github.com/iyulab/u-components)
+- [NPM Package](https://www.npmjs.com/package/@iyulab/components)
+
+> 📝 **Note**: Demo site is coming soon!
+
+## Core Dependencies
+
+- [lit](https://www.npmjs.com/package/lit) - Fast web components framework
+- [mobx](https://www.npmjs.com/package/mobx) - Simple, scalable state management
+- [i18next](https://www.npmjs.com/package/i18next) - Internationalization framework
+- [@floating-ui/dom](https://www.npmjs.com/package/@floating-ui/dom) - Positioning library for tooltips and popovers
 
 ## License
-MIT
 
-## Author
-- iyulab
-- [iyulab](https://www.iyulab.com)
+MIT © [iyulab](https://www.iyulab.com)

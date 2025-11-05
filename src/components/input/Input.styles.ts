@@ -29,8 +29,6 @@ export const styles = css`
     margin-left: 0.25em;
   }
   .header .help-icon {
-    display: inline-flex;
-    align-items: center;
     font-size: 0.8em;
     cursor: help;
   }

@@ -139,10 +139,8 @@ export class Input extends UElement {
         </label>
         
         ${this.labelhelp ? html`
-          <div class="help-icon">
-            <u-icon name="info-circle-fill"></u-icon>
-            <u-tooltip placement="right-end">${this.labelhelp}</u-tooltip>
-          </div>
+          <u-icon class="help-icon" name="info-circle-fill"></u-icon>
+          <u-tooltip trigger-selectors=".help-icon" placement="right-end">${this.labelhelp}</u-tooltip>
         ` : nothing}
       </div>
     `;

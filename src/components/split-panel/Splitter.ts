@@ -1,10 +1,9 @@
 import { html } from "lit";
-import { property } from "lit/decorators.js";
+import { property, state } from "lit/decorators.js";
 
 import { UElement } from "../../internals/UElement.js";
+import type { PanelOrientation } from "./SplitPanel.types.js";
 import { styles } from "./Splitter.styles.js";
-
-type Orientation = 'horizontal' | 'vertical';
 
 /**
  * Splitter 컴포넌트는 SplitPanel의 패널들 사이에 배치되는 디바이더입니다.
@@ -12,39 +11,23 @@ type Orientation = 'horizontal' | 'vertical';
  */
 export class Splitter extends UElement {
   static styles = [ super.styles, styles ];
-
-  /** 분할 방향을 설정합니다. */
-  @property({ type: String, reflect: true }) orientation: Orientation = 'horizontal';
+  static dependencies: Record<string, typeof UElement> = {};
 
   /** 드래그 중인지 여부를 나타냅니다. */
-  @property({ type: Boolean, reflect: true }) dragging = false;
+  @state() dragging = false;
+  
+  /** 분할 방향을 설정합니다. */
+  @property({ type: String, reflect: true }) orientation: PanelOrientation = 'horizontal';
 
   render() {
     return html`
-      <div class="divider-line"></div>
+      <div class="handler" ?dragging=${this.dragging}></div>
     `;
   }
 
-  /**
-   * 드래그 시작 이벤트를 발생시킵니다.
-   */
-  startDrag(event: MouseEvent) {
-    this.dragging = true;
-    this.dispatchEvent(new CustomEvent('splitter-drag-start', {
-      detail: { event },
-      bubbles: true,
-      composed: true
-    }));
-  }
-
-  /**
-   * 드래그 종료 이벤트를 발생시킵니다.
-   */
-  endDrag() {
-    this.dragging = false;
-    this.dispatchEvent(new CustomEvent('splitter-drag-end', {
-      bubbles: true,
-      composed: true
-    }));
+  /** 스플리터의 크기를 반환합니다. */
+  public get size(): number {
+    const sizeStr = getComputedStyle(this).getPropertyValue('--splitter-size').trim();
+    return parseFloat(sizeStr) || 2;
   }
 }
