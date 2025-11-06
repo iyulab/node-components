@@ -7,26 +7,28 @@ import wrapper from './plugins/vite-plugin-react-wrapper';
 export default () => {
   return defineConfig({
     server: {
-      port: 5173,
       open: "./tests/index.html",
+      port: 5173,
     },
     build: {
       target: 'esnext',
       outDir: 'dist',
       emptyOutDir: true,
+      copyPublicDir: false,
+      minify: true,
       lib: {
         entry: resolve(__dirname, 'src/index.ts'),
+        formats: ['es', 'cjs'],
         fileName: (format: string, entry: string): string => {
           return format === 'cjs' ? `${entry}.cjs` : `${entry}.js`;
         },
-        formats: ['es', 'cjs']
       },
       rollupOptions: {
         // 외부 종속성 라이브러리
         external: [
           /^@floating-ui.*/,
           /^lit.*/,
-          /^@lit.*/,
+          // /^@lit.*/,
           /^react.*/,
           /^mobx.*/,
           /^reflect-metadata.*/,
@@ -38,14 +40,14 @@ export default () => {
         output: {
           preserveModulesRoot: 'src',
           preserveModules: true,
-          assetFileNames: 'share/[name]-[hash][extname]',
-          chunkFileNames: 'share/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash][extname]',
+          chunkFileNames: 'chunks/[name]-[hash].js',
         }
       }
     },
     plugins: [
       dts({
-        include: [ "src/**/*"] 
+        include: ["src/**/*"] 
       }),
       copy({
         targets: [

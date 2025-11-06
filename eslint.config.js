@@ -1,31 +1,25 @@
 import { defineConfig } from "eslint/config";
-import js from "@eslint/js";
+import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import liteslint from "eslint-plugin-lit";
 import globals from "globals";
-import path from "path";
-import { fileURLToPath } from "url";
 
 export default defineConfig([
   {
-    ignores: ["dist/**", "node_modules/**", "static/**"]
+    ignores: ["dist/**", "node_modules/**"]
   },
-  js.configs.recommended,
-  ...tseslint.configs.recommended,
-  liteslint.configs["flat/recommended"],
   {
-    files: ["src/**/*.{js,mjs,cjs,ts}", "tests/**/*.{js,mjs,cjs,ts}"],
+    ...eslint.configs.recommended,
+    ...tseslint.configs.recommended,
+    ...liteslint.configs["flat/recommended"],
+    files: [ "src/**/*", "tests/**/*" ],
     languageOptions: {
       sourceType: "module",
       globals: globals.browser,
       parserOptions: {
-        ecmaVersion: 2020,
-        project: "./tsconfig.json",
-        tsconfigRootDir: path.dirname(fileURLToPath(import.meta.url))
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname
       }
-    },
-    plugins: {
-      lit: liteslint
     },
     rules: {
       "@typescript-eslint/no-explicit-any": "off",

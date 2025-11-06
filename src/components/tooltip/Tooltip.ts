@@ -57,7 +57,6 @@ export class Tooltip extends UElement {
     // triggerSelectors 프로퍼티가 변경된 경우, 셀렉터에 해당하는 엘리먼트를 찾아 트리거로 설정합니다.
     if (changedProperties.has('triggerSelectors') && this.triggerSelectors) {
       this.triggers = findElementsBy(this, this.triggerSelectors);
-      console.log('Tooltip triggers updated:', this.triggers);
     }
   }
 
