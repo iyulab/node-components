@@ -1,4 +1,3 @@
-import { convertReact } from '../../internals/react.js';
 import { Alert } from './Alert.js';
 
 Alert.define("u-alert");
@@ -9,9 +8,4 @@ declare global {
   }
 }
 
-const UAlert = convertReact({
-  tagName: 'u-alert',
-  elementClass: Alert
-})
-
-export { Alert, UAlert };
+export { Alert };

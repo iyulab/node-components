@@ -45,8 +45,11 @@
     "vite.config.ts",
     "vite-env.d.ts",
     "src/**/*",
-
-    // 테스트 파일 포함
     "tests/**/*",
+    "plugins/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }

@@ -1,4 +1,3 @@
-import { convertReact } from '../../internals/react.js';
 import { MenuItem } from './MenuItem.js';
 
 MenuItem.define('u-menu-item');
@@ -9,9 +8,4 @@ declare global {
   }
 }
 
-const UMenuItem = convertReact({
-  tagName: 'u-menu-item',
-  elementClass: MenuItem
-});
-
-export { MenuItem, UMenuItem };
+export { MenuItem };

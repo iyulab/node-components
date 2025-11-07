@@ -42,7 +42,6 @@ export const styles = css`
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 0.5em;
   }
   button:focus-visible {
     outline: 2px solid var(--u-blue-500, #3b82f6);
@@ -59,6 +58,13 @@ export const styles = css`
   slot[name="prefix"],
   slot[name="suffix"] {
     flex: 0 0 auto;
+  }
+  /* 슬롯에 내용이 있을 때만 gap 적용 */
+  slot[name="prefix"]:not(:empty) {
+    margin-right: 0.5em;
+  }
+  slot[name="suffix"]:not(:empty) {
+    margin-left: 0.5em;
   }
 
   .overlay {

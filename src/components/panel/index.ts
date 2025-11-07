@@ -1,4 +1,3 @@
-import { convertReact } from "../../internals/react.js";
 import { Panel } from "./Panel.js";
 
 Panel.define("u-panel");
@@ -9,9 +8,4 @@ declare global {
   }
 }
 
-const UPanel = convertReact({
-  elementClass: Panel,
-  tagName: 'u-panel'
-});
-
-export { Panel, UPanel };
+export { Panel };

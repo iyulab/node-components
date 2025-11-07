@@ -1,4 +1,3 @@
-import { convertReact } from '../../internals/react.js';
 import { ContextMenu } from './ContextMenu.js';
 
 ContextMenu.define('u-context-menu');
@@ -9,9 +8,4 @@ declare global {
   }
 }
 
-const UContextMenu = convertReact({
-  tagName: 'u-context-menu',
-  elementClass: ContextMenu
-});
-
-export { ContextMenu, UContextMenu };
+export { ContextMenu };

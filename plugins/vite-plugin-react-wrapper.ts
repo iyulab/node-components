@@ -1,6 +1,7 @@
 import type { Plugin } from 'vite';
 import { resolve, join, relative } from 'path';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs';
+import { gzipSync } from 'zlib';
 
 interface ComponentInfo {
   componentName: string;    // 클래스명 (예: Button)
@@ -17,16 +18,10 @@ interface PluginOptions {
   componentsDir?: string;
   
   /**
-   * React 래퍼를 생성할 출력 폴더 (기본값: 'dist/react')
+   * React 래퍼를 생성할 출력 폴더 (기본값: 'react-components')
    * 빌드 outDir 내부에 생성됩니다
    */
   outDir?: string;
-  
-  /**
-   * 빌드된 컴포넌트 파일들의 기준 경로 (기본값: '.')
-   * 생성되는 import 문에서 사용됩니다
-   */
-  distDir?: string;
 }
 
 /**
@@ -37,7 +32,6 @@ export default function reactWrapperPlugin(options: PluginOptions = {}): Plugin 
   let buildOutDir: string;
   let componentsDir: string;
   let outDir: string;
-  let distDir: string;
 
   return {
     name: 'vite-plugin-react-wrapper',
@@ -53,13 +47,11 @@ export default function reactWrapperPlugin(options: PluginOptions = {}): Plugin 
       // 옵션에서 outDir 가져오기 또는 기본값 (빌드 폴더 내부)
       const outDirPath = options.outDir || 'react-components';
       outDir = resolve(buildOutDir, outDirPath);
-      
-      // 옵션에서 distDir 가져오기 또는 기본값
-      distDir = options.distDir || '.';
     },
 
     closeBundle() {
-      console.log('\n🔄 Generating React wrapper components...\n');
+      console.log('');
+      console.log('\x1b[36m[vite:react-wrapper]\x1b[0m Start generating React wrapper components...');
       
       try {
         // react-components 폴더 생성
@@ -75,17 +67,30 @@ export default function reactWrapperPlugin(options: PluginOptions = {}): Plugin 
           return;
         }
 
-        console.log(`📦 Found ${components.length} components to wrap\n`);
-
         // 각 컴포넌트의 React 래퍼 생성
+        const generatedFiles: Array<{ path: string; size: number; gzipSize: number }> = [];
+        
         components.forEach(component => {
-          generateReactWrapper(component, outDir, distDir);
+          const files = generateReactWrapper(component, outDir, buildOutDir);
+          generatedFiles.push(...files);
         });
 
         // index.ts 생성
-        generateIndexFile(components, outDir);
+        const indexFiles = generateIndexFile(components, outDir, buildOutDir);
+        generatedFiles.push(...indexFiles);
 
-        console.log('\n✅ React wrapper components generated successfully!\n');
+        // 파일 크기 기준으로 정렬
+        generatedFiles.sort((a, b) => a.size - b.size);
+
+        // Vite 스타일로 출력
+        generatedFiles.forEach(file => {
+          const sizeKB = (file.size / 1024).toFixed(2);
+          const gzipKB = (file.gzipSize / 1024).toFixed(2);
+          const padding = ' '.repeat(Math.max(0, 50 - file.path.length));
+          console.log(`${file.path}${padding}${sizeKB.padStart(6)} kB │ gzip: ${gzipKB.padStart(6)} kB`);
+        });
+
+        console.log('\x1b[36m[vite:react-wrapper]\x1b[0m React wrapper components generated successfully!');
         
       } catch (error) {
         console.error('❌ Error generating React wrappers:', error);
@@ -130,15 +135,14 @@ function collectComponents(componentsDir: string): ComponentInfo[] {
  * 컴포넌트 index.ts 파일에서 정보 추출
  */
 function parseComponentInfo(content: string, folderName: string, filePath: string): ComponentInfo | null {
-  // 클래스명 추출 (예: export { Button, UButton })
-  const exportMatch = content.match(/export\s*\{\s*([^,\s]+)\s*,\s*U([^}\s]+)\s*\}/);
+  // 클래스명 추출 (예: export { Button })
+  const exportMatch = content.match(/export\s*\{\s*([^}\s]+)\s*\}/);
   if (!exportMatch) {
     return null;
   }
   
   const componentName = exportMatch[1]; // Button
-  const reactNameSuffix = exportMatch[2]; // Button
-  const reactName = `U${reactNameSuffix}`; // UButton
+  const reactName = `U${componentName}`; // UButton
   
   // 태그명 추출 (예: Button.define("u-button"))
   const tagMatch = content.match(/\.define\s*\(\s*["']([^"']+)["']/);
@@ -160,18 +164,26 @@ function parseComponentInfo(content: string, folderName: string, filePath: strin
 /**
  * 개별 컴포넌트의 React 래퍼 파일 생성
  */
-function generateReactWrapper(component: ComponentInfo, outDir: string, distDir: string): void {
+function generateReactWrapper(
+  component: ComponentInfo, 
+  outDir: string, 
+  buildOutDir: string
+): Array<{ path: string; size: number; gzipSize: number }> {
   const { reactName, componentName, tagName, relativePath } = component;
+  const files: Array<{ path: string; size: number; gzipSize: number }> = [];
   
   // import 경로 계산 (상대 경로)
-  // outDir에서 distDir/relativePath로의 상대 경로를 계산
-  const targetPath = resolve(outDir, '..', distDir, relativePath);
+  // dist/integrations/react/UButton.js 에서 dist/components/button/index.js 로 가는 경로
+  const targetPath = resolve(outDir, '..', '..', relativePath, 'index.js');
   let importPath = relative(outDir, targetPath).replace(/\\/g, '/');
   
   // 상대 경로가 ./ 또는 ../로 시작하지 않으면 추가
   if (!importPath.startsWith('.')) {
     importPath = './' + importPath;
   }
+  
+  // .js 확장자 제거 (import에서 자동으로 해석됨)
+  importPath = importPath.replace(/\.js$/, '');
   
   // .js 파일 생성
   const jsFileName = `${reactName}.js`;
@@ -190,7 +202,13 @@ export const ${reactName} = createComponent({
 `;
 
   writeFileSync(jsFilePath, jsContent, 'utf-8');
-  console.log(`  ✓ Generated ${jsFileName}`);
+  const jsSize = Buffer.byteLength(jsContent, 'utf-8');
+  const jsGzipSize = gzipSync(jsContent).length;
+  files.push({
+    path: relative(buildOutDir, jsFilePath).replace(/\\/g, '/'),
+    size: jsSize,
+    gzipSize: jsGzipSize
+  });
   
   // .d.ts 파일 생성
   const dtsFileName = `${reactName}.d.ts`;
@@ -207,13 +225,27 @@ export type ${reactName}Props = React.ComponentProps<typeof ${reactName}>;
 `;
 
   writeFileSync(dtsFilePath, dtsContent, 'utf-8');
-  console.log(`  ✓ Generated ${dtsFileName}`);
+  const dtsSize = Buffer.byteLength(dtsContent, 'utf-8');
+  const dtsGzipSize = gzipSync(dtsContent).length;
+  files.push({
+    path: relative(buildOutDir, dtsFilePath).replace(/\\/g, '/'),
+    size: dtsSize,
+    gzipSize: dtsGzipSize
+  });
+  
+  return files;
 }
 
 /**
  * index 파일 생성 (모든 React 래퍼 export)
  */
-function generateIndexFile(components: ComponentInfo[], outDir: string): void {
+function generateIndexFile(
+  components: ComponentInfo[], 
+  outDir: string, 
+  buildOutDir: string
+): Array<{ path: string; size: number; gzipSize: number }> {
+  const files: Array<{ path: string; size: number; gzipSize: number }> = [];
+  
   const exports = components
     .map(c => `export { ${c.reactName} } from './${c.reactName}.js';`)
     .join('\n');
@@ -224,7 +256,13 @@ function generateIndexFile(components: ComponentInfo[], outDir: string): void {
 
   const jsIndexPath = join(outDir, 'index.js');
   writeFileSync(jsIndexPath, jsContent, 'utf-8');
-  console.log(`  ✓ Generated index.js`);
+  const jsSize = Buffer.byteLength(jsContent, 'utf-8');
+  const jsGzipSize = gzipSync(jsContent).length;
+  files.push({
+    path: relative(buildOutDir, jsIndexPath).replace(/\\/g, '/'),
+    size: jsSize,
+    gzipSize: jsGzipSize
+  });
   
   // index.d.ts 생성
   const dtsExports = components
@@ -243,5 +281,13 @@ ${dtsExports}
 
   const dtsIndexPath = join(outDir, 'index.d.ts');
   writeFileSync(dtsIndexPath, dtsContent, 'utf-8');
-  console.log(`  ✓ Generated index.d.ts`);
+  const dtsSize = Buffer.byteLength(dtsContent, 'utf-8');
+  const dtsGzipSize = gzipSync(dtsContent).length;
+  files.push({
+    path: relative(buildOutDir, dtsIndexPath).replace(/\\/g, '/'),
+    size: dtsSize,
+    gzipSize: dtsGzipSize
+  });
+  
+  return files;
 }

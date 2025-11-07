@@ -1,4 +1,3 @@
-import { convertReact } from "../../internals/react.js";
 import { Input } from "./Input.js";
 
 Input.define("u-input");
@@ -9,9 +8,4 @@ declare global {
   }
 }
 
-const UInput = convertReact({
-  tagName: "u-input",
-  elementClass: Input,
-})
-
-export { Input, UInput };
+export { Input };

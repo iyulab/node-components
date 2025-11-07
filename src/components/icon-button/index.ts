@@ -1,4 +1,3 @@
-import { convertReact } from "../../internals/react.js";
 import { IconButton } from "./IconButton.js";
 
 IconButton.define("u-icon-button");
@@ -9,9 +8,4 @@ declare global {
   }
 }
 
-const UIconButton = convertReact({
-  tagName: "u-icon-button",
-  elementClass: IconButton
-})
-
-export { IconButton, UIconButton };
+export { IconButton };

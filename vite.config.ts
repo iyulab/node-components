@@ -18,9 +18,9 @@ export default () => {
       minify: true,
       lib: {
         entry: resolve(__dirname, 'src/index.ts'),
-        formats: ['es', 'cjs'],
+        formats: ['es'],
         fileName: (format: string, entry: string): string => {
-          return format === 'cjs' ? `${entry}.cjs` : `${entry}.js`;
+          return format === 'es' ? `${entry}.js` : `${entry}.${format}.js`;
         },
       },
       rollupOptions: {
@@ -30,18 +30,17 @@ export default () => {
           /^lit.*/,
           // /^@lit.*/,
           /^react.*/,
-          /^mobx.*/,
           /^reflect-metadata.*/,
           /^i18next.*/,
           /^react-i18.*/,
           /^lit-i18.*/
         ],
-        // 공통 파일
         output: {
-          preserveModulesRoot: 'src',
           preserveModules: true,
-          assetFileNames: 'assets/[name]-[hash][extname]',
-          chunkFileNames: 'chunks/[name]-[hash].js',
+          preserveModulesRoot: 'src',
+        },
+        treeshake: {
+          moduleSideEffects: false
         }
       }
     },
@@ -59,7 +58,7 @@ export default () => {
       }),
       wrapper({
         componentsDir: 'src/components',  // 컴포넌트 소스 폴더
-        outDir: 'react-components',       // dist/react-components 폴더에 생성
+        outDir: 'integrations/react',     // dist/integrations/react 폴더에 생성
       })
     ]
   })

@@ -92,17 +92,8 @@ export const localizer = {
     }
   },
 
-  /** 리소스를 직접 추가합니다. */
-  addResources(resources: Resources) {
-    for (const lang of languages) {
-      for (const ns in resources[lang]) {
-        i18next.addResourceBundle(lang, ns, resources[lang][ns], true, true);
-      }
-    }
-  },
-
   /** 현재 설정된 언어를 반환합니다. */
-  getLocale(): Languages {
+  get(): Languages {
     const i18lang = i18next.language;
     return (
       i18lang.includes('ko') 
@@ -112,9 +103,18 @@ export const localizer = {
   },
 
   /** 언어를 설정합니다. */
-  async setLocale(locale: Languages) {
+  async set(locale: Languages) {
     await i18next.changeLanguage(locale);
     window.dispatchEvent(new CustomEvent('locale-change', { detail: locale }));
+  },
+
+  /** 리소스를 직접 추가합니다. */
+  addResources(resources: Resources) {
+    for (const lang of languages) {
+      for (const ns in resources[lang]) {
+        i18next.addResourceBundle(lang, ns, resources[lang][ns], true, true);
+      }
+    }
   },
 };
 

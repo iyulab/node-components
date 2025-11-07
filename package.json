@@ -15,36 +15,29 @@
     "package.json"
   ],
   "type": "module",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./react": {
-      "types": "./dist/react/index.d.ts",
-      "import": "./dist/react/index.js"
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
     },
     "./dist/*": {
-      "types": "./dist/*",
-      "import": "./dist/*",
-      "require": "./dist/*.cjs"
+      "types": "./src/*",
+      "import": "./src/*"
     },
     "./styles/*": {
-      "import": "./dist/assets/styles/*.css"
+      "import": "./src/assets/styles/*.css"
     }
   },
   "scripts": {
     "scan": "i18next -c i18next.config.js",
     "start": "vite --force",
-    "build": "eslint src && vite build"
+    "build": "eslint && vite build"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.4",
     "@lit/react": "^1.0.8",
     "lit": "^3.3.1",
-    "mobx": "^6.15.0",
     "react": "^19.2.0",
     "reflect-metadata": "^0.2.2",
     "i18next": "^25.6.0",
