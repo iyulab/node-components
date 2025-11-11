@@ -3,16 +3,16 @@ import { property } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { until } from "lit/directives/until.js";
 
-import { UElement } from "../../internals/UElement.js";
+import { BaseElement } from "../BaseElement.js";
 import { icons } from "../../internals/icons.js";
 import { styles } from "./Icon.styles.js";
 
 /**
  * 아이콘 컴포넌트입니다. SVG 아이콘을 이름으로 불러와서 렌더링합니다.
  */
-export class Icon extends UElement {
+export class Icon extends BaseElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {};
+  static dependencies: Record<string, typeof BaseElement> = {};
 
   /** 
    * 아이콘을 외부에서 불러올 때 사용되는 기본 경로를 설정합니다.

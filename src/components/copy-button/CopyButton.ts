@@ -1,7 +1,7 @@
 import { html } from "lit";
 import { property } from "lit/decorators.js";
 
-import { UElement } from "../../internals/UElement.js";
+import { BaseElement } from "../BaseElement.js";
 import { Button } from "../button/Button.js";
 import { Icon } from "../icon/Icon.js";
 import { styles } from "./CopyButton.styles.js";
@@ -9,9 +9,9 @@ import { styles } from "./CopyButton.styles.js";
 /**
  * 복사 버튼 컴포넌트입니다.
  */
-export class CopyButton extends UElement {
+export class CopyButton extends BaseElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {
+  static dependencies: Record<string, typeof BaseElement> = {
     "u-button": Button,
     "u-icon": Icon
   };

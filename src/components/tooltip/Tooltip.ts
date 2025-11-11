@@ -4,16 +4,16 @@ import { property } from "lit/decorators.js";
 import { computePosition, offset, shift, flip, autoPlacement } from '@floating-ui/dom';
 import type { Placement } from "@floating-ui/dom";
 
-import { findElementsBy, getParentElement } from "../../internals/nodes.js";
-import { UElement } from "../../internals/UElement.js";
+import { findElementsBy, getParentElement } from "../../internals/node-helpers.js";
+import { BaseElement } from "../BaseElement.js";
 import { styles } from "./Tooltip.styles.js";
 
 /**
  * Tooltip 컴포넌트는 대상 엘리먼트에 툴팁을 표시하는 기능을 제공합니다.
  */
-export class Tooltip extends UElement {
+export class Tooltip extends BaseElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {};
+  static dependencies: Record<string, typeof BaseElement> = {};
 
   /** 슬롯이 비어있는지 여부를 나타냅니다. */
   private isSlotEmpty: boolean = true;

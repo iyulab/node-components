@@ -2,7 +2,7 @@ import { html } from "lit";
 import { property } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 
-import { UElement } from "../../internals/UElement.js";
+import { BaseElement } from "../BaseElement.js";
 import { Spinner } from "../spinner/Spinner.js";
 import { Icon } from "../icon/Icon.js";
 import { styles } from "./IconButton.styles.js";
@@ -10,9 +10,9 @@ import { styles } from "./IconButton.styles.js";
 /**
  * IconButton 컴포넌트는 아이콘만 표시하는 버튼입니다.
  */
-export class IconButton extends UElement {
+export class IconButton extends BaseElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {
+  static dependencies: Record<string, typeof BaseElement> = {
     'u-spinner': Spinner,
     'u-icon': Icon
   };

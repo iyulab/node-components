@@ -1,16 +1,16 @@
 import { html, PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js'
 
-import { UElement } from '../../internals/UElement.js';
+import { BaseElement } from '../BaseElement.js';
 import { styles } from './Dialog.styles.js';
 
 /**
  * Dialog 컴포넌트는 모달 대화상자를 제공합니다.
  * 오버레이와 함께 화면 중앙에 표시되며, 헤더, 본문, 푸터 영역을 슬롯으로 제공합니다.
  */
-export class Dialog extends UElement {
+export class Dialog extends BaseElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {};
+  static dependencies: Record<string, typeof BaseElement> = {};
 
   @query('.overlay') overlayEl!: HTMLDivElement;
   

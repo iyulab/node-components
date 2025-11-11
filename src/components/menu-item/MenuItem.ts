@@ -1,16 +1,16 @@
 import { html, nothing, PropertyValues } from "lit";
 import { property } from "lit/decorators.js";
 
-import { UElement } from "../../internals/UElement.js";
+import { BaseElement } from "../BaseElement.js";
 import { styles } from "./MenuItem.styles.js";
 
 /**
  * MenuItem 컴포넌트는 메뉴의 개별 항목을 나타냅니다.
  * u-menu 및 u-context-menu와 함께 사용됩니다.
  */
-export class MenuItem extends UElement {
+export class MenuItem extends BaseElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {};
+  static dependencies: Record<string, typeof BaseElement> = {};
 
     /** 메뉴 항목이 비활성화 상태인지 여부입니다. */
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;

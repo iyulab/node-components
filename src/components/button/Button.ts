@@ -1,7 +1,7 @@
 import { html } from "lit";
 import { property } from "lit/decorators.js";
 
-import { UElement } from "../../internals/UElement.js";
+import { BaseElement } from "../BaseElement.js";
 import { Spinner } from "../spinner/Spinner.js";
 import { styles } from "./Button.styles.js";
 
@@ -11,9 +11,9 @@ import { styles } from "./Button.styles.js";
  * @slot prefix - 버튼의 접두사로 표시할 콘텐츠를 삽입합니다.
  * @slot suffix - 버튼의 접미사로 표시할 콘텐츠를 삽입합니다.
  */
-export class Button extends UElement {
+export class Button extends BaseElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {
+  static dependencies: Record<string, typeof BaseElement> = {
     'u-spinner': Spinner
   };
 

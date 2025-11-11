@@ -40,7 +40,7 @@
     "lit": "^3.3.1",
     "react": "^19.2.0",
     "reflect-metadata": "^0.2.2",
-    "i18next": "^25.6.0",
+    "i18next": "^25.6.2",
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-http-backend": "^3.0.2",
     "lit-i18n": "^4.1.0",
@@ -54,8 +54,8 @@
     "globals": "^16.5.0",
     "i18next-parser": "^9.3.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.3",
-    "vite": "^7.2.1",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.2.2",
     "vite-plugin-dts": "^4.5.4",
     "vite-plugin-static-copy": "^3.1.4"
   }

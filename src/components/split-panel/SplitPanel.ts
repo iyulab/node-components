@@ -1,8 +1,8 @@
 import { html } from "lit";
 import { property } from "lit/decorators.js";
 
-import { arrayAttrConverter } from "../../internals/converters.js";
-import { UElement } from "../../internals/UElement.js";
+import { arrayAttributeConverter } from "../../internals/attribute-converters.js";
+import { BaseElement } from "../BaseElement.js";
 import { Panel } from "../panel/Panel.js";
 import { Splitter } from "./Splitter.js";
 import type { PanelOrientation } from "./SplitPanel.types.js";
@@ -11,9 +11,9 @@ import { styles } from "./SplitPanel.styles.js";
 /**
  * SplitPanel 컴포넌트는 화면을 여러 개의 패널로 분할하여 표시합니다.
  */
-export class SplitPanel extends UElement {
+export class SplitPanel extends BaseElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {
+  static dependencies: Record<string, typeof BaseElement> = {
     'u-panel': Panel,
     'u-splitter': Splitter
   };
@@ -29,7 +29,7 @@ export class SplitPanel extends UElement {
   /** 분할 방향을 설정합니다. 'horizontal'은 좌우 분할, 'vertical'은 상하 분할입니다. */
   @property({ type: String, reflect: true }) orientation: PanelOrientation = 'horizontal';
   /** 초기 패널 크기 비율을 설정합니다. (예: [30, 70]은 첫 번째 패널이 30%, 두 번째 패널이 70%를 차지) */
-  @property({ type: Array, converter: arrayAttrConverter() }) ratio: number[] = [];
+  @property({ type: Array, converter: arrayAttributeConverter(parseFloat) }) ratio: number[] = [];
 
   disconnectedCallback() {
     // 컴포넌트 제거 시 이벤트 리스너 정리

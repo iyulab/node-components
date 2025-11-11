@@ -1,12 +1,12 @@
 import { CSSResultGroup, LitElement } from 'lit';
-import { styles } from './UElement.styles';
+import { styles } from './BaseElement.styles.js';
 
 /**
- * UElement는 LitElement를 확장한 기본 Web Component 클래스입니다.
+ * BaseElement는 LitElement를 확장한 기본 Web Component 클래스입니다.
  * 이 클래스는 자동으로 종속된 컴포넌트를 정의하며, 유용한 헬퍼 메서드들을 제공합니다.
  */
-export class UElement extends LitElement {
-  /** 
+export class BaseElement extends LitElement {
+  /**
    * 기본 스타일을 정의합니다.
    */
   static styles: CSSResultGroup = styles;
@@ -16,11 +16,11 @@ export class UElement extends LitElement {
    * 이 속성은 컴포넌트가 정의될 때 자동으로 호출되어
    * 종속된 컴포넌트를 등록합니다.
    */
-  static dependencies: Record<string, typeof UElement> = {};
+  static dependencies: Record<string, typeof BaseElement> = {};
 
   constructor() {
     super();
-    Object.entries((this.constructor as typeof UElement).dependencies).forEach(([name, component]) => {
+    Object.entries((this.constructor as typeof BaseElement).dependencies).forEach(([name, component]) => {
       component.define(name);
     });
   }

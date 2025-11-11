@@ -1,7 +1,7 @@
 import { html, PropertyValues } from "lit";
 import { property, queryAssignedElements } from "lit/decorators.js";
 
-import { UElement } from "../../internals/UElement.js";
+import { BaseElement } from "../BaseElement.js";
 import { MenuItem } from "../menu-item/MenuItem.js";
 import { styles } from "./Menu.styles.js";
 
@@ -9,9 +9,9 @@ import { styles } from "./Menu.styles.js";
  * Menu 컴포넌트는 일반적인 메뉴 컨테이너입니다.
  * MenuItem 컴포넌트를 자식으로 포함하여 메뉴를 구성합니다.
  */
-export class Menu extends UElement {
+export class Menu extends BaseElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {
+  static dependencies: Record<string, typeof BaseElement> = {
     'u-menu-item': MenuItem,
   };
 

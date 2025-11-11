@@ -4,8 +4,8 @@
  * @param separator - 구분자 (기본값: ',')
  * @returns Lit 속성 컨버터 객체
  */
-export function arrayAttrConverter<T = number>(
-  parser: (value: string) => T = parseFloat as any,
+export function arrayAttributeConverter<T>(
+  parser: (value: string) => T,
   separator: string = ','
 ) {
   return {

@@ -3,7 +3,7 @@ import { property, query, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { live } from "lit/directives/live.js";
 
-import { UElement } from "../../internals/UElement.js";
+import { BaseElement } from "../BaseElement.js";
 import { Icon } from "../icon/Icon.js";
 import { Tooltip } from "../tooltip/Tooltip.js";
 
@@ -13,9 +13,9 @@ import { styles } from "./Input.styles.js";
  * Input 컴포넌트는 사용자 입력을 받는 텍스트 입력 필드입니다.
  * prefix, suffix 슬롯과 라벨, 도움말, 유효성 검사 등의 기능을 제공합니다.
  */
-export class Input extends UElement {
+export class Input extends BaseElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {
+  static dependencies: Record<string, typeof BaseElement> = {
     'u-icon': Icon,
     'u-tooltip': Tooltip,
   };

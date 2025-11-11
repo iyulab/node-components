@@ -4,8 +4,8 @@ import { property } from "lit/decorators.js";
 import { computePosition, offset, shift, flip, autoPlacement } from '@floating-ui/dom';
 import type { Placement } from "@floating-ui/dom";
 
-import { getParentElement } from "../../internals/nodes.js";
-import { UElement } from "../../internals/UElement.js";
+import { getParentElement } from "../../internals/node-helpers.js";
+import { BaseElement } from "../BaseElement.js";
 import { MenuItem } from "../menu-item/MenuItem.js";
 import { styles } from "./ContextMenu.styles.js";
 
@@ -13,9 +13,9 @@ import { styles } from "./ContextMenu.styles.js";
  * ContextMenu 컴포넌트는 마우스 오른쪽 버튼 클릭으로 표시되는 컨텍스트 메뉴입니다.
  * MenuItem 컴포넌트를 자식으로 포함하여 메뉴를 구성합니다.
  */
-export class ContextMenu extends UElement {
+export class ContextMenu extends BaseElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {
+  static dependencies: Record<string, typeof BaseElement> = {
     'u-menu-item': MenuItem,
   };
 

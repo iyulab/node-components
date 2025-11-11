@@ -9,7 +9,7 @@ export type Languages = typeof languages[number];
 
 export type Resources = {
   [lang in Languages]: { 
-    [namespace: string]: Record<string, string>; 
+    [namespace: string]: Record<string, any>; 
   };
 }
 
