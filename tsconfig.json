@@ -42,11 +42,11 @@
     "preserveSymlinks": true
   },
   "include": [
-    "vite.config.ts",
-    "vite-env.d.ts",
     "src/**/*",
     "tests/**/*",
-    "plugins/**/*"
+    "plugins/**/*",
+    "vite.config.ts",
+    "vite-env.d.ts",
   ],
   "exclude": [
     "node_modules",

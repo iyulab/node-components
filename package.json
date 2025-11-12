@@ -1,12 +1,18 @@
 {
   "name": "@iyulab/components",
-  "description": "iyulab ui components",
-  "version": "0.0.3",
-  "author": {
-    "name": "iyulab",
-    "url": "https://www.iyulab.com"
-  },
+  "description": "web-components library by iyulab based on lit-element",
+  "version": "0.1.0",
+  "keywords": [
+    "iyulab",
+    "web-components",
+    "lit-element"
+  ],
   "license": "MIT",
+  "author": "iyulab",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iyulab/node-components.git"
+  },
   "files": [
     "dist",
     "LICENSE",
@@ -24,35 +30,25 @@
     "./dist/*": {
       "types": "./src/*",
       "import": "./src/*"
-    },
-    "./styles/*": {
-      "import": "./src/assets/styles/*.css"
     }
   },
   "scripts": {
-    "scan": "i18next -c i18next.config.js",
     "start": "vite --force",
     "build": "eslint && vite build"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.4",
-    "@lit/react": "^1.0.8",
     "lit": "^3.3.1",
     "react": "^19.2.0",
-    "reflect-metadata": "^0.2.2",
-    "i18next": "^25.6.2",
-    "i18next-browser-languagedetector": "^8.2.0",
-    "i18next-http-backend": "^3.0.2",
-    "lit-i18n": "^4.1.0",
-    "react-i18next": "^16.2.4"
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
+    "@lit/react": "^1.0.8",
     "@eslint/js": "^9.39.1",
-    "@types/node": "^24.10.0",
+    "@types/node": "^24.10.1",
     "eslint": "^9.39.1",
     "eslint-plugin-lit": "^2.1.1",
     "globals": "^16.5.0",
-    "i18next-parser": "^9.3.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.2",

@@ -2,7 +2,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, query } from "lit/decorators.js";
 
 import '../src';
-import { getTheme, importTheme, localizer, setTheme } from "../src/utilities";
+import { theme } from '../src/utilities/theme';
 
 @customElement('preview-app')
 export class PreviewApp extends LitElement {
@@ -10,16 +10,15 @@ export class PreviewApp extends LitElement {
   @query("u-button") button!: any;
 
   firstUpdated(changedProperties: any): void {
-    super.firstUpdated(changedProperties);
-    localizer.init();
-    importTheme();
+    super.firstUpdated(changedProperties);    
+    theme.import();
   }
 
   render() {
     return html`
       <div class="header">
         <h1>Component Preview</h1>
-        <u-button @click=${this.toggleTheme}>테마 변경</u-button>
+        <u-button @click=${() => theme.toggle()}>테마 변경</u-button>
       </div>
 
       <section class="section">
@@ -225,10 +224,6 @@ export class PreviewApp extends LitElement {
         </div>
       </section>
     `;
-  }
-
-  toggleTheme() {
-    setTheme(getTheme() === 'light' ? 'dark' : 'light');
   }
 
   static styles = css`

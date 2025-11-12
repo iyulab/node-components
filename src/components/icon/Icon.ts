@@ -20,9 +20,17 @@ export class Icon extends BaseElement {
    */
   static remoteBaseUrl = '/assets/icons/';
 
-  /** 아이콘을 외부에서 불러와야 하는지 여부를 설정합니다. */
+  /** 
+   * 아이콘을 외부에서 로드할때 사용하는 설정입니다. 
+   * @see {@link Icon.remoteBaseUrl}에서 외부 기본 경로를 설정할 수 있습니다.
+   * @default false 
+   */
   @property({ type: Boolean }) remote: boolean = false;
-  /** 아이콘의 이름을 지정합니다. 외부에서 불러오는 경우, SVG 파일의 이름입니다. */
+
+  /** 
+   * 사용할 아이콘의 이름을 지정합니다. 
+   * @description 외부에서 불러오는 SVG 아이콘인 경우, 이름은 파일명(확장자 제외)이어야 합니다. 
+   */
   @property({ type: String }) name?: string;
 
   render() {

@@ -14,11 +14,17 @@ export type ScreenPosition =
   | "bottom-center"
   | "bottom-right";
 
+/** 토스트 알림 옵션 */
 export interface ToastOptions {
+  /** 알림 유형 */
   type: AlertType;
+  /** 알림 제목 */
   label?: string;
+  /** 알림 내용 */
   content?: string;
+  /** 알림 표시 시간 (밀리초 단위) */
   duration?: number;
+  /** 표시 화면 위치 */
   position?: ScreenPosition;
 }
 

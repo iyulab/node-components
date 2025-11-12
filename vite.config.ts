@@ -26,14 +26,11 @@ export default () => {
       rollupOptions: {
         // 외부 종속성 라이브러리
         external: [
+          // /^@lit.*/,
           /^@floating-ui.*/,
           /^lit.*/,
-          // /^@lit.*/,
           /^react.*/,
-          /^reflect-metadata.*/,
-          /^i18next.*/,
-          /^react-i18.*/,
-          /^lit-i18.*/
+          /^reflect-metadata.*/
         ],
         output: {
           preserveModules: true,
