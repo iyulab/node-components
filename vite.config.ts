@@ -15,9 +15,11 @@ export default () => {
       outDir: 'dist',
       emptyOutDir: true,
       copyPublicDir: false,
-      minify: true,
+      minify: false,
       lib: {
-        entry: resolve(__dirname, 'src/index.ts'),
+        entry: [
+          resolve(__dirname, 'src/index.ts'),
+        ],
         formats: ['es'],
         fileName: (format: string, entry: string): string => {
           return format === 'es' ? `${entry}.js` : `${entry}.${format}.js`;

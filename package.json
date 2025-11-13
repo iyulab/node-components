@@ -1,7 +1,7 @@
 {
   "name": "@iyulab/components",
   "description": "web-components library by iyulab based on lit-element",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "keywords": [
     "iyulab",
     "web-components",
@@ -21,14 +21,14 @@
     "package.json"
   ],
   "type": "module",
-  "types": "./src/index.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./src/index.d.ts",
       "import": "./src/index.js"
     },
     "./dist/*": {
-      "types": "./src/*",
+      "types": "./src/*.d.ts",
       "import": "./src/*"
     }
   },
