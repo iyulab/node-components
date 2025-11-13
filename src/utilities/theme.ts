@@ -71,7 +71,7 @@ export class Theme {
     }
 
     // 2. 스타일 시트를 문서 헤드에 추가합니다.
-    const useBuiltIn = options?.useBuiltIn || true;
+    const useBuiltIn = options?.useBuiltIn ?? true;
     if (useBuiltIn) {
       this.log('Import enabled: loading styles via internal assets');
       const assets = Object.entries(import.meta.glob(`../assets/styles/*.css`, {

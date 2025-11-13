@@ -1,7 +1,7 @@
 # Changelog
 
 ## [Unreleased]
-- No changes yet.
+- fixed a theme `useBuiltIn` Option, now it works as expected.
 
 ## 0.1.2 (2025-11-13)
 - fixed a type issue in `theme` utility.
