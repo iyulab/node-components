@@ -7,19 +7,37 @@ import { theme } from '../src/utilities/theme';
 @customElement('preview-app')
 export class PreviewApp extends LitElement {
 
+  @query("#progress1") progress1!: any;
   @query("u-button") button!: any;
 
-  firstUpdated(changedProperties: any): void {
-    super.firstUpdated(changedProperties);    
-    theme.import();
+  firstUpdated(changedProperties: any) {
+    super.firstUpdated(changedProperties);
+    theme.init();
+  }
+
+  private testProgress = async () => {
+    this.progress1.progress(0);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    this.progress1.progress(30);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    this.progress1.progress(60);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    this.progress1.progress(100);
   }
 
   render() {
     return html`
       <div class="header">
         <h1>Component Preview</h1>
-        <u-button @click=${() => theme.toggle()}>테마 변경</u-button>
+        <u-button @click=${() => theme.set(theme.get() === 'dark' ? 'light' : 'dark')}>테마 변경</u-button>
+        <u-button @click=${this.testProgress}>ProgressBar 테스트</u-button>
       </div>
+
+      <section class="section">
+        <h2>Progress Components</h2>
+        <u-progress-bar id="progress1" .value=${30}></u-progress-bar>
+        <!-- <u-progress-bar id="progress2" indeterminate></u-progress-bar> -->
+      </section>
 
       <section class="section">
         <h2>Input Components</h2>
@@ -135,6 +153,139 @@ export class PreviewApp extends LitElement {
             <u-menu-item checkable>옵션 2</u-menu-item>
             <u-menu-item checkable checked>옵션 3</u-menu-item>
           </u-menu>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Tree Components</h2>
+        
+        <div class="demo-item">
+          <h3>Basic Tree</h3>
+          <u-tree>
+            <u-tree-item value="1">
+              <span slot="label">📁 Documents</span>
+              <u-tree-item slot="children" value="1-1">
+                <span slot="label">📄 Report.pdf</span>
+              </u-tree-item>
+              <u-tree-item slot="children" value="1-2">
+                <span slot="label">📄 Presentation.pptx</span>
+              </u-tree-item>
+            </u-tree-item>
+            <u-tree-item value="2">
+              <span slot="label">📁 Images</span>
+              <u-tree-item slot="children" value="2-1">
+                <span slot="label">🖼️ Photo1.jpg</span>
+              </u-tree-item>
+              <u-tree-item slot="children" value="2-2">
+                <span slot="label">🖼️ Photo2.png</span>
+              </u-tree-item>
+            </u-tree-item>
+            <u-tree-item value="3" leaf>
+              <span slot="label">📄 README.md</span>
+            </u-tree-item>
+          </u-tree>
+        </div>
+
+        <div class="demo-item">
+          <h3>Tree with Icons</h3>
+          <u-tree>
+            <u-tree-item value="root" icon="📦">
+              <span slot="label">Project Root</span>
+              <u-tree-item slot="children" value="src" icon="📁">
+                <span slot="label">src</span>
+                <u-tree-item slot="children" value="components" icon="📁">
+                  <span slot="label">components</span>
+                  <u-tree-item slot="children" value="tree" icon="📁">
+                    <span slot="label">tree</span>
+                    <u-tree-item slot="children" value="tree-ts" icon="📝" leaf>
+                      <span slot="label">Tree.ts</span>
+                    </u-tree-item>
+                    <u-tree-item slot="children" value="tree-styles" icon="🎨" leaf>
+                      <span slot="label">Tree.styles.ts</span>
+                    </u-tree-item>
+                  </u-tree-item>
+                </u-tree-item>
+                <u-tree-item slot="children" value="index" icon="📝" leaf>
+                  <span slot="label">index.ts</span>
+                </u-tree-item>
+              </u-tree-item>
+              <u-tree-item slot="children" value="package" icon="📋" leaf>
+                <span slot="label">package.json</span>
+              </u-tree-item>
+            </u-tree-item>
+          </u-tree>
+        </div>
+
+        <div class="demo-item">
+          <h3>Expanded Tree</h3>
+          <u-tree>
+            <u-tree-item value="folder1" expanded>
+              <span slot="label">📁 Expanded Folder</span>
+              <u-tree-item slot="children" value="file1" leaf>
+                <span slot="label">📄 File 1.txt</span>
+              </u-tree-item>
+              <u-tree-item slot="children" value="file2" leaf>
+                <span slot="label">📄 File 2.txt</span>
+              </u-tree-item>
+              <u-tree-item slot="children" value="subfolder" expanded>
+                <span slot="label">📁 Subfolder</span>
+                <u-tree-item slot="children" value="nested-file" leaf>
+                  <span slot="label">📄 Nested File.txt</span>
+                </u-tree-item>
+              </u-tree-item>
+            </u-tree-item>
+          </u-tree>
+        </div>
+
+        <div class="demo-item">
+          <h3>Tree with Selected Item</h3>
+          <u-tree>
+            <u-tree-item value="item1">
+              <span slot="label">Item 1</span>
+              <u-tree-item slot="children" value="item1-1" selected>
+                <span slot="label">Item 1-1 (Selected)</span>
+              </u-tree-item>
+              <u-tree-item slot="children" value="item1-2">
+                <span slot="label">Item 1-2</span>
+              </u-tree-item>
+            </u-tree-item>
+            <u-tree-item value="item2">
+              <span slot="label">Item 2</span>
+            </u-tree-item>
+          </u-tree>
+        </div>
+
+        <div class="demo-item">
+          <h3>Tree with Disabled Items</h3>
+          <u-tree>
+            <u-tree-item value="enabled1">
+              <span slot="label">Enabled Item</span>
+              <u-tree-item slot="children" value="disabled1" disabled>
+                <span slot="label">Disabled Item</span>
+              </u-tree-item>
+              <u-tree-item slot="children" value="enabled2">
+                <span slot="label">Enabled Item</span>
+              </u-tree-item>
+            </u-tree-item>
+          </u-tree>
+        </div>
+
+        <div class="demo-item">
+          <h3>Multiple Selection Tree</h3>
+          <u-tree multiple>
+            <u-tree-item value="multi1">
+              <span slot="label">Selectable 1</span>
+            </u-tree-item>
+            <u-tree-item value="multi2">
+              <span slot="label">Selectable 2</span>
+            </u-tree-item>
+            <u-tree-item value="multi3">
+              <span slot="label">Selectable 3</span>
+              <u-tree-item slot="children" value="multi3-1">
+                <span slot="label">Selectable 3-1</span>
+              </u-tree-item>
+            </u-tree-item>
+          </u-tree>
         </div>
       </section>
 
