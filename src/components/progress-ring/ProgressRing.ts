@@ -33,10 +33,12 @@ export class ProgressRing extends BaseElement {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('variant')) {
-      this.dasharray = this.updateDashArray(this.variant);
+      this.updateDashArray();
     }
-    if (changedProperties.has('minValue') || changedProperties.has('maxValue') || changedProperties.has('value')) {
-      this.progress = this.updateProgress(this.minValue, this.maxValue, this.value);
+    if (changedProperties.has('minValue') || 
+        changedProperties.has('maxValue') || 
+        changedProperties.has('value')) {
+      this.updateProgress();
     }
   }
 
@@ -70,25 +72,26 @@ export class ProgressRing extends BaseElement {
     `;
   }
 
-  /** 진행 상태를 0과 1 사이의 값으로 반환합니다. */
-  private updateProgress(min: number, max: number, val: number): number {
-    min = Number(min ?? 0);
-    max = Number(max ?? 100);
-    val = Math.min(Math.max(Number(val ?? 0), min), max);
-    return max === min ? 0 : (val - min) / (max - min);
+  /** 
+   * 진행 상태를 0과 1 사이의 값으로 반환합니다. 
+   */
+  private updateProgress() {
+    const range = this.maxValue - this.minValue;
+    const clampedValue = Math.max(this.minValue, Math.min(this.maxValue, this.value));
+    this.progress = range === 0 ? 0 : ((clampedValue - this.minValue) / range);
   }
 
   /** 
    * variant에 따라 dasharray 값을 반환합니다. 
    * [dash-length] [gap-length] or [dash-length] 형식
    */
-  private updateDashArray(variant: ProgressRingVariant): string {
-    if (variant === 'ticks') {
-      return "1 1" // 50개 틱 [1 길이, 1 간격]
-    } else if (variant === 'blocks') {
-      return "8 2" // 10개 블록 [8 길이, 2 간격]
+  private updateDashArray() {
+    if (this.variant === 'ticks') {
+      this.dasharray = "1 1" // 50개 틱 [1 길이, 1 간격]
+    } else if (this.variant === 'blocks') {
+      this.dasharray = "8 2" // 10개 블록 [8 길이, 2 간격]
     } else {
-      return PATH_LENGTH.toString(); // 매끄러운 원형
+      this.dasharray = PATH_LENGTH.toString(); // 매끄러운 원형
     }
   }
 }

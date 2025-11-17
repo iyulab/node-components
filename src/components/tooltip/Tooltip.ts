@@ -45,8 +45,8 @@ export class Tooltip extends BaseElement {
     super.disconnectedCallback();
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
     // trigger 프로퍼티가 변경된 경우, 이전 트리거에서 새로운 트리거로 이벤트를 추가합니다.
     if (changedProperties.has('triggers') && this.triggers) {

@@ -1,7 +1,11 @@
 # Changelog
 
 ## [Unreleased]
+- (No changes yet)
+
+## 0.1.3 (2025-11-17)
 - fixed a theme `useBuiltIn` Option, now it works as expected.
+- added `ProgressBar` component to show loading progress at the top of the page.
 
 ## 0.1.2 (2025-11-13)
 - fixed a type issue in `theme` utility.

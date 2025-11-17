@@ -16,13 +16,13 @@ export class PreviewApp extends LitElement {
   }
 
   private testProgress = async () => {
-    this.progress1.progress(0);
     await new Promise(resolve => setTimeout(resolve, 500));
-    this.progress1.progress(30);
+    this.progress1.value = 30;
     await new Promise(resolve => setTimeout(resolve, 500));
-    this.progress1.progress(60);
+    this.progress1.value = 60;
     await new Promise(resolve => setTimeout(resolve, 500));
-    this.progress1.progress(100);
+    this.progress1.value = 100;
+    await new Promise(resolve => setTimeout(resolve, 1000));
   }
 
   render() {
@@ -35,8 +35,9 @@ export class PreviewApp extends LitElement {
 
       <section class="section">
         <h2>Progress Components</h2>
-        <u-progress-bar id="progress1" .value=${30}></u-progress-bar>
-        <!-- <u-progress-bar id="progress2" indeterminate></u-progress-bar> -->
+        <u-progress-bar id="progress1" .value=${30}>
+          ${this.progress1?.value || 0}% 완료
+        </u-progress-bar>
       </section>
 
       <section class="section">
