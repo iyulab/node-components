@@ -9,11 +9,6 @@ import { styles } from "./Panel.styles.js";
 export class Panel extends BaseElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof BaseElement> = {};
-  
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.classList.add('scrollable');
-  }
 
   render() {
     return html`<slot></slot>`;

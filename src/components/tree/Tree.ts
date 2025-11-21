@@ -15,17 +15,17 @@ export class Tree extends BaseElement {
     'u-tree-item': TreeItem,
   };
 
+  private selectedItems: Set<TreeItem> = new Set();
+
+  @queryAssignedElements({ selector: 'u-tree-item' })
+  treeItems!: TreeItem[];
+
   /** 트리가 비활성화 상태인지 여부입니다. */
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
   /** 다중 선택을 허용할지 여부입니다. */
   @property({ type: Boolean }) multiple: boolean = false;
   /** 선택 가능한 트리인지 여부입니다. */
   @property({ type: Boolean }) selectable: boolean = true;
-
-  @queryAssignedElements({ selector: 'u-tree-item' })
-  private treeItems!: TreeItem[];
-
-  private selectedItems: Set<TreeItem> = new Set();
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -42,33 +42,10 @@ export class Tree extends BaseElement {
 
   render() {
     return html`
-      <div class="tree-container">
-        <slot @slotchange=${this.handleSlotChange}></slot>
+      <div class="container">
+        <slot></slot>
       </div>
     `;
-  }
-
-  /** 슬롯 변경 이벤트를 처리합니다. */
-  private handleSlotChange = () => {
-    this.updateTreeItemsLevel();
-  }
-
-  /** 트리 항목의 레벨을 업데이트합니다. */
-  private updateTreeItemsLevel(items: Element[] = this.treeItems, level: number = 0) {
-    items.forEach((item) => {
-      if (item instanceof TreeItem) {
-        item.level = level;
-        
-        // 자식 슬롯에서 중첩된 tree-item 찾기
-        const childrenSlot = item.shadowRoot?.querySelector('slot[name="children"]') as HTMLSlotElement;
-        if (childrenSlot) {
-          const children = childrenSlot.assignedElements();
-          if (children.length > 0) {
-            this.updateTreeItemsLevel(children, level + 1);
-          }
-        }
-      }
-    });
   }
 
   /** 트리 항목 선택 이벤트를 처리합니다. */
@@ -161,14 +138,8 @@ export class Tree extends BaseElement {
     items.forEach((item) => {
       if (item instanceof TreeItem) {
         allItems.push(item);
-        
-        const childrenSlot = item.shadowRoot?.querySelector('slot[name="children"]') as HTMLSlotElement;
-        if (childrenSlot) {
-          const children = childrenSlot.assignedElements();
-          if (children.length > 0) {
-            allItems = allItems.concat(this.getAllTreeItems(children));
-          }
-        }
+        const childItems = this.getAllTreeItems(item.childrenItems);
+        allItems = allItems.concat(childItems);
       }
     });
     

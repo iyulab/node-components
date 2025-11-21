@@ -22,6 +22,5 @@ export const styles = css`
   .scrollable {
     scrollbar-width: thin;
     scrollbar-color: var(--u-scrollbar-color) var(--u-scrollbar-track-color);
-    scrollbar-gutter: stable;
   }
 `;

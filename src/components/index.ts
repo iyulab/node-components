@@ -2,6 +2,7 @@ export * from './alert';
 export * from './button';
 export * from './context-menu';
 export * from './dialog';
+export * from './divider';
 export * from './form';
 export * from './icon';
 export * from './icon-button';
