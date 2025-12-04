@@ -99,12 +99,14 @@ export class Theme {
     }
 
     // 3. 저장된 테마가 있으면 적용하고, 없으면 기본값 또는 시스템 테마를 적용합니다.
-    let theme: ThemeType = options?.default || 'system';
+    let theme: ThemeType = options?.default ?? 'system';
     if (this.storage !== null) {
       const savedTheme = await this.storage.get(this.STORAGE_KEY_DEFAULT) as ThemeType | null;
       if (savedTheme) {
         theme = savedTheme;
         this.log('loaded theme from storage', theme);
+      } else {
+        this.log('no saved theme in storage, using default', theme);
       }
     }
     this.set(theme);

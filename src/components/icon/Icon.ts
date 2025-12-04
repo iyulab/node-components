@@ -4,7 +4,7 @@ import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { until } from "lit/directives/until.js";
 
 import { BaseElement } from "../BaseElement.js";
-import { icons } from "../../internals/icons.js";
+import { iconBundle, getBaseUrl } from "../../internals/icon-helpers.js";
 import { styles } from "./Icon.styles.js";
 
 /**
@@ -14,17 +14,12 @@ export class Icon extends BaseElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof BaseElement> = {};
 
-  /** 
-   * 아이콘을 외부에서 불러올 때 사용되는 기본 경로를 설정합니다.
-   * @default '/assets/icons/'
-   */
-  static remoteBaseUrl = '/assets/icons/';
-
-  /** 
-   * 아이콘을 외부에서 로드할때 사용하는 설정입니다. 
-   * @see {@link Icon.remoteBaseUrl}에서 외부 기본 경로를 설정할 수 있습니다.
-   * @default false 
-   */
+/** 
+ * 아이콘을 원격 경로에서 로드할지 여부입니다.
+ * - `false`(기본): 번들된 내부 아이콘 레지스트리(`iconBundle`)에서 아이콘을 찾습니다.
+ * - `true`       : `getBaseUrl()`을 기준으로 원격 SVG 파일을 fetch 합니다.
+ * @default false 
+ */
   @property({ type: Boolean }) remote: boolean = false;
 
   /** 
@@ -50,9 +45,10 @@ export class Icon extends BaseElement {
   private async load(name: string): Promise<string | undefined> {
     if (this.remote) {
       // 외부 아이콘을 불러오는 경우
-      const remoteUrl = Icon.remoteBaseUrl.endsWith('/')
-        ? `${Icon.remoteBaseUrl}${name}.svg`
-        : `${Icon.remoteBaseUrl}/${name}.svg`;
+      const baseUrl = getBaseUrl();
+      const remoteUrl = baseUrl.endsWith('/')
+        ? `${baseUrl}${name}.svg`
+        : `${baseUrl}/${name}.svg`;
       
       try {
         const response = await fetch(remoteUrl);
@@ -64,7 +60,7 @@ export class Icon extends BaseElement {
       }
     } else {
       // 내부 아이콘을 불러오는 경우
-      return icons.get(name)?.trim();
+      return iconBundle.get(name)?.trim();
     }
   }
 

@@ -104,7 +104,7 @@ export class SplitPanel extends BaseElement {
   private handleDividerDrag = (event: any) => {
     const divider = event.target as Divider;
     const delta = event.detail.delta; // 드래그 픽셀 이동거리
-    console.log('Divider drag delta:', delta);
+    // console.log('Divider drag delta:', delta);
     const index = this.dividers.indexOf(divider);
     if (index === -1) return;
 
