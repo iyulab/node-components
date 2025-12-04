@@ -68,7 +68,9 @@ export class ProgressRing extends BaseElement {
           mask="url(#progress-mask)"
         ></circle>
       </svg>
-      <div class="label" part="label">${Math.round(this.progress * 100)}%</div>
+      <div class="label" part="label">
+        ${Math.round(this.progress * 100)}%
+      </div>
     `;
   }
 
