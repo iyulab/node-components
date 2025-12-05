@@ -95,24 +95,6 @@ export class Tree extends BaseElement {
   }
 
   /**
-   * 모든 트리 항목을 확장합니다.
-   */
-  public expandAll() {
-    this.getAllTreeItems().forEach((item) => {
-      item.expand();
-    });
-  }
-
-  /**
-   * 모든 트리 항목을 축소합니다.
-   */
-  public collapseAll() {
-    this.getAllTreeItems().forEach((item) => {
-      item.collapse();
-    });
-  }
-
-  /**
    * 선택된 모든 항목을 반환합니다.
    */
   public getSelectedItems(): TreeItem[] {

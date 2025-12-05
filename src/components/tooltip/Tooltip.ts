@@ -15,9 +15,6 @@ export class Tooltip extends BaseElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof BaseElement> = {};
 
-  /** 슬롯이 비어있는지 여부를 나타냅니다. */
-  private isSlotEmpty: boolean = true;
-
   /** 툴팁이 연결될 대상 엘리먼트입니다. 지정하지 않으면 부모 엘리먼트가 대상이 됩니다. */
   @property({ attribute: false }) triggers: HTMLElement[] = [];
   /** 트리거 셀렉터 문자열입니다. 이 속성을 사용하여 트리거 엘리먼트를 지정할 수 있습니다. */
@@ -74,7 +71,7 @@ export class Tooltip extends BaseElement {
 
   render() {
     return html`
-      <slot @slotchange=${this.handleSlotChange}></slot>
+      <slot></slot>
     `;
   }
 
@@ -186,21 +183,5 @@ export class Tooltip extends BaseElement {
       default:
         return 'center';
     }
-  }
-
-  /** 
-   * slot에 콘텐츠가 존재하는지 확인합니다. 
-   */
-  private handleSlotChange = (e: Event) => {
-    const slot = e.target as HTMLSlotElement;
-    const nodes = slot.assignedNodes({ flatten: true }) ?? [];
-    this.isSlotEmpty = !nodes.some(node => {
-      // 요소 노드인 경우, 항상 true
-      if (node.nodeType === Node.ELEMENT_NODE) return true;
-      // 텍스트 노드의 경우, 공백이 아닌 내용이 있는 경우 true
-      if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) return true;
-      // 그 외 모두 false
-      return false;
-    });
   }
 }
