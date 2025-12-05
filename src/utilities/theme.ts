@@ -1,4 +1,12 @@
-import { BrowserStorage, BrowserStorageOptions } from './BrowserStorage.js'
+import { BrowserStorage, BrowserStorageOptions } from './BrowserStorage.js';
+
+const styleAssets = Object.entries(import.meta.glob('../assets/styles/*.css', {
+  eager: true,
+  query: '?inline',
+})).map(([path, module]) => {
+  const name = path.split('/').pop()?.replace('.css', '') || '';
+  return [name, (module as any).default] as [string, string];
+}).filter(([name]) => name !== '');
 
 /** iyulab에서 제공하는 스타일 타입입니다. */
 export type ThemeType = 'system' | 'light' | 'dark';
@@ -74,27 +82,19 @@ export class Theme {
     const useBuiltIn = options?.useBuiltIn ?? true;
     if (useBuiltIn) {
       this.log('Import enabled: loading styles via internal assets');
-      const assets = Object.entries(import.meta.glob(`../assets/styles/*.css`, {
-        eager: true,
-        query: '?inline'
-      }));
-      this.log(`found ${assets.length} style assets`, assets.map(a => a[0]));
-
-      for (let [path, module] of assets) {
-        const fileName = (path as string).split('/').pop() || (path as string);
-
+      for (let [name, module] of styleAssets) {
         // 스타일 시트를 생성합니다.
         const style = document.createElement('style');
-        style.setAttribute('data-path', fileName);
-        style.textContent = (module as { default: string }).default;
+        style.setAttribute('data-path', name);
+        style.textContent = module;
 
         // 이미 추가된 스타일 시트는 건너뜁니다.
-        if (document.head.querySelector(`style[data-path="${fileName}"]`)) {
-          this.log('style already present, skipping', fileName);
+        if (document.head.querySelector(`style[data-path="${name}"]`)) {
+          this.log('style already present, skipping', name);
           continue;
         }
         document.head.appendChild(style);
-        this.log('appended style to head', fileName);
+        this.log('appended style to head', name);
       }
     }
 
