@@ -1,7 +1,7 @@
 import { html, PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 
-import { BaseElement } from '@iyulab/components/dist/components/BaseElement.js';
+import { BaseElement } from '../BaseElement.js';
 import { styles } from './ProgressBar.styles.js';
 
 /**
