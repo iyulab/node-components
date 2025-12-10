@@ -12,7 +12,7 @@ on:
       - "v*"
 
 jobs:
-  publish:
+  call-publish:
     uses: iyulab/node-packages/.github/workflows/publish-npm.yml@main
     with:
       node_version: "20"
