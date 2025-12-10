@@ -4,7 +4,6 @@ import { property } from "lit/decorators.js";
 import { arrayAttributeConverter } from "../../internals/attribute-converters.js";
 import { BaseElement } from "../BaseElement.js";
 import { Divider } from "../divider/Divider.js";
-import { Panel } from "../panel/Panel.js";
 import { styles } from "./SplitPanel.styles.js";
 
 /**
@@ -14,10 +13,9 @@ export class SplitPanel extends BaseElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof BaseElement> = {
     'u-divider': Divider,
-    'u-panel': Panel,
   };
 
-  private panels: Panel[] = [];
+  private panels: HTMLElement[] = [];
   private dividers: Divider[] = [];
 
   private panelSizes: number[] = [];
@@ -51,8 +49,8 @@ export class SplitPanel extends BaseElement {
 
   private handleSlotChange = async (e: Event) => {
     const slot = e.target as HTMLSlotElement;
-    const childrens = slot.assignedElements({ flatten: true });
-    const panels = childrens.filter(el => el instanceof Panel);
+    const children = slot.assignedElements({ flatten: true });
+    const panels = children.filter(el => el instanceof HTMLElement);
 
     // 패널이 변경되지 않았으면 다시 설정하지 않음
     if (this.panels.length === panels.length && 
@@ -61,7 +59,7 @@ export class SplitPanel extends BaseElement {
     }
 
     // 기존 패널 및 divider 정리
-    this.panels = panels as Panel[];
+    this.panels = panels;
     this.dividers.forEach(divider => divider.remove());
     this.dividers = [];
 
@@ -91,7 +89,7 @@ export class SplitPanel extends BaseElement {
       const divider = new Divider();
       divider.orientation = this.orientation;
       divider.draggable = true;
-      divider.addEventListener('u-drag', this.handleDividerDrag);
+      divider.addEventListener('u-move', this.handleDividerMove);
       this.dividers.push(divider);
       panel.after(divider);
     });
@@ -101,7 +99,7 @@ export class SplitPanel extends BaseElement {
   }
 
   /** 디바이더 드래그 이벤트 핸들러 */
-  private handleDividerDrag = (event: any) => {
+  private handleDividerMove = (event: any) => {
     const divider = event.target as Divider;
     const delta = event.detail.delta; // 드래그 픽셀 이동거리
     // console.log('Divider drag delta:', delta);

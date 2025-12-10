@@ -2,24 +2,24 @@ import { css } from 'lit';
 
 export const styles = css`
   :host {
+    --progress-value: 0;
+  }
+
+  :host {
     position: relative;
     display: block;
     width: 100%;
-    height: 12px;
+    height: 1em;
     border-radius: 9999px;
     background-color: var(--u-neutral-200);
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-
-    --progress-value: 0;
   }
 
   .indicator {
     position: absolute;
     inset: 0 0 0 0;
     display: block;
-    width: 100%;
-    height: 100%;
     border-radius: inherit;
     background-color: var(--u-blue-600);
     transform-origin: left center;
@@ -47,14 +47,14 @@ export const styles = css`
   }
 
   .content {
-    position: relative;
-    z-index: 1;
+    position: absolute;
+    z-index: 100;
     display: flex;
+    inset: 0 0 0 0;
     align-items: center;
     justify-content: center;
-    font-size: 8px;
-    line-height: 12px;
-    color: var(--u-neutral-800);
+    font-size: 0.5em;
+    line-height: 1em;
     white-space: nowrap;
     user-select: none;
     pointer-events: none;

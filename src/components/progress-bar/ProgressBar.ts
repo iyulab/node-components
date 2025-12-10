@@ -35,10 +35,9 @@ export class ProgressBar extends BaseElement {
       this.progressState = this.indeterminate ? 'indeterminate' : 'turned-on';
     }
 
-    if (changedProperties.has('minValue') || 
-        changedProperties.has('maxValue') || 
+    if (changedProperties.has('minValue') || changedProperties.has('maxValue') || 
         changedProperties.has('value')) {
-      this.updateProgress();
+      this.updateProgressState();
     }
   }
 
@@ -54,7 +53,7 @@ export class ProgressBar extends BaseElement {
   }
 
   /** 내부 진행 상태 업데이트 */
-  private async updateProgress(): Promise<void> {
+  private async updateProgressState(): Promise<void> {
     await this.updateComplete;
     if (this.indeterminate) return;
 

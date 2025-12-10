@@ -5,7 +5,7 @@ import { BaseElement } from "../BaseElement.js";
 import { styles } from "./Divider.styles.js";
 
 /**
- * Divider 컴포넌트는 엘리먼트 사이에 드래그 가능한 구분선을 표시합니다.
+ * Divider 컴포넌트는 엘리먼트 사이에 움직임이 가능한 구분선을 제공합니다.
  */
 export class Divider extends BaseElement {
   static styles = [ super.styles, styles ];
@@ -14,14 +14,14 @@ export class Divider extends BaseElement {
   /** 마지막 마우스 위치를 저장합니다. */
   private position: number = 0;
 
-  /** 드래그 중인지 여부를 나타냅니다. */
-  @state() dragging = false;
+  /** 분할선이 움직이는지 여부를 나타냅니다. */
+  @state() moving = false;
   
-  /** 드래그 가능 여부를 설정합니다. */
-  @property({ type: Boolean, reflect: true }) draggable = false;
-  /** 분할 방향을 설정합니다. */
+/** 분할 방향을 설정합니다. */
   @property({ type: String, reflect: true }) orientation: 'horizontal' | 'vertical' = 'horizontal';
-
+  /** 분할선을 움직일 수 있는지 여부를 설정합니다. */
+  @property({ type: Boolean, reflect: true }) movable = false;
+  
   disconnectedCallback(): void {
     super.disconnectedCallback();
     document.removeEventListener('mousemove', this.handleMouseMove);
@@ -29,10 +29,10 @@ export class Divider extends BaseElement {
   }
 
   render() {
-    if (this.draggable) {
+    if (this.movable) {
       return html`
         <div class="handler" 
-          ?dragging=${this.dragging}
+          ?moving=${this.moving}
           orientation=${this.orientation}
           @mousedown=${this.handleMouseDown}
         ></div>
@@ -45,9 +45,9 @@ export class Divider extends BaseElement {
   /** 마우스 다운 이벤트 핸들러 */
   private handleMouseDown = (e: MouseEvent) => {
     e.preventDefault();
-    this.dragging = true;
+    this.moving = true;
     this.position = this.orientation === 'horizontal' ? e.clientX : e.clientY;
-    this.emit('u-dragstart');
+    this.emit('u-movestart');
 
     document.addEventListener('mousemove', this.handleMouseMove);
     document.addEventListener('mouseup', this.handleMouseUp);
@@ -59,19 +59,19 @@ export class Divider extends BaseElement {
 
   /** 마우스 무브 이벤트 핸들러 */
   private handleMouseMove = (e: MouseEvent) => {
-    if (!this.dragging) return;
+    if (!this.moving) return;
     e.preventDefault();
     const position = this.orientation === 'horizontal' ? e.clientX : e.clientY;
     const delta = position - this.position;
-    this.emit('u-drag', { delta });
+    this.emit('u-move', { delta });
     this.position = position;
   }
 
   /** 마우스 업 이벤트 핸들러 */
   private handleMouseUp = (_: MouseEvent) => {
-    if (!this.dragging) return;
-    this.dragging = false;
-    this.emit('u-dragend');
+    if (!this.moving) return;
+    this.moving = false;
+    this.emit('u-moveend');
 
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('mouseup', this.handleMouseUp);

@@ -9,30 +9,28 @@ export const styles = css`
     font-weight: 500;
     line-height: 1.5;
     padding: 0.5em 1em;
-    background-color: var(--u-bg-color);
     border: 1px solid var(--u-border-color);
     border-radius: 6px;
+    background-color: var(--u-bg-color);
 
     transition: all 0.2s ease;
+    overflow: hidden;
     user-select: none;
     cursor: pointer;
   }
-  :host([loading]),
-  :host([disabled]) {
-    pointer-events: none;
-  }
-  :host([disabled]) {
-    color: var(--u-text-color-disabled);
-  }
   :host(:hover) {
-    color: var(--u-text-color-hover);
+    color: var(--u-txt-color-hover);
     background-color: var(--u-bg-color-hover);
-    border-color: var(--u-border-color-strong);
   }
   :host(:active) {
-    color: var(--u-text-color-active);
+    color: var(--u-txt-color-active);
     background-color: var(--u-bg-color-active);
     transform: translateY(1px);
+  }
+  :host([loading]),
+  :host([disabled]) {
+    color: var(--u-txt-color-disabled);
+    pointer-events: none;
   }
 
   button {
@@ -49,21 +47,16 @@ export const styles = css`
   }
 
   slot {
-    flex: 1 1 auto;
+    flex: 1 0 auto;
     min-width: 0;
     display: inline-flex;
-    align-items: center;
     justify-content: center;
   }
-  slot[name="prefix"],
-  slot[name="suffix"] {
-    flex: 0 0 auto;
-  }
-  /* 슬롯에 내용이 있을 때만 gap 적용 */
-  slot[name="prefix"]:not(:empty) {
+  /* 슬롯에 내용이 있을 때 gap 적용 */
+  ::slotted([slot="prefix"]) {
     margin-right: 0.5em;
   }
-  slot[name="suffix"]:not(:empty) {
+  ::slotted([slot="suffix"]) {
     margin-left: 0.5em;
   }
 

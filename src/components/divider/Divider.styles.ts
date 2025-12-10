@@ -2,14 +2,16 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
+    --divider-size: 2px;
+    --handler-size: 4px;
+    --handler-color: var(--u-blue-500, #3b82f6);
+  }
+
+  :host {
     position: relative;
     display: block;
     flex-shrink: 0;
     background-color: var(--u-neutral-200, #e5e7eb);
-
-    --divider-size: 2px;
-    --handler-size: 4px;
-    --handler-color: var(--u-blue-500, #3b82f6);
   }
   :host([orientation="horizontal"]) {
     width: var(--divider-size, 2px);
@@ -46,7 +48,7 @@ export const styles = css`
     width: 100%;
     height: var(--handler-size, 4px);
   }
-  .handler[dragging],
+  .handler[moving],
   .handler:hover {
     opacity: 1;
   }

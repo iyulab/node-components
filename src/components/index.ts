@@ -1,6 +1,7 @@
 export * from './alert';
 export * from './button';
 export * from './context-menu';
+export * from './copy-button';
 export * from './dialog';
 export * from './divider';
 export * from './form';
@@ -8,7 +9,6 @@ export * from './icon';
 export * from './icon-button';
 export * from './input';
 export * from './menu';
-export * from './panel';
 export * from './progress-bar';
 export * from './progress-ring';
 export * from './spinner';

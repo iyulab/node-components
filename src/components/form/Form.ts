@@ -37,7 +37,9 @@ export class Form extends BaseElement {
     `;
   }
 
-  /** 폼 내의 모든 입력 요소를 검증합니다. */
+  /** 
+   * 폼 내의 모든 입력 요소를 검증합니다. 
+   */
   public validate() {
     const slot = this.shadowRoot?.querySelector('slot');
     const inputEls = slot?.assignedElements({ flatten: true }).filter(el => el instanceof Input) || [];
@@ -50,6 +52,7 @@ export class Form extends BaseElement {
     const input = e.target as Input;
     const name = input.name;
     const value = input.value;
+
     if (!name) return;
     if (!this.includes.includes(name)) return;
     if (this.excludes.includes(name)) return;

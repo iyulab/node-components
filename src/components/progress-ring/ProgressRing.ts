@@ -17,8 +17,8 @@ export class ProgressRing extends BaseElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof BaseElement> = {};
 
-  @state() progress: number = 0;
   @state() dasharray: string = PATH_LENGTH.toString();
+  @state() progress: number = 0;
 
   /** 진행 표시기의 스타일 변형을 설정합니다. */
   @property({ type: String, reflect: true }) variant: ProgressRingVariant = 'smooth';
@@ -35,10 +35,9 @@ export class ProgressRing extends BaseElement {
     if (changedProperties.has('variant')) {
       this.updateDashArray();
     }
-    if (changedProperties.has('minValue') || 
-        changedProperties.has('maxValue') || 
+    if (changedProperties.has('minValue') || changedProperties.has('maxValue') || 
         changedProperties.has('value')) {
-      this.updateProgress();
+      this.updateProgressState();
     }
   }
 
@@ -52,6 +51,7 @@ export class ProgressRing extends BaseElement {
               stroke="white"
               stroke-dasharray="${PATH_LENGTH}"
               stroke-dashoffset="${PATH_LENGTH * (1 - this.progress)}"
+              stroke-linecap=${this.variant === 'smooth' ? 'round' : 'butt'}
             ></circle>
           </mask>
         </defs>
@@ -69,7 +69,7 @@ export class ProgressRing extends BaseElement {
         ></circle>
       </svg>
       <div class="label" part="label">
-        ${Math.round(this.progress * 100)}%
+        ${Math.round(this.progress * 100)} %
       </div>
     `;
   }
@@ -77,7 +77,7 @@ export class ProgressRing extends BaseElement {
   /** 
    * 진행 상태를 0과 1 사이의 값으로 반환합니다. 
    */
-  private updateProgress() {
+  private updateProgressState() {
     const range = this.maxValue - this.minValue;
     const clampedValue = Math.max(this.minValue, Math.min(this.maxValue, this.value));
     this.progress = range === 0 ? 0 : ((clampedValue - this.minValue) / range);

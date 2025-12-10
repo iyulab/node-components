@@ -10,7 +10,7 @@ export const styles = css`
     display: block;
     width: max-content;
     padding: 8px;
-    color: var(--u-tooltip-text-color);
+    color: var(--u-tooltip-txt-color);
     font-family: var(--u-font-modern, inherit);
     font-size: 14px;
     line-height: 1.5;

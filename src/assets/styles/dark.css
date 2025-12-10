@@ -67,49 +67,53 @@
   --u-red-900:       #FFD2D2;
   --u-red-1000:      #FFF0F0;
 
-  /* Shadow Colors */
-  --u-shadow-weak:   rgba(0, 0, 0, 0.15);
-  --u-shadow-normal: rgba(0, 0, 0, 0.25);
-  --u-shadow-medium: rgba(0, 0, 0, 0.35);
-  --u-shadow-strong: rgba(0, 0, 0, 0.45);
-  --u-shadow-heavy:  rgba(0, 0, 0, 0.60);
+  /* text Colors */
+  --u-txt-color:             var(--u-neutral-900);
+  --u-txt-color-inverse:     var(--u-neutral-100);
+  --u-txt-color-hover:       var(--u-blue-600);
+  --u-txt-color-active:      var(--u-blue-600);
+  --u-txt-color-disabled:    var(--u-neutral-500);
+  --u-txt-color-weak:        var(--u-neutral-700);
+  --u-txt-color-strong:      var(--u-neutral-1000);
 
-  /* background Colors */
-  --u-bg-color:              var(--u-neutral-100);
-  --u-bg-color-inverse:      var(--u-neutral-0);
-  --u-bg-color-hover:        var(--u-neutral-300);
-  --u-bg-color-active:       var(--u-neutral-400);
-  --u-bg-color-disabled:     var(--u-neutral-200);
-  
-  --u-panel-bg-color:        var(--u-neutral-200);
-  --u-overlay-bg-color:      rgba(0, 0, 0, 0.7);
-  --u-tooltip-bg-color:      rgba(255, 255, 255, 0.85);
+  --u-link-txt-color:        var(--u-blue-700);
+  --u-tooltip-txt-color:     var(--u-neutral-100);
+
+  /* Icon Colors */
+  --u-icon-color:            var(--u-neutral-800);
+  --u-icon-color-inverse:    var(--u-neutral-100);
+  --u-icon-color-hover:      var(--u-blue-600);
+  --u-icon-color-active:     var(--u-blue-600);
+  --u-icon-color-disabled:   var(--u-neutral-500);
 
   /* border Colors */
   --u-border-color:          var(--u-neutral-400);
   --u-border-color-weak:     var(--u-neutral-300);
   --u-border-color-strong:   var(--u-neutral-500);
 
-  --u-input-border-color:    var(--u-neutral-400);
-  --u-input-border-hover:    var(--u-neutral-500);
-  --u-input-border-focus:    var(--u-blue-600);
+  --u-input-border-color:         var(--u-neutral-400);
+  --u-input-border-color-hover:   var(--u-neutral-500);
+  --u-input-border-color-focus:   var(--u-blue-600);
+  --u-input-border-color-invalid: var(--u-red-600);
 
-  /* text Colors */
-  --u-text-color:            var(--u-neutral-900);
-  --u-text-color-inverse:    var(--u-neutral-100);
-  --u-text-color-hover:      var(--u-blue-600);
-  --u-text-color-disabled:   var(--u-neutral-500);
+  /* background Colors */
+  --u-bg-color:              var(--u-neutral-100);
+  --u-bg-color-inverse:      var(--u-neutral-0);
+  --u-bg-color-hover:        var(--u-neutral-300);
+  --u-bg-color-active:       var(--u-neutral-400);
+  --u-bg-color-disabled:     var(--u-neutral-100);
+  
+  --u-input-bg-color:        var(--u-neutral-200);
+  --u-panel-bg-color:        var(--u-neutral-200);
+  --u-overlay-bg-color:      rgba(0, 0, 0, 0.7);
+  --u-tooltip-bg-color:      rgba(255, 255, 255, 0.85);
 
-  --u-soft-text-color:       var(--u-neutral-700);
-  --u-strong-text-color:     var(--u-neutral-1000);
-  --u-link-text-color:       var(--u-blue-700);
-  --u-tooltip-text-color:    var(--u-neutral-100);
-
-  /* Icon Colors */
-  --u-icon-color:            var(--u-neutral-800);
-  --u-icon-color-inverse:    var(--u-neutral-100);
-  --u-icon-color-hover:      var(--u-blue-600);
-  --u-icon-color-disabled:   var(--u-neutral-500);
+  /* Shadow Colors */
+  --u-shadow-color-weaker:   rgba(0, 0, 0, 0.15);
+  --u-shadow-color-weak:     rgba(0, 0, 0, 0.25);
+  --u-shadow-color-normal:   rgba(0, 0, 0, 0.35);
+  --u-shadow-color-strong:   rgba(0, 0, 0, 0.45);
+  --u-shadow-color-stronger: rgba(0, 0, 0, 0.60);
 
   /* Scrollbar Colors */
   --u-scrollbar-color:       var(--u-neutral-500);
@@ -117,10 +121,10 @@
   --u-scrollbar-track-color: transparent;
 
   /* Font Styles */
-  --u-font-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-  --u-font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace;
-  --u-font-serif: 'Georgia', 'Times New Roman', Times, serif;
+  --u-font-base:    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --u-font-mono:    ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace;
+  --u-font-serif:   'Georgia', 'Times New Roman', Times, serif;
   --u-font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
-  --u-font-modern: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --u-font-modern:  'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --u-font-rounded: 'Nunito', 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }

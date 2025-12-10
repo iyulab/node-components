@@ -1,3 +1,7 @@
-- Progress-bar, Progress-ring: 컴포넌트 업데이트 수정, 불필요한 re-rendering 방지 및 스타일 수정
-- Tree, Tree-item: 컴포넌트 추가 업데이트,
-- Select: 컴포넌트 추가 업데이트,
+- check `context-menu`
+- check `dialog`
+- check `menu`
+- check `menu-item`
+- check `split-panel`
+- check `tree`
+- check `tree-item`

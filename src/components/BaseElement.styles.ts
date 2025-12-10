@@ -2,10 +2,10 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
+    color: var(--u-txt-color, inherit);
+    font-family: var(--u-font-base, inherit);
     box-sizing: border-box;
     overflow-wrap: anywhere;
-    color: var(--u-text-color, inherit);
-    font-family: var(--u-font-base, inherit);
   }
 
   :host *,

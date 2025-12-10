@@ -2,12 +2,14 @@ import { css } from 'lit';
 
 export const styles = css`
   :host {
-    display: inline-flex;
-    font-size: inherit;
-
     --track-width: 0.125em;
     --track-color: var(--u-neutral-200, #e5e7eb);
     --indicator-color: var(--u-neutral-800, #1f2937);
+  }
+
+  :host {
+    display: inline-flex;
+    font-size: inherit;
   }
 
   .spinner {

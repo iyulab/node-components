@@ -4,6 +4,7 @@ import { property } from 'lit/decorators.js';
 import { BaseElement } from '../BaseElement.js';
 import { Icon } from '../icon/Icon.js';
 import { styles } from './Alert.styles.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 export type AlertType = "error" | "warning" | "info" | "success" | "notice";
 
@@ -24,7 +25,7 @@ export class Alert extends BaseElement {
   /** 상태 (warning, error, info, success, notice) */
   @property({ type: String, reflect: true }) type: AlertType = 'info';
   /** 타이틀 라벨 */
-  @property({ type: String }) label?: string;
+  @property({ type: String }) heading?: string;
   /** 본문 내용 */
   @property({ type: String }) content?: string;
   /** 본문 최소 행 수 */
@@ -50,28 +51,36 @@ export class Alert extends BaseElement {
 
   render() {
     return html`
-      <div class="container">
-        <div class="header">
-          <u-icon class="icon" 
-            name=${this.getIcon(this.type)}
+      <div class="container" part="base">
+        <div class="header" part="header">
+          <u-icon class="icon" part="icon"
+            .library=${"internal"}
+            .name=${this.getIconName(this.type)}
           ></u-icon>
-          <div class="title">
-            ${this.label || this.type.toUpperCase()}
+          <div class="title" part="title">
+            ${this.heading || this.type.toUpperCase()}
           </div>
-          <u-icon class="close-btn" 
-            name="x-lg" 
+          <u-icon class="close-btn" part="close-btn"
+            .library=${"internal"}
+            .name=${"x-lg"}
             @click=${this.hide}
           ></u-icon>
         </div>
-        <div class="content scrollable">
-          ${this.content || html`<slot></slot>`}
+        <div class="content scrollable" part="content">
+          ${this.content
+            ? unsafeHTML(this.content)
+            : html`<slot></slot>`}
         </div>
-        <div class="footer"></div>
+        <div class="footer" part="footer">
+          <slot name="footer"></slot>
+        </div>
       </div>
     `;
   }
 
-  /** Alert를 표시합니다. */
+  /**
+   * Alert를 표시합니다. 
+   */
   public async show() {
     await this.updateComplete;
     requestAnimationFrame(() => {
@@ -79,7 +88,9 @@ export class Alert extends BaseElement {
     });
   }
 
-  /** Alert를 숨깁니다. */
+  /** 
+   * Alert를 숨깁니다. 
+   */
   public async hide() {
     await this.updateComplete;
     requestAnimationFrame(() => {
@@ -88,7 +99,7 @@ export class Alert extends BaseElement {
   }
 
   /** Alert 타입에 따른 아이콘 이름을 반환합니다. */
-  private getIcon(type: AlertType): string {
+  private getIconName(type: AlertType): string {
     switch (type) {
       case 'error': return 'exclamation-circle-fill';
       case 'warning': return 'exclamation-triangle-fill';

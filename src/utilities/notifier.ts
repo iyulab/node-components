@@ -19,7 +19,7 @@ export interface ToastOptions {
   /** 알림 유형 */
   type: AlertType;
   /** 알림 제목 */
-  label?: string;
+  heading?: string;
   /** 알림 내용 */
   content?: string;
   /** 알림 표시 시간 (밀리초 단위) */
@@ -29,25 +29,36 @@ export interface ToastOptions {
 }
 
 /**
- * notifier 객체 여러 위치에 알림을 표시하는 유틸리티입니다.
+ * Notifier 클래스 — 싱글톤 패턴으로 사용합니다.
  */
-export const notifier = {
-  container: new Map<ScreenPosition, HTMLDivElement>(),
-  toasts: new Set<Alert>(),
+class Notifier {
+  private static _instance: Notifier;
+  
+  private containers = new Map<ScreenPosition, HTMLDivElement>();
+  private toasts = new Set<Alert>();
+
+  private constructor() {}
+
+  public static get instance(): Notifier {
+    if (!this._instance) {
+      this._instance = new Notifier();
+    }
+    return this._instance;
+  }
 
   /**
    * 토스트 알림을 생성합니다.
    */
-  async toast(options: ToastOptions) {
+  public async toast(options: ToastOptions) {
     const el = new Alert();
     el.type = options.type;
-    el.label = options.label;
+    el.heading = options.heading;
     el.content = options.content;
     this.toasts.add(el);
 
     // 토스트 알림을 컨테이너에 추가합니다.
     const position = options.position || "top-right";
-    const container = getOrCreateContainer(position);
+    const container = this.getOrCreateContainer(position);
     container.appendChild(el);
     await el.updateComplete;
     el.show();
@@ -64,58 +75,63 @@ export const notifier = {
       // 엘리먼트가 없는 컨테이너는 제거합니다.
       if (!container.hasChildNodes()) {
         container.remove();
-        this.container.delete(position);
+        this.containers.delete(position);
       }
     }, duration);
-  },
-};
-
-/** 위치에 맞는 컨테이너 엘리먼트를 가져오거나, 생성합니다. */
-function getOrCreateContainer(position: ScreenPosition) {
-  let container = notifier.container.get(position);
-  if (container) return container;
-
-  container = document.createElement("div");
-  container.style.position = "fixed";
-  container.style.zIndex = "9999";
-  container.style.display = "flex";
-  container.style.gap = "10px";
-
-  // 기본값 초기화
-  const transformParts: string[] = [];
-
-  // 세로 축: top / middle / bottom
-  if (position.startsWith("top")) {
-    container.style.top = "20px";
-    container.style.flexDirection = "column"; // 위 쪽은 자연스러운 세로 정렬
-  } else if (position.startsWith("bottom")) {
-    container.style.bottom = "20px";
-    container.style.flexDirection = "column-reverse"; // 아래쪽은 역순
-  } else {
-    // middle
-    container.style.top = "50%";
-    container.style.flexDirection = "column"; // 가운데는 일반 세로 정렬
-    transformParts.push("translateY(-50%)");
   }
 
-  // 가로 축: left / center / right
-  if (position.endsWith("left")) {
-    container.style.left = "20px";
-    container.style.alignItems = "flex-start"; // 왼쪽 정렬
-  } else if (position.endsWith("right")) {
-    container.style.right = "20px";
-    container.style.alignItems = "flex-end"; // 오른쪽 정렬
-  } else {
-    // *-center
-    container.style.left = "50%";
-    container.style.alignItems = "center";
-    transformParts.unshift("translateX(-50%)"); // X 변환은 앞쪽에 두어 읽기 편하게
+  /** 위치에 맞는 컨테이너 엘리먼트를 가져오거나, 생성합니다. */
+  private getOrCreateContainer(position: ScreenPosition) {
+    let container = this.containers.get(position);
+    if (container) return container;
+
+    container = document.createElement("div");
+    container.style.position = "fixed";
+    container.style.zIndex = "9999";
+    container.style.display = "flex";
+    container.style.gap = "10px";
+
+    // 기본값 초기화
+    const transformParts: string[] = [];
+
+    // 세로 축: top / middle / bottom
+    if (position.startsWith("top")) {
+      container.style.top = "20px";
+      container.style.flexDirection = "column"; // 위 쪽은 자연스러운 세로 정렬
+    } else if (position.startsWith("bottom")) {
+      container.style.bottom = "20px";
+      container.style.flexDirection = "column-reverse"; // 아래쪽은 역순
+    } else {
+      // middle
+      container.style.top = "50%";
+      container.style.flexDirection = "column"; // 가운데는 일반 세로 정렬
+      transformParts.push("translateY(-50%)");
+    }
+
+    // 가로 축: left / center / right
+    if (position.endsWith("left")) {
+      container.style.left = "20px";
+      container.style.alignItems = "flex-start"; // 왼쪽 정렬
+    } else if (position.endsWith("right")) {
+      container.style.right = "20px";
+      container.style.alignItems = "flex-end"; // 오른쪽 정렬
+    } else {
+      // *-center
+      container.style.left = "50%";
+      container.style.alignItems = "center";
+      transformParts.unshift("translateX(-50%)"); // X 변환은 앞쪽에 두어 읽기 편하게
+    }
+
+    // transform이 필요한 경우 설정 (없으면 빈 문자열)
+    container.style.transform = transformParts.length ? transformParts.join(" ") : "";
+
+    document.body.appendChild(container);
+    this.containers.set(position, container);
+    return container;
   }
-
-  // transform이 필요한 경우 설정 (없으면 빈 문자열)
-  container.style.transform = transformParts.length ? transformParts.join(" ") : "";
-
-  document.body.appendChild(container);
-  notifier.container.set(position, container);
-  return container;
 }
+
+/**
+ * 알림 유틸리티 싱글톤 인스턴스입니다.
+ */
+export const notifier = Notifier.instance;

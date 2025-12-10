@@ -3,99 +3,98 @@ import { css } from "lit";
 export const styles = css`
   :host {
     display: inline-block;
+    color: var(--u-txt-color);
     font-size: inherit;
+    font-family: var(--u-font-base);
   }
   :host([disabled]) {
-    opacity: 0.5;
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   /* 헤더 영역 */
   .header {
     display: flex;
+    flex-direction: row;
     align-items: center;
-    gap: 0.375em;
     margin-bottom: 0.5em;
+    user-select: none;
   }
   .header .label {
     font-size: 0.8em;
     font-weight: 500;
-    line-height: 1;
-    color: var(--u-text-color);
-    user-select: none;
+    line-height: 1.2;
     cursor: pointer;
   }
   .header .required-mark {
     color: var(--u-red-600);
-    margin-left: 0.25em;
+    margin-right: 0.25em;
   }
   .header .help-icon {
     font-size: 0.8em;
+    margin-left: 0.5em;
     cursor: help;
+  }
+  .header .help-tooltip {
+    font-size: 0.6em;
   }
 
   /* 입력 래퍼 */
   .container {
     display: flex;
+    flex-direction: row;
     align-items: center;
-    gap: 0.5em;
-    padding: 0.5em 0.75em;
-    background-color: var(--u-bg-color);
+    padding: 0.3em 0.6em;
     border: 1px solid var(--u-input-border-color);
-    border-radius: 0.375em;
+    border-radius: 0.25em;
+    background-color: var(--u-input-bg-color);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
-  .container[invalid] {
-    border-color: var(--u-red-600);
-  }
-  .container[invalid]:focus-within {
-    box-shadow: 0 0 0 0.125em rgba(244, 67, 54, 0.1);
-  }
+  .container[readonly],
   .container[disabled] {
+    border-color: var(--u-border-color-weak);
     background-color: var(--u-bg-color-disabled);
-    border-color: var(--u-border-color-weak);
-    cursor: not-allowed;
   }
-  .container[readonly] {
-    background-color: var(--u-neutral-50);
-    border-color: var(--u-border-color-weak);
+  .container:hover:not([readonly]):not([disabled]) {
+    box-shadow: 
+      0 0 0 1px var(--u-input-border-color-hover),
+      0 0 0 3px rgba(59, 130, 246, 0.12);
   }
-  .container:hover:not(([disabled])):not(([readonly])) {
-    border-color: var(--u-input-border-hover);
+  .container:focus-within:not([readonly]):not([disabled]) {
+    box-shadow:
+      0 0 0 1px var(--u-input-border-color-focus),
+      0 0 0 3px rgba(59, 130, 246, 0.22);
   }
-  .container:focus-within:not(([disabled])):not(([readonly])) {
-    border-color: var(--u-input-border-focus);
-    box-shadow: 0 0 0 0.125em rgba(33, 150, 243, 0.1);
-    outline: none;
+  .container[invalid]:not([readonly]):not([disabled]) {
+    box-shadow:
+      0 0 0 1px var(--u-input-border-color-invalid),
+      0 0 0 3px rgba(220, 38, 38, 0.12);
   }
 
   /* 입력 필드 */
   input {
-    flex: 1;
+    flex: 1 1 auto;
     min-width: 0;
-    border: none;
-    background: transparent;
-    outline: none;
-    font-family: inherit;
+    all: unset;
     font-size: 1em;
     line-height: 1.5;
-    color: var(--u-text-color);
-    padding: 0;
   }
   input::placeholder {
-    color: var(--u-text-color-disabled);
+    color: var(--u-txt-color-weak);
   }
   input:disabled {
     cursor: not-allowed;
-    color: var(--u-text-color-disabled);
   }
   input:read-only {
     cursor: default;
   }
 
-  /* Prefix & Suffix 슬롯 */
-  ::slotted([slot="prefix"]),
+  /* 슬롯에 내용이 있을 때 gap 적용 */
+  ::slotted([slot="prefix"]) {
+    margin-right: 0.5em;
+  }
   ::slotted([slot="suffix"]) {
-    display: contents;
+    margin-left: 0.5em;
   }
 
   /* Tools 영역 (clear, password toggle 등) */
@@ -103,42 +102,41 @@ export const styles = css`
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 0.375em;
   }
-  .tool {
-    font-size: 1.125em;
+  .tools u-icon {
     color: var(--u-icon-color);
+    font-size: 1em;
+    margin-left: 0.5em;
     transition: color 0.2s ease;
     cursor: pointer;
   }
-  .tool:hover {
+  .tools u-icon:hover {
     color: var(--u-icon-color-hover);
   }
-  .tool:active {
+  .tools u-icon:active {
     color: var(--u-icon-color-active);
   }
 
   /* 유효성 검사 에러 메시지 */
-  .validation-error {
-    margin-top: 0.375em;
-    font-size: 0.8125em;
+  .validation-message {
+    margin-top: 0.5em;
     color: var(--u-red-600);
-    line-height: 1.4;
+    font-size: 0.75em;
+    line-height: 1.2;
   }
 
   /* 설명 텍스트 */
   .description {
-    margin-top: 0.375em;
-    font-size: 0.8125em;
-    color: var(--u-soft-text-color);
-    line-height: 1.4;
+    margin-top: 0.5em;
+    color: var(--u-txt-color-weak);
+    font-size: 0.75em;
+    line-height: 1.2;
   }
 
-  /* Number input 기본 스타일 제거 (브라우저 간 일관성 위해) */
+  /* input 기본 제공 스타일 초기화 */
   input[type="number"] {
     -moz-appearance: textfield;
   }
-  /* Number input 스피너 제거 옵션 (선택적) */
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;

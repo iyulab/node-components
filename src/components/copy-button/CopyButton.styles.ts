@@ -3,12 +3,13 @@ import { css } from "lit";
 export const styles = css`
   :host {
     display: inline-block;
+    font-size: 16px;
   }
-  :host([borderless]) u-button {
-    border: none;
-    box-shadow: none;
+
+  u-icon-button {
+    font-size: inherit;
   }
-  :host([copied]) u-icon {
+  u-icon-button[copied] {
     color: var(--u-green-600, #16a34a);
   }
 `;

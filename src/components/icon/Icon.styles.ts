@@ -3,8 +3,8 @@ import { css } from "lit";
 export const styles = css`
   :host {
     display: inline-flex;
-    font-size: inherit;
     color: var(--u-icon-color, currentColor);
+    font-size: inherit;
   }
 
   svg {

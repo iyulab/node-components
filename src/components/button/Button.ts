@@ -24,13 +24,15 @@ export class Button extends BaseElement {
 
   render() {
     return html`
-      <button part="base" ?disabled=${this.disabled || this.loading}>
+      <button part="base" 
+        ?disabled=${this.disabled || this.loading}>
         <slot name="prefix"></slot>
         <slot></slot>
         <slot name="suffix"></slot>
       </button>
       
-      <div class="overlay" ?hidden=${!this.loading}>
+      <div class="overlay" part="overlay"
+        ?hidden=${!this.loading}>
         <u-spinner></u-spinner>
       </div>
     `;
