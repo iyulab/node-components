@@ -40,13 +40,13 @@
   "dependencies": {
     "@floating-ui/dom": "^1.7.4",
     "lit": "^3.3.1",
-    "react": "^19.2.1",
+    "react": "^19.2.3",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
     "@lit/react": "^1.0.8",
     "@eslint/js": "^9.39.1",
-    "@types/node": "^24.10.2",
+    "@types/node": "^25.0.1",
     "eslint": "^9.39.1",
     "eslint-plugin-lit": "^2.1.1",
     "globals": "^16.5.0",
