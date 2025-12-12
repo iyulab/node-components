@@ -1,7 +1,7 @@
-- check `context-menu`
-- check `dialog`
 - check `menu`
 - check `menu-item`
-- check `split-panel`
+- check `context-menu`
+- check `dropdown-menu`
+
 - check `tree`
 - check `tree-item`

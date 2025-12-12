@@ -97,23 +97,23 @@ export const styles = css`
     margin-left: 0.5em;
   }
 
-  /* Tools 영역 (clear, password toggle 등) */
-  .tools {
+  /* 툴 영역 (clear, password toggle 등) */
+  .suffix-items {
     display: flex;
     flex-direction: row;
     align-items: center;
   }
-  .tools u-icon {
+  .suffix-items u-icon {
     color: var(--u-icon-color);
     font-size: 1em;
     margin-left: 0.5em;
     transition: color 0.2s ease;
     cursor: pointer;
   }
-  .tools u-icon:hover {
+  .suffix-items u-icon:hover {
     color: var(--u-icon-color-hover);
   }
-  .tools u-icon:active {
+  .suffix-items u-icon:active {
     color: var(--u-icon-color-active);
   }
 

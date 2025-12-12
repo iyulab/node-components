@@ -1,4 +1,3 @@
-// ContextMenu.styles.ts (신규)
 import { css } from "lit";
 
 export const styles = css`
@@ -8,7 +7,7 @@ export const styles = css`
     transition: opacity 0.12s ease, transform 0.12s ease;
   }
   :host([visible]) {
-    opacity: 1;
+    opacity: 1;        /* FloatingElement의 0.8을 덮어씀 */
     transform: scale(1);
   }
 `;

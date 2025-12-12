@@ -32,6 +32,7 @@ export class Icon extends BaseElement {
 
   render() {
     if (!this.name) return nothing;
+    console.log(this.library, this.name, 'icon render');
 
     return until(icons.resolve(this.library, this.name).then(html => {
       return this.validate(html)

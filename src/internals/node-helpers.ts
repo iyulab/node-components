@@ -20,10 +20,26 @@ export function getParentElement(element: Element): HTMLElement | undefined {
 }
 
 /**
+ * element 기준으로 selector와 매치되는 첫번째 HTMLElement를 반환합니다.
+ * - 탐색은 element가 존재하는 shadow DOM 또는 document 루트 안에서 이루어집니다.
+ */
+export function querySelectorFrom(element: Element, selectors: string): HTMLElement | null {
+  if (!selectors) return null;
+  const rootNode = element.getRootNode({ composed: false });
+  
+  // rootNode는 shadow DOM까지 탐색합니다.
+  if (rootNode instanceof ShadowRoot || rootNode instanceof Document) {
+    return rootNode.querySelector(selectors) as HTMLElement | null;
+  } else {
+    return null;
+  }
+}
+
+/**
  * element 기준으로 selector와 매치되는 모든 HTMLElement를 반환합니다.
  * - 탐색은 element가 존재하는 shadow DOM 또는 document 루트 안에서 이루어집니다.
  */
-export function findElementsBy(element: Element, selectors: string): HTMLElement[] {
+export function querySelectorAllFrom(element: Element, selectors: string): HTMLElement[] {
   if (!selectors) return [];
   const rootNode = element.getRootNode({ composed: false });
 

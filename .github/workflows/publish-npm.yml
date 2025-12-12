@@ -1,7 +1,4 @@
-# This workflow publishes the package to npm when a tag is pushed.
-# Setup:
-# 1. Check your github > settings > secrets > actions for NPM_TOKEN
-# 2. Create a tag with format vX.X.X and push it to trigger the workflow
+# using owned workflow file: ./.github/workflows/shared-publish-npm.yml
 
 name: Publish to npm
 
@@ -11,82 +8,9 @@ on:
       - "v*"
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v6
-
-      # 1. Node.js 설정
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
-
-      # 2. 태그에서 버전 문자열 추출 (v1.2.3 -> 1.2.3)
-      - name: Extract version from tag
-        shell: bash
-        run: |
-          REF="${GITHUB_REF_NAME}"
-          if [[ ! "$REF" =~ ^v ]]; then
-            echo "This workflow expects a tag starting with 'v' (e.g., v1.2.3). Got: $REF"
-            exit 1
-          fi
-
-          TAG_VERSION="${REF#v}"
-          echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
-          echo "Tag version: $TAG_VERSION"
-
-      # 3. 의존성 설치 (lockfile 정책상 npm ci 사용 불가)
-      - name: Install deps
-        run: npm install
-
-      # 4. 태그 버전과 package.json 버전 일치 여부만 확인(불일치시 실패)
-      - name: Check package.json version matches tag
-        shell: bash
-        run: |
-          PKG_VERSION=$(node -p "require('./package.json').version")
-          echo "tag=${TAG_VERSION}, package.json=${PKG_VERSION}"
-          test "${TAG_VERSION}" = "${PKG_VERSION}"
-
-      # 5. exports 안의 경로 src/ -> dist/ 로 치환
-      - name: Rewrite exports src -> dist
-        run: |
-          node <<'NODE'
-          const fs = require('fs');
-          const path = require('path');
-
-          const pkgPath = path.join(process.cwd(), 'package.json');
-          const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-
-          function replaceSrcWithDist(value) {
-            if (typeof value === 'string') {
-              return value.replace(/^(\.\/)?src\//, './dist/');
-            }
-            if (Array.isArray(value)) {
-              return value.map(replaceSrcWithDist);
-            }
-            if (value && typeof value === 'object') {
-              for (const key of Object.keys(value)) {
-                value[key] = replaceSrcWithDist(value[key]);
-              }
-            }
-            return value;
-          }
-
-          if (pkg.exports) {
-            pkg.exports = replaceSrcWithDist(pkg.exports);
-          }
-
-          fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
-          NODE
-
-      # 6. 빌드
-      - name: Build
-        run: npm run build
-
-      # 7. 퍼블리시
-      - name: Publish
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  call-publish:
+    uses: ./.github/workflows/shared-publish-npm.yml
+    with:
+      node_version: "20"
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

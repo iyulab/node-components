@@ -59,4 +59,10 @@ export const styles = css`
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  .submenu-indicator {
+    margin-left: 8px;
+    opacity: 0.7;
+    user-select: none;
+  }
 `;

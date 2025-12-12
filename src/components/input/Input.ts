@@ -126,7 +126,7 @@ export class Input extends BaseElement {
         
         <slot name="suffix"></slot>
         
-        <div class="tools">
+        <div class="suffix-items">
           <u-icon
             lib="internal"
             name=${this.showPassword ? 'eye-slash' : 'eye'}

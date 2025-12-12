@@ -1,10 +1,10 @@
-import { ContextMenu } from './ContextMenu.js';
+import { ContextMenu } from "./ContextMenu.js";
 
-ContextMenu.define('u-context-menu');
+ContextMenu.define("u-context-menu");
 
 declare global {
   interface HTMLElementTagNameMap {
-    'u-context-menu': ContextMenu;
+    "u-context-menu": ContextMenu;
   }
 }
 

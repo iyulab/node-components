@@ -31,12 +31,32 @@ export class PreviewApp extends LitElement {
           </u-button>
         </div>
       </div>
-      <div class="main">
+      <div class="main" style="overflow: auto;">
         <section>
           <h2>Dialog</h2>
-          <u-dialog heading="Dialog Preview" open>
+          <u-dialog heading="Dialog Preview" ?modal=${true} open>
             <p>이것은 다이얼로그 컴포넌트의 미리보기입니다.</p>
           </u-dialog>
+        </section>
+        <section>
+          <u-split-panel orientation="horizontal">
+            <h2>Button</h2>
+            <u-tooltip on for="u-button:nth-of-type(2)" strategy="fixed">
+              툴팁이 표시됩니다.
+            </u-tooltip>
+            <u-button>Primary Button</u-button>
+            <u-button>Secondary Button</u-button>
+            <u-button>Tertiary Button</u-button>
+          </u-split-panel>
+        </section>
+        <section style="height: 1200vh;">
+          <h2>Scroll Test Content</h2>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </p>
         </section>
       </div>
     `;

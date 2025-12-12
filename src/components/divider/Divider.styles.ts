@@ -9,19 +9,15 @@ export const styles = css`
 
   :host {
     position: relative;
-    display: block;
-    flex-shrink: 0;
     background-color: var(--u-neutral-200, #e5e7eb);
   }
   :host([orientation="horizontal"]) {
     width: var(--divider-size, 2px);
-    height: 100%;
-    cursor: col-resize;
+    min-height: 0px;
   }
   :host([orientation="vertical"]) {
-    width: 100%;
+    min-width: 0px;
     height: var(--divider-size, 2px);
-    cursor: row-resize;
   }
 
   .handler {
@@ -39,6 +35,7 @@ export const styles = css`
     transform: translateX(-50%);
     width: var(--handler-size, 4px);
     height: 100%;
+    cursor: col-resize;
   }
   .handler[orientation="vertical"] {
     left: 0;
@@ -47,6 +44,7 @@ export const styles = css`
     transform: translateY(-50%);
     width: 100%;
     height: var(--handler-size, 4px);
+    cursor: row-resize;
   }
   .handler[moving],
   .handler:hover {

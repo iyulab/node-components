@@ -1,5 +1,5 @@
-import { html } from "lit";
-import { property } from "lit/decorators.js";
+import { html, PropertyValues } from "lit";
+import { property, queryAssignedElements } from "lit/decorators.js";
 
 import { arrayAttributeConverter } from "../../internals/attribute-converters.js";
 import { BaseElement } from "../BaseElement.js";
@@ -21,18 +21,37 @@ export class SplitPanel extends BaseElement {
   private panelSizes: number[] = [];
   private panelAdjustSizes: number[] = [];
 
+  @queryAssignedElements({ flatten: true }) 
+  childElements!: HTMLElement[];
+
   /** 분할 방향을 설정합니다. 'horizontal'은 좌우 분할, 'vertical'은 상하 분할입니다. */
   @property({ type: String, reflect: true }) 
   orientation: 'horizontal' | 'vertical' = 'horizontal';
   
   /** 초기 패널 크기 비율을 설정합니다. (예: [30, 70]은 첫 번째 패널이 30%, 두 번째 패널이 70%를 차지) */
-  @property({ type: Array, attribute: 'initial-ratio', converter: arrayAttributeConverter(parseFloat) })
-  initialRatio: number[] = [];
+  @property({ type: Array, attribute: 'init-ratio', converter: arrayAttributeConverter(parseFloat) })
+  initRatio: number[] = [];
+
+  /** 각 패널의 최소 크기를 설정합니다. (픽셀 단위) */
+  @property({ type: Array, attribute: 'min-sizes', converter: arrayAttributeConverter(parseFloat) })
+  minSizes: number[] = [];
+
+  /** 각 패널의 최대 크기를 설정합니다. (픽셀 단위) */
+  @property({ type: Array, attribute: 'max-sizes', converter: arrayAttributeConverter(parseFloat) })
+  maxSizes: number[] = [];
 
   disconnectedCallback() {
-    // 기존 divider 정리
     this.dividers.forEach(divider => divider.remove());
     super.disconnectedCallback();
+  }
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+
+    // 방향이 변경되었을 때 패널 및 디바이더 재설정
+    if (changedProperties.has('orientation')) {
+      this.initialize();
+    }
   }
 
   render() {
@@ -41,54 +60,39 @@ export class SplitPanel extends BaseElement {
     `;
   }
 
-  // Get divider size from CSS variable
-  private getDividerSize(): number {
-    const sizeStr = getComputedStyle(this).getPropertyValue('--divider-size').trim();
-    return parseFloat(sizeStr) || 2;
-  }
-
-  private handleSlotChange = async (e: Event) => {
-    const slot = e.target as HTMLSlotElement;
-    const children = slot.assignedElements({ flatten: true });
-    const panels = children.filter(el => el instanceof HTMLElement);
-
-    // 패널이 변경되지 않았으면 다시 설정하지 않음
-    if (this.panels.length === panels.length && 
-        this.panels.every((p, i) => p === panels[i])) {
-      return;
-    }
-
+  // 초기화 메서드
+  private initialize = async () => {
     // 기존 패널 및 divider 정리
-    this.panels = panels;
+    this.panels = this.childElements.filter(el => el instanceof Divider === false);
     this.dividers.forEach(divider => divider.remove());
     this.dividers = [];
 
     // 패널 비율 계산
-    if (this.initialRatio.length === panels.length) {
-      const totalRatio = this.initialRatio.reduce((sum, r) => sum + r, 0);
-      this.panelSizes = this.initialRatio.map(r => (r / totalRatio) * 100);
+    if (this.initRatio.length === this.panels.length) {
+      const totalRatio = this.initRatio.reduce((sum, r) => sum + r, 0);
+      this.panelSizes = this.initRatio.map(r => (r / totalRatio) * 100);
     } else {
-      const equalRatio = 100 / panels.length;
-      this.panelSizes = panels.map(() => equalRatio);
+      const equalRatio = 100 / this.panels.length;
+      this.panelSizes = this.panels.map(() => equalRatio);
     }
-    this.panelAdjustSizes = panels.map(() => 0);
+    this.panelAdjustSizes = this.panels.map(() => 0);
 
     const property = this.orientation === 'horizontal' ? 'width' : 'height';
     const dividerSize = this.getDividerSize();
-    panels.forEach((panel, index) => {
+    this.panels.forEach((panel, index) => {
       // 패널 크기 설정
       const ratio = this.panelSizes[index];
       panel.style.flex = 'none';
-      panel.style[property] = (index === 0 || index === panels.length - 1)
+      panel.style[property] = (index === 0 || index === this.panels.length - 1)
         ? `calc(${ratio}% - ${dividerSize / 2}px)`
         : `calc(${ratio}% - ${dividerSize}px)`;
 
       // divider 생성 및 추가, 마지막 패널 뒤에는 divider를 추가하지 않음
-      if (index === panels.length - 1) return;
+      if (index === this.panels.length - 1) return;
         
       const divider = new Divider();
       divider.orientation = this.orientation;
-      divider.draggable = true;
+      divider.movable = true;
       divider.addEventListener('u-move', this.handleDividerMove);
       this.dividers.push(divider);
       panel.after(divider);
@@ -98,11 +102,19 @@ export class SplitPanel extends BaseElement {
     await this.updateComplete;
   }
 
+  private handleSlotChange = async () => {
+    // 변경된 내용이 없으면 무시
+    const panels = this.childElements.filter(el => el instanceof Divider === false);
+    if (panels.every((p, i) => p === this.panels[i])) {
+      return; 
+    }
+    await this.initialize();
+  }
+
   /** 디바이더 드래그 이벤트 핸들러 */
   private handleDividerMove = (event: any) => {
     const divider = event.target as Divider;
     const delta = event.detail.delta; // 드래그 픽셀 이동거리
-    // console.log('Divider drag delta:', delta);
     const index = this.dividers.indexOf(divider);
     if (index === -1) return;
 
@@ -133,5 +145,11 @@ export class SplitPanel extends BaseElement {
 
     prevPanel.style[property] = `calc(${prevPanelSize}% - ${this.getDividerSize()/2}px + ${this.panelAdjustSizes[index]}px)`;
     nextPanel.style[property] = `calc(${nextPanelSize}% - ${this.getDividerSize()/2}px + ${this.panelAdjustSizes[index + 1]}px)`;
+  }
+
+  // Get divider size from CSS variable
+  private getDividerSize(): number {
+    const sizeStr = getComputedStyle(this).getPropertyValue('--divider-size').trim();
+    return parseFloat(sizeStr) || 2;
   }
 }

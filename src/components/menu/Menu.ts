@@ -5,37 +5,32 @@ import { BaseElement } from "../BaseElement.js";
 import { MenuItem } from "../menu-item/MenuItem.js";
 import { styles } from "./Menu.styles.js";
 
-/**
- * Menu 컴포넌트는 일반적인 메뉴 컨테이너입니다.
- * MenuItem 컴포넌트를 자식으로 포함하여 메뉴를 구성합니다.
- */
 export class Menu extends BaseElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof BaseElement> = {
     'u-menu-item': MenuItem,
   };
 
-  /** 슬롯에 할당된 메뉴 항목들을 가져옵니다. */
-  @queryAssignedElements({ selector: 'u-menu-item' }) 
+  @queryAssignedElements({ selector: 'u-menu-item' })
   private items!: MenuItem[];
 
-  /** 메뉴가 열려있는지 여부입니다. */
   @property({ type: Boolean, reflect: true }) open: boolean = false;
-  /** 메뉴 항목 중 하나만 선택할 수 있는지 여부입니다. */
   @property({ type: Boolean }) selectable: boolean = false;
-  /** 현재 선택된 메뉴 항목의 값입니다. */
   @property({ type: String }) value: string = '';
 
   connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute('role', 'menu');
+
     this.addEventListener('u-select', this.handleSelect);
     this.addEventListener('keydown', this.handleKeydown);
+    this.addEventListener('u-submenu-open', this.handleSubmenuOpen as any);
   }
 
   disconnectedCallback(): void {
     this.removeEventListener('u-select', this.handleSelect);
     this.removeEventListener('keydown', this.handleKeydown);
+    this.removeEventListener('u-submenu-open', this.handleSubmenuOpen as any);
     super.disconnectedCallback();
   }
 
@@ -58,46 +53,38 @@ export class Menu extends BaseElement {
     `;
   }
 
-  /** 메뉴를 표시합니다. */
   public show = async () => {
     await this.updateComplete;
-    requestAnimationFrame(() => {
-      this.open = true;
-    });
+    requestAnimationFrame(() => (this.open = true));
   }
 
-  /** 메뉴를 숨깁니다. */
   public hide = async () => {
     await this.updateComplete;
-    requestAnimationFrame(() => {
-      this.open = false;
-    });
+    requestAnimationFrame(() => (this.open = false));
   }
 
-  /** open 상태가 변경될 때 호출됩니다. */
+  /** (추가) 첫 번째 활성 아이템 포커스 */
+  public focusFirstItem = async () => {
+    await this.updateComplete;
+    const enabled = (this.items || []).filter(i => !i.disabled);
+    if (enabled.length) enabled[0].focus();
+  }
+
   private updateOpenState(open: boolean) {
-    if (open) {
-      this.emit('u-show');
-    } else {
-      this.emit('u-hide');
-    }
+    if (open) this.emit('u-show');
+    else this.emit('u-hide');
   }
 
-  /** 선택 상태를 업데이트합니다. */
   private updateSelection() {
-    this.items.forEach(item => {
+    (this.items || []).forEach(item => {
       item.selected = item.value === this.value;
     });
   }
 
-  /** 슬롯 변경 이벤트를 처리합니다. */
   private handleSlotChange = () => {
-    if (this.selectable && this.value) {
-      this.updateSelection();
-    }
+    if (this.selectable && this.value) this.updateSelection();
   }
 
-  /** 메뉴 항목 선택 이벤트를 처리합니다. */
   private handleSelect = (e: Event) => {
     const event = e as CustomEvent;
     const menuItem = e.target as MenuItem;
@@ -108,9 +95,18 @@ export class Menu extends BaseElement {
     }
   }
 
-  /** 키보드 네비게이션을 처리합니다. */
-  private handleKeydown = (e: KeyboardEvent) => {
-    const items = this.items.filter(item => !item.disabled);
+  /** 같은 레벨 다른 submenu 닫기 */
+  private handleSubmenuOpen = (e: CustomEvent<{ item: MenuItem }>) => {
+    const openedItem = e.detail?.item;
+    if (!openedItem) return;
+
+    (this.items || []).forEach(item => {
+      if (item !== openedItem) item.closeSubmenu?.();
+    });
+  };
+
+  private handleKeydown = async (e: KeyboardEvent) => {
+    const items = (this.items || []).filter(item => !item.disabled);
     if (items.length === 0) return;
 
     const currentIndex = items.findIndex(item => item === e.target);
@@ -122,30 +118,53 @@ export class Menu extends BaseElement {
         nextIndex = (currentIndex + 1) % items.length;
         items[nextIndex].focus();
         break;
+
       case 'ArrowUp':
         e.preventDefault();
         nextIndex = currentIndex - 1 < 0 ? items.length - 1 : currentIndex - 1;
         items[nextIndex].focus();
         break;
+
       case 'Home':
         e.preventDefault();
         items[0].focus();
         break;
+
       case 'End':
         e.preventDefault();
         items[items.length - 1].focus();
         break;
+
       case 'Enter':
       case ' ':
         e.preventDefault();
-        if (currentIndex >= 0) {
-          items[currentIndex].click();
+        if (currentIndex >= 0) items[currentIndex].click();
+        break;
+
+      case 'ArrowLeft': {
+        // submenu(= 부모가 menu-item)라면 닫고 부모로 포커스 복귀
+        const parentItem = this.parentElement;
+        if (parentItem?.tagName?.toLowerCase() === 'u-menu-item') {
+          e.preventDefault();
+          (parentItem as any).closeSubmenu?.();
+          (parentItem as HTMLElement).focus?.();
         }
         break;
-      case 'Escape':
+      }
+
+      case 'Escape': {
         e.preventDefault();
-        this.hide();
+        const parentItem = this.parentElement;
+        if (parentItem?.tagName?.toLowerCase() === 'u-menu-item') {
+          (parentItem as any).closeSubmenu?.();
+          (parentItem as HTMLElement).focus?.();
+        } else {
+          // 최상위 메뉴면 “부모(드롭다운/컨텍스트)가 닫아줘” 요청
+          this.emit('u-request-close');
+          await this.hide();
+        }
         break;
+      }
     }
   }
 }

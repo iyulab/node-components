@@ -1,24 +1,33 @@
 import { html, PropertyValues } from "lit";
 import { property } from "lit/decorators.js";
 
-import type { VirtualElement } from "@floating-ui/dom";
-
 import { BaseElement } from "../BaseElement.js";
 import { FloatingElement } from "../FloatingElement.js";
 import { Menu } from "../menu/Menu.js";
 import { MenuItem } from "../menu-item/MenuItem.js";
-import { styles } from "./ContextMenu.styles.js";
+import { styles } from "./DropdownMenu.styles.js";
 
-export class ContextMenu extends FloatingElement {
+export class DropdownMenu extends FloatingElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof BaseElement> = {
     'u-menu': Menu,
     'u-menu-item': MenuItem,
   };
 
-  @property({ type: Boolean }) preventNative: boolean = true;
   @property({ type: Boolean }) closeOnSelect: boolean = true;
   @property({ type: Boolean }) closeOnCheck: boolean = false;
+
+  private onDocPointerDown = (e: PointerEvent) => {
+    if (!this.visible) return;
+    const path = e.composedPath();
+    if (path.includes(this)) return;
+    if (this.anchor && path.includes(this.anchor)) return; // anchor는 예외
+    this.hide();
+  };
+
+  private onWindowBlur = () => {
+    if (this.visible) this.hide();
+  };
 
   private get menu(): Menu | null {
     return this.querySelector('u-menu');
@@ -26,9 +35,8 @@ export class ContextMenu extends FloatingElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.strategy = 'fixed';
     this.placement ||= 'bottom-start';
-    this.distance ||= 4;
+    this.distance ||= 6;
 
     this.addEventListener('u-select', this.onSelect as any);
     this.addEventListener('u-check', this.onCheck as any);
@@ -57,6 +65,10 @@ export class ContextMenu extends FloatingElement {
     if (changed.has('visible')) {
       if (this.visible) this.attachDismiss();
       else this.detachDismiss();
+
+      if (this.anchor) {
+        this.anchor.setAttribute('aria-expanded', this.visible ? 'true' : 'false');
+      }
     }
   }
 
@@ -64,79 +76,46 @@ export class ContextMenu extends FloatingElement {
     return html`<slot></slot>`;
   }
 
-  /** 컨텍스트 메뉴는 Virtual anchor를 쓰므로 autoUpdate는 꺼버림 */
-  protected override autoPosition(_enable: boolean) {
-    // no-op
-  }
-
-  private attachAnchor(target?: HTMLElement): void {
-    if (!target) return;
-    target.addEventListener('contextmenu', this.onContextMenu);
-  }
-
-  private detachAnchor(target?: HTMLElement): void {
-    if (!target) return;
-    target.removeEventListener('contextmenu', this.onContextMenu);
-  }
-
-  private onContextMenu = async (e: MouseEvent) => {
-    if (this.preventNative) e.preventDefault();
-
-    // 메뉴 열어 측정 가능하게
+  public override show = async () => {
+    // 메뉴를 먼저 열어 크기 측정 가능하게
     this.menu && (this.menu.open = true);
 
-    const virtual: VirtualElement = {
-      getBoundingClientRect: () => ({
-        x: e.clientX,
-        y: e.clientY,
-        top: e.clientY,
-        left: e.clientX,
-        right: e.clientX,
-        bottom: e.clientY,
-        width: 0,
-        height: 0,
-        toJSON() { return {}; }
-      }),
-    };
-
-    await super.show(virtual);
+    await super.show();
     await this.menu?.focusFirstItem?.();
   };
 
   public override hide = async () => {
     await super.hide();
     this.menu && (this.menu.open = false);
+    // 서브메뉴들 닫기(열려있던 것 정리)
     this.querySelectorAll('u-menu-item').forEach((i: any) => i.closeSubmenu?.());
   };
 
-  private onDocPointerDown = (e: PointerEvent) => {
-    if (!this.visible) return;
-    const path = e.composedPath();
-    if (path.includes(this)) return;
-    this.hide();
-  };
-
-  private onWindowBlur = () => {
-    if (this.visible) this.hide();
-  };
-
-  private onWindowScrollOrResize = () => {
-    if (this.visible) this.hide();
-  };
-
-  private attachDismiss() {
-    document.addEventListener('pointerdown', this.onDocPointerDown, true);
-    window.addEventListener('blur', this.onWindowBlur);
-    window.addEventListener('scroll', this.onWindowScrollOrResize, true);
-    window.addEventListener('resize', this.onWindowScrollOrResize);
+  private attachAnchor(target?: HTMLElement): void {
+    if (!target) return;
+    target.setAttribute('aria-haspopup', 'menu');
+    target.addEventListener('pointerdown', this.onTriggerPointerDown);
+    target.addEventListener('keydown', this.onTriggerKeydown);
   }
 
-  private detachDismiss() {
-    document.removeEventListener('pointerdown', this.onDocPointerDown, true);
-    window.removeEventListener('blur', this.onWindowBlur);
-    window.removeEventListener('scroll', this.onWindowScrollOrResize, true);
-    window.removeEventListener('resize', this.onWindowScrollOrResize);
+  private detachAnchor(target?: HTMLElement): void {
+    if (!target) return;
+    target.removeEventListener('pointerdown', this.onTriggerPointerDown);
+    target.removeEventListener('keydown', this.onTriggerKeydown);
   }
+
+  private onTriggerPointerDown = async (e: PointerEvent) => {
+    if (e.button !== 0) return;
+    if (this.visible) await this.hide();
+    else await this.show();
+  };
+
+  private onTriggerKeydown = async (e: KeyboardEvent) => {
+    if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (!this.visible) await this.show();
+    }
+  };
 
   private onSelect = async () => {
     if (this.closeOnSelect) await this.hide();
@@ -149,4 +128,14 @@ export class ContextMenu extends FloatingElement {
   private onRequestClose = async () => {
     await this.hide();
   };
+
+  private attachDismiss() {
+    document.addEventListener('pointerdown', this.onDocPointerDown, true);
+    window.addEventListener('blur', this.onWindowBlur);
+  }
+
+  private detachDismiss() {
+    document.removeEventListener('pointerdown', this.onDocPointerDown, true);
+    window.removeEventListener('blur', this.onWindowBlur);
+  }
 }
