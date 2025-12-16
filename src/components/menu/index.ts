@@ -9,3 +9,4 @@ declare global {
 }
 
 export { Menu };
+export type { MenuMode, MenuTrigger } from './Menu.js';

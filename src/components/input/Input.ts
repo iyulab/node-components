@@ -9,7 +9,11 @@ import { Tooltip } from "../tooltip/Tooltip.js";
 
 import { styles } from "./Input.styles.js";
 
-/** 지원하는 input 타입 */
+/** 
+ * Supported input types for Input component
+ * 
+ * - Excludes: checkbox, radio, range, color, file, hidden, image, reset, submit, button
+ */
 type InputType = ('text' | 'password' | 'email' | 'tel' | 'url' | 'search' |
   'number' | 'date' | 'time' | 'datetime-local' | 'month' | 'week');
 
@@ -48,7 +52,7 @@ export class Input extends BaseElement {
   /** 라벨 텍스트 */
   @property({ type: String }) label?: string;
   /** 라벨 도움말 (툴팁) */
-  @property({ type: String }) labelhelp?: string;
+  @property({ type: String }) help?: string;
   /** placeholder 텍스트 */
   @property({ type: String }) placeholder?: string;
   /** 컴포넌트 하단 설명 텍스트 */
@@ -90,11 +94,11 @@ export class Input extends BaseElement {
           ${this.label}
         </label>
         
-        ${this.labelhelp
+        ${this.help
           ? html`
             <u-icon class="help-icon" lib="internal" name="info-circle-fill"></u-icon>
-            <u-tooltip class="help-tooltip" trigger-selectors=".help-icon" placement="right-end">
-              ${this.labelhelp}
+            <u-tooltip class="help-tooltip" for=".help-icon" distance="6" placement="right-end">
+              ${this.help}
             </u-tooltip>`
           : nothing}
       </div>
@@ -157,15 +161,17 @@ export class Input extends BaseElement {
     if (!this.inputEl) return true;
 
     // 브라우저 내장 유효성 검사 사용
-    const isValid = this.inputEl.checkValidity();
-    this.isInvalid = !isValid;
-    if (!isValid) {
-      this.currentValidationMessage = this.validationMessage || this.inputEl.validationMessage;
+    const validity = this.inputEl.validity;
+    this.isInvalid = !validity.valid;
+    if (this.isInvalid) {
+      this.currentValidationMessage = validity.patternMismatch
+        ? (this.validationMessage || this.inputEl.validationMessage)
+        : this.inputEl.validationMessage;
     } else {
       this.currentValidationMessage = '';
     }
 
-    return isValid;
+    return !this.isInvalid;
   }
 
   /** 입력값을 초기화합니다. */

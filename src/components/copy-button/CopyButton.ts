@@ -30,7 +30,7 @@ export class CopyButton extends BaseElement {
         ?copied=${this.copied}
         .borderless=${this.borderless}
         .disabled=${this.disabled || this.copied}
-        .library=${"internal"}
+        .lib=${"internal"}
         .name=${this.copied ? "check-lg" : "copy"}
         @click=${this.handleButtonClick}>
       </u-icon-button>

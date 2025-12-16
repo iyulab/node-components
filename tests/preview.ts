@@ -16,10 +16,6 @@ export class PreviewApp extends LitElement {
     });
   }
 
-  firstUpdated(changedProperties: any) {
-    super.firstUpdated(changedProperties);
-  }
-
   render() {
     return html`
       <div class="header">
@@ -33,33 +29,49 @@ export class PreviewApp extends LitElement {
       </div>
       <div class="main" style="overflow: auto;">
         <section>
-          <h2>Dialog</h2>
-          <u-dialog heading="Dialog Preview" ?modal=${true} open>
-            <p>이것은 다이얼로그 컴포넌트의 미리보기입니다.</p>
-          </u-dialog>
+          <h2>Menu Component</h2>
+          <p>우클릭하여 컨텍스트 메뉴를 확인하세요.</p>
+          <div class="context-area">
+            우클릭 영역
+          </div>
+          <u-menu for=".context-area" trigger="contextmenu" mode="multiple"
+            @u-select=${this.handleSelect}>
+            <u-menu-item value="cut">잘라내기</u-menu-item>
+            <u-menu-item value="copy">복사</u-menu-item>
+            <u-menu-item value="paste">붙여넣기</u-menu-item>
+            <u-menu-item value="delete">삭제</u-menu-item>
+            <u-menu-item value="select-all">모두 선택</u-menu-item>
+            <u-menu-item>더보기
+              <u-menu slot="submenu">
+                <u-menu-item value="find">찾기</u-menu-item>
+                <u-menu-item value="replace">바꾸기</u-menu-item>
+              </u-menu>
+            </u-menu-item>
+          </u-menu>
         </section>
         <section>
-          <u-split-panel orientation="horizontal">
-            <h2>Button</h2>
-            <u-tooltip on for="u-button:nth-of-type(2)" strategy="fixed">
-              툴팁이 표시됩니다.
-            </u-tooltip>
-            <u-button>Primary Button</u-button>
-            <u-button>Secondary Button</u-button>
-            <u-button>Tertiary Button</u-button>
-          </u-split-panel>
-        </section>
-        <section style="height: 1200vh;">
-          <h2>Scroll Test Content</h2>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-          </p>
+          <h2>Dropdown Menu</h2>
+          <p>아래 버튼을 클릭하여 드롭다운 메뉴를 확인하세요.</p>
+          <u-button id="dropdown-btn">메뉴 열기</u-button>
+          <u-menu for="#dropdown-btn" trigger="click" mode="single"
+            @u-select=${this.handleSelect}>
+            <u-menu-item value="new-file">새 파일</u-menu-item>
+            <u-menu-item value="open-file">파일 열기</u-menu-item>
+            <u-menu-item value="save-file">파일 저장</u-menu-item>
+            <u-menu-item>내보내기
+              <u-menu slot="submenu">
+                <u-menu-item value="export-pdf">PDF로 내보내기</u-menu-item>
+                <u-menu-item value="export-docx">DOCX로 내보내기</u-menu-item>
+              </u-menu>
+            </u-menu-item>
+          </u-menu>
         </section>
       </div>
     `;
+  }
+
+  private handleSelect = (e: CustomEvent) => {
+    console.log('u-select:', e.detail);
   }
 
   static styles = css`
@@ -102,10 +114,26 @@ export class PreviewApp extends LitElement {
       margin-bottom: 60px;
     }
     section h2 {
-      margin: 0 0 30px 0;
+      margin: 0 0 10px 0;
       font-size: 1.5rem;
       font-weight: 500;
       color: var(--u-txt-color);
+    }
+    section p {
+      margin: 0 0 20px 0;
+      color: var(--u-txt-color-secondary, #666);
+    }
+
+    .context-area {
+      width: 300px;
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed var(--u-border-color);
+      border-radius: 8px;
+      color: var(--u-txt-color-secondary, #666);
+      user-select: none;
     }
   `;
 }

@@ -1,7 +1,9 @@
 - check `menu`
 - check `menu-item`
-- check `context-menu`
-- check `dropdown-menu`
+
+- check `modal`
+- check `dialog`
+- check `drawer`
 
 - check `tree`
 - check `tree-item`

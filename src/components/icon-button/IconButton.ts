@@ -3,7 +3,7 @@ import { property } from "lit/decorators.js";
 
 import { BaseElement } from "../BaseElement.js";
 import { Spinner } from "../spinner/Spinner.js";
-import { Icon } from "../icon/Icon.js";
+import { Icon, type IconLibrary } from "../icon/Icon.js";
 import { styles } from "./IconButton.styles.js";
 
 /**
@@ -23,7 +23,7 @@ export class IconButton extends BaseElement {
   /** 버튼이 로딩 상태인지 여부를 설정합니다. 로딩 중에는 버튼이 비활성화되고 스피너가 표시됩니다. */
   @property({ type: Boolean, reflect: true }) loading = false;
   /** 아이콘 라이브러리를 지정합니다. */
-  @property({ type: String, attribute: "lib" }) library: "internal" | "default" | (string & {})  = "default";
+  @property({ type: String }) lib: IconLibrary  = "default";
   /** 아이콘의 이름을 지정합니다. */
   @property({ type: String }) name?: string;
 
@@ -33,7 +33,7 @@ export class IconButton extends BaseElement {
         ?disabled=${this.disabled || this.loading}>
         ${this.loading 
           ? html`<u-spinner></u-spinner>` 
-          : html`<u-icon .library=${this.library} .name=${this.name}></u-icon>`}
+          : html`<u-icon .lib=${this.lib} .name=${this.name}></u-icon>`}
       </button>
     `;
   }

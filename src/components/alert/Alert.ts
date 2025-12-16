@@ -54,14 +54,14 @@ export class Alert extends BaseElement {
       <div class="container" part="base">
         <div class="header" part="header">
           <u-icon class="icon" part="icon"
-            .library=${"internal"}
+            .lib=${"internal"}
             .name=${this.getIconName(this.type)}
           ></u-icon>
           <div class="title" part="title">
             ${this.heading || this.type.toUpperCase()}
           </div>
           <u-icon class="close-btn" part="close-btn"
-            .library=${"internal"}
+            .lib=${"internal"}
             .name=${"x-lg"}
             @click=${this.hide}
           ></u-icon>

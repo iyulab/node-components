@@ -4,19 +4,24 @@ import { property, query } from 'lit/decorators.js'
 import { BaseElement } from '../BaseElement.js';
 import { ModalElement } from '../ModalElement.js';
 import { IconButton } from '../icon-button/IconButton.js';
-import { styles } from './Dialog.styles.js';
+import { styles } from './Drawer.styles.js';
+
+export type DrawerPlacement = 'start' | 'end' | 'top' | 'bottom';
 
 /**
- * Dialog 컴포넌트는 모달 대화상자를 제공합니다.
- * 오버레이와 함께 화면 중앙에 표시되며, 헤더, 본문, 푸터 영역을 슬롯으로 제공합니다.
+ * Drawer 컴포넌트는 화면 가장자리에서 슬라이드하여 나타나는 패널을 제공합니다.
+ * 네비게이션, 설정 패널, 상세 정보 표시 등에 사용됩니다.
  */
-export class Dialog extends ModalElement {
+export class Drawer extends ModalElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof BaseElement> = {
     'u-icon-button': IconButton
   };
 
   @query('.panel') override panelEl!: HTMLDivElement;
+
+  /** 드로어가 나타나는 위치 */
+  @property({ type: String, reflect: true }) placement: DrawerPlacement = 'start';
 
   /** 타이틀 텍스트 */
   @property({ type: String }) heading: string = '';

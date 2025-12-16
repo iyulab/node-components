@@ -7,6 +7,8 @@ import { BaseElement } from "../BaseElement.js";
 import { icons } from "../../utilities/icons.js";
 import { styles } from "./Icon.styles.js";
 
+export type IconLibrary = "internal" | "default" | (string & {});
+
 /**
  * 아이콘 컴포넌트입니다. SVG 아이콘을 이름으로 불러와서 렌더링합니다.
  */
@@ -21,8 +23,8 @@ export class Icon extends BaseElement {
    * - 사용자 확장 라이브러리: icons.register()로 등록한 라이브러리 이름
    * @default "default"
    */
-  @property({ type: String, attribute: "lib" })
-  library: "internal" | "default" | (string & {})  = "default";
+  @property({ type: String })
+  lib: IconLibrary  = "default";
 
   /**
    * 사용할 아이콘의 이름을 지정합니다.
@@ -32,9 +34,8 @@ export class Icon extends BaseElement {
 
   render() {
     if (!this.name) return nothing;
-    console.log(this.library, this.name, 'icon render');
 
-    return until(icons.resolve(this.library, this.name).then(html => {
+    return until(icons.resolve(this.lib, this.name).then(html => {
       return this.validate(html)
         ? unsafeHTML(html)
         : nothing;

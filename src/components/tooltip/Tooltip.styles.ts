@@ -15,6 +15,7 @@ export const styles = css`
     transition: opacity 0.2s ease, transform 0.2s ease;
   }
   :host([visible]) {
+    opacity: 0.8;
     transform: scale(1);
   }
 `;

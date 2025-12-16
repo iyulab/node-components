@@ -17,7 +17,7 @@ import { styles } from './FloatingElement.styles.js';
  * 3. strategy, placement, distance 속성을 통해 표시 위치 결정 방식을 설정할 수 있습니다.
  * 4. show() 및 hide() 메서드를 통해 프로그래밍적으로 표시하거나 숨길 수 있습니다.
  */
-export class FloatingElement extends BaseElement {
+export abstract class FloatingElement extends BaseElement {
   /** 기본 스타일을 정의합니다. */
   static styles: CSSResultGroup = [ super.styles, styles ];
   /** 종속된 컴포넌트를 정의합니다. */
@@ -77,8 +77,10 @@ export class FloatingElement extends BaseElement {
   }
 
   disconnectedCallback(): void {
+    if (this.anchor) this.unbind(this.anchor);
     if (this.rafId !== null) cancelAnimationFrame(this.rafId);
-    this.autoPosition(false);
+    if (this.cleanup !== null) this.cleanup();
+    this.cleanup = null;
     super.disconnectedCallback();
   }
 
@@ -90,20 +92,33 @@ export class FloatingElement extends BaseElement {
       const founded = this.for ? querySelectorFrom(this, this.for) : undefined;
       this.anchor = founded || undefined;
     }
+
+    // anchor 변경 시 바인딩 갱신 및 위치 자동 업데이트 설정
+    if (changedProperties.has('anchor')) {
+      const oldAnchor = changedProperties.get('anchor');
+      const newAnchor = this.anchor;
+      if (oldAnchor instanceof HTMLElement) this.unbind(oldAnchor);
+      if (newAnchor instanceof HTMLElement) this.bind(newAnchor);
+    }
   }
 
   /** 
    * 현재 엘리먼트를 표시합니다.
    * 
    * @param anchor - 위치 계산에 사용할 앵커 엘리먼트입니다. 지정하지 않으면 this.anchor 가 사용됩니다.
+   * @param auto - 표시 후 자동 위치 업데이트 활성화 여부입니다. 기본값은 true 입니다.
    */
-  public async show(anchor?: Element | VirtualElement) {
+  public async show(anchor?: Element | VirtualElement, auto: boolean = true) {
     anchor ||= this.anchor;
     if (!anchor) return;
     
     await this.updateComplete;
     await this.reposition(anchor);
-    this.autoPosition(true);
+    if (auto === true) {
+      this.cleanup = autoUpdate(anchor, this, () => {
+        this.reposition(anchor);
+      });
+    }
     this.scheduleVisible(true);
   };
 
@@ -112,9 +127,24 @@ export class FloatingElement extends BaseElement {
    */
   public async hide() {
     await this.updateComplete;
-    this.autoPosition(false);
+    if (this.cleanup !== null) this.cleanup();
+    this.cleanup = null;
     this.scheduleVisible(false);
   };
+
+  /**
+   * for 속성이나 anchor 속성으로 지정된 대상 엘리먼트와 바인딩을 설정합니다.
+   * 
+   * @param target - 바인딩할 엘리먼트입니다.
+   */
+  protected abstract bind(target: HTMLElement): void;
+
+  /**
+   * for 속성이나 anchor 속성으로 지정된 대상 엘리먼트와 바인딩을 해제합니다.
+   * 
+   * @param target - 바인딩 해제할 엘리먼트입니다.
+   */
+  protected abstract unbind(target: HTMLElement): void;
   
   /** 
    * `floating-ui` 를 이용하여 위치를 계산하고 style 을 적용합니다. 
@@ -166,23 +196,6 @@ export class FloatingElement extends BaseElement {
         }
       })()
     });
-  }
-
-  /**
-   * 자동 위치 업데이트를 설정하거나 해제합니다.
-   * 
-   * @param enable - 자동 위치 업데이트 활성화 여부
-   */
-  protected autoPosition(enable: boolean) {
-    if (this.cleanup) {
-      this.cleanup();
-      this.cleanup = null;
-    }
-    if (enable && this.anchor) {
-      this.cleanup = autoUpdate(this.anchor, this, () => {
-        this.reposition(this.anchor!);
-      });
-    }
   }
 
   /** 애니메이션 프레임을 사용하여 표시 상태를 스케줄링합니다. */

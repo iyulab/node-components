@@ -73,9 +73,9 @@ export const styles = css`
 
   /* 입력 필드 */
   input {
-    flex: 1 1 auto;
-    min-width: 0;
     all: unset;
+    flex: 1 0 auto;
+    min-width: 0;
     font-size: 1em;
     line-height: 1.5;
   }

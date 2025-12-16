@@ -1,29 +1,7 @@
 import { css } from 'lit';
 
 export const styles = css`
-  :host {
-    position: fixed;
-    z-index: 9999;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    visibility: hidden;
-    pointer-events: none;
-  }
-  :host([open]) {
-    visibility: visible;
-    pointer-events: auto;
-  }
-  :host([modal]) {
-    background: var(--u-overlay-bg-color);
-  }
-
-  .dialog {
+  .panel {
     position: relative;
     display: block;
     max-width: 90vw;
@@ -35,7 +13,7 @@ export const styles = css`
     background: var(--u-panel-bg-color);
     overflow: auto;
   }
-  .dialog.shake {
+  .panel.shake {
     animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
   }
 

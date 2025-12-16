@@ -23,11 +23,11 @@ export class Form extends BaseElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.addEventListener('change', this.handleChange);
+    this.addEventListener('change', this.handleInputChange);
   }
 
   disconnectedCallback(): void {
-    this.removeEventListener('change', this.handleChange);
+    this.removeEventListener('change', this.handleInputChange);
     super.disconnectedCallback();
   }
 
@@ -42,13 +42,17 @@ export class Form extends BaseElement {
    */
   public validate() {
     const slot = this.shadowRoot?.querySelector('slot');
-    const inputEls = slot?.assignedElements({ flatten: true }).filter(el => el instanceof Input) || [];
-    const isValid = Array.from(inputEls).every(input => input.validate());
+    const elements = slot?.assignedElements({ flatten: true })
+      .filter(el => el instanceof Input);
+    if (!elements) return true;
+    if (elements.length === 0) return true;
+
+    const isValid = Array.from(elements).every(input => input.validate());
     return isValid;
   }
 
   /** 입력 요소의 변경 이벤트를 처리합니다. */
-  private handleChange = (e: Event) => {
+  private handleInputChange = (e: Event) => {
     const input = e.target as Input;
     const name = input.name;
     const value = input.value;

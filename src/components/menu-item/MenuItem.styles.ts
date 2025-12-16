@@ -2,67 +2,62 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    display: block;
+    --selected-color: var(--u-txt-color-inverse, #ffffff);
+    --selected-bg-color: var(--u-blue-600, #0078d4);
+  }
 
-    --selected-color: var(--u-blue-600, #0066cc);
-    --selected-bg-color: var(--u-blue-50, #e8f4f8);
+  :host {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.5em 1em;
+    background-color: transparent;
+    transition: background-color 0.15s ease;
+    user-select: none;
+    cursor: pointer;
   }
   :host([disabled]) {
     opacity: 0.5;
     pointer-events: none;
     cursor: not-allowed;
   }
-  :host([disabled]) .container {
-    cursor: not-allowed;
-    pointer-events: none;
+  :host(:not([disabled])[selected]) {
+    color: var(--selected-color);
+    background-color: var(--selected-bg-color);
   }
-  :host(:not([disabled])) .container:hover {
-    background-color: var(--u-bg-color-hover, #f5f5f5);
-  }
-  :host([selected]) .container {
-    color: var(--selected-color, #0066cc);
-    background-color: var(--selected-bg-color, #e8f4f8);
+  :host(:not([disabled]):not([selected]):hover),
+  :host(:not([disabled]):not([selected]):focus-visible) {
+    background-color: var(--u-bg-color-hover);
   }
 
-  .container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    line-height: 1.5;
-    border-radius: 4px;
-    background-color: transparent;
-    transition: background-color 0.2s ease;
-    user-select: none;
-    cursor: pointer;
-  }
-
-  .checker {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    width: 1em;
-    font-size: 0.75em;
-    font-weight: bold;
-    color: var(--u-blue-600, #0066cc);
-    transition: opacity 0.2s ease;
-  }
-  .checker[checked] {
-    opacity: 1;
-  }
-
+  /* 콘텐츠 영역 */
   .content {
-    flex: 1;
+    flex: 1 0 auto;
+    font-size: 1em;
+    line-height: 1.5;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .submenu-indicator {
-    margin-left: 8px;
-    opacity: 0.7;
-    user-select: none;
+  /* prefix/suffix 슬롯 */
+  ::slotted([slot="prefix"]) {
+    margin-right: 0.5em;
+  }
+  ::slotted([slot="suffix"]) {
+    margin-left: 0.5em;
+  }
+
+  /* 아이콘 공통 스타일 */
+  .icon {
+    color: var(--u-txt-color);
+    font-size: 0.75em;
+  }
+  .icon.prefix {
+    margin-right: 0.5em;
+  }
+  .icon.suffix {
+    margin-left: 0.5em;
   }
 `;

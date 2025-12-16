@@ -18,7 +18,7 @@ export const styles = css`
     position: fixed;
   }
   :host([visible]) {
-    opacity: 0.8;
+    opacity: 1;
     pointer-events: auto;
   }
 `;
