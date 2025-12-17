@@ -16,26 +16,26 @@ export const styles = css`
   .header {
     display: flex;
     flex-direction: row;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 0.5em;
+    font-size: 0.8em;
     user-select: none;
   }
-  .header .label {
-    font-size: 0.8em;
-    font-weight: 500;
-    line-height: 1.2;
-    cursor: pointer;
-  }
-  .header .required-mark {
+  .header .required {
     color: var(--u-red-600);
     margin-right: 0.25em;
   }
-  .header .help-icon {
-    font-size: 0.8em;
+  .header .label {
+    font-weight: 500;
+    line-height: 1.25;
+    cursor: pointer;
+  }
+  .header .helper u-icon {
     margin-left: 0.5em;
     cursor: help;
   }
-  .header .help-tooltip {
+  .header .helper u-tooltip {
     font-size: 0.6em;
   }
 
@@ -49,23 +49,24 @@ export const styles = css`
     border-radius: 0.25em;
     background-color: var(--u-input-bg-color);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
   }
   .container[readonly],
   .container[disabled] {
     border-color: var(--u-border-color-weak);
     background-color: var(--u-bg-color-disabled);
   }
-  .container:hover:not([readonly]):not([disabled]) {
+  .container:not([readonly]):not([disabled]):hover {
     box-shadow: 
       0 0 0 1px var(--u-input-border-color-hover),
       0 0 0 3px rgba(59, 130, 246, 0.12);
   }
-  .container:focus-within:not([readonly]):not([disabled]) {
+  .container:not([readonly]):not([disabled]):focus-within {
     box-shadow:
       0 0 0 1px var(--u-input-border-color-focus),
       0 0 0 3px rgba(59, 130, 246, 0.22);
   }
-  .container[invalid]:not([readonly]):not([disabled]) {
+  .container:not([readonly]):not([disabled])[invalid] {
     box-shadow:
       0 0 0 1px var(--u-input-border-color-invalid),
       0 0 0 3px rgba(220, 38, 38, 0.12);
@@ -97,24 +98,26 @@ export const styles = css`
     margin-left: 0.5em;
   }
 
-  /* 툴 영역 (clear, password toggle 등) */
-  .suffix-items {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-  .suffix-items u-icon {
+  /* 아이콘 영역 (clear, password toggle 등) */
+  .icon {
     color: var(--u-icon-color);
     font-size: 1em;
-    margin-left: 0.5em;
     transition: color 0.2s ease;
     cursor: pointer;
   }
-  .suffix-items u-icon:hover {
+  .icon:hover {
     color: var(--u-icon-color-hover);
   }
-  .suffix-items u-icon:active {
+  .icon:active {
     color: var(--u-icon-color-active);
+  }
+
+  /* 접두/접미 아이콘 간격 */
+  .icon.prefix {
+    margin-right: 0.5em;
+  }
+  .icon.suffix {
+    margin-left: 0.5em;
   }
 
   /* 유효성 검사 에러 메시지 */

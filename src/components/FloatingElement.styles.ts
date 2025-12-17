@@ -11,14 +11,15 @@ export const styles = css`
     opacity: 0;
     pointer-events: none;
   }
+  :host([visible]) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   :host([strategy="absolute"]) {
     position: absolute;
   }
   :host([strategy="fixed"]) {
     position: fixed;
-  }
-  :host([visible]) {
-    opacity: 1;
-    pointer-events: auto;
   }
 `;

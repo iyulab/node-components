@@ -4,7 +4,7 @@ import { property, state } from 'lit/decorators.js';
 import { computePosition, offset, shift, flip, autoPlacement, autoUpdate } from '@floating-ui/dom';
 import type { Placement, VirtualElement } from '@floating-ui/dom';
 
-import { getParentElement, querySelectorFrom } from '../internals/node-helpers.js';
+import { getParentElement, querySelectorWithin } from '../internals/node-helpers.js';
 import { BaseElement } from './BaseElement.js';
 import { styles } from './FloatingElement.styles.js';
 
@@ -14,10 +14,10 @@ import { styles } from './FloatingElement.styles.js';
  * 
  * 1. for, anchor 속성을 통해 연결될 대상 엘리먼트를 지정할 수 있습니다.
  * 2. visible 속성을 통해 엘리먼트의 표시 여부를 제어할 수 있습니다.
- * 3. strategy, placement, distance 속성을 통해 표시 위치 결정 방식을 설정할 수 있습니다.
- * 4. show() 및 hide() 메서드를 통해 프로그래밍적으로 표시하거나 숨길 수 있습니다.
+ * 3. show() 및 hide() 메서드를 통해 프로그래밍적으로 표시하거나 숨길 수 있습니다.
+ * 4. strategy, placement, distance, shift 속성을 통해 표시 위치 결정 방식을 설정할 수 있습니다.
  */
-export abstract class FloatingElement extends BaseElement {
+export class FloatingElement extends BaseElement {
   /** 기본 스타일을 정의합니다. */
   static styles: CSSResultGroup = [ super.styles, styles ];
   /** 종속된 컴포넌트를 정의합니다. */
@@ -32,20 +32,6 @@ export abstract class FloatingElement extends BaseElement {
    * 연결될 대상 엘리먼트 입니다. 지정하지 않으면 부모 엘리먼트를 사용합니다. 
    */
   @state() anchor?: HTMLElement;
-  
-  /** 
-   * 현재 엘리먼트가 보여지는지 여부입니다. 
-   */
-  @property({ type: Boolean, reflect: true }) visible: boolean = false;
-
-  /** 
-   * 현재 엘리먼트의 위치 결정 전략입니다.
-   * 
-   * @remarks
-   * - `absolute`: 엘리먼트가 문서 흐름에 따라 배치됩니다.
-   * - `fixed`: 엘리먼트가 뷰포트에 고정되어 스크롤과 무관하게 위치합니다. 
-   */
-  @property({ type: String, reflect: true }) strategy: 'absolute' | 'fixed' = 'absolute';
 
   /** 
    * 앵커 엘리먼트를 찾기 위한 CSS 선택자입니다. querySelector를 사용하여 DOM에서 대상을 검색합니다.
@@ -57,6 +43,22 @@ export abstract class FloatingElement extends BaseElement {
    * - `속성`으로 찾기: for="[data-role='target']"
    */
   @property({ type: String }) for?: string;
+  
+  /** 
+   * 현재 엘리먼트가 보여지는지 여부입니다. 
+   * 
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true }) visible: boolean = false;
+
+  /** 
+   * 현재 엘리먼트의 위치 결정 전략입니다.
+   * 
+   * @remarks
+   * - `absolute`: 엘리먼트가 문서 흐름에 따라 배치됩니다.
+   * - `fixed`: 엘리먼트가 뷰포트에 고정되어 스크롤과 무관하게 위치합니다. 
+   */
+  @property({ type: String, reflect: true }) strategy: 'absolute' | 'fixed' = 'absolute';
 
   /** 
    * 대상 엘리먼트로부터의 배치 위치입니다.
@@ -71,15 +73,22 @@ export abstract class FloatingElement extends BaseElement {
    */
   @property({ type: Number }) distance: number = 0;
 
+  /**
+   * 엘리먼트가 화면 안에 머물도록 자동으로 조정할지 여부입니다.
+   * 
+   * @default false
+   */
+  @property({ type: Boolean }) shift: boolean = false;
+
   connectedCallback(): void {
     super.connectedCallback();
     this.anchor ||= getParentElement(this); // 기본(부모 엘리먼트)
   }
 
   disconnectedCallback(): void {
-    if (this.anchor) this.unbind(this.anchor);
     if (this.rafId !== null) cancelAnimationFrame(this.rafId);
     if (this.cleanup !== null) this.cleanup();
+    this.rafId = null;
     this.cleanup = null;
     super.disconnectedCallback();
   }
@@ -89,16 +98,8 @@ export abstract class FloatingElement extends BaseElement {
 
     // for 변경 시 DOM 에서 앵커 재검색
     if (changedProperties.has('for')) {
-      const founded = this.for ? querySelectorFrom(this, this.for) : undefined;
+      const founded = this.for ? querySelectorWithin(this, this.for) : undefined;
       this.anchor = founded || undefined;
-    }
-
-    // anchor 변경 시 바인딩 갱신 및 위치 자동 업데이트 설정
-    if (changedProperties.has('anchor')) {
-      const oldAnchor = changedProperties.get('anchor');
-      const newAnchor = this.anchor;
-      if (oldAnchor instanceof HTMLElement) this.unbind(oldAnchor);
-      if (newAnchor instanceof HTMLElement) this.bind(newAnchor);
     }
   }
 
@@ -131,20 +132,6 @@ export abstract class FloatingElement extends BaseElement {
     this.cleanup = null;
     this.scheduleVisible(false);
   };
-
-  /**
-   * for 속성이나 anchor 속성으로 지정된 대상 엘리먼트와 바인딩을 설정합니다.
-   * 
-   * @param target - 바인딩할 엘리먼트입니다.
-   */
-  protected abstract bind(target: HTMLElement): void;
-
-  /**
-   * for 속성이나 anchor 속성으로 지정된 대상 엘리먼트와 바인딩을 해제합니다.
-   * 
-   * @param target - 바인딩 해제할 엘리먼트입니다.
-   */
-  protected abstract unbind(target: HTMLElement): void;
   
   /** 
    * `floating-ui` 를 이용하여 위치를 계산하고 style 을 적용합니다. 
@@ -152,27 +139,21 @@ export abstract class FloatingElement extends BaseElement {
    * @param target - 위치 계산에 사용할 앵커 엘리먼트입니다.
    */
   protected async reposition(target: Element | VirtualElement) {
-    const middleware = [
-      offset({ mainAxis: this.distance }),
-      shift(),
-      flip()
-    ];
-
-    if (!this.placement) {
-      middleware.push(autoPlacement());
-    }
-
     const position = await computePosition(target, this, {
       strategy: this.strategy,
       placement: this.placement,
-      middleware: middleware,
+      middleware: [
+        offset({ mainAxis: this.distance }),
+        shift({ mainAxis: this.shift }),
+        this.placement ? flip() : autoPlacement(),
+      ],
     });
 
     Object.assign(this.style, {
       left: `${position.x}px`,
       top: `${position.y}px`,
 
-      // placement 에 따라 transform-origin 값을 결정합니다.
+      // placement 에 따라 transform-origin 값을 결정합니다.(애니메이션용)
       transformOrigin: (() => {
         switch (position.placement) {
           case 'top':

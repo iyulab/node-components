@@ -14,12 +14,17 @@ export const styles = css`
     background: transparent;
     visibility: hidden;
     pointer-events: none;
+    transition: visibility 0s 0.3s, background 0.3s ease;
   }
   :host([open]) {
     visibility: visible;
     pointer-events: auto;
+    transition: visibility 0s, background 0.3s ease;
   }
   :host([modal]) {
     background: var(--u-overlay-bg-color);
+  }
+  :host([modal]:not([open])) {
+    background: transparent;
   }
 `;

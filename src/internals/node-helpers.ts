@@ -1,8 +1,8 @@
 /**
  * 엘리먼트의 부모 엘리먼트를 반환합니다.
- * Shadow DOM을 지원하는 경우, Shadow DOM의 호스트 엘리먼트를 반환합니다.
- * 일반 DOM 엘리먼트인 경우, 해당 엘리먼트를 반환합니다.
- * 찾을 수 없는 경우 undefined을 반환합니다.
+ * - Shadow DOM을 지원하는 경우, Shadow DOM의 호스트 엘리먼트를 반환합니다.
+ * - 일반 DOM 엘리먼트인 경우, 해당 엘리먼트를 반환합니다.
+ * - 찾을 수 없는 경우 undefined을 반환합니다.
  */
 export function getParentElement(element: Element): HTMLElement | undefined {
   if (element.parentElement) {
@@ -10,7 +10,7 @@ export function getParentElement(element: Element): HTMLElement | undefined {
   } else {
     const root = element.getRootNode({ composed: false });
     return root instanceof Document 
-      ? root.documentElement as HTMLElement 
+      ? root.documentElement as HTMLElement // 문서 루트 엘리먼트
       : root instanceof ShadowRoot
       ? root.host as HTMLElement  // Shadow DOM 호스트 엘리먼트
       : root instanceof HTMLElement
@@ -20,10 +20,10 @@ export function getParentElement(element: Element): HTMLElement | undefined {
 }
 
 /**
- * element 기준으로 selector와 매치되는 첫번째 HTMLElement를 반환합니다.
- * - 탐색은 element가 존재하는 shadow DOM 또는 document 루트 안에서 이루어집니다.
+ * element의 root를 기준으로 selector와 매치되는 첫번째 HTMLElement를 반환합니다.
+ * - 탐색은 element가 존재하는 shadow DOM 또는 document 루트 범위에서 이루어집니다.
  */
-export function querySelectorFrom(element: Element, selectors: string): HTMLElement | null {
+export function querySelectorWithin(element: Element, selectors: string): HTMLElement | null {
   if (!selectors) return null;
   const rootNode = element.getRootNode({ composed: false });
   
@@ -36,10 +36,10 @@ export function querySelectorFrom(element: Element, selectors: string): HTMLElem
 }
 
 /**
- * element 기준으로 selector와 매치되는 모든 HTMLElement를 반환합니다.
- * - 탐색은 element가 존재하는 shadow DOM 또는 document 루트 안에서 이루어집니다.
+ * element의 root를 기준으로 selector와 매치되는 모든 HTMLElement를 반환합니다.
+ * - 탐색은 element가 존재하는 shadow DOM 또는 document 루트 범위에서 이루어집니다.
  */
-export function querySelectorAllFrom(element: Element, selectors: string): HTMLElement[] {
+export function querySelectorAllWithin(element: Element, selectors: string): HTMLElement[] {
   if (!selectors) return [];
   const rootNode = element.getRootNode({ composed: false });
 

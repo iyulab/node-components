@@ -12,6 +12,13 @@ export const styles = css`
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     background: var(--u-panel-bg-color);
     overflow: auto;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  :host([open]) .panel {
+    opacity: 1;
+    transform: scale(1);
   }
   .panel.shake {
     animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
@@ -28,18 +35,6 @@ export const styles = css`
   .header .title {
     line-height: 1.2;
     font-weight: 600;
-  }
-
-  /* 페이드 인 및 스케일 업 애니메이션 */
-  @keyframes fadeout {
-    0% {
-      opacity: 0;
-      transform: scale(0.9);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
   }
 
   /* 진동 애니메이션 */

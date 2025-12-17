@@ -1,4 +1,4 @@
-import { html, nothing, PropertyValues } from "lit";
+import { html, PropertyValues } from "lit";
 import { property, query, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { live } from "lit/directives/live.js";
@@ -30,8 +30,8 @@ export class Input extends BaseElement {
 
   @query('input') inputEl!: HTMLInputElement;
 
-  /** 유효성 검사 실패 여부 */
-  @state() isInvalid: boolean = false;
+  /** 유효성 여부 */
+  @state() isValid: boolean = true;
   /** 현재 표시할 유효성 검사 메시지 */
   @state() currentValidationMessage: string = '';
   /** password type인 경우 비밀번호 표시/숨김 상태 */
@@ -86,25 +86,22 @@ export class Input extends BaseElement {
   render() {
     return html`
       <div class="header" ?hidden=${!this.label}>
-        ${this.required 
-          ? html`<span class="required-mark">*</span>` 
-          : nothing}
+        <span class="required" ?hidden=${!this.required}>*</span>
       
         <label class="label" @click=${this.focus}>
           ${this.label}
         </label>
         
-        ${this.help
-          ? html`
-            <u-icon class="help-icon" lib="internal" name="info-circle-fill"></u-icon>
-            <u-tooltip class="help-tooltip" for=".help-icon" distance="6" placement="right-end">
-              ${this.help}
-            </u-tooltip>`
-          : nothing}
+        <div class="helper" ?hidden=${!this.help}>
+          <u-icon lib="internal" name="info-circle-fill"></u-icon>
+          <u-tooltip distance="6" placement="right-end">
+            ${this.help}
+          </u-tooltip>
+        </div>
       </div>
       
       <div class="container"
-        ?invalid=${this.isInvalid}
+        ?invalid=${!this.isValid}
         ?disabled=${this.disabled}
         ?readonly=${this.readonly}>
 
@@ -130,20 +127,18 @@ export class Input extends BaseElement {
         
         <slot name="suffix"></slot>
         
-        <div class="suffix-items">
-          <u-icon
-            lib="internal"
-            name=${this.showPassword ? 'eye-slash' : 'eye'}
-            ?hidden=${this.type !== 'password' || this.disabled || this.readonly}
-            @click=${this.handlePasswordTogglerClick}
-          ></u-icon>
-          <u-icon
-            lib="internal"
-            name="x-lg"
-            ?hidden=${!this.clearable || !this.value || this.disabled || this.readonly}
-            @click=${this.handleClearBtnClick}
-          ></u-icon>
-        </div>
+        <u-icon class="suffix icon" tabindex="0"
+          ?hidden=${this.type !== 'password' || this.disabled || this.readonly}  
+          lib="internal"
+          name=${this.showPassword ? 'eye-slash' : 'eye'}
+          @click=${this.handlePasswordTogglerClick}
+        ></u-icon>
+        <u-icon class="suffix icon" tabindex="0"
+          ?hidden=${!this.clearable || this.disabled || this.readonly}
+          lib="internal"
+          name="x-lg"
+          @click=${this.handleClearButtonClick}
+        ></u-icon>
       </div>
 
       <div class="validation-message" ?hidden=${!this.currentValidationMessage}>
@@ -156,32 +151,6 @@ export class Input extends BaseElement {
     `;
   }
 
-  /** 유효성 검사를 수행합니다. */
-  public validate(): boolean {
-    if (!this.inputEl) return true;
-
-    // 브라우저 내장 유효성 검사 사용
-    const validity = this.inputEl.validity;
-    this.isInvalid = !validity.valid;
-    if (this.isInvalid) {
-      this.currentValidationMessage = validity.patternMismatch
-        ? (this.validationMessage || this.inputEl.validationMessage)
-        : this.inputEl.validationMessage;
-    } else {
-      this.currentValidationMessage = '';
-    }
-
-    return !this.isInvalid;
-  }
-
-  /** 입력값을 초기화합니다. */
-  public clear(): void {
-    this.value = '';
-    this.isInvalid = false;
-    this.currentValidationMessage = '';
-    this.focus();
-  }
-
   /** 입력 필드에 포커스를 설정합니다. */
   public focus(): void {
     this.inputEl?.focus();
@@ -192,29 +161,48 @@ export class Input extends BaseElement {
     this.inputEl?.blur();
   }
 
+  /** 입력값을 초기화합니다. */
+  public clear(): void {
+    this.value = '';
+    this.isValid = true;
+    this.currentValidationMessage = '';
+    this.focus();
+  }
+
+  /** 유효성 검사를 수행합니다. */
+  public validate(): boolean {
+    if (!this.inputEl) return true;
+
+    // 브라우저 내장 유효성 검사 사용
+    const validity = this.inputEl.validity;
+    this.isValid = validity.valid;
+    if (this.isValid) {
+      this.currentValidationMessage = '';
+    } else {
+      this.currentValidationMessage = validity.patternMismatch
+        ? (this.validationMessage || this.inputEl.validationMessage)
+        : this.inputEl.validationMessage;
+    }
+
+    return this.isValid;
+  }
+
   /** input 이벤트 핸들러 */
   private handleInput = (e: Event) => {
     const input = e.target as HTMLInputElement;
     this.value = input.value;
-    
-    // 입력 중에는 유효성 검사 에러를 임시로 제거
-    if (this.isInvalid) {
-      this.isInvalid = false;
-      this.currentValidationMessage = '';
-    }
-
     this.emit('u-input', { value: this.value });
   }
 
   /** change 이벤트 핸들러 */
-  private handleInputChange = (e: Event) => {
+  private handleInputChange = (e: InputEvent) => {
     const input = e.target as HTMLInputElement;
     this.value = input.value;
     this.emit('u-change', { value: this.value });
   }
 
   /** blur 이벤트 핸들러 */
-  private handleInputBlur = () => {
+  private handleInputBlur = (_: FocusEvent) => {
     this.validate();
   }
 
@@ -227,7 +215,7 @@ export class Input extends BaseElement {
   }
 
   /** 클리어 버튼 클릭 핸들러 */
-  private handleClearBtnClick = (e: MouseEvent) => {
+  private handleClearButtonClick = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     this.clear();

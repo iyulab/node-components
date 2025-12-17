@@ -3,15 +3,19 @@ import { property, queryAssignedElements } from "lit/decorators.js";
 
 import type { VirtualElement } from "@floating-ui/dom";
 
-import { arrayAttributeConverter } from "../../internals/attribute-converters.js";
 import { BaseElement } from "../BaseElement.js";
 import { FloatingElement } from "../FloatingElement.js";
 import { MenuItem } from "../menu-item/MenuItem.js";
 import { styles } from "./Menu.styles.js";
 
+export type MenuType = 'default' | 'dropdown' | 'contextmenu' | 'submenu';
 export type MenuMode = 'none' | 'single' | 'multiple';
-export type MenuTrigger = 'none' | 'hover' | 'click' | 'contextmenu';
 
+type MenuItemFilter = 'all' | 'enabled' | 'disabled' | 'selected' | 'unselected' | 'checked' | 'unchecked';
+
+/**
+ * Menu 컴포넌트는 드롭다운 메뉴, 컨텍스트 메뉴, 서브메뉴 등을 구현하기 위한 컴포넌트입니다.
+ */
 export class Menu extends FloatingElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof BaseElement> = {
@@ -19,17 +23,17 @@ export class Menu extends FloatingElement {
   };
 
   @queryAssignedElements({ flatten: false, selector: 'u-menu-item' })
-  items!: MenuItem[];
+  items?: MenuItem[];
 
   /** 
-   * 메뉴 트리거 방식
-   * - none: 수동 제어 (기본)
-   * - hover: 앵커 호버 시 표시 (드롭다운 메뉴)
-   * - click: 앵커 클릭 시 토글 (드롭다운 메뉴)
-   * - contextmenu: 앵커 우클릭 시 표시 (컨텍스트 메뉴)
+   * 메뉴 타입
+   * - default: 일반 메뉴 (수동 제어)
+   * - dropdown: 드롭다운 메뉴 (앵커 클릭 시 토글)
+   * - contextmenu: 컨텍스트 메뉴 (앵커 우클릭 시 표시)
+   * - submenu: 서브메뉴 (앵커 호버/포커스 시 표시)
    */
   @property({ type: String, reflect: true }) 
-  trigger: MenuTrigger = 'none';
+  type: MenuType = 'default';
 
   /** 
    * 메뉴 선택 모드
@@ -39,12 +43,6 @@ export class Menu extends FloatingElement {
    */
   @property({ type: String, reflect: true }) 
   mode: MenuMode = 'none';
-
-  /** 
-   * 선택된 값 (single: 첫번째 요소, multiple: 배열) 
-   */
-  @property({ type: Array, converter: arrayAttributeConverter(v => v) }) 
-  value: string[] = [];
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -58,58 +56,107 @@ export class Menu extends FloatingElement {
     super.disconnectedCallback();
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
-    if (!changedProperties.has('anchor') && 
-        changedProperties.has('trigger') && this.anchor) {
-      this.unbind(this.anchor);
-      this.bind(this.anchor);
-    }
+    if (changedProperties.has('anchor') || changedProperties.has('type')) {
+      const oldType = changedProperties.get('type') || 'default' as MenuType;
+      const newType = this.type || 'default' as MenuType;
+      const oldAnchor = changedProperties.get('anchor') as HTMLElement | null;
+      const newAnchor = this.anchor;
 
-    if (changedProperties.has('value')) {
-      this.updateItems();
+      if (oldAnchor) this.unbind(oldType, oldAnchor);
+      if (newAnchor) this.bind(newType, newAnchor);
     }
   }
 
   render() {
-    return html`<slot @slotchange=${this.handleSlotChange}></slot>`;
+    return html`<slot></slot>`;
   }
 
-  /** 특정 인덱스의 아이템에 포커스 (기본: 첫 번째) */
+  /** 
+   * 특정 인덱스의 아이템에 포커스 (기본: 첫 번째)
+   * @param index 인덱스 (음수 가능)
+   */
   public focusAt = async (index: number = 0) => {
     await this.updateComplete;
-    const enabled = (this.items || []).filter(i => !i.disabled);
-    if (enabled.length === 0) return;
+    const items = this.items || [];
+    const length = items.length;
+    if (length === 0) return;
+
+    index = index < 0
+      ? Math.max(0, length + index) 
+      : Math.min(index, length - 1);
     
-    index = index < 0 
-      ? Math.max(0, enabled.length + index) 
-      : Math.min(index, enabled.length - 1);
-    
-    enabled[index]?.focus();
+    const item = items[index];
+    if (item.disabled) return;
+    item.focus();
+  }
+
+  /**
+   * 조건에 맞는 메뉴 아이템들을 반환합니다
+   * 
+   * @param filter - 필터 조건입니다
+   * @return 조건에 맞는 아이템들의 배열입니다
+   */
+  public getItems(filter: MenuItemFilter = 'all'): MenuItem[] {
+    const items = this.items || [];
+    switch (filter) {
+      case 'all':
+        return items;
+      case 'enabled':
+        return items.filter(item => !item.disabled);
+      case 'disabled':
+        return items.filter(item => item.disabled);
+      case 'selected':
+        return items.filter(item => item.selected);
+      case 'unselected':
+        return items.filter(item => !item.selected);
+      case 'checked':
+        return items.filter(item => item.checked);
+      case 'unchecked':
+        return items.filter(item => !item.checked);
+      default:
+        return [];
+    }
   }
 
   /** 앵커에 이벤트 바인딩 */
-  protected bind(target: HTMLElement): void {
-    if (this.trigger === 'hover') {
+  private bind(type: MenuType, target: HTMLElement): void {
+    // 타입별 속성 및 이벤트 바인딩
+    if (type === 'submenu') {
+      this.visible = false;
+      this.placement ||= 'right-start';
       target.addEventListener('pointerenter', this.handleAnchorPointerEnter);
       target.addEventListener('pointerleave', this.handleAnchorPointerLeave);
       target.addEventListener('focusin', this.handleAnchorFocusIn);
       target.addEventListener('focusout', this.handleAnchorFocusOut);
-    }else if (this.trigger === 'click') {
-      this.placement = 'bottom-start';
+    } else if (type === 'dropdown') {
+      this.visible = false;
+      this.placement ||= 'bottom-start';
       target.addEventListener('pointerdown', this.handleAnchorPointerDown);
       target.addEventListener('keydown', this.handleAnchorKeydown);
-    } else if (this.trigger === 'contextmenu') {
-      this.placement = 'bottom-start';
+    } else if (type === 'contextmenu') {
+      this.visible = false;
+      this.placement ||= 'bottom-start';
       target.addEventListener('contextmenu', this.handleAnchorContextMenu);
     } else {
-      // nothing to do
+      this.visible = true;
+      return;
     }
+
+    // 공통 이벤트
+    window.addEventListener('focusout', this.handleWindowFocusOut);
+    window.addEventListener('keydown', this.handleWindowKeydown);
+    window.addEventListener('pointerdown', this.handleWindowPointerDown);
   }
 
   /** 앵커에서 이벤트 바인딩 해제 */
-  protected unbind(target: HTMLElement): void {
+  private unbind(_: MenuType, target: HTMLElement): void {
+    window.removeEventListener('focusout', this.handleWindowFocusOut);
+    window.removeEventListener('keydown', this.handleWindowKeydown);
+    window.removeEventListener('pointerdown', this.handleWindowPointerDown);
+
     target.removeEventListener('pointerenter', this.handleAnchorPointerEnter);
     target.removeEventListener('pointerleave', this.handleAnchorPointerLeave);
     target.removeEventListener('focusin', this.handleAnchorFocusIn);
@@ -119,75 +166,34 @@ export class Menu extends FloatingElement {
     target.removeEventListener('contextmenu', this.handleAnchorContextMenu);
   }
 
-  /** 아이템들의 선택 상태를 value에 맞게 업데이트 */
-  private updateItems = () => {
-    const items = this.items || [];
-
-    if (this.mode === 'single') {
-      items.forEach(item => {
-        item.selected = item.value === this.value.at(0);
-        item.checked = false;
-      });
-    } else if (this.mode === 'multiple') {
-      items.forEach(item => {
-        item.selected = false;
-        item.checked = this.value.includes(item.value);
-      });
-    } else {
-      // nothing to do
-    }
-  }
-
-  /** 슬롯 변경 핸들러 */
-  private handleSlotChange = () => {
-    this.updateItems();
-  };
-
   /** 클릭 핸들러 */
   private handleClick = async (e: MouseEvent) => {
-    const target = e.target as HTMLElement;
-    const item = target.closest('u-menu-item');
-
-    if (!item || item.disabled) return;
-    if (!(this.items || []).includes(item)) return;
+    const item = this.getEnabledItemFrom(e);
+    if (!item) return;
+    
+    const items = this.getItems('enabled');
+    if (!items.includes(item)) return;
     
     const value = item.value || '';
-
-    // 모드에 따른 값 처리
-    if (this.mode === 'single') {
-      this.value = [value];
-      this.emit('u-select', { value: this.value });
-    } else if (this.mode === 'multiple') {
-      this.value = this.value.includes(value)
-        ? this.value.filter(v => v !== value)
-        : [...this.value, value];
-      this.emit('u-select', { value: this.value });
-    } else {
-      this.emit('u-select', { value });
-    }
+    this.emit('u-select', { value });
   }
 
   /** 키보드 내비게이션 핸들러 */
   private handleKeydown = async (e: KeyboardEvent) => {
-    const items = (this.items || []).filter(item => !item.disabled);
-    if (items.length === 0) return;
+    const item = this.getEnabledItemFrom(e);
+    if (!item) return;
 
-    const currentItem = e.target as MenuItem;
-    if (!currentItem || !items.includes(currentItem)) return;
+    const items = this.getItems('enabled');
+    if (!items.includes(item)) return;
 
-    const currentIndex = items.findIndex(item => item === currentItem);
+    const currentIndex = items.findIndex(i => i === item);
     let nextIndex: number;
     
     switch (e.key) {
       case 'Enter':
       case ' ':
         e.preventDefault();
-        currentItem.click();
-        break;
-
-      case 'Escape':
-        e.preventDefault();
-        await this.hide();
+        item.click();
         break;
 
       case 'Home':
@@ -211,90 +217,107 @@ export class Menu extends FloatingElement {
         nextIndex = currentIndex - 1 < 0 ? items.length - 1 : currentIndex - 1;
         await this.focusAt(nextIndex);
         break;
-        
-      case 'ArrowRight':
-        e.preventDefault();
-        e.stopPropagation();
-        break;
 
       case 'ArrowLeft':
         e.preventDefault();
         e.stopPropagation();
+        if (this.type === 'submenu') {
+          this.anchor?.focus();
+        }
+        break;
+        
+      case 'ArrowRight':
+        e.preventDefault();
+        e.stopPropagation();
+        const menu = item.querySelector('u-menu');
+        if (menu?.type === 'submenu') {
+          await menu?.focusAt(0);
+        }
         break;
     }
   }
 
-  private handleWindowPointerDown = async (e: PointerEvent) => {
-    const target = e.target as Node;
-    console.log('window pointerdown', target);
-    if (this.contains(target)) return;
-    console.log('window pointerdown - hide menu');
+  //#region 공통 이벤트 핸들러
+  private handleWindowFocusOut = async (_: FocusEvent) => {
     await this.hide();
   }
 
   private handleWindowKeydown = async (e: KeyboardEvent) => {    
     if (e.key === 'Escape') {
-      e.preventDefault();
       await this.hide();
     }
   }
 
-  private handleAnchorPointerEnter = (e: PointerEvent) => {
-    console.log('pointerenter');
-    const target = e.target as HTMLElement;
-    const menuItem = target.closest('u-menu-item');
-    if (!menuItem || menuItem.disabled) return;
+  private handleWindowPointerDown = async (e: PointerEvent) => {
+    if (this.type === 'contextmenu') {
+      // 메뉴 내부 클릭인 경우 무시
+      const targets = e.composedPath().filter(v => v instanceof HTMLElement);
+      for (const target of targets) {
+        if (this.contains(target)) return;
+      }
+      
+      await this.hide();
+    } else if (this.type === 'dropdown') {
+      const anchor = this.anchor;
+      if (!anchor) return;
+      
+      // 메뉴 또는 앵커 내부 클릭인 경우 무시
+      const targets = e.composedPath().filter(v => v instanceof HTMLElement);
+      for (const target of targets) {
+        if (this.contains(target) || anchor.contains(target)) return;
+      }
 
-    menuItem.submenu?.show();
+      await this.hide();
+    }
+  }
+  //#endregion
+
+  //#region 'submenu' 이벤트 핸들러
+  private handleAnchorPointerEnter = (e: PointerEvent) => {
+    const item = this.getEnabledItemFrom(e);
+    if (!item) return;
+    this.show();
   };
 
   private handleAnchorPointerLeave = async (e: PointerEvent) => {
-    console.log('pointerleave');
-    const target = e.target as HTMLElement;
-    const menuItem = target.closest('u-menu-item');
-    if (!menuItem || menuItem.disabled) return;
-
-    // 서브메뉴로 이동한 경우는 제외
-    const related = e.relatedTarget as Node | null;
-    if (related && menuItem.submenu?.contains(related)) return;
-    await menuItem.submenu?.hide();
+    const item = this.getEnabledItemFrom(e);
+    if (!item) return;
+    this.hide();
   };
 
   private handleAnchorFocusIn = (e: FocusEvent) => {
-    console.log('focusin');
-    const target = e.target as HTMLElement;
-    const menuItem = target.closest('u-menu-item');
-    if (!menuItem || menuItem.disabled) return;
-
-    menuItem.submenu?.show();
+    const item = this.getEnabledItemFrom(e);
+    if (!item) return;
+    this.show();
   };
   
   private handleAnchorFocusOut = async (e: FocusEvent) => {
-    console.log('focusout');
-    const target = e.target as HTMLElement;
-    const menuItem = target.closest('u-menu-item');
-    if (!menuItem || menuItem.disabled) return;
-    // 서브메뉴로 이동한 경우는 제외
-    const related = e.relatedTarget as Node | null;
-    if (related && menuItem.submenu?.contains(related)) return;
-    await menuItem.submenu?.hide();
+    const item = this.getEnabledItemFrom(e);
+    if (!item) return;
+    this.hide();
   };
+  //#endregion
 
+  //#region 'dropdown' 이벤트 핸들러
   private handleAnchorPointerDown = async (e: PointerEvent) => {
-    console.log('pointerdown');
     if (e.button !== 0) return;
-    if (this.visible) await this.hide();
-    else await this.show();
+
+    if (this.visible)
+      await this.hide();
+    else 
+      await this.show();
   };
 
   private handleAnchorKeydown = async (e: KeyboardEvent) => {
-    console.log('keydown');
     if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      if (!this.visible) await this.show();
+      if (this.visible) return; 
+      await this.show();
     }
   };
+  //#endregion
 
+  //#region 'contextmenu' 이벤트 핸들러
   private handleAnchorContextMenu = async (e: MouseEvent) => {
     e.preventDefault();
     await this.hide();
@@ -314,4 +337,13 @@ export class Menu extends FloatingElement {
 
     await this.show(virtual, false);
   };
+  //#endregion
+
+  /** 이벤트로부터 활성화된 (비활성화되지 않은) 메뉴 아이템을 반환 */
+  private getEnabledItemFrom(event: Event): MenuItem | null {
+    const target = event.target as HTMLElement;
+    const item = target.closest('u-menu-item');
+    if (!item || item.disabled) return null;
+    return item;
+  }
 }

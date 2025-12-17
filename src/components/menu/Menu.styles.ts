@@ -13,8 +13,8 @@ export const styles = css`
     background: var(--u-panel-bg-color);
   }
 
-  /* manual 모드: 일반 메뉴 (항상 표시, 문서 흐름에 포함) */
-  :host([trigger="none"]) {
+  /* default 타입: 일반 메뉴 (항상 표시, 문서 흐름에 포함) */
+  :host([type="default"]) {
     position: relative;
     z-index: inherit;
     top: unset;
@@ -23,16 +23,16 @@ export const styles = css`
     pointer-events: auto;
   }
 
-  /* click/contextmenu 모드: 플로팅 메뉴 */
-  :host([trigger="hover"]),
-  :host([trigger="click"]),
-  :host([trigger="contextmenu"]) {
-    transform: scale(0.95);
-    transition: opacity 0.15s ease, transform 0.15s ease;
+  /* dropdown/contextmenu/submenu 타입: 플로팅 메뉴 */
+  :host([type="dropdown"]),
+  :host([type="contextmenu"]),
+  :host([type="submenu"]) {
+    transform: scale(0.9);
+    transition: opacity 0.2s ease, transform 0.2s ease;
   }
-  :host([trigger="hover"][visible]),
-  :host([trigger="click"][visible]),
-  :host([trigger="contextmenu"][visible]) {
+  :host([type="dropdown"][visible]),
+  :host([type="contextmenu"][visible]),
+  :host([type="submenu"][visible]) {
     transform: scale(1);
   }
 `;
