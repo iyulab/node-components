@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.1.8 (2025-12-18)
+- **Breaking Change**: Added `U` prefix to all component class names (e.g., `Alert` → `UAlert`)
+- **Breaking Change**: Changed file naming convention
+  - `{Name}.ts` → `U{Name}.component.ts` (class implementation)
+  - `{Name}.styles.ts` → `U{Name}.styles.ts` (styles)
+  - `index.ts` → `U{Name}.ts` (element definition)
+
+## 0.1.7 (2025-12-13)
+- Added `FloatingElement` base class for popover, tooltip common logic
+- Added `ModalElement` base class for dialog, drawer common logic
+- Added `Drawer` component
+- Added `Skeleton` component
+- Improved `Menu` component with dropdown, contextmenu, submenu support
+- Refactored `Dialog` component based on `ModalElement`
+- Removed `ContextMenu`, `DropdownMenu` (merged into `Menu`)
+
+## 0.1.5 (2025-12-10)
+- Improved `Icon` component and refactored icon utilities
+- Improved `Input` component styles and validation
+- Improved `Tooltip`, `Divider`, `SplitPanel` components
+- Improved `notifier` utility
+- Removed `Panel` component
+- Updated theme styles (light/dark)
+
 ## 0.1.4 (2025-12-05)
 - Fixes some issues
 

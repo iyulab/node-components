@@ -74,6 +74,13 @@ export class FloatingElement extends BaseElement {
   @property({ type: Number }) distance: number = 0;
 
   /**
+   * 대상 엘리먼트로의 기준축에서의 오프셋 (px) 입니다.
+   * 
+   * @default 0
+   */
+  @property({ type: Number }) offset: number = 0;
+
+  /**
    * 엘리먼트가 화면 안에 머물도록 자동으로 조정할지 여부입니다.
    * 
    * @default false
@@ -100,6 +107,17 @@ export class FloatingElement extends BaseElement {
     if (changedProperties.has('for')) {
       const founded = this.for ? querySelectorWithin(this, this.for) : undefined;
       this.anchor = founded || undefined;
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+
+    // visible 변경 시 접근성 속성 업데이트 및 상태 이벤트 발생
+    if (changedProperties.has('visible')) {
+      this.toggleAttribute('inert', !this.visible);
+      this.toggleAttribute('aria-hidden', !this.visible);
+      this.updateVisibleState(this.visible);
     }
   }
 
@@ -143,7 +161,7 @@ export class FloatingElement extends BaseElement {
       strategy: this.strategy,
       placement: this.placement,
       middleware: [
-        offset({ mainAxis: this.distance }),
+        offset({ mainAxis: this.distance, crossAxis: this.offset }),
         shift({ mainAxis: this.shift }),
         this.placement ? flip() : autoPlacement(),
       ],
@@ -177,6 +195,15 @@ export class FloatingElement extends BaseElement {
         }
       })()
     });
+  }
+
+  /** 표시 상태 변경 이벤트를 발생시킵니다. */
+  private updateVisibleState(visible: boolean) {
+    if (visible) {
+      this.emit('u-show');
+    } else {
+      this.emit('u-hide');
+    }
   }
 
   /** 애니메이션 프레임을 사용하여 표시 상태를 스케줄링합니다. */

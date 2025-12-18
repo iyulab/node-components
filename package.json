@@ -1,11 +1,12 @@
 {
   "name": "@iyulab/components",
   "description": "web-components library based on lit-element made by iyulab",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "keywords": [
     "iyulab",
     "components",
     "web-components",
+    "lit",
     "lit-element"
   ],
   "license": "MIT",

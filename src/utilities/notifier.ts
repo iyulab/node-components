@@ -1,7 +1,7 @@
-import { Alert, type AlertType } from "../components/alert/Alert.js";
+import { UAlert, type AlertType } from "../components/alert/UAlert.component.js";
 
 // Alert 커스텀 엘리먼트 정의 확인
-Alert.define("u-alert");
+UAlert.define("u-alert");
 
 export type ScreenPosition =
   | "top-left"
@@ -35,7 +35,7 @@ class Notifier {
   private static _instance: Notifier;
   
   private containers = new Map<ScreenPosition, HTMLDivElement>();
-  private toasts = new Set<Alert>();
+  private toasts = new Set<UAlert>();
 
   private constructor() {}
 
@@ -50,7 +50,7 @@ class Notifier {
    * 토스트 알림을 생성합니다.
    */
   public async toast(options: ToastOptions) {
-    const el = new Alert();
+    const el = new UAlert();
     el.type = options.type;
     el.heading = options.heading;
     el.content = options.content;

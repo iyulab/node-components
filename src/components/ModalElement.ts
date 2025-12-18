@@ -1,5 +1,5 @@
 import { CSSResultGroup, PropertyValues } from 'lit';
-import { property, query } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 
 import { BaseElement } from './BaseElement.js';
 import { styles } from './ModalElement.styles.js';
@@ -19,28 +19,47 @@ export abstract class ModalElement extends BaseElement {
   /** 종속된 컴포넌트를 정의합니다. */
   static dependencies: Record<string, typeof BaseElement> = {};
 
-  // 애니메이션 프레임 아이디
-  private rafId: number | null = null;
+  /** 
+   * 현재 엘리먼트의 열림/닫힘 상태입니다.
+   * 
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true }) open: boolean = false
 
-  /** 패널 엘리먼트 - 하위 클래스에서 query로 설정해야 합니다 */
-  @query('.panel') panelEl!: HTMLElement;
-
-  /** 모달 모드 활성화 (배경 차단 및 포커스 트랩) */
+  /**
+   * 엘리먼트의 위치 결정 전략입니다.
+   * - `absolute`: 엘리먼트가 문서 흐름에 따라 배치됩니다.
+   * - `fixed`: 엘리먼트가 뷰포트에 고정되어 스크롤과 무관하게 위치합니다. 
+   * 
+   * @default 'fixed'
+   */
+  @property({ type: String, reflect: true }) strategy: 'absolute' | 'fixed' = 'fixed';
+  
+  /** 
+   * 모달 모드 여부, true인 경우 배경이 차단되고 포커스 트랩이 활성화됩니다.
+   * false인 경우 배경이 차단되지 않고 포커스 트랩도 비활성화됩니다.
+   * 
+   * @default true
+   */
   @property({ type: Boolean, reflect: true }) modal: boolean = true;
-  /** 모달이 열려있는지 여부 */
-  @property({ type: Boolean, reflect: true }) open: boolean = false;
-  /** 이벤트에 의한 모달 닫기 허용 여부 */
-  @property({ type: Boolean }) closable: boolean = true;
+
+  /** 
+   * 이벤트에 의한 모달 닫기 허용 여부, 예: 오버레이 클릭, ESC 키 등
+   * 닫기를 시도해야할 경우, hide() 메서드를 호출합니다.
+   * 
+   * @default true
+   */
+  @property({ type: Boolean, reflect: true }) closable: boolean = true;
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.addEventListener('click', this.handleBackdropClick);
+    this.setAttribute('tabindex', '-1');
+    this.addEventListener('pointerdown', this.handlePointerdown);
   }
   
   disconnectedCallback(): void {
-    if (this.rafId !== null) cancelAnimationFrame(this.rafId);
-    window.removeEventListener('keydown', this.handleKeydown);
-    window.removeEventListener('focusin', this.handleFocusin);
+    window.removeEventListener('keydown', this.handleWindowKeydown);
+    window.removeEventListener('focusin', this.handleWindowFocusin);
     super.disconnectedCallback();
   }
 
@@ -48,6 +67,8 @@ export abstract class ModalElement extends BaseElement {
     super.updated(changedProperties);
 
     if (changedProperties.has('open')) {
+      this.toggleAttribute('aria-hidden', !this.open);
+      this.toggleAttribute('inert', !this.open);
       this.updateOpenState(this.open);
     }
     if (changedProperties.has('modal')) {
@@ -55,62 +76,34 @@ export abstract class ModalElement extends BaseElement {
     }
   }
 
-  /** 모달을 표시합니다 */
+  /** 
+   * 모달을 표시합니다 
+   */
   public async show() {
     await this.updateComplete;
-    this.scheduleOpen(true);
+    requestAnimationFrame(() => {
+      this.open = true;
+    });
   }
 
-  /** 모달을 숨깁니다 */
+  /** 
+   * 모달을 숨깁니다 
+   */
   public async hide() {
     await this.updateComplete;
-    this.scheduleOpen(false);
+    requestAnimationFrame(() => {
+      this.open = false;
+    });
   }
 
-  /** 패널을 흔드는 애니메이션을 재생합니다 */
-  protected shake() {
-    if (!this.panelEl) return;
-    this.panelEl.classList.add('shake');
-    setTimeout(() => {
-      this.panelEl.classList.remove('shake');
-    }, 500);
+  /** 
+   * 모달이 차단 상태일 때 호출 됩니다 
+   */
+  protected async block() {
+    await this.updateComplete;
   }
 
-  /** 오버레이 클릭 핸들러 */
-  private handleBackdropClick = (e: MouseEvent) => {
-    if (e.target === this) {
-      if (this.closable) {
-        this.hide();
-      } else {
-        this.shake();
-      }
-    }
-  }
-
-  /** 키보드 이벤트 핸들러 */
-  private handleKeydown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && this.open) {
-      e.preventDefault();
-      if (this.closable) {
-        this.hide();
-      } else {
-        this.shake();
-      }
-    }
-  }
-
-  /** 포커스 트랩 핸들러 */
-  private handleFocusin = (e: FocusEvent) => {
-    if (!this.modal || !this.open) return;
-    
-    // 모달 내부의 요소가 아니면 포커스 막기
-    const target = e.target as HTMLElement;
-    if (!this.contains(target)) {
-      e.preventDefault();
-      this.panelEl?.focus();
-    }
-  }
-
+  /** 엘리먼트의 열림/닫힘 상태를 업데이트합니다 */
   private updateOpenState(open: boolean) {
     if (open) {
       this.emit('u-show');
@@ -121,28 +114,58 @@ export abstract class ModalElement extends BaseElement {
     }
   }
 
+  /** 모달 모드 상태를 업데이트합니다 */
   private updateModalState(modal: boolean) {
     if (modal) {
-      window.addEventListener('keydown', this.handleKeydown);
-      window.addEventListener('focusin', this.handleFocusin);
+      window.addEventListener('keydown', this.handleWindowKeydown);
+      window.addEventListener('focusin', this.handleWindowFocusin);
       document.body.style.overflow = this.open ? 'hidden' : '';
     } else {
-      window.removeEventListener('keydown', this.handleKeydown);
-      window.removeEventListener('focusin', this.handleFocusin);
+      window.removeEventListener('keydown', this.handleWindowKeydown);
+      window.removeEventListener('focusin', this.handleWindowFocusin);
       document.body.style.overflow = '';
     }
   }
 
-  /** 애니메이션 프레임을 사용하여 열림 상태를 스케줄링합니다. */
-  private scheduleOpen(open: boolean) {
-    if (this.rafId !== null) {
-      cancelAnimationFrame(this.rafId);
-      this.rafId = null;
-    }
+  /** 백드롭 클릭 핸들러 */
+  private handlePointerdown = (e: MouseEvent) => {
+    if (!this.modal || !this.open) return;
 
-    this.rafId = requestAnimationFrame(() => {
-      this.open = open;
-      this.rafId = null;
-    });
+    const origin = e.composedPath()[0]; // 실제 클릭 시작점(리타겟팅 전)
+
+    // 호스트 자신일 때만 백드롭 클릭으로 간주
+    if (origin === this) {
+      if (this.closable) {
+        this.hide();
+      } else {
+        this.block();
+      }
+    }
+  }
+
+  /** 키보드 이벤트 핸들러 */
+  private handleWindowKeydown = (e: KeyboardEvent) => {
+    if (!this.modal || !this.open) return;
+
+    if (e.key === 'Escape' && this.open) {
+      e.preventDefault();
+      if (this.closable) {
+        this.hide();
+      } else {
+        this.block();
+      }
+    }
+  }
+
+  /** 포커스 트랩 핸들러 */
+  private handleWindowFocusin = (e: FocusEvent) => {
+    if (!this.modal || !this.open) return;
+    
+    // 모달 내부의 요소가 아니면 포커스를 강제로 모달로 이동
+    const target = e.target as HTMLElement;
+    if (!this.contains(target)) {
+      e.preventDefault();
+      this.focus();
+    }
   }
 }

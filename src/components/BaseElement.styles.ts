@@ -19,7 +19,7 @@ export const styles = css`
     display: none !important;
   }
 
-  .scrollable {
+  [scrollable] {
     scrollbar-width: thin;
     scrollbar-color: var(--u-scrollbar-color) var(--u-scrollbar-track-color);
   }
