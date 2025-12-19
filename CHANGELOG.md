@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.10 (2025-12-19)
+- Fixed circular dependency issue between `UMenu` and `UMenuItem`
+- Changed `UMenuItem` to use tagName check instead of `instanceof` for submenu detection
+
 ## 0.1.9 (2025-12-19)
 - Added `Tree`, `TreeItem` components for hierarchical data display
 - Updated React wrapper plugin to support new file structure

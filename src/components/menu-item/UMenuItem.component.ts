@@ -2,7 +2,6 @@ import { html, PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
 
 import { BaseElement } from "../BaseElement.js";
-import { UMenu } from "../menu/UMenu.component.js";
 import { styles } from "./UMenuItem.styles.js";
 
 export class UMenuItem extends BaseElement {
@@ -61,17 +60,21 @@ export class UMenuItem extends BaseElement {
 
   private handleSubmenuSlotChange = (e: Event) => {
     const slot = e.target as HTMLSlotElement;
-    const elements = slot.assignedElements({ flatten: true })
-      .filter(el => el instanceof UMenu) as UMenu[] || [];
+    const elements = slot.assignedElements({ flatten: true });
 
     if (elements.length !== 1) {
-      console.warn(`when using <u-menu-item> with submenu, there must be exactly one <u-menu> element in the 'submenu' slot.`);
+      console.warn(`when using submenu, there must be exactly one UMenu component in the 'submenu' slot.`);
       this.isNested = false;
     } else {
       const submenu = elements[0];
-      submenu.anchor = this;
-      submenu.type = 'submenu';
-      this.isNested = true;
+      if ('anchor' in submenu && 'type' in submenu) {
+        submenu.anchor = this;
+        submenu.type = 'submenu';
+        this.isNested = true;
+      } else {
+        console.warn(`the element assigned to the 'submenu' slot is not a valid UMenu component.`);
+        this.isNested = false;
+      }
     }
   }
 }
