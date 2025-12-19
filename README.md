@@ -2,6 +2,8 @@
 
 Modern web components library built with Lit-Element for building reactive user interfaces.
 
+Visit our [Demo Site](https://components.iyulab.com) to explore all components and their features.
+
 ## Installation
 
 ```bash
@@ -10,18 +12,9 @@ npm install @iyulab/components
 
 ## Usage
 
-### Basic Import
-
 ```js
 import "@iyulab/components";
 ```
-
-## Links
-
-- [GitHub Repository](https://github.com/iyulab/u-components)
-- [NPM Package](https://www.npmjs.com/package/@iyulab/components)
-
-> 📝 **Note**: Demo site is coming soon!
 
 ## Core Dependencies
 

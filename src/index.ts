@@ -1,7 +1,6 @@
 // Components
 export * from './components/alert/UAlert.js';
 export * from './components/button/UButton.js';
-export * from './components/copy-button/UCopyButton.js';
 export * from './components/dialog/UDialog.js';
 export * from './components/divider/UDivider.js';
 export * from './components/drawer/UDrawer.js';

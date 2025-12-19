@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.9 (2025-12-19)
+- Added `Tree`, `TreeItem` components for hierarchical data display
+- Updated React wrapper plugin to support new file structure
+- Removed `CopyButton` component
+- Changed React wrapper output directory to `react-components`
+
 ## 0.1.8 (2025-12-18)
 - **Breaking Change**: Added `U` prefix to all component class names (e.g., `Alert` → `UAlert`)
 - **Breaking Change**: Changed file naming convention

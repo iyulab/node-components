@@ -115,11 +115,19 @@ function collectComponents(componentsDir: string): ComponentInfo[] {
     
     // 디렉토리인 경우에만 처리
     if (stat.isDirectory()) {
-      const indexPath = join(entryPath, 'index.ts');
+      // U로 시작하는 .ts 파일 찾기 (예: UButton.ts, UTree.ts)
+      const files = readdirSync(entryPath);
+      const componentFile = files.find(f => 
+        f.startsWith('U') && 
+        f.endsWith('.ts') && 
+        !f.includes('.component') && 
+        !f.includes('.styles')
+      );
       
-      if (existsSync(indexPath)) {
-        const content = readFileSync(indexPath, 'utf-8');
-        const componentInfo = parseComponentInfo(content, entry, indexPath);
+      if (componentFile) {
+        const filePath = join(entryPath, componentFile);
+        const content = readFileSync(filePath, 'utf-8');
+        const componentInfo = parseComponentInfo(content, entry, filePath, componentFile);
         
         if (componentInfo) {
           components.push(componentInfo);
@@ -132,19 +140,19 @@ function collectComponents(componentsDir: string): ComponentInfo[] {
 }
 
 /**
- * 컴포넌트 index.ts 파일에서 정보 추출
+ * 컴포넌트 파일에서 정보 추출 (예: UButton.ts)
  */
-function parseComponentInfo(content: string, folderName: string, filePath: string): ComponentInfo | null {
-  // 클래스명 추출 (예: export { Button })
+function parseComponentInfo(content: string, folderName: string, filePath: string, fileName: string): ComponentInfo | null {
+  // 클래스명 추출 (예: export { UButton })
   const exportMatch = content.match(/export\s*\{\s*([^}\s]+)\s*\}/);
   if (!exportMatch) {
     return null;
   }
   
-  const componentName = exportMatch[1]; // Button
-  const reactName = `U${componentName}`; // UButton
+  const componentName = exportMatch[1]; // UButton
+  const reactName = componentName; // UButton (이미 U 접두사가 있음)
   
-  // 태그명 추출 (예: Button.define("u-button"))
+  // 태그명 추출 (예: UButton.define("u-button"))
   const tagMatch = content.match(/\.define\s*\(\s*["']([^"']+)["']/);
   if (!tagMatch) {
     return null;
@@ -152,12 +160,15 @@ function parseComponentInfo(content: string, folderName: string, filePath: strin
   
   const tagName = tagMatch[1]; // u-button
   
+  // 파일명에서 확장자 제거 (UButton.ts -> UButton)
+  const fileBaseName = fileName.replace('.ts', '');
+  
   return {
     componentName,
     reactName,
     tagName,
     filePath,
-    relativePath: `components/${folderName}`
+    relativePath: `components/${folderName}/${fileBaseName}`
   };
 }
 
@@ -173,8 +184,8 @@ function generateReactWrapper(
   const files: Array<{ path: string; size: number; gzipSize: number }> = [];
   
   // import 경로 계산 (상대 경로)
-  // dist/integrations/react/UButton.js 에서 dist/components/button/index.js 로 가는 경로
-  const targetPath = resolve(outDir, '..', '..', relativePath, 'index.js');
+  // dist/react-components/UButton.js 에서 dist/components/button/UButton.js 로 가는 경로
+  const targetPath = resolve(outDir, '..', relativePath + '.js');
   let importPath = relative(outDir, targetPath).replace(/\\/g, '/');
   
   // 상대 경로가 ./ 또는 ../로 시작하지 않으면 추가

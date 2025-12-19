@@ -17,8 +17,8 @@ export class UTree extends BaseElement {
 
   private selectedItems: Set<UTreeItem> = new Set();
 
-  @queryAssignedElements({ selector: 'u-tree-item' })
-  treeItems!: UTreeItem[];
+  @queryAssignedElements({ flatten: false, selector: 'u-tree-item' })
+  items!: UTreeItem[];
 
   /** 트리가 비활성화 상태인지 여부입니다. */
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
@@ -29,7 +29,6 @@ export class UTree extends BaseElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.setAttribute('role', 'tree');
     this.addEventListener('u-select', this.handleItemSelect as EventListener);
     this.addEventListener('u-toggle', this.handleItemToggle as EventListener);
   }
@@ -72,12 +71,6 @@ export class UTree extends BaseElement {
     } else {
       this.selectedItems.delete(item);
     }
-
-    this.emit('u-tree-select', { 
-      value: item.value,
-      item: item,
-      selectedItems: Array.from(this.selectedItems)
-    });
   }
 
   /** 트리 항목 확장/축소 이벤트를 처리합니다. */
@@ -86,12 +79,6 @@ export class UTree extends BaseElement {
       e.stopPropagation();
       return;
     }
-
-    const item = e.detail.item as UTreeItem;
-    this.emit('u-tree-toggle', { 
-      expanded: item.expanded,
-      item: item
-    });
   }
 
   /**
@@ -114,7 +101,7 @@ export class UTree extends BaseElement {
   /**
    * 재귀적으로 모든 TreeItem을 가져옵니다.
    */
-  private getAllTreeItems(items: Element[] = this.treeItems): UTreeItem[] {
+  private getAllTreeItems(items: Element[] = this.items): UTreeItem[] {
     let allItems: UTreeItem[] = [];
     
     items.forEach((item) => {

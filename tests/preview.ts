@@ -33,15 +33,20 @@ export class PreviewApp extends LitElement {
           <p>A preview of the Tree component.</p>
           <u-tree>
             <u-tree-item>
-              <span slot="label">Item 1</span>
-              <u-tree-item slot="children" label="Item 1.1"></u-tree-item>
-              <u-tree-item slot="children" label="Item 1.2"></u-tree-item>
+              Item 1
+              <u-tree-item slot="children">Item 1.1</u-tree-item>
+              <u-tree-item slot="children">Item 1.2</u-tree-item>
             </u-tree-item>
-            <u-tree-item label="Item 2">
-              <u-tree-item label="Item 2.1"></u-tree-item>
-              <u-tree-item label="Item 2.2"></u-tree-item>
+            <u-tree-item>
+              Item 2
+              <u-tree-item slot="children">Item 2.1</u-tree-item>
+              <u-tree-item slot="children">
+                Item 2.2
+                <u-tree-item slot="children">Item 2.2.1</u-tree-item>
+                <u-tree-item slot="children">Item 2.2.2</u-tree-item>
+              </u-tree-item>
             </u-tree-item>
-            <u-tree-item label="Item 3"></u-tree-item>
+            <u-tree-item>Item 3 (Leaf)</u-tree-item>
           </u-tree>
         </section>
       </div>

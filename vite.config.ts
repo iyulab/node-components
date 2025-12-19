@@ -60,7 +60,7 @@ export default defineConfig({
     }),
     wrapper({
       componentsDir: 'src/components',  // 컴포넌트 소스 폴더
-      outDir: 'integrations/react',     // dist/integrations/react 폴더에 생성
+      outDir: 'react-components',     // dist/react-components 폴더에 생성
     })
   ]
 }); 

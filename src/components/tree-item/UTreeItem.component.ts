@@ -36,7 +36,6 @@ export class UTreeItem extends BaseElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.setAttribute('role', 'treeitem');
     this.setAttribute('tabindex', this.disabled ? '-1' : '0');
   }
 
@@ -45,16 +44,8 @@ export class UTreeItem extends BaseElement {
 
     if (changedProperties.has('disabled')) {
       this.setAttribute('tabindex', this.disabled ? '-1' : '0');
-      this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
-    }
-    if (changedProperties.has('expanded')) {
-      this.setAttribute('aria-expanded', this.expanded ? 'true' : 'false');
-    }
-    if (changedProperties.has('selected')) {
-      this.setAttribute('aria-selected', this.selected ? 'true' : 'false');
     }
     if (changedProperties.has('level')) {
-      this.setAttribute('aria-level', String(this.level + 1));
       this.headerEl.style.paddingLeft = `calc(${this.level} * var(--indent-size, 20px))`;
     }
   }
@@ -64,6 +55,7 @@ export class UTreeItem extends BaseElement {
       <div class="header" @click=${this.handleHeaderClick}>
         <u-icon class="expand-icon"
           ?hidden=${this.leaf}
+          lib="internal"
           name=${this.expanded ? 'chevron-down' : 'chevron-right'}
         ></u-icon>
         <slot name="prefix"></slot>
