@@ -29,21 +29,36 @@ export class PreviewApp extends LitElement {
       </div>
       <div class="main" style="overflow: auto;">
         <section>
+          <h2>Menu Component</h2>
+          <p>A preview of the Menu component.</p>
+          <u-menu mode="single" style="width: 200px; border: 1px solid var(--u-border-color); border-radius: 8px;">
+            <u-menu-item value="item1">Menu Item 1</u-menu-item>
+            <u-menu-item value="item2" selected>Menu Item 2 (Selected)</u-menu-item>
+            <u-menu-item value="item3" disabled>Menu Item 3 (Disabled)</u-menu-item>
+            <u-menu-item value="item4">
+              Menu Item 4
+              <u-menu-item value="item4-1">Submenu Item 4-1</u-menu-item>
+              <u-menu-item value="item4-2">Submenu Item 4-2</u-menu-item>
+            </u-menu-item>
+          </u-menu>
+        </section>
+
+        <section>
           <h2>Tree Component</h2>
           <p>A preview of the Tree component.</p>
           <u-tree>
             <u-tree-item>
               Item 1
-              <u-tree-item slot="children">Item 1.1</u-tree-item>
-              <u-tree-item slot="children">Item 1.2</u-tree-item>
+              <u-tree-item>Item 1.1</u-tree-item>
+              <u-tree-item>Item 1.2</u-tree-item>
             </u-tree-item>
             <u-tree-item>
               Item 2
-              <u-tree-item slot="children">Item 2.1</u-tree-item>
-              <u-tree-item slot="children">
+              <u-tree-item>Item 2.1</u-tree-item>
+              <u-tree-item>
                 Item 2.2
-                <u-tree-item slot="children">Item 2.2.1</u-tree-item>
-                <u-tree-item slot="children">Item 2.2.2</u-tree-item>
+                <u-tree-item>Item 2.2.1</u-tree-item>
+                <u-tree-item>Item 2.2.2</u-tree-item>
               </u-tree-item>
             </u-tree-item>
             <u-tree-item>Item 3 (Leaf)</u-tree-item>
@@ -108,6 +123,43 @@ export class PreviewApp extends LitElement {
       flex-wrap: wrap;
       gap: 10px;
       margin-bottom: 20px;
+    }
+
+    .divider-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding: 10px;
+      border: 1px solid var(--u-border-color);
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .divider-demo.vertical {
+      flex-direction: row;
+      height: 100px;
+    }
+    .divider-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: var(--u-neutral-100, #f3f4f6);
+      flex: 1;
+    }
+
+    .panel-content {
+      padding: 16px;
+      overflow: auto;
+    }
+    .panel-content h3 {
+      margin: 0 0 8px 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    .panel-content p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--u-txt-color-secondary, #666);
     }
   `;
 }

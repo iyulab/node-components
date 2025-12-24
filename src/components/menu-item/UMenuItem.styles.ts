@@ -22,7 +22,7 @@ export const styles = css`
     pointer-events: none;
     cursor: not-allowed;
   }
-  :host(:not([disabled])[selected]) {
+  :host([selected]) {
     color: var(--selected-color);
     background-color: var(--selected-bg-color);
   }
@@ -31,9 +31,9 @@ export const styles = css`
     background-color: var(--u-bg-color-hover);
   }
 
-  /* 콘텐츠 영역 */
-  .content {
-    flex: 1 0 auto;
+  /* 라벨 영역 */
+  .label {
+    flex: 1 1 auto;
     font-size: 1em;
     line-height: 1.5;
     overflow: hidden;
@@ -59,5 +59,22 @@ export const styles = css`
   }
   .icon.suffix {
     margin-left: 0.5em;
+  }
+
+  /* 서브메뉴 팝업 */
+  .submenu-popup {
+    position: fixed;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    min-width: 8rem;
+    padding: 0.25em 0;
+    background-color: var(--u-bg-color);
+    border: 1px solid var(--u-border-color);
+    border-radius: var(--u-border-radius);
+    box-shadow: var(--u-shadow-md);
+  }
+  .submenu-popup[visible] {
+    display: flex;
   }
 `;

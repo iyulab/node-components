@@ -8,7 +8,7 @@ import { FloatingElement } from "../FloatingElement.js";
 import { UMenuItem } from "../menu-item/UMenuItem.component.js";
 import { styles } from "./UMenu.styles.js";
 
-export type MenuType = 'default' | 'dropdown' | 'contextmenu' | 'submenu';
+export type MenuType = 'default' | 'dropdown' | 'contextmenu';
 export type MenuMode = 'none' | 'single' | 'multiple';
 
 type MenuItemFilter = 'all' | 'enabled' | 'disabled' | 'selected' | 'unselected' | 'checked' | 'unchecked';
@@ -18,11 +18,9 @@ type MenuItemFilter = 'all' | 'enabled' | 'disabled' | 'selected' | 'unselected'
  */
 export class UMenu extends FloatingElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {
-    'u-menu-item': UMenuItem,
-  };
+  static dependencies: Record<string, typeof BaseElement> = {};
 
-  @queryAssignedElements({ flatten: false, selector: 'u-menu-item' })
+  @queryAssignedElements({ flatten: false })
   items?: UMenuItem[];
 
   /** 
@@ -30,7 +28,6 @@ export class UMenu extends FloatingElement {
    * - default: 일반 메뉴 (수동 제어)
    * - dropdown: 드롭다운 메뉴 (앵커 클릭 시 토글)
    * - contextmenu: 컨텍스트 메뉴 (앵커 우클릭 시 표시)
-   * - submenu: 서브메뉴 (앵커 호버/포커스 시 표시)
    */
   @property({ type: String, reflect: true }) 
   type: MenuType = 'default';
@@ -86,7 +83,7 @@ export class UMenu extends FloatingElement {
    */
   public focusAt = async (index: number = 0) => {
     await this.updateComplete;
-    const items = this.items || [];
+    const items = this.getItems('enabled');
     const length = items.length;
     if (length === 0) return;
 
@@ -104,13 +101,16 @@ export class UMenu extends FloatingElement {
    * 재귀적으로 서브메뉴의 아이템들도 해제됩니다.
    */
   public clearAll(): void {
-    const items = this.items || [];
+    const items = this.getItems('all');
     for (const item of items) {
       item.selected = false;
       item.checked = false;
-      if (item.isNested) {
-        const submenu = item.querySelector('u-menu');
-        submenu?.clearAll();
+      // 중첩된 아이템들도 재귀적으로 처리
+      if (item.submenuItems.length > 0) {
+        for (const nested of item.submenuItems) {
+          nested.selected = false;
+          nested.checked = false;
+        }
       }
     }
   }
@@ -122,7 +122,7 @@ export class UMenu extends FloatingElement {
    * @return 조건에 맞는 아이템들의 배열입니다
    */
   public getItems(filter: MenuItemFilter = 'all'): UMenuItem[] {
-    const items = this.items || [];
+    const items = this.items?.filter(item => item instanceof UMenuItem) || [];
     switch (filter) {
       case 'all':
         return items;
@@ -146,15 +146,7 @@ export class UMenu extends FloatingElement {
   /** 앵커에 이벤트 바인딩 */
   private bind(type: MenuType, target: HTMLElement): void {
     // 타입별 속성 및 이벤트 바인딩
-    if (type === 'submenu') {
-      this.visible = false;
-      this.placement ||= 'right-start';
-      this.offset = -8;
-      target.addEventListener('pointerenter', this.handleAnchorPointerEnter);
-      target.addEventListener('pointerleave', this.handleAnchorPointerLeave);
-      target.addEventListener('focusin', this.handleAnchorFocusIn);
-      target.addEventListener('focusout', this.handleAnchorFocusOut);
-    } else if (type === 'dropdown') {
+    if (type === 'dropdown') {
       this.visible = false;
       this.placement ||= 'bottom-start';
       target.addEventListener('pointerdown', this.handleAnchorPointerDown);
@@ -180,10 +172,6 @@ export class UMenu extends FloatingElement {
     window.removeEventListener('keydown', this.handleWindowKeydown);
     window.removeEventListener('pointerdown', this.handleWindowPointerDown);
 
-    target.removeEventListener('pointerenter', this.handleAnchorPointerEnter);
-    target.removeEventListener('pointerleave', this.handleAnchorPointerLeave);
-    target.removeEventListener('focusin', this.handleAnchorFocusIn);
-    target.removeEventListener('focusout', this.handleAnchorFocusOut);
     target.removeEventListener('pointerdown', this.handleAnchorPointerDown);
     target.removeEventListener('keydown', this.handleAnchorKeydown);
     target.removeEventListener('contextmenu', this.handleAnchorContextMenu);
@@ -191,8 +179,10 @@ export class UMenu extends FloatingElement {
 
   //#region 기본 이벤트 핸들러
   private handleClick = async (e: MouseEvent) => {
-    const item = this.getEnabledItemFrom(e);
-    if (!item || item.isNested) return;
+    const item = e.target;
+    if (!(item instanceof UMenuItem)) return;
+    if (item.disabled) return;
+    if (item.submenuItems.length > 0) return;
     
     const items = this.getItems('enabled');
     if (!items.includes(item)) return;
@@ -220,8 +210,9 @@ export class UMenu extends FloatingElement {
   }
 
   private handleKeydown = async (e: KeyboardEvent) => {
-    const item = this.getEnabledItemFrom(e);
-    if (!item) return;
+    const item = e.target;
+    if (!(item instanceof UMenuItem)) return;
+    if (item.disabled) return;
 
     const items = this.getItems('enabled');
     if (!items.includes(item)) return;
@@ -258,20 +249,13 @@ export class UMenu extends FloatingElement {
         await this.focusAt(nextIndex);
         break;
 
-      case 'ArrowLeft':
-        e.preventDefault();
-        e.stopPropagation();
-        if (this.type === 'submenu') {
-          this.anchor?.focus();
-        }
-        break;
-        
       case 'ArrowRight':
-        e.preventDefault();
-        e.stopPropagation();
-        const menu = item.querySelector('u-menu');
-        if (menu?.type === 'submenu') {
-          await menu?.focusAt(0);
+        // 중첩된 아이템이면 서브메뉴로 포커스 이동
+        if (item.submenuItems.length > 0) {
+          e.preventDefault();
+          e.stopPropagation();
+          await item.showSubmenu();
+          await item.focusNestedAt(0);
         }
         break;
     }
@@ -311,32 +295,6 @@ export class UMenu extends FloatingElement {
       await this.hide();
     }
   }
-  //#endregion
-
-  //#region 'submenu' 이벤트 핸들러
-  private handleAnchorPointerEnter = (e: PointerEvent) => {
-    const item = this.getEnabledItemFrom(e);
-    if (!item) return;
-    this.show();
-  };
-
-  private handleAnchorPointerLeave = async (e: PointerEvent) => {
-    const item = this.getEnabledItemFrom(e);
-    if (!item) return;
-    this.hide();
-  };
-
-  private handleAnchorFocusIn = (e: FocusEvent) => {
-    const item = this.getEnabledItemFrom(e);
-    if (!item) return;
-    this.show();
-  };
-  
-  private handleAnchorFocusOut = async (e: FocusEvent) => {
-    const item = this.getEnabledItemFrom(e);
-    if (!item) return;
-    this.hide();
-  };
   //#endregion
 
   //#region 'dropdown' 이벤트 핸들러
@@ -379,12 +337,4 @@ export class UMenu extends FloatingElement {
     await this.show(virtual, false);
   };
   //#endregion
-
-  /** 이벤트로부터 활성화된 (비활성화되지 않은) 메뉴 아이템을 반환 */
-  private getEnabledItemFrom(event: Event): UMenuItem | null {
-    const target = event.target as HTMLElement;
-    const item = target.closest('u-menu-item') as UMenuItem | null;
-    if (!item || item.disabled) return null;
-    return item;
-  }
 }

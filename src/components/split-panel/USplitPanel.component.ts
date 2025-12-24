@@ -1,9 +1,8 @@
 import { html, PropertyValues } from "lit";
-import { property, queryAssignedElements } from "lit/decorators.js";
+import { property, queryAssignedElements, state } from "lit/decorators.js";
 
 import { arrayAttributeConverter } from "../../internals/attribute-converters.js";
 import { BaseElement } from "../BaseElement.js";
-import { UDivider } from "../divider/UDivider.component.js";
 import { styles } from "./USplitPanel.styles.js";
 
 /**
@@ -11,18 +10,23 @@ import { styles } from "./USplitPanel.styles.js";
  */
 export class USplitPanel extends BaseElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {
-    'u-divider': UDivider,
-  };
+  static dependencies: Record<string, typeof BaseElement> = {};
 
+  /** 현재 상태를 저장하는 패널 요소들 */
   private panels: HTMLElement[] = [];
-  private dividers: UDivider[] = [];
+  private sizes: number[] = [];
 
-  private panelSizes: number[] = [];
-  private panelAdjustSizes: number[] = [];
+  /** 드래그 시작 시 저장되는 정보 */
+  private draggingIndex: number = -1;
+  private dragStartSizes: number[] = [];
+  private dragStartPosition: number = 0;
+  private containerSize: number = 0;
 
   @queryAssignedElements({ flatten: true }) 
-  childElements!: HTMLElement[];
+  slotEls?: HTMLElement[];
+
+  /** 스플리터 개수 (렌더링용) */
+  @state() splitterCount: number = 0;
 
   /** 분할 방향을 설정합니다. 'horizontal'은 좌우 분할, 'vertical'은 상하 분할입니다. */
   @property({ type: String, reflect: true }) 
@@ -41,14 +45,13 @@ export class USplitPanel extends BaseElement {
   maxSizes: number[] = [];
 
   disconnectedCallback() {
-    this.dividers.forEach(divider => divider.remove());
+    this.removeEventListeners();
     super.disconnectedCallback();
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
-
-    // 방향이 변경되었을 때 패널 및 디바이더 재설정
+    
     if (changedProperties.has('orientation')) {
       this.initialize();
     }
@@ -56,100 +59,162 @@ export class USplitPanel extends BaseElement {
 
   render() {
     return html`
+      ${Array.from({ length: this.splitterCount }, (_, i) => html`
+        <div class="splitter" style="order: ${i * 2 + 1}"
+          orientation=${this.orientation}
+          @mousedown=${(e: MouseEvent) => this.handleSplitterMouseDown(e, i)}>
+        </div>
+      `)}
       <slot @slotchange=${this.handleSlotChange}></slot>
     `;
   }
 
-  // 초기화 메서드
-  private initialize = async () => {
-    // 기존 패널 및 divider 정리
-    this.panels = this.childElements.filter(el => el instanceof UDivider === false);
-    this.dividers.forEach(divider => divider.remove());
-    this.dividers = [];
-
-    // 패널 비율 계산
-    if (this.initRatio.length === this.panels.length) {
-      const totalRatio = this.initRatio.reduce((sum, r) => sum + r, 0);
-      this.panelSizes = this.initRatio.map(r => (r / totalRatio) * 100);
-    } else {
-      const equalRatio = 100 / this.panels.length;
-      this.panelSizes = this.panels.map(() => equalRatio);
-    }
-    this.panelAdjustSizes = this.panels.map(() => 0);
-
-    const property = this.orientation === 'horizontal' ? 'width' : 'height';
-    const dividerSize = this.getDividerSize();
-    this.panels.forEach((panel, index) => {
-      // 패널 크기 설정
-      const ratio = this.panelSizes[index];
-      panel.style.flex = 'none';
-      panel.style[property] = (index === 0 || index === this.panels.length - 1)
-        ? `calc(${ratio}% - ${dividerSize / 2}px)`
-        : `calc(${ratio}% - ${dividerSize}px)`;
-
-      // divider 생성 및 추가, 마지막 패널 뒤에는 divider를 추가하지 않음
-      if (index === this.panels.length - 1) return;
-        
-      const divider = new UDivider();
-      divider.orientation = this.orientation;
-      divider.movable = true;
-      divider.addEventListener('u-move', this.handleDividerMove);
-      this.dividers.push(divider);
-      panel.after(divider);
-    });
-    
-    this.requestUpdate();
-    await this.updateComplete;
-  }
-
-  private handleSlotChange = async () => {
-    // 변경된 내용이 없으면 무시
-    const panels = this.childElements.filter(el => el instanceof UDivider === false);
+  /** 슬롯 변경시 패널 초기화 */
+  private handleSlotChange = () => {
+    const panels = this.slotEls || [];
     if (panels.every((p, i) => p === this.panels[i])) {
-      return; 
+      return;
     }
-    await this.initialize();
+    this.initialize();
   }
 
-  /** 디바이더 드래그 이벤트 핸들러 */
-  private handleDividerMove = (event: any) => {
-    const divider = event.target as UDivider;
-    const delta = event.detail.delta; // 드래그 픽셀 이동거리
-    const index = this.dividers.indexOf(divider);
-    if (index === -1) return;
+  /** 패널 및 크기 초기화 */
+  private initialize = () => {
+    this.panels = this.slotEls || [];
+    
+    if (this.panels.length === 0) {
+      this.splitterCount = 0;
+      return;
+    }
 
-    const prevPanel = this.panels[index];
-    const nextPanel = this.panels[index + 1];
+    this.splitterCount = Math.max(0, this.panels.length - 1);
 
-    const property = this.orientation === 'horizontal' ? 'width' : 'height';
-    const prevPanelSize = this.panelSizes[index];
-    const nextPanelSize = this.panelSizes[index + 1];
-
-    const prevAdjSize = this.panelAdjustSizes[index] || 0;
-    const nextAdjSize = this.panelAdjustSizes[index + 1] || 0;
-
-    if (delta === 0) return;
-    if (delta > 0) {
-      // 이전 패널 크기 증가, 다음 패널 크기 감소
-      const prevNewAdjSize = prevAdjSize + delta;
-      const nextNewAdjSize = nextAdjSize - delta;
-      this.panelAdjustSizes[index] = prevNewAdjSize;
-      this.panelAdjustSizes[index + 1] = nextNewAdjSize;
+    // 초기 비율 계산 (퍼센트)
+    if (this.initRatio.length === this.panels.length) {
+      const total = this.initRatio.reduce((sum, r) => sum + r, 0);
+      this.sizes = this.initRatio.map(r => (r / total) * 100);
     } else {
-      // 이전 패널 크기 감소, 다음 패널 크기 증가
-      const prevNewAdjSize = prevAdjSize + delta;
-      const nextNewAdjSize = nextAdjSize - delta;
-      this.panelAdjustSizes[index] = prevNewAdjSize;
-      this.panelAdjustSizes[index + 1] = nextNewAdjSize;
+      const equalSize = 100 / this.panels.length;
+      this.sizes = this.panels.map(() => equalSize);
     }
 
-    prevPanel.style[property] = `calc(${prevPanelSize}% - ${this.getDividerSize()/2}px + ${this.panelAdjustSizes[index]}px)`;
-    nextPanel.style[property] = `calc(${nextPanelSize}% - ${this.getDividerSize()/2}px + ${this.panelAdjustSizes[index + 1]}px)`;
+    this.updatePanelStyles();
+    this.requestUpdate();
   }
 
-  // Get divider size from CSS variable
-  private getDividerSize(): number {
-    const sizeStr = getComputedStyle(this).getPropertyValue('--divider-size').trim();
-    return parseFloat(sizeStr) || 2;
+  /** 패널에 새로운 스타일 적용 */
+  private updatePanelStyles() {
+    const dimension = this.orientation === 'horizontal' ? 'width' : 'height';
+    const gutterSize = this.getGutterSize();
+
+    this.panels.forEach((panel, index) => {
+      const size = this.sizes[index];
+      // calc(percentage% - gutterSize 비율만큼 차감)
+      panel.style[dimension] = `calc(${size}% - ${gutterSize * (this.splitterCount / this.panels.length)}px)`;
+      panel.style.order = String(index * 2);
+    });
+  }
+
+  private handleSplitterMouseDown = (e: MouseEvent, index: number) => {
+    if (e.button !== 0) return; // 좌클릭만
+    e.preventDefault();
+
+    this.draggingIndex = index;
+    this.dragStartPosition = this.orientation === 'horizontal' ? e.clientX : e.clientY;
+    this.dragStartSizes = [...this.sizes];
+    
+    // 컨테이너 크기 저장
+    const rect = this.getBoundingClientRect();
+    this.containerSize = this.orientation === 'horizontal' ? rect.width : rect.height;
+    // 거터 크기 제외
+    this.containerSize -= this.getGutterSize() * this.splitterCount;
+
+    // 활성 상태 표시
+    const splitters = this.shadowRoot?.querySelectorAll('.splitter');
+    splitters?.[index]?.classList.add('active');
+
+    // 전역 이벤트 등록
+    document.addEventListener('mousemove', this.handleDocumentMouseMove);
+    document.addEventListener('mouseup', this.handleDocumentMouseUp);
+
+    // 드래그 중 선택 방지
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = this.orientation === 'horizontal' ? 'col-resize' : 'row-resize';
+  }
+
+  private handleDocumentMouseMove = (e: MouseEvent) => {
+    if (this.draggingIndex === -1) return;
+    e.preventDefault();
+
+    const currentPosition = this.orientation === 'horizontal' ? e.clientX : e.clientY;
+    const delta = currentPosition - this.dragStartPosition;
+    
+    // delta를 퍼센트로 변환
+    const deltaPercent = (delta / this.containerSize) * 100;
+
+    const aIndex = this.draggingIndex;
+    const bIndex = this.draggingIndex + 1;
+
+    // 새 크기 계산
+    let newASize = this.dragStartSizes[aIndex] + deltaPercent;
+    let newBSize = this.dragStartSizes[bIndex] - deltaPercent;
+
+    // 최소/최대 크기 제한 (픽셀을 퍼센트로 변환)
+    const minAPercent = ((this.minSizes[aIndex] ?? 0) / this.containerSize) * 100;
+    const minBPercent = ((this.minSizes[bIndex] ?? 0) / this.containerSize) * 100;
+    const maxAPercent = this.maxSizes[aIndex] ? ((this.maxSizes[aIndex]) / this.containerSize) * 100 : 100;
+    const maxBPercent = this.maxSizes[bIndex] ? ((this.maxSizes[bIndex]) / this.containerSize) * 100 : 100;
+
+    // 제한 적용
+    if (newASize < minAPercent) {
+      newASize = minAPercent;
+      newBSize = this.dragStartSizes[aIndex] + this.dragStartSizes[bIndex] - newASize;
+    }
+    if (newBSize < minBPercent) {
+      newBSize = minBPercent;
+      newASize = this.dragStartSizes[aIndex] + this.dragStartSizes[bIndex] - newBSize;
+    }
+    if (newASize > maxAPercent) {
+      newASize = maxAPercent;
+      newBSize = this.dragStartSizes[aIndex] + this.dragStartSizes[bIndex] - newASize;
+    }
+    if (newBSize > maxBPercent) {
+      newBSize = maxBPercent;
+      newASize = this.dragStartSizes[aIndex] + this.dragStartSizes[bIndex] - newBSize;
+    }
+
+    // 크기 업데이트
+    this.sizes[aIndex] = newASize;
+    this.sizes[bIndex] = newBSize;
+
+    // 스타일 적용
+    this.updatePanelStyles();
+  }
+
+  private handleDocumentMouseUp = () => {
+    if (this.draggingIndex === -1) return;
+
+    // 활성 상태 해제
+    const splitters = this.shadowRoot?.querySelectorAll('.splitter');
+    splitters?.[this.draggingIndex]?.classList.remove('active');
+
+    this.draggingIndex = -1;
+    this.removeEventListeners();
+
+    // 스타일 복원
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+  }
+
+  /** 전역 이벤트 리스너 제거 */
+  private removeEventListeners() {
+    document.removeEventListener('mousemove', this.handleDocumentMouseMove);
+    document.removeEventListener('mouseup', this.handleDocumentMouseUp);
+  }
+
+  /** 거터 크기 가져오기 */
+  private getGutterSize(): number {
+    const sizeStr = getComputedStyle(this).getPropertyValue('--splitter-size').trim();
+    return parseFloat(sizeStr) || 4;
   }
 }

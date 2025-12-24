@@ -48,7 +48,8 @@ export const styles = css`
     align-items: center;
     justify-content: center;
   }
-  slot:not([name]) {
+  
+  .label {
     flex: 1;
     display: inline-flex;
     align-items: center;

@@ -22,16 +22,14 @@ export const styles = css`
     opacity: 1;
   }
 
-  /* dropdown/contextmenu/submenu 타입: 플로팅 메뉴 */
+  /* dropdown/contextmenu 타입: 플로팅 메뉴 */
   :host([type="dropdown"]),
-  :host([type="contextmenu"]),
-  :host([type="submenu"]) {
+  :host([type="contextmenu"]) {
     transform: scale(0.9);
     transition: transform 0.2s ease;
   }
   :host([type="dropdown"][visible]),
-  :host([type="contextmenu"][visible]),
-  :host([type="submenu"][visible]) {
+  :host([type="contextmenu"][visible]) {
     transform: scale(1);
   }
 `;
