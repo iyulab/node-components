@@ -1,10 +1,27 @@
 # Changelog
 
 ## 0.1.11 (2026-01-06)
+
+### Fixes
 - Fixed d.ts generation error for `Theme` class by exporting the class
-- Fixed `UTreeItem.childrenItems` accessibility for `UTree` component
-  - Changed private field to public readonly getter for d.ts compatibility
-- Fixed `UTree.getAllTreeItems` parameter type to accept readonly arrays
+
+### Features
+- **UTreeItem**: Added `loading` property with spinner indicator
+- **UTreeItem**: Added MutationObserver for dynamic child loading support
+- **UMenuItem**: Added `loading` property with spinner indicator
+
+### Improvements
+- **UDivider**: Simplified component (removed movable functionality)
+- **USplitPanel**: Completely rewritten with native splitter implementation
+  - Removed dependency on `UDivider` component
+  - Added CSS variables (`--splitter-size`, `--splitter-color`, `--splitter-active-color`)
+  - Improved drag handling with percentage-based sizing
+- **UMenu/UMenuItem**: Refactored submenu handling logic
+  - Simplified submenu detection using `submenu` property
+  - Improved pointer/focus event handling for submenus
+  - Fixed submenu auto-positioning with `slot` attribute assignment
+- **UTreeItem**: Improved children slot handling with `processChildren` method
+- **UTreeItem**: Changed indent styling to use CSS custom property (`--indent-level`)
 
 ## 0.1.10 (2025-12-19)
 - Fixed circular dependency issue between `UMenu` and `UMenuItem`
