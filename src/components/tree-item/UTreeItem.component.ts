@@ -20,7 +20,12 @@ export class UTreeItem extends BaseElement {
   /** DOM 변경 감지를 위한 MutationObserver */
   private mutationObserver?: MutationObserver;
   /** 자식 트리 아이템 배열 */
-  private childrenItems: UTreeItem[] = [];
+  private _childrenItems: UTreeItem[] = [];
+
+  /** 자식 트리 아이템 배열 (읽기 전용) */
+  public get childrenItems(): readonly UTreeItem[] {
+    return this._childrenItems;
+  }
 
   @query('.header')
   headerEl!: HTMLElement;
@@ -126,14 +131,14 @@ export class UTreeItem extends BaseElement {
     const assignedElements = slot.assignedElements({ flatten: true });
     
     // u-tree-item만 필터링
-    this.childrenItems = assignedElements.filter(
+    this._childrenItems = assignedElements.filter(
       (el): el is UTreeItem => el.tagName.toLowerCase() === 'u-tree-item'
     ) as UTreeItem[];
     
-    this.leaf = this.childrenItems.length === 0;
+    this.leaf = this._childrenItems.length === 0;
     
     // 자식 요소들의 레벨 설정
-    this.childrenItems.forEach(child => {
+    this._childrenItems.forEach(child => {
       child.level = this.level + 1;
     });
   }

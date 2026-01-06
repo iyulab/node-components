@@ -101,7 +101,7 @@ export class UTree extends BaseElement {
   /**
    * 재귀적으로 모든 TreeItem을 가져옵니다.
    */
-  private getAllTreeItems(items: Element[] = this.items): UTreeItem[] {
+  private getAllTreeItems(items: readonly Element[] = this.items): UTreeItem[] {
     let allItems: UTreeItem[] = [];
     
     items.forEach((item) => {

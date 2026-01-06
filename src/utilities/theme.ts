@@ -45,7 +45,7 @@ export interface ThemeInitOptions {
 /**
  * 현재 문서에 테마를 적용하고 관리하는 유틸리티 클래스입니다.
  */
-class Theme {
+export class Theme {
   private static _instance: Theme;
   
   private readonly STORAGE_THEME_KEY = 'theme';

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.11 (2026-01-06)
+- Fixed d.ts generation error for `Theme` class by exporting the class
+- Fixed `UTreeItem.childrenItems` accessibility for `UTree` component
+  - Changed private field to public readonly getter for d.ts compatibility
+- Fixed `UTree.getAllTreeItems` parameter type to accept readonly arrays
+
 ## 0.1.10 (2025-12-19)
 - Fixed circular dependency issue between `UMenu` and `UMenuItem`
 - Changed `UMenuItem` to use tagName check instead of `instanceof` for submenu detection
