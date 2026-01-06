@@ -60,21 +60,4 @@ export const styles = css`
   .icon.suffix {
     margin-left: 0.5em;
   }
-
-  /* 서브메뉴 팝업 */
-  .submenu-popup {
-    position: fixed;
-    z-index: 1000;
-    display: none;
-    flex-direction: column;
-    min-width: 8rem;
-    padding: 0.25em 0;
-    background-color: var(--u-bg-color);
-    border: 1px solid var(--u-border-color);
-    border-radius: var(--u-border-radius);
-    box-shadow: var(--u-shadow-md);
-  }
-  .submenu-popup[visible] {
-    display: flex;
-  }
 `;

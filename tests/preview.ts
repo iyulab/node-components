@@ -37,8 +37,10 @@ export class PreviewApp extends LitElement {
             <u-menu-item value="item3" disabled>Menu Item 3 (Disabled)</u-menu-item>
             <u-menu-item value="item4">
               Menu Item 4
-              <u-menu-item value="item4-1">Submenu Item 4-1</u-menu-item>
-              <u-menu-item value="item4-2">Submenu Item 4-2</u-menu-item>
+              <u-menu>
+                <u-menu-item value="item4-1">Submenu Item 4-1</u-menu-item>
+                <u-menu-item value="item4-2">Submenu Item 4-2</u-menu-item>
+              </u-menu>
             </u-menu-item>
           </u-menu>
         </section>

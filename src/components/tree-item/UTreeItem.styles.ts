@@ -2,9 +2,12 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    display: block;
-    
+    --indent-level: 0;
     --indent-size: 20px;
+  }
+
+  :host {
+    display: block;
   }
   :host([disabled]) {
     opacity: 0.5;
@@ -22,6 +25,7 @@ export const styles = css`
     align-items: center;
     gap: 6px;
     padding: 6px 8px;
+    padding-left: calc(var(--indent-level, 0) * var(--indent-size));
     line-height: 1.5;
     border-radius: 4px;
     background-color: transparent;

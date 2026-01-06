@@ -8,7 +8,7 @@ import { FloatingElement } from "../FloatingElement.js";
 import { UMenuItem } from "../menu-item/UMenuItem.component.js";
 import { styles } from "./UMenu.styles.js";
 
-export type MenuType = 'default' | 'dropdown' | 'contextmenu';
+export type MenuType = 'default' | 'dropdown' | 'contextmenu' | 'submenu';
 export type MenuMode = 'none' | 'single' | 'multiple';
 
 type MenuItemFilter = 'all' | 'enabled' | 'disabled' | 'selected' | 'unselected' | 'checked' | 'unchecked';
@@ -106,11 +106,8 @@ export class UMenu extends FloatingElement {
       item.selected = false;
       item.checked = false;
       // 중첩된 아이템들도 재귀적으로 처리
-      if (item.submenuItems.length > 0) {
-        for (const nested of item.submenuItems) {
-          nested.selected = false;
-          nested.checked = false;
-        }
+      if (item.submenu) {
+        item.submenu.clearAll();
       }
     }
   }
@@ -155,6 +152,13 @@ export class UMenu extends FloatingElement {
       this.visible = false;
       this.placement ||= 'bottom-start';
       target.addEventListener('contextmenu', this.handleAnchorContextMenu);
+    } else if (type === 'submenu') {
+      this.visible = false;
+      this.placement ||= 'right-start';
+      target.addEventListener('pointerenter', this.handleSubmenuAnchorPointerEnter);
+      target.addEventListener('pointerleave', this.handleSubmenuAnchorPointerLeave);
+      target.addEventListener('focusin', this.handleSubmenuAnchorFocusIn);
+      target.addEventListener('focusout', this.handleSubmenuAnchorFocusOut);
     } else {
       this.visible = true;
       return;
@@ -175,6 +179,12 @@ export class UMenu extends FloatingElement {
     target.removeEventListener('pointerdown', this.handleAnchorPointerDown);
     target.removeEventListener('keydown', this.handleAnchorKeydown);
     target.removeEventListener('contextmenu', this.handleAnchorContextMenu);
+    
+    // submenu 이벤트 해제
+    target.removeEventListener('pointerenter', this.handleSubmenuAnchorPointerEnter);
+    target.removeEventListener('pointerleave', this.handleSubmenuAnchorPointerLeave);
+    target.removeEventListener('focusin', this.handleSubmenuAnchorFocusIn);
+    target.removeEventListener('focusout', this.handleSubmenuAnchorFocusOut);
   }
 
   //#region 기본 이벤트 핸들러
@@ -182,7 +192,7 @@ export class UMenu extends FloatingElement {
     const item = e.target;
     if (!(item instanceof UMenuItem)) return;
     if (item.disabled) return;
-    if (item.submenuItems.length > 0) return;
+    if (item.submenu) return;
     
     const items = this.getItems('enabled');
     if (!items.includes(item)) return;
@@ -249,13 +259,23 @@ export class UMenu extends FloatingElement {
         await this.focusAt(nextIndex);
         break;
 
-      case 'ArrowRight':
-        // 중첩된 아이템이면 서브메뉴로 포커스 이동
-        if (item.submenuItems.length > 0) {
+      case 'ArrowLeft':
+        // 서브메뉴인 경우 닫기
+        if (this.type === 'submenu') {
           e.preventDefault();
           e.stopPropagation();
-          await item.showSubmenu();
-          await item.focusNestedAt(0);
+          await this.hide();
+          this.anchor?.focus();
+        }
+        break;
+
+      case 'ArrowRight':
+        // 중첩된 아이템이면 서브메뉴로 포커스 이동
+        if (item.submenu) {
+          e.preventDefault();
+          e.stopPropagation();
+          await item.submenu.show();
+          await item.submenu.focusAt(0);
         }
         break;
     }
@@ -336,5 +356,37 @@ export class UMenu extends FloatingElement {
 
     await this.show(virtual, false);
   };
+  //#endregion
+
+  //#region 'submenu' 이벤트 핸들러
+  private handleSubmenuAnchorPointerEnter = () => {
+    const anchor = this.anchor as UMenuItem | null;
+    if (anchor?.disabled) return;
+    this.show();
+  }
+
+  private handleSubmenuAnchorPointerLeave = (e: PointerEvent) => {
+    const related = e.relatedTarget as Element | null;
+    if (related) {
+      const anchor = this.anchor;
+      if (anchor?.contains(related) || this.contains(related)) return;
+    }
+    this.hide();
+  }
+
+  private handleSubmenuAnchorFocusIn = () => {
+    const anchor = this.anchor as UMenuItem | null;
+    if (anchor?.disabled) return;
+    this.show();
+  }
+
+  private handleSubmenuAnchorFocusOut = (e: FocusEvent) => {
+    const related = e.relatedTarget as Element | null;
+    if (related) {
+      const anchor = this.anchor;
+      if (anchor?.contains(related) || this.contains(related)) return;
+    }
+    this.hide();
+  }
   //#endregion
 }

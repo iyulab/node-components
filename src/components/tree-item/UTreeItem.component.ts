@@ -4,6 +4,7 @@ import { property, query, state } from "lit/decorators.js";
 import { BaseElement } from "../BaseElement.js";
 import { UIcon } from "../icon/UIcon.component.js";
 import { styles } from "./UTreeItem.styles.js";
+import { USpinner } from "../spinner/USpinner.component.js";
 
 /**
  * UTreeItem 컴포넌트는 트리의 개별 노드를 나타냅니다.
@@ -13,7 +14,13 @@ export class UTreeItem extends BaseElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof BaseElement> = {
     'u-icon': UIcon,
+    'u-spinner': USpinner,
   };
+
+  /** DOM 변경 감지를 위한 MutationObserver */
+  private mutationObserver?: MutationObserver;
+  /** 자식 트리 아이템 배열 */
+  private childrenItems: UTreeItem[] = [];
 
   @query('.header')
   headerEl!: HTMLElement;
@@ -22,19 +29,17 @@ export class UTreeItem extends BaseElement {
   @state() leaf: boolean = true;
   /** 트리 항목의 들여쓰기 레벨입니다. */
   @state() level: number = 0;
-  /** 자식 트리 아이템 배열 */
-  private childrenItems: UTreeItem[] = [];
-
-  /** 트리 항목이 비활성화 상태인지 여부입니다. */
-  @property({ type: Boolean, reflect: true }) disabled: boolean = false;
-  /** 트리 항목이 선택된 상태인지 여부입니다. */
-  @property({ type: Boolean, reflect: true }) selected: boolean = false;
+  
   /** 트리 항목이 확장된 상태인지 여부입니다. */
   @property({ type: Boolean, reflect: true }) expanded: boolean = false;
+  /** 트리 항목이 비활성화 상태인지 여부입니다. */
+  @property({ type: Boolean, reflect: true }) disabled: boolean = false;
+  /** 로딩 상태 @default false */
+  @property({ type: Boolean, reflect: true }) loading: boolean = false;
+  /** 트리 항목이 선택된 상태인지 여부입니다. */
+  @property({ type: Boolean, reflect: true }) selected: boolean = false;
   /** 트리 항목의 값입니다. */
   @property({ type: String }) value: string = '';
-
-  private mutationObserver?: MutationObserver;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -73,7 +78,7 @@ export class UTreeItem extends BaseElement {
       this.setAttribute('tabindex', this.disabled ? '-1' : '0');
     }
     if (changedProperties.has('level')) {
-      this.headerEl.style.paddingLeft = `calc(${this.level} * var(--indent-size, 20px))`;
+      this.style.setProperty('--indent-level', this.level.toString());
     }
   }
 
@@ -85,13 +90,20 @@ export class UTreeItem extends BaseElement {
           lib="internal"
           name=${this.expanded ? 'chevron-down' : 'chevron-right'}
         ></u-icon>
+        
+        <u-spinner class="prefix icon" 
+          ?hidden=${!this.loading}
+        ></u-spinner>
+        
         <slot name="prefix"></slot>
+        
         <span class="label">
           <slot></slot>
         </span>
+        
         <slot name="suffix"></slot>
       </div>
-      
+
       <div class="children" ?hidden=${!this.expanded}>
         <slot name="children" @slotchange=${this.handleChildrenSlotChange}></slot>
       </div>

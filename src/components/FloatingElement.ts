@@ -115,8 +115,8 @@ export class FloatingElement extends BaseElement {
 
     // visible 변경 시 접근성 속성 업데이트 및 상태 이벤트 발생
     if (changedProperties.has('visible')) {
-      this.toggleAttribute('inert', !this.visible);
       this.toggleAttribute('aria-hidden', !this.visible);
+      this.toggleAttribute('inert', !this.visible);
       this.updateVisibleState(this.visible);
     }
   }
