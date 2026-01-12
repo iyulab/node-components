@@ -115,6 +115,12 @@ export class PreviewApp extends LitElement {
       font-weight: 500;
       color: var(--u-txt-color);
     }
+    section h3 {
+      margin: 20px 0 10px 0;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--u-txt-color);
+    }
     section p {
       margin: 0 0 20px 0;
       color: var(--u-txt-color-secondary, #666);

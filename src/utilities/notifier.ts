@@ -31,7 +31,7 @@ export interface ToastOptions {
 /**
  * Notifier 클래스 — 싱글톤 패턴으로 사용합니다.
  */
-class Notifier {
+export class Notifier {
   private static _instance: Notifier;
   
   private containers = new Map<ScreenPosition, HTMLDivElement>();

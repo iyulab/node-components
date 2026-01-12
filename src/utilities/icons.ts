@@ -37,7 +37,7 @@ type IconResolver = (name: string) => string | undefined | Promise<string | unde
  * 아이콘 레지스트리 클래스입니다.
  * 아이콘 라이브러리를 등록하고, 아이콘을 조회하는 기능을 제공합니다.
  */
-class IconRegistry {
+export class IconRegistry {
   private static _instance: IconRegistry;
   private libs = new Map<string, IconResolver>();
 

@@ -3,7 +3,8 @@ import { property } from 'lit/decorators.js'
 
 import { BaseElement } from '../BaseElement.js';
 import { ModalElement } from '../ModalElement.js';
-import { UIconButton } from '../icon-button/UIconButton.component.js';
+import { UIcon } from '../icon/UIcon.component.js';
+import { UButton } from '../button/UButton.component.js';
 import { styles } from './UDrawer.styles.js';
 
 export type DrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
@@ -15,27 +16,29 @@ export type DrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
 export class UDrawer extends ModalElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof BaseElement> = {
-    'u-icon-button': UIconButton
+    'u-icon': UIcon,
+    'u-button': UButton
   };
 
   /** 드로어가 나타나는 위치 */
   @property({ type: String, reflect: true }) placement: DrawerPlacement = 'left';
+  /** 헤드리스 모드 여부 */
+  @property({ type: Boolean, reflect: true }) headless = false;
   /** 타이틀 텍스트 */
   @property({ type: String }) heading: string = '';
 
   render() {
     return html`
       <div class="drawer" part="base" ?open=${this.open} placement=${this.placement}>
-        <div class="header" part="header" ?hidden=${!this.heading}>
+        <div class="header" part="header" ?hidden=${this.headless}>
           <span class="title" part="title">
             ${this.heading}
           </span>
-          <u-icon-button class="close-btn" part="close-btn"
-            borderless  
-            lib="internal" 
-            name="x-lg"
-            @click=${() => this.hide()}
-          ></u-icon-button>
+          <u-button class="close-btn" part="close-btn"
+            variant="link"
+            @click=${() => this.hide()}>
+            <u-icon lib="internal" name="x-lg"></u-icon>
+          </u-button>
         </div>
 
         <div class="content" part="content" scrollable>

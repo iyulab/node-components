@@ -6,7 +6,6 @@ export * from './components/divider/UDivider.js';
 export * from './components/drawer/UDrawer.js';
 export * from './components/form/UForm.js';
 export * from './components/icon/UIcon.js';
-export * from './components/icon-button/UIconButton.js';
 export * from './components/input/UInput.js';
 export * from './components/menu/UMenu.js';
 export * from './components/menu-item/UMenuItem.js';

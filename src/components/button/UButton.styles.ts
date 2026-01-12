@@ -8,7 +8,7 @@ export const styles = css`
     font-size: 14px;
     font-weight: 500;
     line-height: 1.5;
-    padding: 0.5em 1em;
+    padding: 0.5em;
     border: 1px solid var(--u-border-color);
     border-radius: 6px;
     background-color: var(--u-bg-color);
@@ -18,19 +18,57 @@ export const styles = css`
     user-select: none;
     cursor: pointer;
   }
-  :host(:hover) {
-    color: var(--u-txt-color-hover);
+
+  /* Style variants */
+  :host([variant="default"]) {
+    color: var(--u-txt-color);
+    border-color: var(--u-border-color);
+    background-color: var(--u-bg-color);
+  }
+  :host([variant="default"]:hover) {
     background-color: var(--u-bg-color-hover);
   }
-  :host(:active) {
-    color: var(--u-txt-color-active);
+  :host([variant="default"]:active) {
     background-color: var(--u-bg-color-active);
+  }
+
+  :host([variant="borderless"]) {
+    color: var(--u-txt-color);
+    border-color: transparent;
+    background-color: transparent;
+  }
+  :host([variant="borderless"]:hover) {
+    background-color: var(--u-bg-color-hover);
+  }
+  :host([variant="borderless"]:active) {
+    background-color: var(--u-bg-color-active);
+  }
+
+  :host([variant="link"]) {
+    color: var(--u-txt-color);
+    border-color: transparent;
+    background-color: transparent;
+  }
+  :host([variant="link"]:hover) {
+    color: var(--u-blue-500, #3b82f6);
+  }
+  :host([variant="link"]:active) {
+    color: var(--u-blue-600, #2563eb);
+  }
+
+  :host(:active) {
     transform: translateY(1px);
   }
-  :host([loading]),
+
   :host([disabled]) {
     color: var(--u-txt-color-disabled);
-    pointer-events: none;
+    cursor: not-allowed;
+  }
+  :host([loading]) {
+    cursor: wait;
+  }
+  :host([loading]) button {
+    visibility: hidden;
   }
 
   button {
@@ -52,6 +90,10 @@ export const styles = css`
     display: inline-flex;
     justify-content: center;
   }
+  ::slotted(*) {
+    color: inherit;
+    font-size: inherit;
+  }
   /* 슬롯에 내용이 있을 때 gap 적용 */
   ::slotted([slot="prefix"]) {
     margin-right: 0.5em;
@@ -60,7 +102,7 @@ export const styles = css`
     margin-left: 0.5em;
   }
 
-  .overlay {
+  .mask {
     position: absolute;
     z-index: 100;
     top: 0;
@@ -76,5 +118,6 @@ export const styles = css`
     font-size: inherit;
     border-radius: inherit;
     background-color: inherit;
+    pointer-events: none;
   }
 `;
