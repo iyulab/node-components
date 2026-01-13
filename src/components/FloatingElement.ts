@@ -4,7 +4,7 @@ import { property, state } from 'lit/decorators.js';
 import { computePosition, offset, shift, flip, autoPlacement, autoUpdate } from '@floating-ui/dom';
 import type { Placement, VirtualElement } from '@floating-ui/dom';
 
-import { getParentElement, querySelectorWithin } from '../internals/node-helpers.js';
+import { getParentElement, querySelectorAllWithin } from '../internals/node-helpers.js';
 import { BaseElement } from './BaseElement.js';
 import { styles } from './FloatingElement.styles.js';
 
@@ -28,10 +28,15 @@ export class FloatingElement extends BaseElement {
   // 자동 위치 업데이트 정리 함수
   private cleanup: (() => void) | null = null;
 
-  /** 
-   * 연결될 대상 엘리먼트 입니다. 지정하지 않으면 부모 엘리먼트를 사용합니다. 
+  /**
+   * 연결될 대상 엘리먼트 입니다. 지정하지 않으면 부모 엘리먼트가 포함됩니다. 
    */
-  @state() anchor?: HTMLElement;
+  @state() anchors?: HTMLElement[];
+
+  /**
+   * 엘리먼트가 떠 있는 동안의 대상 엘리먼트 입니다.
+   */
+  @state() target?: HTMLElement | VirtualElement;
 
   /** 
    * 앵커 엘리먼트를 찾기 위한 CSS 선택자입니다. querySelector를 사용하여 DOM에서 대상을 검색합니다.
@@ -89,7 +94,11 @@ export class FloatingElement extends BaseElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.anchor ||= getParentElement(this); // 기본(부모 엘리먼트)
+
+    if (!this.anchors || this.anchors.length === 0) {
+      const parent = getParentElement(this);
+      this.anchors = parent ? [parent] : [];
+    }
   }
 
   disconnectedCallback(): void {
@@ -105,8 +114,7 @@ export class FloatingElement extends BaseElement {
 
     // for 변경 시 DOM 에서 앵커 재검색
     if (changedProperties.has('for')) {
-      const founded = this.for ? querySelectorWithin(this, this.for) : undefined;
-      this.anchor = founded || undefined;
+      this.anchors = this.for ? querySelectorAllWithin(this, this.for) : [];
     }
   }
 
@@ -124,21 +132,21 @@ export class FloatingElement extends BaseElement {
   /** 
    * 현재 엘리먼트를 표시합니다.
    * 
-   * @param anchor - 위치 계산에 사용할 앵커 엘리먼트입니다. 지정하지 않으면 this.anchor 가 사용됩니다.
+   * @param target - 위치 계산에 사용할 타겟 엘리먼트입니다.
    * @param auto - 표시 후 자동 위치 업데이트 활성화 여부입니다. 기본값은 true 입니다.
    */
-  public async show(anchor?: Element | VirtualElement, auto: boolean = true) {
-    anchor ||= this.anchor;
-    if (!anchor) return;
-    
+  public async show(target: Element | VirtualElement, auto: boolean = true) {
     await this.updateComplete;
-    await this.reposition(anchor);
+    
+    await this.reposition(target);
+    
     if (auto === true) {
-      this.cleanup = autoUpdate(anchor, this, () => {
-        this.reposition(anchor);
+      this.cleanup = autoUpdate(target, this, () => {
+        this.reposition(target);
       });
     }
     this.scheduleVisible(true);
+    this.target = target;
   };
 
   /** 
@@ -149,12 +157,13 @@ export class FloatingElement extends BaseElement {
     if (this.cleanup !== null) this.cleanup();
     this.cleanup = null;
     this.scheduleVisible(false);
+    this.target = undefined;
   };
   
   /** 
    * `floating-ui` 를 이용하여 위치를 계산하고 style 을 적용합니다. 
    * 
-   * @param target - 위치 계산에 사용할 앵커 엘리먼트입니다.
+   * @param target - 위치 계산에 사용할 타겟 엘리먼트입니다.
    */
   protected async reposition(target: Element | VirtualElement) {
     const position = await computePosition(target, this, {

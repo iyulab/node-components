@@ -56,15 +56,15 @@ export class UMenu extends FloatingElement {
   protected willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
-    // anchor 또는 type 변경 시 바인딩 갱신
-    if (changedProperties.has('anchor') || changedProperties.has('type')) {
+    // anchors 또는 type 변경 시 바인딩 갱신
+    if (changedProperties.has('anchors') || changedProperties.has('type')) {
       const oldType = changedProperties.get('type') || 'default' as MenuType;
       const newType = this.type || 'default' as MenuType;
-      const oldAnchor = changedProperties.get('anchor') as HTMLElement | null;
-      const newAnchor = this.anchor;
+      const oldAnchors = changedProperties.get('anchors') as HTMLElement[] | undefined;
+      const newAnchors = this.anchors;
 
-      if (oldAnchor) this.unbind(oldType, oldAnchor);
-      if (newAnchor) this.bind(newType, newAnchor);
+      if (oldAnchors) this.unbind(oldType, oldAnchors);
+      if (newAnchors) this.bind(newType, newAnchors);
     }
 
     // mode 변경 시 선택 상태 초기화
@@ -141,24 +141,30 @@ export class UMenu extends FloatingElement {
   }
 
   /** 앵커에 이벤트 바인딩 */
-  private bind(type: MenuType, target: HTMLElement): void {
+  private bind(type: MenuType, anchors: HTMLElement[]): void {
     // 타입별 속성 및 이벤트 바인딩
     if (type === 'dropdown') {
       this.visible = false;
       this.placement ||= 'bottom-start';
-      target.addEventListener('pointerdown', this.handleAnchorPointerDown);
-      target.addEventListener('keydown', this.handleAnchorKeydown);
+      for (const anchor of anchors) {
+        anchor.addEventListener('pointerdown', this.handleAnchorPointerDown);
+        anchor.addEventListener('keydown', this.handleAnchorKeydown);
+      }
     } else if (type === 'contextmenu') {
       this.visible = false;
       this.placement ||= 'bottom-start';
-      target.addEventListener('contextmenu', this.handleAnchorContextMenu);
+      for (const anchor of anchors) {
+        anchor.addEventListener('contextmenu', this.handleAnchorContextMenu);
+      }
     } else if (type === 'submenu') {
       this.visible = false;
       this.placement ||= 'right-start';
-      target.addEventListener('pointerenter', this.handleSubmenuAnchorPointerEnter);
-      target.addEventListener('pointerleave', this.handleSubmenuAnchorPointerLeave);
-      target.addEventListener('focusin', this.handleSubmenuAnchorFocusIn);
-      target.addEventListener('focusout', this.handleSubmenuAnchorFocusOut);
+      for (const anchor of anchors) {
+        anchor.addEventListener('pointerenter', this.handleSubmenuAnchorPointerEnter);
+        anchor.addEventListener('pointerleave', this.handleSubmenuAnchorPointerLeave);
+        anchor.addEventListener('focusin', this.handleSubmenuAnchorFocusIn);
+        anchor.addEventListener('focusout', this.handleSubmenuAnchorFocusOut);
+      }
     } else {
       this.visible = true;
       return;
@@ -171,20 +177,22 @@ export class UMenu extends FloatingElement {
   }
 
   /** 앵커에서 이벤트 바인딩 해제 */
-  private unbind(_: MenuType, target: HTMLElement): void {
+  private unbind(_: MenuType, anchors: HTMLElement[]): void {
     window.removeEventListener('focusout', this.handleWindowFocusOut);
     window.removeEventListener('keydown', this.handleWindowKeydown);
     window.removeEventListener('pointerdown', this.handleWindowPointerDown);
 
-    target.removeEventListener('pointerdown', this.handleAnchorPointerDown);
-    target.removeEventListener('keydown', this.handleAnchorKeydown);
-    target.removeEventListener('contextmenu', this.handleAnchorContextMenu);
-    
-    // submenu 이벤트 해제
-    target.removeEventListener('pointerenter', this.handleSubmenuAnchorPointerEnter);
-    target.removeEventListener('pointerleave', this.handleSubmenuAnchorPointerLeave);
-    target.removeEventListener('focusin', this.handleSubmenuAnchorFocusIn);
-    target.removeEventListener('focusout', this.handleSubmenuAnchorFocusOut);
+    for (const anchor of anchors) {
+      anchor.removeEventListener('pointerdown', this.handleAnchorPointerDown);
+      anchor.removeEventListener('keydown', this.handleAnchorKeydown);
+      anchor.removeEventListener('contextmenu', this.handleAnchorContextMenu);
+      
+      // submenu 이벤트 해제
+      anchor.removeEventListener('pointerenter', this.handleSubmenuAnchorPointerEnter);
+      anchor.removeEventListener('pointerleave', this.handleSubmenuAnchorPointerLeave);
+      anchor.removeEventListener('focusin', this.handleSubmenuAnchorFocusIn);
+      anchor.removeEventListener('focusout', this.handleSubmenuAnchorFocusOut);
+    }
   }
 
   //#region 기본 이벤트 핸들러
@@ -265,7 +273,9 @@ export class UMenu extends FloatingElement {
           e.preventDefault();
           e.stopPropagation();
           await this.hide();
-          this.anchor?.focus();
+          if (this.target instanceof HTMLElement) {
+            this.target.focus();
+          }
         }
         break;
 
@@ -274,7 +284,7 @@ export class UMenu extends FloatingElement {
         if (item.submenu) {
           e.preventDefault();
           e.stopPropagation();
-          await item.submenu.show();
+          await item.submenu.show(item);
           await item.submenu.focusAt(0);
         }
         break;
@@ -303,13 +313,13 @@ export class UMenu extends FloatingElement {
       
       await this.hide();
     } else if (this.type === 'dropdown') {
-      const anchor = this.anchor;
-      if (!anchor) return;
+      const currentTarget = this.target;
+      if (!currentTarget || !(currentTarget instanceof HTMLElement)) return;
       
-      // 메뉴 또는 앵커 내부 클릭인 경우 무시
+      // 메뉴 또는 현재 타겟 내부 클릭인 경우 무시
       const targets = e.composedPath().filter(v => v instanceof HTMLElement);
       for (const target of targets) {
-        if (this.contains(target) || anchor.contains(target)) return;
+        if (this.contains(target) || currentTarget.contains(target)) return;
       }
 
       await this.hide();
@@ -320,18 +330,20 @@ export class UMenu extends FloatingElement {
   //#region 'dropdown' 이벤트 핸들러
   private handleAnchorPointerDown = async (e: PointerEvent) => {
     if (e.button !== 0) return;
+    const target = e.currentTarget as HTMLElement;
 
-    if (this.visible)
+    if (this.visible && this.target === target)
       await this.hide();
     else 
-      await this.show();
+      await this.show(target);
   };
 
   private handleAnchorKeydown = async (e: KeyboardEvent) => {
     if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
+      const target = e.currentTarget as HTMLElement;
       if (this.visible) return; 
-      await this.show();
+      await this.show(target);
     }
   };
   //#endregion
@@ -359,32 +371,32 @@ export class UMenu extends FloatingElement {
   //#endregion
 
   //#region 'submenu' 이벤트 핸들러
-  private handleSubmenuAnchorPointerEnter = () => {
-    const anchor = this.anchor as UMenuItem | null;
-    if (anchor?.disabled) return;
-    this.show();
+  private handleSubmenuAnchorPointerEnter = (e: PointerEvent) => {
+    const target = e.currentTarget as UMenuItem;
+    if (target?.disabled) return;
+    this.show(target);
   }
 
   private handleSubmenuAnchorPointerLeave = (e: PointerEvent) => {
     const related = e.relatedTarget as Element | null;
     if (related) {
-      const anchor = this.anchor;
-      if (anchor?.contains(related) || this.contains(related)) return;
+      const target = this.target as Element | undefined;
+      if (target?.contains(related) || this.contains(related)) return;
     }
     this.hide();
   }
 
-  private handleSubmenuAnchorFocusIn = () => {
-    const anchor = this.anchor as UMenuItem | null;
-    if (anchor?.disabled) return;
-    this.show();
+  private handleSubmenuAnchorFocusIn = (e: FocusEvent) => {
+    const target = e.currentTarget as UMenuItem;
+    if (target?.disabled) return;
+    this.show(target);
   }
 
   private handleSubmenuAnchorFocusOut = (e: FocusEvent) => {
     const related = e.relatedTarget as Element | null;
     if (related) {
-      const anchor = this.anchor;
-      if (anchor?.contains(related) || this.contains(related)) return;
+      const target = this.target as Element | undefined;
+      if (target?.contains(related) || this.contains(related)) return;
     }
     this.hide();
   }

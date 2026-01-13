@@ -1,4 +1,5 @@
 import { html, PropertyValues } from "lit";
+import { property } from "lit/decorators.js";
 
 import { BaseElement } from "../BaseElement.js";
 import { FloatingElement } from "../FloatingElement.js";
@@ -11,16 +12,24 @@ export class UTooltip extends FloatingElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof BaseElement> = {};
 
+  /**
+   * 툴팁 내부로 마우스를 이동해도 툴팁이 유지되는지 여부입니다.
+   * true일 경우 툴팁 위에 마우스를 올려놓을 수 있습니다.
+   * 
+   * @default false
+   */
+  @property({ type: Boolean }) interactive: boolean = false;
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     
-    // anchor 변경 시 바인딩 갱신 및 위치 자동 업데이트 설정
-    if (changedProperties.has('anchor')) {
-      const oldAnchor = changedProperties.get('anchor') as HTMLElement | null;
-      const newAnchor = this.anchor as HTMLElement | null;
+    // anchors 변경 시 바인딩 갱신 및 위치 자동 업데이트 설정
+    if (changedProperties.has('anchors')) {
+      const oldAnchors = changedProperties.get('anchors') as HTMLElement[] | undefined;
+      const newAnchors = this.anchors as HTMLElement[] | undefined;
       
-      if (oldAnchor) this.unbind(oldAnchor);
-      if (newAnchor) this.bind(newAnchor);
+      if (oldAnchors) this.unbind(oldAnchors);
+      if (newAnchors) this.bind(newAnchors);
     }
   }
 
@@ -29,22 +38,47 @@ export class UTooltip extends FloatingElement {
   }
 
   /** this 바인딩 이벤트 핸들러 */ 
-  private _show = () => this.show();
-  private _hide = () => this.hide();
+  private _show = (event: Event) => {
+    const target = event.currentTarget as Element | null;
+    if (!target) return;
+    this.show(target);
+  }
+  
+  /** this 바인딩 이벤트 핸들러 */
+  private _hide = (event: Event) => {
+    // interactive 모드에서는 anchor또는 tooltip 내부로 포커스/포인터가 이동할 경우 숨기지 않음
+    if (this.interactive) {
+      const target = this.target as Element | undefined;
+      const related = (event as any).relatedTarget as Element | null;
+      if (!target || !related) return;
+      if (this.contains(related) || target.contains(related)) return;
+    }
+    this.hide();
+  };
   
   /** 바인딩 이벤트 핸들러 */
-  private bind(target: HTMLElement): void {
-    target.addEventListener('pointerenter', this._show);
-    target.addEventListener('pointerleave', this._hide);
-    target.addEventListener('focusin', this._show);
-    target.addEventListener('focusout', this._hide);
+  private bind(anchors: HTMLElement[]): void {
+    for (const anchor of anchors) {
+      anchor.addEventListener('pointerenter', this._show);
+      anchor.addEventListener('pointerleave', this._hide);
+      anchor.addEventListener('focusin', this._show);
+      anchor.addEventListener('focusout', this._hide);
+    }
+
+    this.addEventListener('pointerleave', this._hide);
+    this.addEventListener('focusout', this._hide);
   }
 
   /** 바인딩 해제 이벤트 핸들러 */
-  private unbind(target: HTMLElement): void {
-    target.removeEventListener('pointerenter', this._show);
-    target.removeEventListener('pointerleave', this._hide);
-    target.removeEventListener('focusin', this._show);
-    target.removeEventListener('focusout', this._hide);
+  private unbind(anchors: HTMLElement[]): void {
+    for (const anchor of anchors) {
+      anchor.removeEventListener('pointerenter', this._show);
+      anchor.removeEventListener('pointerleave', this._hide);
+      anchor.removeEventListener('focusin', this._show);
+      anchor.removeEventListener('focusout', this._hide);
+    }
+
+    this.addEventListener('pointerleave', this._hide);
+    this.addEventListener('focusout', this._hide);
   }
 }

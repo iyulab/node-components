@@ -169,5 +169,36 @@ export class PreviewApp extends LitElement {
       font-size: 0.9rem;
       color: var(--u-txt-color-secondary, #666);
     }
+
+    .tag-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .tooltip-demo {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid var(--u-border-color);
+      border-radius: 8px;
+    }
+
+    .tooltip-demo-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+      padding: 60px 20px;
+      border: 1px solid var(--u-border-color);
+      border-radius: 8px;
+    }
+    .tooltip-demo-grid > div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   `;
 }

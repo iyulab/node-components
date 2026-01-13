@@ -14,6 +14,7 @@ export * from './components/progress-ring/UProgressRing.js';
 export * from './components/skeleton/USkeleton.js';
 export * from './components/spinner/USpinner.js';
 export * from './components/split-panel/USplitPanel.js';
+export * from './components/tag/UTag.js';
 export * from './components/tooltip/UTooltip.js';
 export * from './components/tree/UTree.js';
 export * from './components/tree-item/UTreeItem.js';
@@ -28,6 +29,7 @@ export * from './events/UShowEvent';
 
 // Utilities
 export * from './utilities/BrowserStorage.js';
-// export * from './utilities/decorators';export * from './utilities/icons.js';
+// export * from './utilities/decorators';
+export * from './utilities/icons.js';
 export * from './utilities/notifier.js';
 export * from './utilities/theme.js';
