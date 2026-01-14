@@ -29,14 +29,14 @@ export class FloatingElement extends BaseElement {
   private cleanup: (() => void) | null = null;
 
   /**
-   * 연결될 대상 엘리먼트 입니다. 지정하지 않으면 부모 엘리먼트가 포함됩니다. 
-   */
-  @state() anchors?: HTMLElement[];
-
-  /**
    * 엘리먼트가 떠 있는 동안의 대상 엘리먼트 입니다.
    */
   @state() target?: HTMLElement | VirtualElement;
+
+  /**
+   * 연결될 대상 엘리먼트 입니다. 지정하지 않으면 부모 엘리먼트가 포함됩니다. 
+   */
+  @state() anchors?: HTMLElement[];
 
   /** 
    * 앵커 엘리먼트를 찾기 위한 CSS 선택자입니다. querySelector를 사용하여 DOM에서 대상을 검색합니다.
@@ -112,9 +112,9 @@ export class FloatingElement extends BaseElement {
   protected willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
-    // for 변경 시 DOM 에서 앵커 재검색
+    // for 변경 시 DOM 에서 앵커 검색
     if (changedProperties.has('for')) {
-      this.anchors = this.for ? querySelectorAllWithin(this, this.for) : [];
+      this.scan();
     }
   }
 
@@ -126,6 +126,19 @@ export class FloatingElement extends BaseElement {
       this.toggleAttribute('aria-hidden', !this.visible);
       this.toggleAttribute('inert', !this.visible);
       this.updateVisibleState(this.visible);
+    }
+  }
+
+  /**
+   * for 속성에 따라 앵커 엘리먼트를 검색하여 anchors 속성에 설정합니다.
+   */
+  public scan() {
+    if (this.for) {
+      const anchors = querySelectorAllWithin(this, this.for);
+      this.anchors = Array.from(anchors);
+    } else {
+      const parent = getParentElement(this);
+      this.anchors = parent ? [parent] : [];
     }
   }
 
