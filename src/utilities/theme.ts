@@ -4,7 +4,7 @@ import { BrowserStorage, BrowserStorageOptions } from './BrowserStorage.js';
  * 스타일 시트 번들 로드, 내부 자산에서 CSS를 인라인으로 가져옵니다.
  * 빌드 시점에 정적 파일을 포함시키기 위해 Vite의 `import.meta.glob`을 사용합니다.
  */
-const styleBundle = Object.entries(import.meta.glob('../assets/styles/*.css', {
+const styleSheetBundle = Object.entries(import.meta.glob('../assets/styles/*.css', {
   eager: true,
   query: '?inline',
 })).map(([path, module]) => {
@@ -43,37 +43,29 @@ export interface ThemeInitOptions {
 }
 
 /**
- * 현재 문서에 테마를 적용하고 관리하는 유틸리티 클래스입니다.
+ * 현재 문서에 테마를 적용하고 관리하는 유틸리티 전역 인스턴스입니다.
  */
 export class Theme {
-  private static _instance: Theme;
-  
-  private readonly STORAGE_THEME_KEY = 'theme';
-  private storage: BrowserStorage | null = null;
-  private _isInitialized = false;
-  private _isDebugMode = false;
+  private static readonly STORAGE_THEME_KEY = 'theme';
+  private static storage: BrowserStorage | null = null;
+  private static _isInitialized = false;
+  private static _isDebugMode = false;
 
+  /** 개별 인스턴스 생성을 방지합니다. */
   private constructor() {}
 
-  public static get instance(): Theme {
-    if (!this._instance) {
-      this._instance = new Theme();
-    }
-    return this._instance;
-  }
-
-  public get isInitialized() {
+  public static get isInitialized() {
     return this._isInitialized;
   }
 
-  public get isDebugMode() {
+  public static get isDebugMode() {
     return this._isDebugMode;
   }
 
   /**
    * 테마 유틸리티를 초기화합니다.
    */
-  public async init(options?: ThemeInitOptions) {
+  public static async init(options?: ThemeInitOptions) {
     this._isDebugMode = options?.debug || false;
     this.log('init called', { options }); // 초기화 호출 로깅
 
@@ -90,7 +82,7 @@ export class Theme {
     const useBuiltIn = options?.useBuiltIn ?? true;
     if (useBuiltIn) {
       this.log('Import enabled: loading styles via internal assets');
-      for (let [name, module] of styleBundle) {
+      for (let [name, module] of styleSheetBundle) {
         // 스타일 시트를 생성합니다.
         const style = document.createElement('style');
         style.setAttribute('data-name', name);
@@ -131,7 +123,7 @@ export class Theme {
   /**
    * 현재 문서에 적용된 테마를 가져옵니다.
    */
-  public get(): ThemeType | undefined {
+  public static get(): ThemeType | undefined {
     const attr = document.documentElement.getAttribute('data-theme');
     switch (attr) {
       case 'system': return 'system';
@@ -144,7 +136,7 @@ export class Theme {
   /**
    * 현재 문서에 적용할 테마를 설정합니다.
    */
-  public set(theme: ThemeType) {
+  public static set(theme: ThemeType) {
     try {
       const media = window.matchMedia('(prefers-color-scheme: dark)');
       if (theme === 'system') {
@@ -177,7 +169,7 @@ export class Theme {
   }
 
   /** 시스템 테마 변경을 처리하는 메서드 */
-  private handleSystemThemeChanged = (_?: MediaQueryListEvent) => {
+  private static handleSystemThemeChanged = (_?: MediaQueryListEvent) => {
     if (document.documentElement.getAttribute('data-theme') === 'system') {
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       document.documentElement.setAttribute('theme', isDark ? 'dark' : 'light');
@@ -186,12 +178,7 @@ export class Theme {
   };
 
   /** 디버그 모드시 로그 출력 함수 (인스턴스 스코프) */
-  private log(...args: any[]) {
+  private static log(...args: any[]) {
     if (this._isDebugMode) console.log('[theme]', ...args);
   }
 }
-
-/**
- * 테마 유틸리티의 싱글톤 인스턴스입니다.
- */
-export const theme = Theme.instance;

@@ -4,7 +4,7 @@ import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { until } from "lit/directives/until.js";
 
 import { BaseElement } from "../BaseElement.js";
-import { icons } from "../../utilities/icons.js";
+import { IconRegistry } from "../../utilities/IconRegistry.js";
 import { styles } from "./UIcon.styles.js";
 
 export type IconLibrary = "internal" | "default" | (string & {});
@@ -35,7 +35,7 @@ export class UIcon extends BaseElement {
   render() {
     if (!this.lib || !this.name) return nothing;
 
-    return until(icons.resolve(this.lib, this.name).then(html => {
+    return until(IconRegistry.resolve(this.lib, this.name).then(html => {
       return this.validate(html)
         ? unsafeHTML(html)
         : nothing;

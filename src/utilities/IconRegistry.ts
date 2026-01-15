@@ -7,6 +7,24 @@
 let defaultIconBaseUrl = '/assets/icons/';
 
 /**
+ * `default` 라이브러리에서 아이콘을 로드할 때 사용할 기본 URL을 반환합니다.
+ */
+function getDefaultBaseUrl(): string {
+  return defaultIconBaseUrl;
+}
+
+/**
+ * `default` 라이브러리에서 아이콘을 로드할 때 사용할 기본 URL을 설정합니다.
+ *
+ * @example
+ * - `/assets/icons/`
+ * - `https://cdn.example.com/icons/`
+ */
+function setDefaultBaseUrl(url: string): void {
+  defaultIconBaseUrl = url;
+}
+
+/**
  * 아이콘 캐시 맵입니다.
  * 한 번 로드된 아이콘은 이 맵에 저장되어 재사용됩니다.
  */
@@ -34,26 +52,19 @@ const internalIconBundle = new Map<string, string>(
 type IconResolver = (name: string) => string | undefined | Promise<string | undefined>;
 
 /**
- * 아이콘 레지스트리 클래스입니다.
+ * 아이콘 레지스트리입니다.
  * 아이콘 라이브러리를 등록하고, 아이콘을 조회하는 기능을 제공합니다.
  */
-export class IconRegistry {
-  private static _instance: IconRegistry;
-  private libs = new Map<string, IconResolver>();
+class IconRegistry {
+  private static libs = new Map<string, IconResolver>();
 
+  /** 클래스 생성 방지 */
   private constructor() {}
-
-  public static get instance(): IconRegistry {
-    if (!this._instance) {
-      this._instance = new IconRegistry();
-    }
-    return this._instance;
-  }
 
   /**
    * 지정된 아이콘 라이브러리가 등록되었는지 확인합니다.
    */
-  public has(lib: string) {
+  public static has(lib: string) {
     return this.libs.has(lib);
   }
 
@@ -61,7 +72,7 @@ export class IconRegistry {
    * 지정된 아이콘 라이브러리를 등록합니다.
    * 이미 등록된 라이브러리 이름인 경우, 경고 메시지를 출력합니다.
    */
-  public register(lib: string, resolver: IconResolver) {
+  public static register(lib: string, resolver: IconResolver) {
     if (this.libs.has(lib)) {
       console.warn(`Icon library "${lib}" is already registered`); // eslint-disable-line no-console
     } else {
@@ -72,14 +83,14 @@ export class IconRegistry {
   /**
    * 지정된 아이콘 라이브러리를 등록 해제합니다.
    */
-  public unregister(lib: string) {
+  public static unregister(lib: string) {
     this.libs.delete(lib);
   }
 
   /**
    * 지정된 아이콘 라이브러리의 svg 아이콘 소스를 가져옵니다.
    */
-  public async resolve(lib: string, name: string): Promise<string | undefined> {
+  public static async resolve(lib: string, name: string): Promise<string | undefined> {
     const resolver = this.libs.get(lib);
     if (!resolver) return undefined;
 
@@ -89,11 +100,11 @@ export class IconRegistry {
 }
 
 // 기본 내장 아이콘 라이브러리 등록
-IconRegistry.instance.register("internal", (name: string) => {
+IconRegistry.register("internal", (name: string) => {
   return internalIconBundle.get(name);
 });
 // 기본 원격 아이콘 라이브러리 등록
-IconRegistry.instance.register("default", async (name: string) => {
+IconRegistry.register("default", async (name: string) => {
   if (defaultIconCache.has(name)) {
     return defaultIconCache.get(name);
   }
@@ -115,26 +126,8 @@ IconRegistry.instance.register("default", async (name: string) => {
   }
 });
 
-/**
- * 전역 아이콘 레지스트리 인스턴스에 접근합니다.
- * 기본 내장 아이콘 라이브러리가 포함되어 있습니다.
- */
-export const icons = IconRegistry.instance;
-
-/**
- * `default` 라이브러리에서 아이콘을 로드할 때 사용할 기본 URL을 반환합니다.
- */
-export function getDefaultBaseUrl(): string {
-  return defaultIconBaseUrl;
-}
-
-/**
- * `default` 라이브러리에서 아이콘을 로드할 때 사용할 기본 URL을 설정합니다.
- *
- * @example
- * - `/assets/icons/`
- * - `https://cdn.example.com/icons/`
- */
-export function setDefaultBaseUrl(url: string): void {
-  defaultIconBaseUrl = url;
-}
+export {
+  IconRegistry,
+  getDefaultBaseUrl,
+  setDefaultBaseUrl,
+};

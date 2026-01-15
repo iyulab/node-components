@@ -3,6 +3,7 @@ import { UAlert, type AlertType } from "../components/alert/UAlert.component.js"
 // Alert 커스텀 엘리먼트 정의 확인
 UAlert.define("u-alert");
 
+/** 토스트 알림의 화면 위치 타입 */
 export type ScreenPosition =
   | "top-left"
   | "top-center"
@@ -29,27 +30,19 @@ export interface ToastOptions {
 }
 
 /**
- * Notifier 클래스 — 싱글톤 패턴으로 사용합니다.
+ * 알림 유틸리티 전역 인스턴스입니다.
  */
 export class Notifier {
-  private static _instance: Notifier;
-  
-  private containers = new Map<ScreenPosition, HTMLDivElement>();
-  private toasts = new Set<UAlert>();
+  private static containers = new Map<ScreenPosition, HTMLDivElement>();
+  private static toasts = new Set<UAlert>();
 
+  /** 개별 인스턴스 생성을 방지합니다. */
   private constructor() {}
-
-  public static get instance(): Notifier {
-    if (!this._instance) {
-      this._instance = new Notifier();
-    }
-    return this._instance;
-  }
 
   /**
    * 토스트 알림을 생성합니다.
    */
-  public async toast(options: ToastOptions) {
+  public static async toast(options: ToastOptions) {
     const el = new UAlert();
     el.type = options.type;
     el.heading = options.heading;
@@ -81,7 +74,7 @@ export class Notifier {
   }
 
   /** 위치에 맞는 컨테이너 엘리먼트를 가져오거나, 생성합니다. */
-  private getOrCreateContainer(position: ScreenPosition) {
+  private static getOrCreateContainer(position: ScreenPosition) {
     let container = this.containers.get(position);
     if (container) return container;
 
@@ -130,8 +123,3 @@ export class Notifier {
     return container;
   }
 }
-
-/**
- * 알림 유틸리티 싱글톤 인스턴스입니다.
- */
-export const notifier = Notifier.instance;

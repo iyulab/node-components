@@ -25,8 +25,8 @@ export class UMenuItem extends BaseElement {
   @property({ type: Boolean, reflect: true }) checked: boolean = false;
   /** 선택 여부(single mode) @default false */
   @property({ type: Boolean, reflect: true }) selected: boolean = false;
-  /** 값 */
-  @property({ type: String }) value: string = '';
+  /** 메뉴 아이템 값 */
+  @property({ type: String }) value?: string;
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -83,7 +83,7 @@ export class UMenuItem extends BaseElement {
     const menu = elements.find(el => el instanceof UMenu);
     if (menu) {
       menu.type = 'submenu';
-      menu.anchor = this;
+      menu.anchors = [this];
       this.submenu = menu;
     } else {
       this.submenu = null;

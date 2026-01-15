@@ -28,11 +28,10 @@ export default defineConfig({
       },
     },
     rollupOptions: {
-      // 외부 종속성 라이브러리
+      // 외부 종속성 라이브러리 (react, @lit/react는 직접 사용되지 않음)
       external: [
         /^@floating-ui.*/,
         /^lit.*/,
-        /^react.*/,
         /^reflect-metadata.*/
       ],
       output: {
@@ -63,4 +62,4 @@ export default defineConfig({
       outDir: 'react-components',     // dist/react-components 폴더에 생성
     })
   ]
-}); 
+});

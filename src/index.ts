@@ -30,6 +30,6 @@ export * from './events/UShowEvent';
 // Utilities
 export * from './utilities/BrowserStorage.js';
 // export * from './utilities/decorators';
-export * from './utilities/icons.js';
-export * from './utilities/notifier.js';
-export * from './utilities/theme.js';
+export * from './utilities/IconRegistry.js';
+export * from './utilities/Notifier.js';
+export * from './utilities/Theme.js';
