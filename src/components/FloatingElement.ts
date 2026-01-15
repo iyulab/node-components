@@ -112,9 +112,9 @@ export class FloatingElement extends BaseElement {
   protected willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
-    // for 변경 시 DOM 에서 앵커 검색
+    // for 변경시 기본적으로 현재 엘리먼트로 부터 탐색
     if (changedProperties.has('for')) {
-      this.scan();
+      this.scan(this);
     }
   }
 
@@ -130,11 +130,11 @@ export class FloatingElement extends BaseElement {
   }
 
   /**
-   * for 속성에 따라 앵커 엘리먼트를 검색하여 anchors 속성에 설정합니다.
+   * for 속성에 따라 element를 기준으로 앵커 엘리먼트를 탐색하여 anchors로 설정합니다.
    */
-  public scan() {
+  public scan(element: Element) {
     if (this.for) {
-      const anchors = querySelectorAllWithin(this, this.for);
+      const anchors = querySelectorAllWithin(element, this.for);
       this.anchors = Array.from(anchors);
     } else {
       const parent = getParentElement(this);

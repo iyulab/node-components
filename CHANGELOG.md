@@ -13,13 +13,7 @@
 ### Improvements
 - **UDivider**: Simplified component (removed movable functionality)
 - **USplitPanel**: Completely rewritten with native splitter implementation
-  - Removed dependency on `UDivider` component
-  - Added CSS variables (`--splitter-size`, `--splitter-color`, `--splitter-active-color`)
-  - Improved drag handling with percentage-based sizing
 - **UMenu/UMenuItem**: Refactored submenu handling logic
-  - Simplified submenu detection using `submenu` property
-  - Improved pointer/focus event handling for submenus
-  - Fixed submenu auto-positioning with `slot` attribute assignment
 - **UTreeItem**: Improved children slot handling with `processChildren` method
 - **UTreeItem**: Changed indent styling to use CSS custom property (`--indent-level`)
 

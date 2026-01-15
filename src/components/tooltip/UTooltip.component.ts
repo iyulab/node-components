@@ -42,7 +42,7 @@ export class UTooltip extends FloatingElement {
     const target = event.currentTarget as Element | null;
     if (!target) return;
     this.show(target);
-  }
+  };
   
   /** this 바인딩 이벤트 핸들러 */
   private _hide = (event: Event) => {
