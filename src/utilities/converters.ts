@@ -6,7 +6,7 @@
  * @param separator - 구분자 문자열 (default: `,`)
  * @returns lit 속성 컨버터 객체
  */
-export function arrayAttributeConverter<T>(
+export function arrayAttrConverter<T>(
   parser: (value: string) => T,
   separator: string = ','
 ) {

@@ -1,7 +1,7 @@
 import { html  } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { arrayAttributeConverter } from '../../internals/attribute-converters.js';
+import { arrayAttrConverter } from '../../utilities/converters.js';
 import { BaseElement } from '../BaseElement.js';
 import { UInput } from '../input/UInput.component.js';
 import { styles } from './UForm.styles.js';
@@ -15,9 +15,9 @@ export class UForm extends BaseElement {
   static dependencies: Record<string, typeof BaseElement> = {};
 
   /** 포함할 입력 요소의 name 속성 목록입니다. */
-  @property({ type: Array, converter: arrayAttributeConverter(v => v) }) includes: string[] = [];
+  @property({ type: Array, converter: arrayAttrConverter(v => v) }) includes: string[] = [];
   /** 제외할 입력 요소의 name 속성 목록입니다. */
-  @property({ type: Array, converter: arrayAttributeConverter(v => v) }) excludes: string[] = [];
+  @property({ type: Array, converter: arrayAttrConverter(v => v) }) excludes: string[] = [];
   /** 폼의 컨텍스트 데이터를 설정합니다. */
   @property({ type: Object, attribute: false }) context?: any;
 

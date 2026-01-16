@@ -2,7 +2,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, query } from "lit/decorators.js";
 
 import '../src';
-import { theme } from '../src/utilities/theme';
+import { Theme } from '../src/utilities/Theme';
 
 @customElement('preview-app')
 export class PreviewApp extends LitElement {
@@ -11,7 +11,7 @@ export class PreviewApp extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    theme.init({
+    Theme.init({
       store: { type: 'localStorage', prefix: 'uui-' },
     });
   }
@@ -22,7 +22,7 @@ export class PreviewApp extends LitElement {
         <h1>Component Preview</h1>
         <div class="actions">
           <u-button id="theme-toggle"
-            @click=${() => theme.set(theme.get() === 'dark' ? 'light' : 'dark')}>
+            @click=${() => Theme.set(Theme.get() === 'dark' ? 'light' : 'dark')}>
             테마 변경
           </u-button>
         </div>

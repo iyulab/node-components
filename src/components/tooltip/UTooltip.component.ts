@@ -18,7 +18,7 @@ export class UTooltip extends FloatingElement {
    * 
    * @default false
    */
-  @property({ type: Boolean }) interactive: boolean = false;
+  @property({ type: Boolean, reflect: true }) interactive: boolean = false;
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -30,6 +30,15 @@ export class UTooltip extends FloatingElement {
       
       if (oldAnchors) this.unbind(oldAnchors);
       if (newAnchors) this.bind(newAnchors);
+    }
+
+    // distance 변경 시 interactive모드를 위한 히트 영역 사이즈를 조정
+    if (changedProperties.has('distance')) {
+      if (this.distance > 0) {
+        this.style.setProperty('--interactive-area', `${this.distance}px`);
+      } else {
+        this.style.removeProperty('--interactive-area');
+      }
     }
   }
 

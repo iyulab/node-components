@@ -4,7 +4,7 @@ import { property, state } from 'lit/decorators.js';
 import { computePosition, offset, shift, flip, autoPlacement, autoUpdate } from '@floating-ui/dom';
 import type { Placement, VirtualElement } from '@floating-ui/dom';
 
-import { getParentElement, querySelectorAllWithin } from '../internals/node-helpers.js';
+import { getParentElement, querySelectorAllWithin } from '../utilities/elements.js';
 import { BaseElement } from './BaseElement.js';
 import { styles } from './FloatingElement.styles.js';
 
@@ -47,7 +47,7 @@ export class FloatingElement extends BaseElement {
    * - `태그명`으로 찾기: for="target-tag-name"
    * - `속성`으로 찾기: for="[data-role='target']"
    */
-  @property({ type: String }) for?: string;
+  @property({ type: String, reflect: true }) for?: string;
   
   /** 
    * 현재 엘리먼트가 보여지는지 여부입니다. 

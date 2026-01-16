@@ -1,7 +1,7 @@
 import { html, PropertyValues } from "lit";
 import { property, queryAssignedElements, state } from "lit/decorators.js";
 
-import { arrayAttributeConverter } from "../../internals/attribute-converters.js";
+import { arrayAttrConverter } from "../../utilities/converters.js";
 import { BaseElement } from "../BaseElement.js";
 import { styles } from "./USplitPanel.styles.js";
 
@@ -33,15 +33,15 @@ export class USplitPanel extends BaseElement {
   orientation: 'horizontal' | 'vertical' = 'horizontal';
   
   /** 초기 패널 크기 비율을 설정합니다. (예: [30, 70]은 첫 번째 패널이 30%, 두 번째 패널이 70%를 차지) */
-  @property({ type: Array, attribute: 'init-ratio', converter: arrayAttributeConverter(parseFloat) })
+  @property({ type: Array, attribute: 'init-ratio', converter: arrayAttrConverter(parseFloat) })
   initRatio: number[] = [];
 
   /** 각 패널의 최소 크기를 설정합니다. (픽셀 단위) */
-  @property({ type: Array, attribute: 'min-sizes', converter: arrayAttributeConverter(parseFloat) })
+  @property({ type: Array, attribute: 'min-sizes', converter: arrayAttrConverter(parseFloat) })
   minSizes: number[] = [];
 
   /** 각 패널의 최대 크기를 설정합니다. (픽셀 단위) */
-  @property({ type: Array, attribute: 'max-sizes', converter: arrayAttributeConverter(parseFloat) })
+  @property({ type: Array, attribute: 'max-sizes', converter: arrayAttrConverter(parseFloat) })
   maxSizes: number[] = [];
 
   disconnectedCallback() {
