@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.2.0 (2026-01-16)
+
+### Breaking Changes
+- **Utilities**: Refactored utility class architecture to static-only pattern
+  - `IconRegistry`: Changed from singleton instance to static class (use `IconRegistry.register()` instead of `icons.register()`)
+  - `Notifier`: Changed from singleton instance to static class (use `Notifier.toast()` instead of `notifier.toast()`)
+  - `Theme`: Changed from singleton instance to static class (use `Theme.init()` instead of `theme.init()`)
+- **IconButton**: Removed `UIconButton` component (use `UButton` with icon slot instead)
+
+### Features
+- **UTag**: Added new Tag component for displaying labels, categories, and status
+  - Supports variants: `default`, `info`, `success`, `warning`, `danger`
+  - Removable tag functionality with smooth animation
+  - Prefix/suffix slots for custom content
+- **UButton**: Added `variant` property with support for `default`, `borderless`, and `link` styles
+- **UTooltip**: Added `interactive` property for keeping tooltip open when hovering over it
+- **Icons**: Added new icon assets
+  - `arrow-repeat`, `box-arrow-up-right`, `file-earmark`, `flag`, `globe`
+  - `hand-thumbs-up`, `hand-thumbs-up-fill`, `hand-thumbs-down`, `hand-thumbs-down-fill`
+  - `share`, `stop-circle`, `tools`
+- **Utilities**: Added new utility functions
+  - `converters.ts`: `arrayAttrConverter()` for array attribute conversion
+  - `elements.ts`: DOM helper functions (`getParentElement`, `querySelectorWithin`, `querySelectorAllWithin`)
+
+### Improvements
+- **FloatingElement**: Enhanced positioning and anchor management logic
+- **UButton**: Improved click event handling for disabled and loading states
+- **UDialog/UDrawer**: Updated to use improved modal element patterns
+- **UMenu**: Refactored submenu handling and dropdown logic
+- **IconRegistry**: Reorganized and improved icon loading architecture
+- **Utilities**: Moved internal utilities to public utilities directory
+  - `internals/attribute-converters.ts` → `utilities/converters.ts`
+  - `internals/node-helpers.ts` → `utilities/elements.ts`
+  - `utilities/icons.ts` → `utilities/IconRegistry.ts`
+
 ## 0.1.11 (2026-01-06)
 
 ### Fixes

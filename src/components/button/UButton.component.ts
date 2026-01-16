@@ -31,7 +31,7 @@ export class UButton extends BaseElement {
     this.addEventListener('click', this.handleClick);
   }
 
-  disconnecctedCallback(): void {
+  disconnectedCallback(): void {
     this.removeEventListener('click', this.handleClick);
     super.disconnectedCallback();
   }
