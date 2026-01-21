@@ -75,6 +75,7 @@ export class UProgressBar extends BaseElement {
     }
 
     // 완료시 끄기 애니메이션 후 리셋
+    // TODO: 'transitionend' 이벤트 활용
     if (progress >= 1) {
       setTimeout(() => {
         this.progressState = 'turned-off';
