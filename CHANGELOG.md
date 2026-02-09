@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1 (2026-02-09)
+
+### Documentation
+- **Events**: Added complete event API reference with all `u-*` events, detail types, and usage examples (closes #3)
+- **CSS Custom Properties**: Added full `--u-*` variable reference with light/dark values (closes #2)
+- **Theming**: Added theme setup, switching, and external design system integration guide
+- **Components**: Added component list with tags and descriptions
+
 ## 0.2.0 (2026-01-16)
 
 ### Breaking Changes
