@@ -71,6 +71,12 @@ export class UInput extends BaseElement {
   @property({ type: String }) pattern?: string;
   /** 유효성 검사 실패 시 표시할 메시지 */
   @property({ type: String }) validationMessage?: string;
+  /** 최솟값 (number, date, time 등) */
+  @property({ type: Number }) min?: number;
+  /** 최댓값 (number, date, time 등) */
+  @property({ type: Number }) max?: number;
+  /** 증감 단위 (number, date, time 등) */
+  @property({ type: Number }) step?: number;
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -119,6 +125,9 @@ export class UInput extends BaseElement {
           autocomplete=${ifDefined(this.autocomplete as any)}
           placeholder=${ifDefined(this.placeholder)}
           pattern=${ifDefined(this.pattern)}
+          min=${ifDefined(this.min)}
+          max=${ifDefined(this.max)}
+          step=${ifDefined(this.step)}
           .value=${live(this.value)}
           @input=${this.handleInput}
           @change=${this.handleInputChange}

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2 (2026-02-09)
+
+### Features
+- **UInput**: Added `min`, `max`, `step` properties for number/date/time input types (closes #1)
+
 ## 0.2.1 (2026-02-09)
 
 ### Documentation
