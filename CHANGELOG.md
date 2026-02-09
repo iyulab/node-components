@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.3 (2026-02-09)
+
+### Features
+- **UInput**: Added `inputmode`, `enterkeyhint`, `size`, `multiple` properties for improved mobile UX and HTML standard compliance (closes #4)
+
 ## 0.2.2 (2026-02-09)
 
 ### Features

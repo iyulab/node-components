@@ -77,6 +77,14 @@ export class UInput extends BaseElement {
   @property({ type: Number }) max?: number;
   /** 증감 단위 (number, date, time 등) */
   @property({ type: Number }) step?: number;
+  /** 모바일 가상 키보드 종류 */
+  @property({ type: String }) inputmode?: 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
+  /** 모바일 엔터 키 라벨 */
+  @property({ type: String }) enterkeyhint?: 'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send';
+  /** 입력 필드 표시 너비 (문자 수 기준) */
+  @property({ type: Number }) size?: number;
+  /** 다중 값 허용 (email 타입) */
+  @property({ type: Boolean }) multiple: boolean = false;
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -128,6 +136,10 @@ export class UInput extends BaseElement {
           min=${ifDefined(this.min)}
           max=${ifDefined(this.max)}
           step=${ifDefined(this.step)}
+          inputmode=${ifDefined(this.inputmode)}
+          enterkeyhint=${ifDefined(this.enterkeyhint)}
+          size=${ifDefined(this.size)}
+          ?multiple=${this.multiple}
           .value=${live(this.value)}
           @input=${this.handleInput}
           @change=${this.handleInputChange}
