@@ -66,6 +66,33 @@ export class PreviewApp extends LitElement {
             <u-tree-item>Item 3 (Leaf)</u-tree-item>
           </u-tree>
         </section>
+
+        <section>
+          <h2>Carousel Component</h2>
+          <p>slides-per-view, slides-per-move, gap, draggable, loop, autoplay, navigation, pagination, ::part(slides)</p>
+
+          <u-carousel class="carousel-demo"
+            slides-per-view="3"
+            slides-per-move="3"
+            gap="16"
+            draggable
+            loop
+            autoplay
+            autoplay-interval="5000"
+            navigation
+            pagination
+            style="padding: 0 60px;">
+            <div class="slide" style="background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 8px;">Slide 1</div>
+            <div class="slide" style="background: linear-gradient(135deg, #f093fb, #f5576c); border-radius: 8px;">Slide 2</div>
+            <div class="slide" style="background: linear-gradient(135deg, #4facfe, #00f2fe); border-radius: 8px;">Slide 3</div>
+            <div class="slide" style="background: linear-gradient(135deg, #fa709a, #fee140); border-radius: 8px;">Slide 4</div>
+            <div class="slide" style="background: linear-gradient(135deg, #30cfd0, #330867); border-radius: 8px;">Slide 5</div>
+            <div class="slide" style="background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333; border-radius: 8px;">Slide 6</div>
+            <div class="slide" style="background: linear-gradient(135deg, #ff9a9e, #fecfef); color: #333; border-radius: 8px;">Slide 7</div>
+            <div class="slide" style="background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #333; border-radius: 8px;">Slide 8</div>
+            <div class="slide" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb); color: #333; border-radius: 8px;">Slide 9</div>
+          </u-carousel>
+        </section>
       </div>
     `;
   }
@@ -199,6 +226,20 @@ export class PreviewApp extends LitElement {
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+
+    /* Carousel - 슬라이드 공통 스타일 */
+    .slide {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    /* Carousel */
+    .carousel-demo {
+      height: 250px;
     }
   `;
 }
