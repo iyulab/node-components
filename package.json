@@ -41,7 +41,6 @@
   "dependencies": {
     "@floating-ui/dom": "^1.7.5",
     "lit": "^3.3.2",
-    "quill": "2.0.3",
     "reflect-metadata": "^0.2.2"
   },
   "peerDependencies": {
