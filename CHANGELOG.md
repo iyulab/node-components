@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 (2026-02-26)
+
+### Features
+- **UCard**: Added card layout component with `header`, `footer`, `media` slots
+- **UCarousel**: Added carousel component with autoplay, drag, navigation, multi-slide view
+
+### Improvements
+- Moved `@lit/react`, `react` to optional peerDependencies
+- Updated devDependencies
+
 ## 0.2.3 (2026-02-09)
 
 ### Features
