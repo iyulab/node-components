@@ -53,6 +53,7 @@ export class UCarousel extends BaseElement {
   private _autoplayTimer?: number;
   private _dragStartX = 0;
   private _dragStartTime = 0;
+  private _pointerTarget: Element | null = null;
 
   private get _perView() { return Math.max(1, this.slidesPerView); }
   private get _perMove() { return Math.max(1, this.slidesPerMove); }
@@ -201,6 +202,7 @@ export class UCarousel extends BaseElement {
     this._dragStartX = e.clientX;
     this._dragOffset = 0;
     this._dragStartTime = Date.now();
+    this._pointerTarget = (e.composedPath()[0] as Element) || null;
     if (this.autoplay) this.stopAutoplay();
 
     const wrapper = e.currentTarget as HTMLElement;
@@ -220,9 +222,15 @@ export class UCarousel extends BaseElement {
     if (absDrag > 20 || (absDrag > 5 && elapsed < 300)) {
       if (this._dragOffset < 0) this.next();
       else this.prev();
+    } else if (this._pointerTarget) {
+      // 드래그가 아닌 탭 → 원래 타겟에 클릭 이벤트 발생
+      this._pointerTarget.dispatchEvent(
+        new MouseEvent('click', { bubbles: true, composed: true })
+      );
     }
     this._isDragging = false;
     this._dragOffset = 0;
+    this._pointerTarget = null;
     if (this.autoplay) this.startAutoplay();
 
     const wrapper = e.currentTarget as HTMLElement;
