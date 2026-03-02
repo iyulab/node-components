@@ -1,7 +1,7 @@
-import { html } from "lit";
+﻿import { html } from "lit";
 import { property } from "lit/decorators.js";
 
-import { BaseElement } from "../BaseElement.js";
+import { UElement } from "../UElement.js";
 import { styles } from "./UCard.styles.js";
 
 /**
@@ -11,7 +11,7 @@ import { styles } from "./UCard.styles.js";
  * @slot footer - 카드 하단의 푸터 영역에 표시할 콘텐츠를 삽입합니다.
  * @slot media - 카드의 미디어 영역에 표시할 이미지, 비디오 등을 삽입합니다.
  */
-export class UCard extends BaseElement {
+export class UCard extends UElement {
   static styles = [ super.styles, styles ];
 
   /** 카드의 그림자 효과를 제거할지 여부를 설정합니다. */

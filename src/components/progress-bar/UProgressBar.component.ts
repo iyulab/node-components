@@ -1,16 +1,16 @@
-import { html, PropertyValues } from 'lit';
+﻿import { html, PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 
-import { BaseElement } from '../BaseElement.js';
+import { UElement } from '../UElement.js';
 import { styles } from './UProgressBar.styles.js';
 
 /**
  * ProgressBar 컴포넌트는 진행 상태를 시각적으로 표시합니다.
  * 로딩 상태나 작업 진행률을 표시하는데 사용됩니다.
  */
-export class UProgressBar extends BaseElement {
+export class UProgressBar extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {};
+  static dependencies: Record<string, typeof UElement> = {};
 
   @query('.indicator') indicatorEl!: HTMLElement;
 

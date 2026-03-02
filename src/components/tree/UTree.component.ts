@@ -1,7 +1,7 @@
-import { html } from "lit";
+﻿import { html } from "lit";
 import { property, queryAssignedElements } from "lit/decorators.js";
 
-import { BaseElement } from "../BaseElement.js";
+import { UElement } from "../UElement.js";
 import { UTreeItem } from "../tree-item/UTreeItem.component.js";
 import { styles } from "./UTree.styles.js";
 
@@ -9,9 +9,9 @@ import { styles } from "./UTree.styles.js";
  * Tree 컴포넌트는 계층적 데이터 구조를 표시하는 트리 뷰를 제공합니다.
  * u-tree-item 컴포넌트를 자식으로 사용하여 중첩된 구조를 구성할 수 있습니다.
  */
-export class UTree extends BaseElement {
+export class UTree extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {
+  static dependencies: Record<string, typeof UElement> = {
     'u-tree-item': UTreeItem,
   };
 

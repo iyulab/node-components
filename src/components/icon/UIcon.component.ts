@@ -1,9 +1,9 @@
-import { nothing } from "lit";
+﻿import { nothing } from "lit";
 import { property } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { until } from "lit/directives/until.js";
 
-import { BaseElement } from "../BaseElement.js";
+import { UElement } from "../UElement.js";
 import { IconRegistry } from "../../utilities/IconRegistry.js";
 import { styles } from "./UIcon.styles.js";
 
@@ -12,9 +12,9 @@ export type IconLibrary = "internal" | "default" | (string & {});
 /**
  * 아이콘 컴포넌트입니다. SVG 아이콘을 이름으로 불러와서 렌더링합니다.
  */
-export class UIcon extends BaseElement {
+export class UIcon extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {};
+  static dependencies: Record<string, typeof UElement> = {};
 
   /**
    * 사용할 아이콘 라이브러리를 지정합니다.

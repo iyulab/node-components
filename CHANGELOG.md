@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.4.0 (2026-03-02)
+
+### Breaking Changes
+- **BaseElement / FloatingElement / ModalElement**: Renamed to `UElement`, `UFloatingElement`, `UModalElement` to align with the `U` prefix naming convention
+  - All components updated to use the renamed base classes
+
+### Features
+- **UJsonElement**: Added new base class that reads JSON from a `<script type="application/json">` tag in light DOM and maps properties to the component automatically
+  - Includes built-in error UI rendering via `error()` method
+  - Provides static `buildHTML()` helper to generate safe component HTML from JSON data
+- **Icons**: Added new icon assets
+  - `arrow-down-up`, `code-slash`, `download`, `sort-alpha-down`, `sort-alpha-up`
+
+### New Utilities
+- **sanitizers.ts**: Added HTML/XSS protection utilities
+  - `stripZeroWidth()`: Removes zero-width characters (ZWSP, BOM, etc.)
+  - `escapeHtmlText()`: Escapes special characters for HTML text context
+  - `escapeHtmlAttr()`: Escapes special characters for HTML attribute context
+  - `escapeHtmlHref()`: Sanitizes and validates `href`/`src` values (blocks `javascript:`, `data:`, `vbscript:` protocols)
+
+### Bug Fixes
+- **UCarousel**: Fixed tap vs drag detection — pointer target is now tracked to dispatch a `click` event on tap when drag distance is below threshold
+
 ## 0.3.0 (2026-02-26)
 
 ### Features

@@ -1,7 +1,7 @@
-import { html, PropertyValues } from 'lit';
+﻿import { html, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { BaseElement } from '../BaseElement.js';
+import { UElement } from '../UElement.js';
 import { styles } from './USkeleton.styles.js';
 
 export type SkeletonShape = 'default' | 'circle' | 'rounded';
@@ -11,9 +11,9 @@ export type SkeletonEffect = 'pulse' | 'shimmer' | 'none';
  * 콘텐츠가 로딩 중임을 나타내는 Skeleton 컴포넌트입니다.
  * 다양한 모양과 애니메이션 효과를 지원합니다.
  */
-export class USkeleton extends BaseElement {
+export class USkeleton extends UElement {
   static styles = [super.styles, styles];
-  static dependencies: Record<string, typeof BaseElement> = {};
+  static dependencies: Record<string, typeof UElement> = {};
 
   /** 모양 (default, circle, rounded) */
   @property({ type: String, reflect: true }) shape: SkeletonShape = 'default';

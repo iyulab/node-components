@@ -1,10 +1,10 @@
-import { html, PropertyValues } from "lit";
+﻿import { html, PropertyValues } from "lit";
 import { property, queryAssignedElements } from "lit/decorators.js";
 
 import type { VirtualElement } from "@floating-ui/dom";
 
-import { BaseElement } from "../BaseElement.js";
-import { FloatingElement } from "../FloatingElement.js";
+import { UElement } from "../UElement.js";
+import { UFloatingElement } from "../UFloatingElement.js";
 import { UMenuItem } from "../menu-item/UMenuItem.component.js";
 import { styles } from "./UMenu.styles.js";
 
@@ -16,9 +16,9 @@ type MenuItemFilter = 'all' | 'enabled' | 'disabled' | 'selected' | 'unselected'
 /**
  * Menu 컴포넌트는 드롭다운 메뉴, 컨텍스트 메뉴, 서브메뉴 등을 구현하기 위한 컴포넌트입니다.
  */
-export class UMenu extends FloatingElement {
+export class UMenu extends UFloatingElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {};
+  static dependencies: Record<string, typeof UElement> = {};
 
   @queryAssignedElements({ flatten: false })
   items?: UMenuItem[];

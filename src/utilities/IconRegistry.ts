@@ -125,6 +125,18 @@ IconRegistry.register("default", async (name: string) => {
     return undefined;
   }
 });
+// Bootstrap 아이콘 라이브러리 등록 (CDN 사용) - https://icons.getbootstrap.com/
+IconRegistry.register("bootstrap", async (name: string) => {
+  const bootstrapUrl = `https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/icons/${name}.svg`;
+  try {
+    const response = await fetch(bootstrapUrl);
+    if (!response.ok) return undefined;
+    return await response.text();
+  }
+  catch (error) {
+    return undefined;
+  }
+});
 
 export {
   IconRegistry,

@@ -1,3 +1,9 @@
+// Base Components
+export * from './components/UElement.js';
+export * from './components/UFloatingElement.js';
+export * from './components/UJsonElement.js';
+export * from './components/UModalElement.js';
+
 // Components
 export * from './components/alert/UAlert.js';
 export * from './components/button/UButton.js';
@@ -31,9 +37,10 @@ export * from './events/UShowEvent';
 
 // Utilities
 export * from './utilities/BrowserStorage.js';
-// export * from './utilities/decorators';
 // export * from './utilities/converters.js';
-// export * from './utilities/elements.js';
+// export * from './utilities/decorators';
+export * from './utilities/elements.js';
 export * from './utilities/IconRegistry.js';
 export * from './utilities/Notifier.js';
+export * from './utilities/sanitizers.js';
 export * from './utilities/Theme.js';

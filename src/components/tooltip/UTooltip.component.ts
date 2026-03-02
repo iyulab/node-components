@@ -1,16 +1,16 @@
-import { html, PropertyValues } from "lit";
+﻿import { html, PropertyValues } from "lit";
 import { property } from "lit/decorators.js";
 
-import { BaseElement } from "../BaseElement.js";
-import { FloatingElement } from "../FloatingElement.js";
+import { UElement } from "../UElement.js";
+import { UFloatingElement } from "../UFloatingElement.js";
 import { styles } from "./UTooltip.styles.js";
 
 /**
  * Tooltip 컴포넌트는 대상 엘리먼트에 툴팁을 표시하는 기능을 제공합니다.
  */
-export class UTooltip extends FloatingElement {
+export class UTooltip extends UFloatingElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {};
+  static dependencies: Record<string, typeof UElement> = {};
 
   /**
    * 툴팁 내부로 마우스를 이동해도 툴팁이 유지되는지 여부입니다.

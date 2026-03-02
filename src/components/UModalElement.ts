@@ -1,11 +1,11 @@
 import { CSSResultGroup, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { BaseElement } from './BaseElement.js';
-import { styles } from './ModalElement.styles.js';
+import { UElement } from './UElement.js';
+import { styles } from './UModalElement.styles.js';
 
 /**
- * ModalElement는 다이얼로그, 드로어 등 화면에 오버레이로 표시되는 엘리먼트를 구현하기 위한 기본 클래스입니다.
+ * UModalElement는 다이얼로그, 드로어 등 화면에 오버레이로 표시되는 엘리먼트를 구현하기 위한 기본 클래스입니다.
  * 이 클래스를 상속하여 커스텀 모달 컴포넌트를 만들 수 있습니다.
  * 
  * 1. open 속성을 통해 엘리먼트의 표시 여부를 제어할 수 있습니다.
@@ -13,11 +13,11 @@ import { styles } from './ModalElement.styles.js';
  * 3. closable 속성을 통해 이벤트에 의한 닫기 허용 여부를 설정할 수 있습니다.
  * 4. show() 및 hide() 메서드를 통해 프로그래밍적으로 표시하거나 숨길 수 있습니다.
  */
-export abstract class ModalElement extends BaseElement {
+export abstract class UModalElement extends UElement {
   /** 기본 스타일을 정의합니다. */
   static styles: CSSResultGroup = [ super.styles, styles ];
   /** 종속된 컴포넌트를 정의합니다. */
-  static dependencies: Record<string, typeof BaseElement> = {};
+  static dependencies: Record<string, typeof UElement> = {};
 
   /** 
    * 현재 엘리먼트의 열림/닫힘 상태입니다.

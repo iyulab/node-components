@@ -1,7 +1,7 @@
-import { html, PropertyValues } from "lit";
+﻿import { html, PropertyValues } from "lit";
 import { property, query, state } from "lit/decorators.js";
 
-import { BaseElement } from "../BaseElement.js";
+import { UElement } from "../UElement.js";
 import { UIcon } from "../icon/UIcon.component.js";
 import { styles } from "./UTreeItem.styles.js";
 import { USpinner } from "../spinner/USpinner.component.js";
@@ -10,9 +10,9 @@ import { USpinner } from "../spinner/USpinner.component.js";
  * UTreeItem 컴포넌트는 트리의 개별 노드를 나타냅니다.
  * UTree 컴포넌트와 함께 사용되며, 중첩된 구조를 지원합니다.
  */
-export class UTreeItem extends BaseElement {
+export class UTreeItem extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {
+  static dependencies: Record<string, typeof UElement> = {
     'u-icon': UIcon,
     'u-spinner': USpinner,
   };

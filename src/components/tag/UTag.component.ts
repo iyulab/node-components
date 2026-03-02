@@ -1,7 +1,7 @@
-import { html } from "lit";
+﻿import { html } from "lit";
 import { property } from "lit/decorators.js";
 
-import { BaseElement } from "../BaseElement.js";
+import { UElement } from "../UElement.js";
 import { styles } from "./UTag.styles.js";
 
 export type TagVariant = "default" | "info" | "success" | "warning" | "danger";
@@ -12,9 +12,9 @@ export type TagVariant = "default" | "info" | "success" | "warning" | "danger";
  * @slot prefix - 태그의 접두사로 표시할 콘텐츠를 삽입합니다.
  * @slot suffix - 태그의 접미사로 표시할 콘텐츠를 삽입합니다.
  */
-export class UTag extends BaseElement {
+export class UTag extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {};
+  static dependencies: Record<string, typeof UElement> = {};
 
   /** 태그의 스타일 변형을 설정합니다. */
   @property({ type: String, reflect: true }) variant: TagVariant = "default";

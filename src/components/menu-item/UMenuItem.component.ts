@@ -1,15 +1,15 @@
-import { html, PropertyValues } from "lit";
+﻿import { html, PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
 
-import { BaseElement } from "../BaseElement.js";
+import { UElement } from "../UElement.js";
 import { UIcon } from "../icon/UIcon.component.js";
 import { UMenu } from "../menu/UMenu.component.js";
 import { USpinner } from "../spinner/USpinner.component.js";
 import { styles } from "./UMenuItem.styles.js";
 
-export class UMenuItem extends BaseElement {
+export class UMenuItem extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {
+  static dependencies: Record<string, typeof UElement> = {
     'u-icon': UIcon,
     'u-spinner': USpinner,
   };

@@ -5,11 +5,11 @@ import { computePosition, offset, shift, flip, autoPlacement, autoUpdate } from 
 import type { Placement, VirtualElement } from '@floating-ui/dom';
 
 import { getParentElement, querySelectorAllWithin } from '../utilities/elements.js';
-import { BaseElement } from './BaseElement.js';
-import { styles } from './FloatingElement.styles.js';
+import { UElement } from './UElement.js';
+import { styles } from './UFloatingElement.styles.js';
 
 /**
- * FloatingElement는 팝오버, 툴팁 등 화면에 떠 있는 엘리먼트를 구현하기 위한 기본 클래스입니다.
+ * UFloatingElement는 팝오버, 툴팁 등 화면에 떠 있는 엘리먼트를 구현하기 위한 기본 클래스입니다.
  * 이 클래스를 상속하여 커스텀 팝오버 컴포넌트를 만들 수 있습니다.
  * 
  * 1. for, anchor 속성을 통해 연결될 대상 엘리먼트를 지정할 수 있습니다.
@@ -17,11 +17,11 @@ import { styles } from './FloatingElement.styles.js';
  * 3. show() 및 hide() 메서드를 통해 프로그래밍적으로 표시하거나 숨길 수 있습니다.
  * 4. strategy, placement, distance, shift 속성을 통해 표시 위치 결정 방식을 설정할 수 있습니다.
  */
-export class FloatingElement extends BaseElement {
+export class UFloatingElement extends UElement {
   /** 기본 스타일을 정의합니다. */
   static styles: CSSResultGroup = [ super.styles, styles ];
   /** 종속된 컴포넌트를 정의합니다. */
-  static dependencies: Record<string, typeof BaseElement> = {};
+  static dependencies: Record<string, typeof UElement> = {};
 
   // 애니메이션 프레임 아이디
   private rafId: number | null = null;

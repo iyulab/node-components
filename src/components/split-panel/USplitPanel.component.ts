@@ -1,16 +1,16 @@
-import { html, PropertyValues } from "lit";
+﻿import { html, PropertyValues } from "lit";
 import { property, queryAssignedElements, state } from "lit/decorators.js";
 
 import { arrayAttrConverter } from "../../utilities/converters.js";
-import { BaseElement } from "../BaseElement.js";
+import { UElement } from "../UElement.js";
 import { styles } from "./USplitPanel.styles.js";
 
 /**
  * SplitPanel 컴포넌트는 화면을 여러 개의 패널로 분할하여 표시합니다.
  */
-export class USplitPanel extends BaseElement {
+export class USplitPanel extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {};
+  static dependencies: Record<string, typeof UElement> = {};
 
   /** 현재 상태를 저장하는 패널 요소들 */
   private panels: HTMLElement[] = [];

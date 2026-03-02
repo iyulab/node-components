@@ -1,8 +1,8 @@
-import { html } from 'lit';
+﻿import { html } from 'lit';
 import { property } from 'lit/decorators.js'
 
-import { BaseElement } from '../BaseElement.js';
-import { ModalElement } from '../ModalElement.js';
+import { UElement } from '../UElement.js';
+import { UModalElement } from '../UModalElement.js';
 import { UIcon } from '../icon/UIcon.component.js';
 import { UButton } from '../button/UButton.component.js';
 import { styles } from './UDialog.styles.js';
@@ -11,9 +11,9 @@ import { styles } from './UDialog.styles.js';
  * Dialog 컴포넌트는 모달 대화상자를 제공합니다.
  * 오버레이와 함께 화면 중앙에 표시되며, 헤더, 본문, 푸터 영역을 슬롯으로 제공합니다.
  */
-export class UDialog extends ModalElement {
+export class UDialog extends UModalElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {
+  static dependencies: Record<string, typeof UElement> = {
     'u-icon': UIcon,
     'u-button': UButton
   };

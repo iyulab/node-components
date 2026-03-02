@@ -1,8 +1,8 @@
-import { html  } from 'lit';
+﻿import { html  } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import { arrayAttrConverter } from '../../utilities/converters.js';
-import { BaseElement } from '../BaseElement.js';
+import { UElement } from '../UElement.js';
 import { UInput } from '../input/UInput.component.js';
 import { styles } from './UForm.styles.js';
 
@@ -10,9 +10,9 @@ import { styles } from './UForm.styles.js';
  * Form 컴포넌트는 여러 입력 요소를 그룹화하고 관리하는 폼 컨테이너입니다.
  * 폼 내의 입력 요소들의 값 변경을 감지하고, 포함 및 제외 규칙에 따라 폼 컨텍스트에 데이터를 자동으로 업데이트합니다.
  */
-export class UForm extends BaseElement {
+export class UForm extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {};
+  static dependencies: Record<string, typeof UElement> = {};
 
   /** 포함할 입력 요소의 name 속성 목록입니다. */
   @property({ type: Array, converter: arrayAttrConverter(v => v) }) includes: string[] = [];

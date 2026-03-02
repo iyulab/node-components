@@ -1,9 +1,9 @@
-import { html, PropertyValues } from "lit";
+﻿import { html, PropertyValues } from "lit";
 import { property, query, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { live } from "lit/directives/live.js";
 
-import { BaseElement } from "../BaseElement.js";
+import { UElement } from "../UElement.js";
 import { UIcon } from "../icon/UIcon.component.js";
 import { UTooltip } from "../tooltip/UTooltip.component.js";
 
@@ -21,9 +21,9 @@ type InputType = ('text' | 'password' | 'email' | 'tel' | 'url' | 'search' |
  * Input 컴포넌트는 사용자 입력을 받는 텍스트 입력 필드입니다.
  * prefix, suffix 슬롯과 라벨, 도움말, 유효성 검사 등의 기능을 제공합니다.
  */
-export class UInput extends BaseElement {
+export class UInput extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {
+  static dependencies: Record<string, typeof UElement> = {
     'u-icon': UIcon,
     'u-tooltip': UTooltip,
   };

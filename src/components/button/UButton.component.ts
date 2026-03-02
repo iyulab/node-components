@@ -1,7 +1,7 @@
-import { html } from "lit";
+﻿import { html } from "lit";
 import { property } from "lit/decorators.js";
 
-import { BaseElement } from "../BaseElement.js";
+import { UElement } from "../UElement.js";
 import { USpinner } from "../spinner/USpinner.component.js";
 import { styles } from "./UButton.styles.js";
 
@@ -13,9 +13,9 @@ export type ButtonVariant = "default" | "borderless" | "link";
  * @slot prefix - 버튼의 접두사로 표시할 콘텐츠를 삽입합니다.
  * @slot suffix - 버튼의 접미사로 표시할 콘텐츠를 삽입합니다.
  */
-export class UButton extends BaseElement {
+export class UButton extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {
+  static dependencies: Record<string, typeof UElement> = {
     'u-spinner': USpinner
   };
 

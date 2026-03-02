@@ -1,20 +1,16 @@
 import { css } from "lit";
 
 export const styles = css`
-  /* ── Host ── */
   :host {
     --slide-gap: 0px;
     --slides-per-view: 1;
   }
   :host {
-    display: block;
     position: relative;
+    display: block;
     width: 100%;
     overflow: hidden;
-    box-sizing: border-box;
   }
-  
-  /* ── Draggable ── */
   :host([draggable]) .slides-wrapper {
     cursor: grab;
     user-select: none;
@@ -38,6 +34,7 @@ export const styles = css`
 
   .slides {
     display: flex;
+    flex-direction: row;
     width: 100%;
     height: 100%;
     gap: var(--slide-gap, 0px);
@@ -46,12 +43,10 @@ export const styles = css`
 
   ::slotted(*) {
     flex: 0 0 calc(
-      (100% - (var(--slides-per-view) - 1) * var(--slide-gap, 0px))
-      / var(--slides-per-view)
+      (100% - (var(--slides-per-view) - 1) * var(--slide-gap, 0px)) / var(--slides-per-view)
     );
     min-width: 0;
     height: 100%;
-    box-sizing: border-box;
   }
 
   /* ── Navigation ── */
@@ -60,34 +55,38 @@ export const styles = css`
     z-index: 10;
     top: 50%;
     transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    font-size: 16px;
-    background-color: var(--u-panel-bg-color, #fff);
-    box-shadow: 0 2px 8px var(--u-shadow-color-normal, rgba(0, 0, 0, 0.12));
-    opacity: 0.9;
+    font-size: 24px;
+    color: var(--u-neutral-900);
+    border: none;
+    background-color: transparent;
   }
   .nav-button:hover {
-    opacity: 1;
-    background-color: var(--u-bg-color-hover, #f3f4f6);
+    opacity: 0.5;
+    transform: scale(1.2) translateY(-40%);
+  }
+  .nav-button:active {
+    opacity: 0.8;
+    transform: scale(1.1) translateY(-45%);
   }
 
   .nav-button.prev { left: 16px; }
   .nav-button.next { right: 16px; }
 
-  /* ── Indicator ── */
+  /* ── Pagination ── */
   .indicator {
     position: absolute;
     z-index: 10;
     bottom: 16px;
     left: 50%;
-    transform: translateX(-50%);
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     gap: 8px;
+    transform: translateX(-50%);
   }
 
   .dot {
@@ -96,16 +95,16 @@ export const styles = css`
     padding: 0;
     border: none;
     border-radius: 50%;
-    background-color: var(--u-neutral-400, rgba(0, 0, 0, 0.3));
+    background-color: var(--u-neutral-400);
     cursor: pointer;
     transition: all 0.2s ease;
   }
   .dot:hover {
-    background-color: var(--u-neutral-200, rgba(0, 0, 0, 0.5));
+    background-color: var(--u-neutral-200);
   }
-  .dot.active {
-    background-color: var(--u-neutral-100, rgba(0, 0, 0, 0.8));
+  .dot[active] {
     width: 24px;
     border-radius: 5px;
+    background-color: var(--u-neutral-100);
   }
 `;

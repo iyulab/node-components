@@ -1,7 +1,7 @@
-import { html, PropertyValues } from 'lit';
+﻿import { html, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { BaseElement } from '../BaseElement.js';
+import { UElement } from '../UElement.js';
 import { UIcon } from '../icon/UIcon.component.js';
 import { styles } from './UAlert.styles.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
@@ -12,9 +12,9 @@ export type AlertType = "error" | "warning" | "info" | "success" | "notice";
  * 사용자에게 메시지를 표시하는 Alert 컴포넌트입니다.
  * 자동 닫힘 타이머, 접기/펼치기 기능 등을 제공합니다.
  */
-export class UAlert extends BaseElement {
+export class UAlert extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {
+  static dependencies: Record<string, typeof UElement> = {
     'u-icon': UIcon,
   };
 

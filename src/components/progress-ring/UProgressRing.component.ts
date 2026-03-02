@@ -1,7 +1,7 @@
-import { html, PropertyValues } from "lit";
+﻿import { html, PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
 
-import { BaseElement } from "../BaseElement.js";
+import { UElement } from "../UElement.js";
 import { styles } from './UProgressRing.styles.js';
 
 /** 원형 진행 표시기의 둘레 길이 계산을 위한 상수 */
@@ -13,9 +13,9 @@ export type ProgressRingVariant = 'smooth' | 'blocks' | 'ticks';
  * ProgressRing 컴포넌트는 원형 진행 표시기를 제공합니다.
  * 진행 상태를 시각적으로 나타내며, 크기와 두께를 스타일 속성으로 조절할 수 있습니다.
  */
-export class UProgressRing extends BaseElement {
+export class UProgressRing extends UElement {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof BaseElement> = {};
+  static dependencies: Record<string, typeof UElement> = {};
 
   @state() dasharray: string = PATH_LENGTH.toString();
   @state() progress: number = 0;
