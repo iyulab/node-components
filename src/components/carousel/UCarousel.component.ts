@@ -146,7 +146,7 @@ export class UCarousel extends UElement {
       </u-button>
 
       <div part="indicator" class="indicator"
-        ?hidden=${!this.pagination || !this.slideCount}>
+        ?hidden=${!this.pagination || this.pageCount <= 1}>
         ${Array.from({ length: this.pageCount }, (_, i) => html`
           <button part="dot" class="dot"
             ?active=${i === this.currentPage}

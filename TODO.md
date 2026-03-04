@@ -2,3 +2,5 @@
 - Check `menu` and `menu-item` components
 
 - Desire to `tree` and `menu` components to control their items via nested structure rather than slots, So their items can be defined as children elements.
+
+- Add `select` and `option` components for select dropdowns, and `option` can be used in other components as well (e.g., `menu`)

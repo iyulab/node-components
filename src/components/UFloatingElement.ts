@@ -125,7 +125,8 @@ export class UFloatingElement extends UElement {
     if (changedProperties.has('visible')) {
       this.toggleAttribute('aria-hidden', !this.visible);
       this.toggleAttribute('inert', !this.visible);
-      this.updateVisibleState(this.visible);
+      if (this.visible) this.emit('u-show');
+      else this.emit('u-hide');
     }
   }
 
@@ -217,15 +218,6 @@ export class UFloatingElement extends UElement {
         }
       })()
     });
-  }
-
-  /** 표시 상태 변경 이벤트를 발생시킵니다. */
-  private updateVisibleState(visible: boolean) {
-    if (visible) {
-      this.emit('u-show');
-    } else {
-      this.emit('u-hide');
-    }
   }
 
   /** 애니메이션 프레임을 사용하여 표시 상태를 스케줄링합니다. */

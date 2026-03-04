@@ -1,5 +1,5 @@
 ﻿import { html, PropertyValues } from "lit";
-import { property } from "lit/decorators.js";
+import { property, state } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
 import { UFloatingElement } from "../UFloatingElement.js";
@@ -19,6 +19,13 @@ export class UTooltip extends UFloatingElement {
    * @default false
    */
   @property({ type: Boolean, reflect: true }) interactive: boolean = false;
+
+  // 툴팁이 비어있는지 여부입니다. 툴팁이 비어있으면 표시되지 않습니다.
+  @state() private isEmpty: boolean = true;
+
+  render() {
+    return html`<slot @slotchange=${this.handleSlotChange}></slot>`;
+  }
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -42,12 +49,9 @@ export class UTooltip extends UFloatingElement {
     }
   }
 
-  render() {
-    return html`<slot></slot>`;
-  }
-
   /** this 바인딩 이벤트 핸들러 */ 
   private _show = (event: Event) => {
+    if (this.isEmpty) return;
     const target = event.currentTarget as Element | null;
     if (!target) return;
     this.show(target);
@@ -87,7 +91,19 @@ export class UTooltip extends UFloatingElement {
       anchor.removeEventListener('focusout', this._hide);
     }
 
-    this.addEventListener('pointerleave', this._hide);
-    this.addEventListener('focusout', this._hide);
+    this.removeEventListener('pointerleave', this._hide);
+    this.removeEventListener('focusout', this._hide);
+  }
+
+  private handleSlotChange() {
+    const nodes = this.shadowRoot?.querySelector('slot')?.assignedNodes({ flatten: true }) || [];
+    this.isEmpty = nodes.every(node => {
+      // 텍스트 노드인 경우 공백만 있는지 확인
+      if (node.nodeType === Node.TEXT_NODE) {
+        return node.textContent?.trim() === '';
+      }
+      // 요소 노드인 경우에는 비어있지 않다고 간주
+      return false;
+    });
   }
 }
