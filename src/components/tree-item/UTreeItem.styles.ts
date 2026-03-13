@@ -45,14 +45,14 @@ export const styles = css`
     transition: transform 0.2s ease, color 0.2s ease;
     cursor: pointer;
   }
-  
+
   slot[name="prefix"],
   slot[name="suffix"] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
   }
-  
+
   .label {
     flex: 1;
     display: inline-flex;

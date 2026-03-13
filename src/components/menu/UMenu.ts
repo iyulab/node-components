@@ -8,5 +8,4 @@ declare global {
   }
 }
 
-export { UMenu };
-export type { MenuType, MenuMode } from './UMenu.component.js';
+export * from './UMenu.component.js';

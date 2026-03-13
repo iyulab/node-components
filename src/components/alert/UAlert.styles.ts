@@ -1,58 +1,91 @@
 import { css } from "lit";
 
 export const styles = css`
+  /* === Status Colors === */
   :host {
-    --icon-primary-color: var(--u-neutral-700);
-    --min-content-rows: 1;
-    --max-content-rows: 3;
+    --alert-icon-color: var(--u-neutral-700);
+    --alert-border-color: var(--u-neutral-300);
+    --alert-bg-color: var(--u-neutral-200);
+  }
+  :host([status="error"]) {
+    --alert-icon-color: var(--u-red-700);
+    --alert-border-color: var(--u-red-300);
+    --alert-bg-color: var(--u-red-200);
+  }
+  :host([status="warning"]) {
+    --alert-icon-color: var(--u-yellow-700);
+    --alert-border-color: var(--u-yellow-300);
+    --alert-bg-color: var(--u-yellow-200);
+  }
+  :host([status="info"]) {
+    --alert-icon-color: var(--u-blue-700);
+    --alert-border-color: var(--u-blue-300);
+    --alert-bg-color: var(--u-blue-200);
+  }
+  :host([status="success"]) {
+    --alert-icon-color: var(--u-green-700);
+    --alert-border-color: var(--u-green-300);
+    --alert-bg-color: var(--u-green-200);
+  }
+  :host([status="notice"]) {
+    --alert-icon-color: var(--u-neutral-700);
+    --alert-border-color: var(--u-neutral-300);
+    --alert-bg-color: var(--u-neutral-200);
   }
 
   :host {
     display: block;
-    min-width: 300px;
-    max-width: 500px;
-
+    width: fit-content;
+    min-width: 200px;
+    max-width: 100%;
+    max-height: 50vh;
+    padding: 8px 12px;
     border-radius: 8px;
     box-shadow: 0 4px 12px var(--u-shadow-color-normal);
     
     opacity: 0;
     transform: scale(0.8);
-    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);    
+    visibility: hidden;
+    pointer-events: none;
+    transition: 
+      visibility 0s 0.2s,
+      opacity 0.2s ease,
+      transform 0.2s ease-out;
   }
   :host([open]) {
     opacity: 1;
     transform: scale(1);
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
   }
-  :host([type="error"]) {
-    --icon-primary-color: var(--u-red-700);
-    border-color: var(--u-red-300);
-    background-color: var(--u-red-200);
+
+  /* === Variant Styles === */
+  :host([variant="solid"]) {
+    border: 1px solid var(--alert-border-color);
+    background-color: var(--alert-bg-color);
   }
-  :host([type="warning"]) {
-    --icon-primary-color: var(--u-yellow-700);
-    border-color: var(--u-yellow-300);
-    background-color: var(--u-yellow-200);
+  :host([variant="filled"]) {
+    border: 1px solid transparent;
+    background-color: var(--alert-bg-color);
   }
-  :host([type="info"]) {
-    --icon-primary-color: var(--u-blue-700);
-    border-color: var(--u-blue-300);
-    background-color: var(--u-blue-200);
+  :host([variant="outlined"]) {
+    border: 1px solid var(--alert-border-color);
+    background-color: transparent;
   }
-  :host([type="success"]) {
-    --icon-primary-color: var(--u-green-700);
-    border-color: var(--u-green-300);
-    background-color: var(--u-green-200);
-  }
-  :host([type="notice"]) {
-    --icon-primary-color: var(--u-neutral-700);
-    border-color: var(--u-neutral-300);
-    background-color: var(--u-neutral-200);
+  /* From https://css.glass */
+  :host([variant="glass"]) {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
   .container {
     display: flex;
     flex-direction: column;
-    padding: 8px 12px;
     overflow: hidden;
   }
 
@@ -68,7 +101,7 @@ export const styles = css`
   }
   .header .icon {
     flex-shrink: 0;
-    color: var(--icon-primary-color);
+    color: var(--alert-icon-color);
   }
   .header .title {
     flex-grow: 1;
@@ -77,23 +110,15 @@ export const styles = css`
   }
   .header .close-btn {
     flex-shrink: 0;
-    color: var(--u-icon-color);
-    cursor: pointer;
-  }
-  .header .close-btn:hover {
-    color: var(--u-icon-color-hover);
-  }
-  .header .close-btn:active {
-    color: var(--u-icon-color-active);
-    transform: scale(0.9);
+    padding: 4px;
+    font-size: inherit;
+    border-radius: 4px;
   }
 
   .content {
     font-size: 14px;
     font-weight: 300;
     line-height: 1.5;
-    min-height: calc(1.6em * var(--min-content-rows));
-    max-height: calc(1.6em * var(--max-content-rows));
     overflow-y: auto;
   }
 

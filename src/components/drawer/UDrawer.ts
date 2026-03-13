@@ -8,5 +8,4 @@ declare global {
   }
 }
 
-export { UDrawer };
-export type { DrawerPlacement } from './UDrawer.component.js';
+export * from './UDrawer.component.js';

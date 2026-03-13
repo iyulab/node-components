@@ -8,5 +8,4 @@ declare global {
   }
 }
 
-export { UAlert };
-export type { AlertType } from './UAlert.component.js';
+export * from './UAlert.component.js';

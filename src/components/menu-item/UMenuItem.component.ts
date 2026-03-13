@@ -1,4 +1,4 @@
-﻿import { html, PropertyValues } from "lit";
+import { html, PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
@@ -44,7 +44,7 @@ export class UMenuItem extends UElement {
         name="check"
       ></u-icon>
 
-      <u-spinner class="prefix icon" 
+      <u-spinner class="prefix icon"
         ?hidden=${!this.loading}
       ></u-spinner>
 
@@ -71,7 +71,7 @@ export class UMenuItem extends UElement {
     const slot = e.target as HTMLSlotElement;
     const elements = slot.assignedElements({ flatten: true });
     const menu = elements.find(el => el instanceof UMenu);
-    
+
     // menu 요소가 있으면 submenu 슬롯으로 이동
     menu?.setAttribute('slot', 'submenu');
   }

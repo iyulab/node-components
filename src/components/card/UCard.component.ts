@@ -4,8 +4,11 @@ import { property } from "lit/decorators.js";
 import { UElement } from "../UElement.js";
 import { styles } from "./UCard.styles.js";
 
+export type CardOrientation = 'vertical' | 'horizontal';
+
 /**
  * Card 컴포넌트는 콘텐츠를 카드 형태로 표시합니다.
+ * 
  * @slot - 카드의 메인 콘텐츠를 삽입합니다.
  * @slot header - 카드 상단의 헤더 영역에 표시할 콘텐츠를 삽입합니다.
  * @slot footer - 카드 하단의 푸터 영역에 표시할 콘텐츠를 삽입합니다.
@@ -13,15 +16,16 @@ import { styles } from "./UCard.styles.js";
  */
 export class UCard extends UElement {
   static styles = [ super.styles, styles ];
+  static dependencies: Record<string, typeof UElement> = {};
 
+  /** 카드의 레이아웃 방향을 설정합니다. 'vertical'(세로) 또는 'horizontal'(가로) */
+  @property({ type: String, reflect: true }) orientation: CardOrientation = 'vertical';
   /** 카드의 그림자 효과를 제거할지 여부를 설정합니다. */
   @property({ type: Boolean, reflect: true }) shadowless = false;
   /** 카드의 경계선을 제거할지 여부를 설정합니다. */
   @property({ type: Boolean, reflect: true }) borderless = false;
   /** 카드에 호버 효과를 적용할지 여부를 설정합니다. */
   @property({ type: Boolean, reflect: true }) hoverable = false;
-  /** 카드의 레이아웃 방향을 설정합니다. 'vertical'(세로) 또는 'horizontal'(가로) */
-  @property({ type: String, reflect: true }) orientation: 'vertical' | 'horizontal' = 'vertical';
 
   render() {
     return html`

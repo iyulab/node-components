@@ -8,5 +8,4 @@ declare global {
   }
 }
 
-export { UProgressRing };
-export type { ProgressRingVariant } from './UProgressRing.component.js';
+export * from './UProgressRing.component.js';

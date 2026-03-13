@@ -8,4 +8,4 @@ declare global {
   }
 }
 
-export { UDivider };
+export * from "./UDivider.component.js";

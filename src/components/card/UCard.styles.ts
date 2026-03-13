@@ -3,12 +3,17 @@ import { css } from "lit";
 export const styles = css`
   :host {
     display: flex;
-    flex-direction: column;
-    background-color: var(--u-panel-bg-color);
-    border-radius: 8px;
-    overflow: hidden;
     border: 1px solid var(--u-border-color);
+    border-radius: 8px;
+    background-color: var(--u-panel-bg-color);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  :host([orientation="vertical"]) {
+    flex-direction: column;
+  }
+  :host([orientation="horizontal"]) {
+    flex-direction: row;
   }
   :host([borderless]) {
     border: none;
@@ -23,9 +28,6 @@ export const styles = css`
   :host([hoverable]:hover) {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-  :host([orientation="horizontal"]) {
-    flex-direction: row;
   }
 
   .media {
@@ -70,5 +72,4 @@ export const styles = css`
   .footer.has-content {
     display: block;
   }
-
 `;

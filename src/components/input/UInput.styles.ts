@@ -89,6 +89,9 @@ export const styles = css`
   input:read-only {
     cursor: default;
   }
+  input:focus-visible {
+    outline: none;
+  }
 
   /* 슬롯에 내용이 있을 때 gap 적용 */
   ::slotted([slot="prefix"]) {

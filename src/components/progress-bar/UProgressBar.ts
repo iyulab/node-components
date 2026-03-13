@@ -8,4 +8,4 @@ declare global {
   }
 }
 
-export { UProgressBar };
+export * from "./UProgressBar.component.js";

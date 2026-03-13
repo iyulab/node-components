@@ -8,4 +8,4 @@ declare global {
   }
 }
 
-export { UCard };
+export * from "./UCard.component.js";

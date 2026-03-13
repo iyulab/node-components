@@ -8,4 +8,4 @@ declare global {
   }
 }
 
-export { UButton };
+export * from "./UButton.component.js";

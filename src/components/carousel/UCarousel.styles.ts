@@ -5,6 +5,7 @@ export const styles = css`
     --slide-gap: 0px;
     --slides-per-view: 1;
   }
+
   :host {
     position: relative;
     display: block;
@@ -12,8 +13,8 @@ export const styles = css`
     overflow: hidden;
   }
   :host([draggable]) .slides-wrapper {
-    cursor: grab;
     user-select: none;
+    cursor: grab;
   }
   :host([draggable]) .slides-wrapper:active {
     cursor: grabbing;
@@ -55,25 +56,24 @@ export const styles = css`
     z-index: 10;
     top: 50%;
     transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
+    padding: 8px;
+    font-size: 20px;
     color: var(--u-neutral-900);
-    border: none;
-    background-color: transparent;
+    background-color: var(--u-neutral-100);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
   .nav-button:hover {
-    opacity: 0.5;
-    transform: scale(1.2) translateY(-40%);
+    background-color: var(--u-neutral-200);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-50%) scale(1.1);
   }
   .nav-button:active {
-    opacity: 0.8;
-    transform: scale(1.1) translateY(-45%);
+    background-color: var(--u-neutral-300);
+    transform: translateY(-50%) scale(0.95);
   }
 
-  .nav-button.prev { left: 16px; }
-  .nav-button.next { right: 16px; }
+  .nav-button.prev { left: 12px; }
+  .nav-button.next { right: 12px; }
 
   /* ── Pagination ── */
   .indicator {

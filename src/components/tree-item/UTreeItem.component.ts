@@ -1,4 +1,4 @@
-﻿import { html, PropertyValues } from "lit";
+import { html, PropertyValues } from "lit";
 import { property, query, state } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
@@ -34,7 +34,7 @@ export class UTreeItem extends UElement {
   @state() leaf: boolean = true;
   /** 트리 항목의 들여쓰기 레벨입니다. */
   @state() level: number = 0;
-  
+
   /** 트리 항목이 확장된 상태인지 여부입니다. */
   @property({ type: Boolean, reflect: true }) expanded: boolean = false;
   /** 트리 항목이 비활성화 상태인지 여부입니다. */
@@ -49,15 +49,15 @@ export class UTreeItem extends UElement {
   connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute('tabindex', this.disabled ? '-1' : '0');
-    
+
     // DOM 변경 감지를 위한 MutationObserver 설정 (동적 로딩 지원)
     this.mutationObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         if (mutation.type === 'childList') {
           // 새로 추가된 노드들 처리
           mutation.addedNodes.forEach(node => {
-            if (node instanceof Element && 
-                node.tagName.toLowerCase() === 'u-tree-item' && 
+            if (node instanceof Element &&
+                node.tagName.toLowerCase() === 'u-tree-item' &&
                 !node.hasAttribute('slot')) {
               node.setAttribute('slot', 'children');
             }
@@ -66,7 +66,7 @@ export class UTreeItem extends UElement {
       }
     });
     this.mutationObserver.observe(this, { childList: true });
-    
+
     // 초기 자식 요소 처리
     this.processChildren();
   }
@@ -95,17 +95,17 @@ export class UTreeItem extends UElement {
           lib="internal"
           name=${this.expanded ? 'chevron-down' : 'chevron-right'}
         ></u-icon>
-        
-        <u-spinner class="prefix icon" 
+
+        <u-spinner class="prefix icon"
           ?hidden=${!this.loading}
         ></u-spinner>
-        
+
         <slot name="prefix"></slot>
-        
+
         <span class="label">
           <slot></slot>
         </span>
-        
+
         <slot name="suffix"></slot>
       </div>
 
@@ -129,14 +129,14 @@ export class UTreeItem extends UElement {
   private handleChildrenSlotChange = (e: Event) => {
     const slot = e.target as HTMLSlotElement;
     const assignedElements = slot.assignedElements({ flatten: true });
-    
+
     // u-tree-item만 필터링
     this._childrenItems = assignedElements.filter(
       (el): el is UTreeItem => el.tagName.toLowerCase() === 'u-tree-item'
     ) as UTreeItem[];
-    
+
     this.leaf = this._childrenItems.length === 0;
-    
+
     // 자식 요소들의 레벨 설정
     this._childrenItems.forEach(child => {
       child.level = this.level + 1;

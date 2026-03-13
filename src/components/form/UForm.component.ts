@@ -23,11 +23,11 @@ export class UForm extends UElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.addEventListener('change', this.handleInputChange);
+    this.addEventListener('u-change', this.handleInputChange);
   }
 
   disconnectedCallback(): void {
-    this.removeEventListener('change', this.handleInputChange);
+    this.removeEventListener('u-change', this.handleInputChange);
     super.disconnectedCallback();
   }
 

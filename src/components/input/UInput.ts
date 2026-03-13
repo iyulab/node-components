@@ -8,4 +8,4 @@ declare global {
   }
 }
 
-export { UInput };
+export * from "./UInput.component.js";

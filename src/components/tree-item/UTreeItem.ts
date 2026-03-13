@@ -8,4 +8,4 @@ declare global {
   }
 }
 
-export { UTreeItem };
+export * from './UTreeItem.component.js';

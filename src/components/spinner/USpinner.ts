@@ -8,4 +8,4 @@ declare global {
   }
 }
 
-export { USpinner };
+export * from "./USpinner.component.js";

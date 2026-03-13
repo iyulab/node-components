@@ -2,63 +2,114 @@ import { css } from 'lit';
 
 export const styles = css`
   :host {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    --container-offset: 0px;
   }
 
-  .dialog {
-    position: relative;
-    display: block;
-    max-width: 90vw;
-    max-height: 90vh;
-    padding: 20px;
+  /* placement별 정렬 */
+  :host([placement="center"])       .container { align-items: center;     justify-content: center;     }
+  :host([placement="top"])          .container { align-items: flex-start;  justify-content: center;    }
+  :host([placement="bottom"])       .container { align-items: flex-end;    justify-content: center;    }
+  :host([placement="start"])        .container { align-items: center;      justify-content: flex-start; }
+  :host([placement="end"])          .container { align-items: center;      justify-content: flex-end;   }
+  :host([placement="top-start"])    .container { align-items: flex-start;  justify-content: flex-start; }
+  :host([placement="top-end"])      .container { align-items: flex-start;  justify-content: flex-end;   }
+  :host([placement="bottom-start"]) .container { align-items: flex-end;    justify-content: flex-start; }
+  :host([placement="bottom-end"])   .container { align-items: flex-end;    justify-content: flex-end;   }
+
+  /* placement별 초기 transform */
+  :host([placement="top"]) .panel,
+  :host([placement="top-start"]) .panel,
+  :host([placement="top-end"]) .panel       { 
+    transform: scale(0.92) translateY(-12px); 
+  }
+
+  :host([placement="bottom"]) .panel,
+  :host([placement="bottom-start"]) .panel,
+  :host([placement="bottom-end"]) .panel    { 
+    transform: scale(0.92) translateY(12px); 
+  }
+
+  :host([placement="start"]) .panel         { 
+    transform: scale(0.92) translateX(-12px); 
+  }
+  :host([placement="end"]) .panel           { 
+    transform: scale(0.92) translateX(12px); 
+  }
+
+  :host([open][placement="top"]) .panel,
+  :host([open][placement="top-start"]) .panel,
+  :host([open][placement="top-end"]) .panel,
+  :host([open][placement="bottom"]) .panel,
+  :host([open][placement="bottom-start"]) .panel,
+  :host([open][placement="bottom-end"]) .panel,
+  :host([open][placement="start"]) .panel,
+  :host([open][placement="end"]) .panel {
+    opacity: 1;
+    transform: scale(1) translate(0);
+  }
+
+  .container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding: var(--container-offset);
+    pointer-events: none;
+  }
+  
+  .panel {
+    display: flex;
+    flex-direction: column;
+    max-width: 90%;
+    max-height: 90%;
     border: 1px solid var(--u-border-color);
     border-radius: 6px;
     background: var(--u-panel-bg-color);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    pointer-events: auto;
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.92);
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
-  .dialog[open] {
+  :host([open]) .panel {
     opacity: 1;
     transform: scale(1);
   }
-  .dialog[shake] {
-    animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
-  }
 
   .header {
+    flex-shrink: 0;
+    position: relative;
     display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    font-size: 20px;
-    margin-bottom: 20px;
-  }
-  .header .title {
-    line-height: 1.2;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: 18px;
     font-weight: 600;
+    line-height: 1.3;
+    border-bottom: 1px solid var(--u-border-color);
+  }
+  .header .close-btn {
+    flex-shrink: 0;
+    padding: 4px;
+    font-size: inherit;
+    border-radius: 4px;
   }
 
-  .content {
+  .body {
+    flex: 1 1 auto;
+    min-height: 0;
     display: block;
-    max-width: calc(90vw - 40px);
-    max-height: calc(90vh - 100px);
+    padding: 16px;
     overflow: auto;
   }
 
-  /* 진동 애니메이션 */
-  @keyframes shake {
-    0%, 100% {
-      transform: translateX(0);
-    }
-    10%, 30%, 50%, 70%, 90% {
-      transform: translateX(-8px);
-    }
-    20%, 40%, 60%, 80% {
-      transform: translateX(8px);
-    }
+  ::slotted([slot="footer"]) {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--u-border-color);
   }
 `;

@@ -8,5 +8,4 @@ declare global {
   }
 }
 
-export { UTag };
-export type { TagVariant } from "./UTag.component.js";
+export * from "./UTag.component.js";

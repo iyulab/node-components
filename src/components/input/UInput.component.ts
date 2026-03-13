@@ -212,14 +212,14 @@ export class UInput extends UElement {
   private handleInput = (e: Event) => {
     const input = e.target as HTMLInputElement;
     this.value = input.value;
-    this.emit('u-input', { value: this.value });
+    this.emit('u-input');
   }
 
   /** change 이벤트 핸들러 */
   private handleInputChange = (e: InputEvent) => {
     const input = e.target as HTMLInputElement;
     this.value = input.value;
-    this.emit('u-change', { value: this.value });
+    this.emit('u-change');
   }
 
   /** blur 이벤트 핸들러 */

@@ -8,4 +8,4 @@ declare global {
   }
 }
 
-export { UMenuItem };
+export * from './UMenuItem.component.js';

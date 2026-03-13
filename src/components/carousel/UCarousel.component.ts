@@ -26,15 +26,15 @@ export class UCarousel extends UElement {
   };
   
   /** 자동 재생 활성화 */
-  @property({ type: Boolean }) autoplay = false;
+  @property({ type: Boolean, reflect: true }) autoplay = false;
   /** 자동 재생 간격 (ms) */
   @property({ type: Number, attribute: 'autoplay-interval' }) autoplayInterval = 3000;
   /** 처음/끝에서 순환 이동 */
-  @property({ type: Boolean }) loop = false;
+  @property({ type: Boolean, reflect: true }) loop = false;
   /** 이전/다음 네비게이션 버튼 표시 */
-  @property({ type: Boolean }) navigation = false;
+  @property({ type: Boolean, reflect: true }) navigation = false;
   /** 페이지 인디케이터 표시 */
-  @property({ type: Boolean }) pagination = false;
+  @property({ type: Boolean, reflect: true }) pagination = false;
   /** 드래그로 슬라이드 전환 */
   @property({ type: Boolean, reflect: true }) draggable = false;
   /** 한 화면에 표시할 슬라이드 수 */
@@ -136,11 +136,15 @@ export class UCarousel extends UElement {
 
       <u-button part="prev-button" class="nav-button prev"
         ?hidden=${!this.navigation || (!this.loop && this.index <= 0)}
+        variant="ghost"
+        rounded
         @click=${this.prev}>
         <u-icon lib="internal" name="chevron-left"></u-icon>
       </u-button>
       <u-button part="next-button" class="nav-button next"
         ?hidden=${!this.navigation || (!this.loop && this.index >= this.maxIndex)}
+        variant="ghost"
+        rounded
         @click=${this.next}>
         <u-icon lib="internal" name="chevron-right"></u-icon>
       </u-button>
@@ -157,7 +161,9 @@ export class UCarousel extends UElement {
     `;
   }
 
-  /** 이전 슬라이드로 이동 */
+  /** 
+   * 이전 슬라이드로 이동합니다.
+   */
   public prev = () => {
     const target = Math.max(0, this.index - this.perMove);
     if (target !== this.index) {
@@ -167,7 +173,9 @@ export class UCarousel extends UElement {
     }
   }
 
-  /** 다음 슬라이드로 이동 */
+  /** 
+   * 다음 슬라이드로 이동합니다.
+   */
   public next = () => {
     const target = Math.min(this.maxIndex, this.index + this.perMove);
     if (target !== this.index) {
@@ -177,13 +185,12 @@ export class UCarousel extends UElement {
     }
   }
 
-  /** 지정한 인덱스로 이동 */
+  /** 
+   * 지정한 인덱스로 이동합니다.
+   */
   public goTo = (index: number) => {
     if (index < 0 || index > this.maxIndex || index === this.index) return;
     this.index = index;
-    this.emit('u-change', { 
-      index: this.index 
-    });
     if (this.autoplay) this.startAutoplay();
   }
 
@@ -200,6 +207,8 @@ export class UCarousel extends UElement {
       this.autoplayTimer = undefined;
     }
   }
+
+//#region Event Handlers
 
   private handleSlotChange(e: Event) {
     const slot = e.target as HTMLSlotElement;
@@ -276,4 +285,6 @@ export class UCarousel extends UElement {
     e.preventDefault();
     e.stopPropagation();
   };
+
+//#endregion
 }

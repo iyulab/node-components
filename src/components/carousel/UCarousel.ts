@@ -8,4 +8,4 @@ declare global {
   }
 }
 
-export { UCarousel };
+export * from "./UCarousel.component.js";

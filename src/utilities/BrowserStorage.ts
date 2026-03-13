@@ -13,6 +13,7 @@ export interface CookieOptions {
   partitioned?: boolean;
 }
 
+/** 브라우저 저장소 설정 옵션 */
 export type BrowserStorageOptions = (LocalStorageOptions | CookieOptions) & {
   /** 키 앞에 붙일 접두사 (옵션) */
   prefix?: string;
@@ -35,7 +36,7 @@ export class BrowserStorage {
   }
 
   /** 키에 prefix를 붙인 실제 저장 키 */
-  private buildKey(key: string) {
+  private makeKey(key: string) {
     return `${this.options.prefix || ''}${key}`;
   }
 
@@ -45,7 +46,7 @@ export class BrowserStorage {
    * @param value 문자열 값 (문자열이 아닌 값은 JSON.stringify 권장)
    */
   public async set(key: string, value: string) {
-    key = this.buildKey(key);
+    key = this.makeKey(key);
     try {
       if (this.options.type === 'localStorage') {
         window.localStorage.setItem(key, value);
@@ -73,7 +74,7 @@ export class BrowserStorage {
    * @returns 값 (없으면 null)
    */
   public async get(key: string) {
-    key = this.buildKey(key);
+    key = this.makeKey(key);
     try {
       if (this.options.type === 'localStorage') {
         return window.localStorage.getItem(key);
@@ -96,7 +97,7 @@ export class BrowserStorage {
    * @param key 키
    */
   public async remove(key: string) {
-    key = this.buildKey(key);
+    key = this.makeKey(key);
     try {
       if (this.options.type === 'localStorage') {
         window.localStorage.removeItem(key);

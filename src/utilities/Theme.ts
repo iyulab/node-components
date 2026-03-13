@@ -2,9 +2,9 @@ import { BrowserStorage, BrowserStorageOptions } from './BrowserStorage.js';
 
 /**
  * 스타일 시트 번들 로드, 내부 자산에서 CSS를 인라인으로 가져옵니다.
- * 빌드 시점에 정적 파일을 포함시키기 위해 Vite의 `import.meta.glob`을 사용합니다.
+ * 빌드 시점에 정적 파일을 포함시키기 위해 vite의 `import.meta.glob`을 사용합니다.
  */
-const styleSheetBundle = Object.entries(import.meta.glob('../assets/styles/*.css', {
+const internalStyleBundle = Object.entries(import.meta.glob('../assets/styles/*.css', {
   eager: true,
   query: '?inline',
 })).map(([path, module]) => {
@@ -82,7 +82,7 @@ export class Theme {
     const useBuiltIn = options?.useBuiltIn ?? true;
     if (useBuiltIn) {
       this.log('Import enabled: loading styles via internal assets');
-      for (let [name, module] of styleSheetBundle) {
+      for (let [name, module] of internalStyleBundle) {
         // 스타일 시트를 생성합니다.
         const style = document.createElement('style');
         style.setAttribute('data-name', name);

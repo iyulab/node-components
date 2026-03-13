@@ -32,13 +32,15 @@ export class UElement extends LitElement {
    * @param options - 엘리먼트 정의 옵션
    */
   static define(name: string, options: ElementDefinitionOptions = {}) {
-    if (!customElements.get(name)) {
-      try {
-        customElements.define(name, this, options);
-      } catch(error: any) {
-        // eslint-disable-next-line no-console
-        console.warn(`Failed to register component "${name}":`, error);
-      }
+    const element = customElements.get(name);
+    if (element) return element;
+
+    try {
+      customElements.define(name, this, options);
+      return this;
+    } catch (error: any) {
+      console.warn(`Failed to register component "${name}":`, error);
+      return undefined;
     }
   }
 
@@ -53,7 +55,7 @@ export class UElement extends LitElement {
     const event = new CustomEvent(name, {
       bubbles: true,
       composed: true,
-      cancelable: false,
+      cancelable: true,
       detail: value,
       ...options,
     });

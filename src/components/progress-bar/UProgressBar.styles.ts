@@ -2,70 +2,144 @@ import { css } from 'lit';
 
 export const styles = css`
   :host {
-    --progress-value: 0;
+    --bar-height: 0.5em;
+    --bar-color: var(--u-blue-600);
+    --buffer-color: var(--u-blue-200);
+    --track-color: var(--u-neutral-200);
+  }
+
+  /* === Status Colors === */
+  :host([status="success"]) { 
+    --bar-color: var(--u-green-600); 
+    --buffer-color: var(--u-green-200); 
+  }
+  :host([status="warning"]) { 
+    --bar-color: var(--u-yellow-500); 
+    --buffer-color: var(--u-yellow-200); 
+  }
+  :host([status="error"]) { 
+    --bar-color: var(--u-red-600); 
+    --buffer-color: var(--u-red-200); 
+  }
+  :host([status="info"]) { 
+    --bar-color: var(--u-blue-500); 
+    --buffer-color: var(--u-blue-200); 
   }
 
   :host {
     position: relative;
     display: block;
     width: 100%;
-    height: 1em;
-    border-radius: 9999px;
-    background-color: var(--u-neutral-200);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    height: var(--bar-height);
+    background-color: var(--track-color);
     overflow: hidden;
   }
 
-  .indicator {
-    position: absolute;
-    inset: 0 0 0 0;
-    display: block;
-    border-radius: inherit;
-    background-color: var(--u-blue-600);
-    transform-origin: left center;
-    will-change: transform, opacity;
-  }
-  .indicator[state="turned-on"] {
-    opacity: 0;
-    transform: scaleX(0);
-    transition: none;
-  }
-  .indicator[state="turned-off"] {
-    opacity: 0;
-    transform: scaleX(1);
-    transition: transform 0.3s ease, opacity 0.5s ease;
-  }
-  .indicator[state="determinate"] {
-    opacity: 1;
-    transform: scaleX(var(--progress-value));
-    transition: transform 0.3s ease;
-  }
-  .indicator[state="indeterminate"] {
-    opacity: 1;
-    transform: scaleX(1);
-    animation: indeterminate 1.5s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+  /* === Rounded === */
+  :host([rounded]) {
+    border-radius: 9999px;
   }
 
+  /* === Indeterminate === */
+  :host([indeterminate]) .indicator {
+    animation: indeterminate-move 2s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+    transform: none !important;
+    inset: 0;
+  }
+
+  /* === Striped Effect === */
+  :host([striped]) .indicator {
+    background-image: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.15) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.15) 50%,
+      rgba(255, 255, 255, 0.15) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: 1em 1em;
+    animation: striped-move 1s linear infinite;
+  }
+
+  :host([striped][indeterminate]) .indicator {
+    animation:
+      indeterminate-move 2s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite,
+      striped-move 1s linear infinite;
+  }
+
+  /* === Indicator Bar === */
+  .indicator {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--bar-color);
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+  }
+
+  /* === Buffer Bar === */
+  .buffer {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--buffer-color);
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+  }
+
+  /* === Segments === */
+  .segments {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .segment-gap {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-color: var(--track-color);
+    transform: translateX(-50%);
+  }
+
+  /* === Content (슬롯) === */
   .content {
     position: absolute;
-    z-index: 100;
+    inset: 0;
+    z-index: 3;
     display: flex;
-    inset: 0 0 0 0;
     align-items: center;
     justify-content: center;
-    font-size: 0.5em;
-    line-height: 1em;
+    font-size: 0.65em;
+    line-height: 1;
     white-space: nowrap;
     user-select: none;
     pointer-events: none;
   }
 
-  @keyframes indeterminate {
+  @keyframes indeterminate-move {
     0% {
-      transform: translateX(-100%);
+      left: -35%;
+      right: 100%;
+    }
+    60% {
+      left: 100%;
+      right: -90%;
     }
     100% {
-      transform: translateX(100%);
+      left: 100%;
+      right: -90%;
     }
+  }
+
+  @keyframes striped-move {
+    from { background-position: 1em 0; }
+    to { background-position: 0 0; }
   }
 `;

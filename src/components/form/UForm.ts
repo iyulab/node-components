@@ -8,4 +8,4 @@ declare global {
   }
 }
 
-export { UForm };
+export * from './UForm.component.js';

@@ -10,7 +10,7 @@ export const styles = css`
     font-size: 14px;
   }
 
-  :host * {
+  :host > * {
     width: 100%;
     font-size: inherit;
   }

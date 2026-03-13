@@ -67,7 +67,72 @@
   --u-red-900:       #B71C1C;
   --u-red-1000:      #6B0F0F;
 
-  /* text Colors */
+  /* Orange Colors */
+  --u-orange-0:      #FFF3E0;
+  --u-orange-100:    #FFE0B2;
+  --u-orange-200:    #FFCC80;
+  --u-orange-300:    #FFB74D;
+  --u-orange-400:    #FFA726;
+  --u-orange-500:    #FF9800;
+  --u-orange-600:    #FB8C00;
+  --u-orange-700:    #F57C00;
+  --u-orange-800:    #EF6C00;
+  --u-orange-900:    #E65100;
+  --u-orange-1000:   #8C3100;
+
+  /* Teal Colors */
+  --u-teal-0:        #E0F2F1;
+  --u-teal-100:      #B2DFDB;
+  --u-teal-200:      #80CBC4;
+  --u-teal-300:      #4DB6AC;
+  --u-teal-400:      #26A69A;
+  --u-teal-500:      #009688;
+  --u-teal-600:      #00897B;
+  --u-teal-700:      #00796B;
+  --u-teal-800:      #00695C;
+  --u-teal-900:      #004D40;
+  --u-teal-1000:     #002E26;
+
+  /* Cyan Colors */
+  --u-cyan-0:        #E0F7FA;
+  --u-cyan-100:      #B2EBF2;
+  --u-cyan-200:      #80DEEA;
+  --u-cyan-300:      #4DD0E1;
+  --u-cyan-400:      #26C6DA;
+  --u-cyan-500:      #00BCD4;
+  --u-cyan-600:      #00ACC1;
+  --u-cyan-700:      #0097A7;
+  --u-cyan-800:      #00838F;
+  --u-cyan-900:      #006064;
+  --u-cyan-1000:     #003A3D;
+
+  /* Purple Colors */
+  --u-purple-0:      #F3E5F5;
+  --u-purple-100:    #E1BEE7;
+  --u-purple-200:    #CE93D8;
+  --u-purple-300:    #BA68C8;
+  --u-purple-400:    #AB47BC;
+  --u-purple-500:    #9C27B0;
+  --u-purple-600:    #8E24AA;
+  --u-purple-700:    #7B1FA2;
+  --u-purple-800:    #6A1B9A;
+  --u-purple-900:    #4A148C;
+  --u-purple-1000:   #2C0B54;
+
+  /* Pink Colors */
+  --u-pink-0:        #FCE4EC;
+  --u-pink-100:      #F8BBD0;
+  --u-pink-200:      #F48FB1;
+  --u-pink-300:      #F06292;
+  --u-pink-400:      #EC407A;
+  --u-pink-500:      #E91E63;
+  --u-pink-600:      #D81B60;
+  --u-pink-700:      #C2185B;
+  --u-pink-800:      #AD1457;
+  --u-pink-900:      #880E4F;
+  --u-pink-1000:     #520830;
+
+  /* Text Colors */
   --u-txt-color:             var(--u-neutral-900);
   --u-txt-color-inverse:     var(--u-neutral-0);
   --u-txt-color-hover:       var(--u-blue-600);
@@ -86,7 +151,7 @@
   --u-icon-color-active:     var(--u-blue-600);
   --u-icon-color-disabled:   var(--u-neutral-400);
 
-  /* border Colors */
+  /* Border Colors */
   --u-border-color:          var(--u-neutral-300);
   --u-border-color-weak:     var(--u-neutral-200);
   --u-border-color-strong:   var(--u-neutral-400);
@@ -96,7 +161,7 @@
   --u-input-border-color-focus:   var(--u-blue-600);
   --u-input-border-color-invalid: var(--u-red-600);
 
-  /* background Colors */
+  /* Background Colors */
   --u-bg-color:              var(--u-neutral-0);
   --u-bg-color-inverse:      var(--u-neutral-900);
   --u-bg-color-hover:        var(--u-neutral-100);

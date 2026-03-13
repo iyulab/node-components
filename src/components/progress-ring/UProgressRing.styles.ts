@@ -2,49 +2,112 @@ import { css } from 'lit';
 
 export const styles = css`
   :host {
-    --track-width: 0.25em;
-    --track-color: var(--u-neutral-200, #e5e7eb);
-    --indicator-color: var(--u-blue-600, #3b82f6);
+    --ring-size: 6em;
+    --ring-color: var(--u-blue-600);
+    --track-width: 6;
+    --track-color: var(--u-neutral-200);
+    --buffer-color: var(--u-blue-200);
   }
 
+  /* === Status Colors === */
+  :host([status="success"]) { 
+    --ring-color: var(--u-green-600);
+    --buffer-color: var(--u-green-200);
+  }
+  :host([status="warning"]) { 
+    --ring-color: var(--u-yellow-500);
+    --buffer-color: var(--u-yellow-200);
+  }
+  :host([status="error"]) { 
+    --ring-color: var(--u-red-600);
+    --buffer-color: var(--u-red-200);
+  }
+  :host([status="info"]) { 
+    --ring-color: var(--u-blue-500);
+    --buffer-color: var(--u-blue-200);
+  }
+
+  /* === Host === */
   :host {
     position: relative;
     display: inline-flex;
+    width: var(--ring-size);
+    height: var(--ring-size);
     font-size: inherit;
   }
 
-  .progress-ring {
-    position: relative;
-    width: 6em;
-    height: 6em;
-    transform: rotate(-90deg); /* 0%가 위에서 시작하도록 회전 */
+  /* === Indeterminate === */
+  :host([indeterminate]) .ring {
+    animation: ring-rotate 1.4s linear infinite;
   }
-  .progress-ring circle {
-    fill: none;
-    stroke-width: var(--track-width);
-    r: calc(3em - var(--track-width) / 2);
-    cx: 3em;
-    cy: 3em;
+  :host([indeterminate]) .indicator.indeterminate {
+    animation: ring-dash 2s ease-in-out infinite;
+    transition: none;
+    stroke-linecap: round;
   }
 
+  /* === SVG Ring === */
+  .ring {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+  .ring circle {
+    fill: none;
+    stroke-width: var(--track-width);
+  }
+
+  /* === Mask === */
+  .mask-progress,
+  .mask-buffer {
+    transition: stroke-dashoffset 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* === Track === */
   .track {
     stroke: var(--track-color);
   }
-  .indicator {
-    stroke: var(--indicator-color);
-    transition: stroke-dashoffset 350ms ease;
+
+  /* === Buffer === */
+  .buffer {
+    stroke: var(--buffer-color);
   }
 
-  /* 라벨 중앙 숫자 */
-  .label {
+  /* === Indicator === */
+  .indicator {
+    stroke: var(--ring-color);
+  }
+  
+  /* === Content (슬롯) === */
+  .content {
     position: absolute;
-    inset: 0 0 0 0;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
     font-size: 1em;
-    color: var(--indicator-color);
+    color: var(--ring-color);
     pointer-events: none;
+  }
+
+  @keyframes ring-rotate {
+    from { transform: rotate(-90deg); }
+    to { transform: rotate(270deg); }
+  }
+
+  @keyframes ring-dash {
+    0% {
+      stroke-dasharray: 1 99;
+      stroke-dashoffset: 0;
+    }
+    50% {
+      stroke-dasharray: 60 40;
+      stroke-dashoffset: -20;
+    }
+    100% {
+      stroke-dasharray: 1 99;
+      stroke-dashoffset: -99;
+    }
   }
 `;

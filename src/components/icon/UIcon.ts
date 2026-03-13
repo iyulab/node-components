@@ -8,5 +8,4 @@ declare global {
   }
 }
 
-export { UIcon };
-export type { IconLibrary } from "./UIcon.component.js";
+export * from "./UIcon.component.js";

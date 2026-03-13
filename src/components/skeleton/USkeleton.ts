@@ -8,5 +8,4 @@ declare global {
   }
 }
 
-export { USkeleton };
-export type { SkeletonShape, SkeletonEffect } from './USkeleton.component.js';
+export * from './USkeleton.component.js';

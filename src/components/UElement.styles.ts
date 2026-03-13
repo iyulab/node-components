@@ -15,12 +15,37 @@ export const styles = css`
     overflow-wrap: inherit;
   }
 
+  /* Focus Styles */
+  :host(:focus-visible) {
+    outline: 2px solid var(--u-blue-500);
+    outline-offset: 2px;
+  }
+  :focus-visible {
+    outline: 2px solid var(--u-blue-500);
+    outline-offset: 2px;
+  }
+
+  /* Hidden Attribute */
+  :host([hidden]) {
+    display: none !important;
+  }
   [hidden] {
     display: none !important;
   }
 
+  /* Scrollbar Styles */
   [scrollable] {
     scrollbar-width: thin;
     scrollbar-color: var(--u-scrollbar-color) var(--u-scrollbar-track-color);
+  }
+  [scrollable]::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  [scrollable]::-webkit-scrollbar-thumb {
+    background: var(--u-scrollbar-color);
+  }
+  [scrollable]::-webkit-scrollbar-track {
+    background: var(--u-scrollbar-track-color);
   }
 `;
