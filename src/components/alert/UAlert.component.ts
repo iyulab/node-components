@@ -6,7 +6,7 @@ import { UIcon } from '../icon/UIcon.component.js';
 import { styles } from './UAlert.styles.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
-export type AlertType = "error" | "warning" | "info" | "success" | "notice";
+export type AlertType = "error" | "warning" | "info" | "success" | "notice" | "danger";
 
 /**
  * 사용자에게 메시지를 표시하는 Alert 컴포넌트입니다.
@@ -104,6 +104,7 @@ export class UAlert extends UElement {
   private getIconName(type: AlertType): string {
     switch (type) {
       case 'error': return 'exclamation-circle-fill';
+      case 'danger': return 'exclamation-circle-fill';
       case 'warning': return 'exclamation-triangle-fill';
       case 'info': return 'info-circle-fill';
       case 'success': return 'check-circle-fill';

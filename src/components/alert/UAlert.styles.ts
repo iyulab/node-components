@@ -28,6 +28,11 @@ export const styles = css`
     border-color: var(--u-red-300);
     background-color: var(--u-red-200);
   }
+  :host([type="danger"]) {
+    --icon-primary-color: var(--u-red-700);
+    border-color: var(--u-red-300);
+    background-color: var(--u-red-200);
+  }
   :host([type="warning"]) {
     --icon-primary-color: var(--u-yellow-700);
     border-color: var(--u-yellow-300);
