@@ -29,6 +29,10 @@
       "types": "./src/index.d.ts",
       "import": "./src/index.js"
     },
+    "./react": {
+      "types": "./src/react-components/index.d.ts",
+      "import": "./src/react-components/index.js"
+    },
     "./dist/*": {
       "types": "./src/*.d.ts",
       "import": "./src/*"

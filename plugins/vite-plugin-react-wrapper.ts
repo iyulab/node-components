@@ -9,6 +9,51 @@ interface ComponentInfo {
   tagName: string;          // 태그명 (예: u-button)
   filePath: string;         // 원본 파일 경로
   relativePath: string;     // src 기준 상대 경로
+  events: Record<string, string>;  // { onUChange: 'u-change' }
+}
+
+/** 베이스 클래스별 상속 이벤트 */
+const BASE_EVENTS: Record<string, string[]> = {
+  'UModalElement': ['u-show', 'u-hide'],
+  'UFloatingElement': ['u-show', 'u-hide'],
+};
+
+/** 하이픈 이벤트명 → React prop 변환 (u-change → onUChange) */
+function toReactEventName(eventName: string): string {
+  return 'on' + eventName.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('');
+}
+
+/** .component.ts 파일에서 이벤트 추출 */
+function extractEvents(componentDir: string): Record<string, string> {
+  const events: Record<string, string> = {};
+
+  const files = readdirSync(componentDir);
+  const componentFile = files.find(f => f.endsWith('.component.ts'));
+  if (!componentFile) return events;
+
+  const content = readFileSync(join(componentDir, componentFile), 'utf-8');
+
+  // this.emit('이벤트명') 패턴 추출
+  const emitRegex = /this\.emit\s*\(\s*['"]([^'"]+)['"]/g;
+  let match;
+  while ((match = emitRegex.exec(content)) !== null) {
+    const eventName = match[1];
+    events[toReactEventName(eventName)] = eventName;
+  }
+
+  // extends 절에서 베이스 클래스 확인
+  const extendsMatch = content.match(/extends\s+(\w+)/);
+  if (extendsMatch) {
+    const baseClass = extendsMatch[1];
+    const baseEvents = BASE_EVENTS[baseClass];
+    if (baseEvents) {
+      for (const eventName of baseEvents) {
+        events[toReactEventName(eventName)] = eventName;
+      }
+    }
+  }
+
+  return events;
 }
 
 interface PluginOptions {
@@ -130,6 +175,7 @@ function collectComponents(componentsDir: string): ComponentInfo[] {
         const componentInfo = parseComponentInfo(content, entry, filePath, componentFile);
         
         if (componentInfo) {
+          componentInfo.events = extractEvents(entryPath);
           components.push(componentInfo);
         }
       }
@@ -168,7 +214,8 @@ function parseComponentInfo(content: string, folderName: string, filePath: strin
     reactName,
     tagName,
     filePath,
-    relativePath: `components/${folderName}/${fileBaseName}`
+    relativePath: `components/${folderName}/${fileBaseName}`,
+    events: {}
   };
 }
 
@@ -200,6 +247,11 @@ function generateReactWrapper(
   const jsFileName = `${reactName}.js`;
   const jsFilePath = join(outDir, jsFileName);
   
+  // events 객체 문자열 생성
+  const eventsStr = Object.keys(component.events).length > 0
+    ? `{\n${Object.entries(component.events).map(([k, v]) => `    ${k}: '${v}'`).join(',\n')}\n  }`
+    : '{}';
+
   const jsContent = `import React from 'react';
 import { createComponent } from '@lit/react';
 import { ${componentName} } from '${importPath}';
@@ -208,7 +260,7 @@ export const ${reactName} = createComponent({
   react: React,
   tagName: '${tagName}',
   elementClass: ${componentName},
-  events: {}
+  events: ${eventsStr}
 });
 `;
 
@@ -225,11 +277,16 @@ export const ${reactName} = createComponent({
   const dtsFileName = `${reactName}.d.ts`;
   const dtsFilePath = join(outDir, dtsFileName);
   
+  // 이벤트 prop 타입 문자열 생성
+  const eventPropsStr = Object.keys(component.events).length > 0
+    ? ' & { ' + Object.keys(component.events).map(k => `${k}?: (e: CustomEvent) => void`).join('; ') + ' }'
+    : '';
+
   const dtsContent = `import React from 'react';
 import { ${componentName} } from '${importPath}';
 
 export declare const ${reactName}: React.ForwardRefExoticComponent<
-  Partial<${componentName}> & React.HTMLAttributes<${componentName}>
+  Partial<${componentName}>${eventPropsStr} & React.HTMLAttributes<${componentName}>
 >;
 
 export type ${reactName}Props = React.ComponentProps<typeof ${reactName}>;
