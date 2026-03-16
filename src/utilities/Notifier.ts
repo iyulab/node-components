@@ -1,4 +1,4 @@
-import { UAlert, type AlertType } from "../components/alert/UAlert.component.js";
+import { UAlert, type AlertVariant } from "../components/alert/UAlert.component.js";
 
 // Alert 커스텀 엘리먼트 정의 확인
 UAlert.define("u-alert");
@@ -17,8 +17,8 @@ export type ScreenPosition =
 
 /** 토스트 알림 옵션 */
 export interface ToastOptions {
-  /** 알림 유형 */
-  type: AlertType;
+  /** 알림 변형 */
+  variant: AlertVariant;
   /** 알림 제목 */
   heading?: string;
   /** 알림 내용 */
@@ -44,7 +44,7 @@ export class Notifier {
    */
   public static async toast(options: ToastOptions) {
     const el = new UAlert();
-    el.type = options.type;
+    el.variant = options.variant;
     el.heading = options.heading;
     el.content = options.content;
     this.toasts.add(el);

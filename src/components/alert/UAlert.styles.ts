@@ -23,32 +23,27 @@ export const styles = css`
     opacity: 1;
     transform: scale(1);
   }
-  :host([type="error"]) {
+  :host([variant="error"]) {
     --icon-primary-color: var(--u-red-700);
     border-color: var(--u-red-300);
     background-color: var(--u-red-200);
   }
-  :host([type="danger"]) {
-    --icon-primary-color: var(--u-red-700);
-    border-color: var(--u-red-300);
-    background-color: var(--u-red-200);
-  }
-  :host([type="warning"]) {
+  :host([variant="warning"]) {
     --icon-primary-color: var(--u-yellow-700);
     border-color: var(--u-yellow-300);
     background-color: var(--u-yellow-200);
   }
-  :host([type="info"]) {
+  :host([variant="info"]) {
     --icon-primary-color: var(--u-blue-700);
     border-color: var(--u-blue-300);
     background-color: var(--u-blue-200);
   }
-  :host([type="success"]) {
+  :host([variant="success"]) {
     --icon-primary-color: var(--u-green-700);
     border-color: var(--u-green-300);
     background-color: var(--u-green-200);
   }
-  :host([type="notice"]) {
+  :host([variant="notice"]) {
     --icon-primary-color: var(--u-neutral-700);
     border-color: var(--u-neutral-300);
     background-color: var(--u-neutral-200);

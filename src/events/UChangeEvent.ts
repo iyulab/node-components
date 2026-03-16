@@ -1,4 +1,4 @@
-export type UChangeEvent = CustomEvent<Record<PropertyKey, never>>;
+export type UChangeEvent = CustomEvent<{ value?: string; checked?: boolean }>;
 
 declare global {
   interface GlobalEventHandlersEventMap {

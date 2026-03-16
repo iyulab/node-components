@@ -1,4 +1,4 @@
-export type USelectEvent = CustomEvent<Record<PropertyKey, never>>;
+export type USelectEvent = CustomEvent<{ value: string }>;
 
 declare global {
   interface GlobalEventHandlersEventMap {

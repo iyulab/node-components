@@ -6,7 +6,7 @@ import { UIcon } from '../icon/UIcon.component.js';
 import { styles } from './UAlert.styles.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
-export type AlertType = "error" | "warning" | "info" | "success" | "notice" | "danger";
+export type AlertVariant = "error" | "warning" | "info" | "success" | "notice";
 
 /**
  * 사용자에게 메시지를 표시하는 Alert 컴포넌트입니다.
@@ -22,8 +22,8 @@ export class UAlert extends UElement {
 
   /** 표시 여부 */
   @property({ type: Boolean, reflect: true }) open: boolean = false;
-  /** 상태 (warning, error, info, success, notice) */
-  @property({ type: String, reflect: true }) type: AlertType = 'info';
+  /** 스타일 변형 */
+  @property({ type: String, reflect: true }) variant: AlertVariant = 'info';
   /** 타이틀 라벨 */
   @property({ type: String }) heading?: string;
   /** 본문 내용 */
@@ -57,10 +57,10 @@ export class UAlert extends UElement {
         <div class="header" part="header">
           <u-icon class="icon" part="icon"
             .lib=${"internal"}
-            .name=${this.getIconName(this.type)}
+            .name=${this.getIconName(this.variant)}
           ></u-icon>
           <div class="title" part="title">
-            ${this.heading || this.type.toUpperCase()}
+            ${this.heading || this.variant.toUpperCase()}
           </div>
           <u-icon class="close-btn" part="close-btn"
             .lib=${"internal"}
@@ -100,11 +100,10 @@ export class UAlert extends UElement {
     });
   }
 
-  /** Alert 타입에 따른 아이콘 이름을 반환합니다. */
-  private getIconName(type: AlertType): string {
-    switch (type) {
+  /** Alert variant에 따른 아이콘 이름을 반환합니다. */
+  private getIconName(variant: AlertVariant): string {
+    switch (variant) {
       case 'error': return 'exclamation-circle-fill';
-      case 'danger': return 'exclamation-circle-fill';
       case 'warning': return 'exclamation-triangle-fill';
       case 'info': return 'info-circle-fill';
       case 'success': return 'check-circle-fill';
