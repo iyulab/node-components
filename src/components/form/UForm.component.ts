@@ -15,9 +15,9 @@ export class UForm extends UElement {
   static dependencies: Record<string, typeof UElement> = {};
 
   /** 포함할 입력 요소의 name 속성 목록입니다. */
-  @property({ type: Array, converter: arrayAttrConverter(v => v) }) includes: string[] = [];
+  @property({ type: Array, converter: arrayAttrConverter() }) includes: string[] = [];
   /** 제외할 입력 요소의 name 속성 목록입니다. */
-  @property({ type: Array, converter: arrayAttrConverter(v => v) }) excludes: string[] = [];
+  @property({ type: Array, converter: arrayAttrConverter() }) excludes: string[] = [];
   /** 폼의 컨텍스트 데이터를 설정합니다. */
   @property({ type: Object, attribute: false }) context?: any;
 

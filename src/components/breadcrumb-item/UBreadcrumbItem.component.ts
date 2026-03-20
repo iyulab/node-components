@@ -26,17 +26,25 @@ export class UBreadcrumbItem extends UElement {
   @property({ type: String }) rel?: string;
 
   render() {
+    if (this.href) {
+      return html`
+        <a part="link"
+          href=${this.href}
+          target=${ifDefined(this.target)}
+          rel=${ifDefined(this.rel)}
+          @click=${this.handleAnchorClick}
+        >
+          <slot name="prefix"></slot>
+          <slot></slot>
+          <slot name="suffix"></slot>
+        </a>`;
+    }
+
     return html`
-      <a part="link"
-        href=${ifDefined(this.href)}
-        target=${ifDefined(this.target)}
-        rel=${ifDefined(this.rel)}
-        @click=${this.handleAnchorClick}
-      >
-        <slot name="prefix"></slot>
-        <slot></slot>
-        <slot name="suffix"></slot>
-      </a>`;
+      <slot name="prefix"></slot>
+      <slot></slot>
+      <slot name="suffix"></slot>
+    `;
   }
 
   /** 링크 클릭 시 호출되어 네비게이션을 처리합니다. */

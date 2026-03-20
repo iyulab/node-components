@@ -1,5 +1,5 @@
 ﻿import { html, PropertyValues } from "lit";
-import { property, state } from "lit/decorators.js";
+import { property } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
 import { UFloatingElement } from "../UFloatingElement.js";
@@ -12,98 +12,121 @@ export class UTooltip extends UFloatingElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof UElement> = {};
 
-  /**
-   * 툴팁 내부로 마우스를 이동해도 툴팁이 유지되는지 여부입니다.
-   * true일 경우 툴팁 위에 마우스를 올려놓을 수 있습니다.
-   * 
-   * @default false
-   */
+  /** 툴팁 내부로 마우스를 이동해도 툴팁이 유지되는지 여부입니다. */
   @property({ type: Boolean, reflect: true }) interactive: boolean = false;
+  /** 호버 시 마우스 커서 위치를 따라가는지 여부입니다. */
+  @property({ type: Boolean, reflect: true }) tracking: boolean = false;
 
-  // 툴팁이 비어있는지 여부입니다. 툴팁이 비어있으면 표시되지 않습니다.
-  @state() private isEmpty: boolean = true;
+  // 컨텐츠 존재 여부
+  private isEmpty: boolean = true;
 
-  render() {
-    return html`<slot @slotchange=${this.handleSlotChange}></slot>`;
+  disconnectedCallback(): void {
+    if (this.anchors) this.unbind(this.anchors);
+    super.disconnectedCallback();
   }
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
-    
+
     // anchors 변경 시 바인딩 갱신 및 위치 자동 업데이트 설정
     if (changedProperties.has('anchors')) {
       const oldAnchors = changedProperties.get('anchors') as HTMLElement[] | undefined;
       const newAnchors = this.anchors as HTMLElement[] | undefined;
-      
+
       if (oldAnchors) this.unbind(oldAnchors);
       if (newAnchors) this.bind(newAnchors);
     }
 
-    // distance 변경 시 interactive모드를 위한 히트 영역 사이즈를 조정
-    if (changedProperties.has('distance')) {
-      if (this.distance > 0) {
-        this.style.setProperty('--interactive-area', `${this.distance}px`);
+    // offset 변경 시 interactive모드를 위한 히트 영역 사이즈를 조정
+    if (changedProperties.has('offset') || changedProperties.has('interactive')) {
+      if (this.interactive) {
+        let size = 0;
+        if (typeof this.offset === 'number') {
+          size = this.offset;
+        }
+        if (typeof this.offset === 'object') {
+          const { mainAxis = 0, crossAxis = 0 } = this.offset;
+          size = Math.max(mainAxis, crossAxis);
+        }
+        this.style.setProperty('--tooltip-bridge-area', `${size}px`);
       } else {
-        this.style.removeProperty('--interactive-area');
+        this.style.removeProperty('--tooltip-bridge-area');
       }
     }
   }
 
-  /** this 바인딩 이벤트 핸들러 */ 
-  private _show = (event: Event) => {
-    if (this.isEmpty) return;
-    const target = event.currentTarget as Element | null;
-    if (!target) return;
-    this.show(target);
-  };
-  
-  /** this 바인딩 이벤트 핸들러 */
-  private _hide = (event: Event) => {
-    // interactive 모드에서는 anchor또는 tooltip 내부로 포커스/포인터가 이동할 경우 숨기지 않음
-    if (this.interactive) {
-      const target = this.target as Element | undefined;
-      const related = (event as any).relatedTarget as Element | null;
-      if (!target || !related) return;
-      if (this.contains(related) || target.contains(related)) return;
-    }
-    this.hide();
-  };
-  
-  /** 바인딩 이벤트 핸들러 */
+  render() {
+    return html`
+      <slot @slotchange=${this.handleSlotChange}></slot>
+    `;
+  }
+
+  /** 툴팁 이벤트를 트리거하는 앵커 요소에 이벤트를 바인딩하는 메서드 */
   private bind(anchors: HTMLElement[]): void {
     for (const anchor of anchors) {
-      anchor.addEventListener('pointerenter', this._show);
-      anchor.addEventListener('pointerleave', this._hide);
-      anchor.addEventListener('focusin', this._show);
-      anchor.addEventListener('focusout', this._hide);
+      anchor.addEventListener('pointerenter', this.handleAnchorTrigger);
+      anchor.addEventListener('pointerleave', this.handleAnchorDismiss);
+      anchor.addEventListener('pointermove', this.handleAnchorPointerMove);
+      anchor.addEventListener('focusin', this.handleAnchorTrigger);
+      anchor.addEventListener('focusout', this.handleAnchorDismiss);
     }
 
-    this.addEventListener('pointerleave', this._hide);
-    this.addEventListener('focusout', this._hide);
+    this.addEventListener('pointerleave', this.handleAnchorDismiss);
+    this.addEventListener('focusout', this.handleAnchorDismiss);
   }
 
-  /** 바인딩 해제 이벤트 핸들러 */
+  /** 툴팁 이벤트를 트리거하는 앵커 요소에 이벤트를 언바인딩하는 메서드 */
   private unbind(anchors: HTMLElement[]): void {
     for (const anchor of anchors) {
-      anchor.removeEventListener('pointerenter', this._show);
-      anchor.removeEventListener('pointerleave', this._hide);
-      anchor.removeEventListener('focusin', this._show);
-      anchor.removeEventListener('focusout', this._hide);
+      anchor.removeEventListener('pointerenter', this.handleAnchorTrigger);
+      anchor.removeEventListener('pointerleave', this.handleAnchorDismiss);
+      anchor.removeEventListener('pointermove', this.handleAnchorPointerMove);
+      anchor.removeEventListener('focusin', this.handleAnchorTrigger);
+      anchor.removeEventListener('focusout', this.handleAnchorDismiss);
     }
 
-    this.removeEventListener('pointerleave', this._hide);
-    this.removeEventListener('focusout', this._hide);
+    this.removeEventListener('pointerleave', this.handleAnchorDismiss);
+    this.removeEventListener('focusout', this.handleAnchorDismiss);
   }
 
-  private handleSlotChange() {
-    const nodes = this.shadowRoot?.querySelector('slot')?.assignedNodes({ flatten: true }) || [];
-    this.isEmpty = nodes.every(node => {
-      // 텍스트 노드인 경우 공백만 있는지 확인
-      if (node.nodeType === Node.TEXT_NODE) {
-        return node.textContent?.trim() === '';
-      }
-      // 요소 노드인 경우에는 비어있지 않다고 간주
-      return false;
+  private handleSlotChange = (event: Event) => {
+    const slot = event.target as HTMLSlotElement;
+    this.isEmpty = slot.assignedNodes({ flatten: true }).every(node => {
+      return (node.nodeType === Node.TEXT_NODE && node.textContent?.trim() === '' )
+        || node.nodeType === Node.COMMENT_NODE;
     });
-  }
+  };
+
+  private handleAnchorTrigger = (event: PointerEvent | FocusEvent) => {
+    if (this.isEmpty) return;
+    let target = event.currentTarget as any;
+    if (!target) return;
+
+    // tracking이 켜진 경우, 포인터 이벤트의 위치를 타겟으로 변경
+    if (this.tracking && event instanceof PointerEvent) {
+      target = this.createVirtualTarget(event);
+    }
+
+    this.show(target);
+  };
+
+  private handleAnchorDismiss = (event: PointerEvent | FocusEvent) => {
+    // interactive 모드에서 tooltip또는 anchor 내부로 이동할 경우 숨기지 않음
+    if (this.interactive) {
+      const related = event.relatedTarget;
+      if (related instanceof Node) {
+        if (this.contains(related)) return;
+        if (this.targetEl instanceof Element && this.targetEl.contains(related)) return;
+      }
+    }
+
+    this.hide();
+  };
+
+  private handleAnchorPointerMove = (event: PointerEvent) => {
+    if (!this.tracking || !this.open) return;
+
+    const virtualEl = this.createVirtualTarget(event);
+    this.reposition(virtualEl);
+  };
 }

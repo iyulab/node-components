@@ -2,6 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
+    position: relative;
     display: inline-block;
     color: var(--u-txt-color);
     font-size: inherit;
@@ -30,13 +31,6 @@ export const styles = css`
     font-weight: 500;
     line-height: 1.25;
     cursor: pointer;
-  }
-  .header .helper u-icon {
-    margin-left: 0.5em;
-    cursor: help;
-  }
-  .header .helper u-tooltip {
-    font-size: 0.6em;
   }
 
   /* 입력 래퍼 */
@@ -70,6 +64,73 @@ export const styles = css`
     box-shadow:
       0 0 0 1px var(--u-input-border-color-invalid),
       0 0 0 3px rgba(220, 38, 38, 0.12);
+  }
+
+  /* ===== Variant: filled ===== */
+  :host([variant="filled"]) .container {
+    border-color: transparent;
+    background-color: var(--u-bg-color-muted, rgba(0, 0, 0, 0.06));
+    border-radius: 0.25em 0.25em 0 0;
+    border-bottom: 2px solid var(--u-input-border-color);
+  }
+  :host([variant="filled"]) .container[readonly],
+  :host([variant="filled"]) .container[disabled] {
+    background-color: var(--u-bg-color-disabled);
+    border-bottom-color: var(--u-border-color-weak);
+  }
+  :host([variant="filled"]) .container:not([readonly]):not([disabled]):hover {
+    box-shadow: none;
+    background-color: var(--u-bg-color-muted-hover, rgba(0, 0, 0, 0.09));
+    border-bottom-color: var(--u-input-border-color-hover);
+  }
+  :host([variant="filled"]) .container:not([readonly]):not([disabled]):focus-within {
+    box-shadow: none;
+    border-bottom-color: var(--u-input-border-color-focus);
+  }
+  :host([variant="filled"]) .container:not([readonly]):not([disabled])[invalid] {
+    box-shadow: none;
+    border-bottom-color: var(--u-input-border-color-invalid);
+  }
+
+  /* ===== Variant: underlined ===== */
+  :host([variant="underlined"]) .container {
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    padding-left: 0;
+    padding-right: 0;
+    border-bottom: 1px solid var(--u-input-border-color);
+  }
+  :host([variant="underlined"]) .container[readonly],
+  :host([variant="underlined"]) .container[disabled] {
+    background-color: transparent;
+    border-bottom-color: var(--u-border-color-weak);
+  }
+  :host([variant="underlined"]) .container:not([readonly]):not([disabled]):hover {
+    box-shadow: none;
+    border-bottom-color: var(--u-input-border-color-hover);
+  }
+  :host([variant="underlined"]) .container:not([readonly]):not([disabled]):focus-within {
+    box-shadow: none;
+    border-bottom-color: var(--u-input-border-color-focus);
+    border-bottom-width: 2px;
+  }
+  :host([variant="underlined"]) .container:not([readonly]):not([disabled])[invalid] {
+    box-shadow: none;
+    border-bottom-color: var(--u-input-border-color-invalid);
+  }
+
+  /* ===== Variant: borderless ===== */
+  :host([variant="borderless"]) .container {
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    padding: 0;
+    box-shadow: none;
+  }
+  :host([variant="borderless"]) .container:hover,
+  :host([variant="borderless"]) .container:focus-within {
+    box-shadow: none;
   }
 
   /* 입력 필드 */
@@ -147,5 +208,22 @@ export const styles = css`
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+  }
+
+  /* ===== Combobox 드롭다운 (u-popover) ===== */
+
+  u-popover.dropdown {
+    min-width: 100%;
+    max-height: 240px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .empty-message {
+    padding: 8px 12px;
+    color: var(--u-txt-color-weak);
+    font-size: 0.85em;
+    text-align: center;
+    user-select: none;
   }
 `;

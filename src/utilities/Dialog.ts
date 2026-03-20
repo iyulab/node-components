@@ -203,7 +203,7 @@ export class Dialog {
 
     // closeOn 정책 설정
     const closeOn: string[] = [];
-    if (dialog.closable) closeOn.push('close-button');
+    if (dialog.closable) closeOn.push('button');
     if (options?.escapeClose !== false) closeOn.push('escape');
     if (options?.backdropClose !== false) closeOn.push('backdrop');
     dialog.closeOn = closeOn as any;

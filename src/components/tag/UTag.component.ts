@@ -4,7 +4,8 @@ import { property } from "lit/decorators.js";
 import { UElement } from "../UElement.js";
 import { styles } from "./UTag.styles.js";
 
-export type TagVariant = "solid" | "surface" | "filled" | "outlined";
+export type TagVariant = 
+  | "solid" | "surface" | "filled" | "outlined";
 export type TagColor =
   | "neutral" | "blue" | "green" | "yellow" | "red"
   | "orange" | "teal" | "cyan" | "purple" | "pink";
@@ -17,7 +18,6 @@ export type TagColor =
  * @slot suffix - 태그의 접미사로 표시할 콘텐츠를 삽입합니다.
  *
  * @csspart content - 콘텐츠 영역
- * @csspart remove-btn - 삭제 버튼
  *
  * @cssprop --tag-color - 텍스트 색상
  * @cssprop --tag-bg-color - 배경 색상
@@ -33,8 +33,6 @@ export class UTag extends UElement {
   @property({ type: String, reflect: true }) color: TagColor = "neutral";
   /** 태그를 둥글게 표시합니다. */
   @property({ type: Boolean, reflect: true }) rounded = false;
-  /** 태그를 제거 가능하게 설정합니다. */
-  @property({ type: Boolean, reflect: true }) removable = false;
 
   render() {
     return html`
@@ -43,19 +41,6 @@ export class UTag extends UElement {
         <slot></slot>
       </span>
       <slot name="suffix"></slot>
-      
-      <button class="remove-btn" part="remove-btn"
-        ?hidden=${!this.removable}
-        @click=${this.handleRemoveClick}>
-        &times;
-      </button>
     `;
   }
-
-  private handleRemoveClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    if (!this.emit('u-remove')) return;
-    
-    this.remove();
-  };
 }

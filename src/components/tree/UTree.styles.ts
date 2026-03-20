@@ -2,22 +2,21 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    display: block;
-    min-width: 0;
-    width: 100%;
-    padding: 4px;
-    background-color: transparent;
-    border-radius: 4px;
+    --tree-indent-size: 12px;
+    --tree-indent-guide-width: 1px;
+    --tree-indent-guide-color: var(--u-border-color-weak);
+    --tree-indent-guide-style: solid;
+    --tree-indent-guide-offset: 0px;
   }
+
+  :host {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--u-txt-color, #1f2937);
+  }
+
   :host([disabled]) {
     opacity: 0.5;
     pointer-events: none;
-    cursor: not-allowed;
-  }
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
   }
 `;

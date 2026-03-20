@@ -4,11 +4,15 @@ export const styles = css`
   :host {
     display: inline-flex;
     align-items: center;
+    gap: 0.2em;
     flex-shrink: 0;
-    font-size: inherit;
     color: var(--u-txt-color-weak);
+    font-size: inherit;
     line-height: 1.5em;
     cursor: pointer;
+  }
+  :host:hover {
+    color: var(--u-blue-700);
   }
   :host([disabled]) {
     opacity: 0.5;
@@ -24,8 +28,5 @@ export const styles = css`
     text-decoration: none;
     transition: color 0.2s ease;
     cursor: inherit;
-  }
-  a:hover {
-    color: var(--u-blue-700);
   }
 `;

@@ -7,7 +7,7 @@
  * @returns lit 속성 컨버터 객체
  */
 export function arrayAttrConverter<T>(
-  parser: (value: string) => T,
+  parser: (value: string) => T = (value) => value as unknown as T,
   separator: string = ','
 ) {
   return {

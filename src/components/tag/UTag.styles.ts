@@ -7,35 +7,6 @@ export const styles = css`
     --tag-border-color: transparent;
   }
 
-  :host {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 0.25em 0.5em;
-    border: 1px solid var(--tag-border-color);
-    border-radius: 4px;
-    color: var(--tag-color);
-    background-color: var(--tag-bg-color);
-    line-height: 1.5em;
-    white-space: nowrap;
-    user-select: none;
-    box-sizing: border-box;
-  }
-  :host([rounded]) {
-    border-radius: 999px;
-  }
-
-  /* === Content === */
-  .content {
-    display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    min-width: 0;
-  }
-
   /* Variant: solid (강한 채움) */
   :host([variant="solid"]) {
     --tag-color: var(--u-neutral-0);
@@ -87,47 +58,47 @@ export const styles = css`
   }
   :host([variant="surface"][color="blue"]) {
     --tag-color: var(--u-blue-800);
-    --tag-bg-color: var(--u-blue-50);
+    --tag-bg-color: var(--u-blue-100);
     --tag-border-color: var(--u-blue-300);
   }
   :host([variant="surface"][color="green"]) {
     --tag-color: var(--u-green-800);
-    --tag-bg-color: var(--u-green-50);
+    --tag-bg-color: var(--u-green-100);
     --tag-border-color: var(--u-green-300);
   }
   :host([variant="surface"][color="yellow"]) {
     --tag-color: var(--u-yellow-800);
-    --tag-bg-color: var(--u-yellow-50);
+    --tag-bg-color: var(--u-yellow-100);
     --tag-border-color: var(--u-yellow-300);
   }
   :host([variant="surface"][color="red"]) {
     --tag-color: var(--u-red-800);
-    --tag-bg-color: var(--u-red-50);
+    --tag-bg-color: var(--u-red-100);
     --tag-border-color: var(--u-red-300);
   }
   :host([variant="surface"][color="orange"]) {
     --tag-color: var(--u-orange-800);
-    --tag-bg-color: var(--u-orange-50);
+    --tag-bg-color: var(--u-orange-100);
     --tag-border-color: var(--u-orange-300);
   }
   :host([variant="surface"][color="teal"]) {
     --tag-color: var(--u-teal-800);
-    --tag-bg-color: var(--u-teal-50);
+    --tag-bg-color: var(--u-teal-100);
     --tag-border-color: var(--u-teal-300);
   }
   :host([variant="surface"][color="cyan"]) {
     --tag-color: var(--u-cyan-800);
-    --tag-bg-color: var(--u-cyan-50);
+    --tag-bg-color: var(--u-cyan-100);
     --tag-border-color: var(--u-cyan-300);
   }
   :host([variant="surface"][color="purple"]) {
     --tag-color: var(--u-purple-800);
-    --tag-bg-color: var(--u-purple-50);
+    --tag-bg-color: var(--u-purple-100);
     --tag-border-color: var(--u-purple-300);
   }
   :host([variant="surface"][color="pink"]) {
     --tag-color: var(--u-pink-800);
-    --tag-bg-color: var(--u-pink-50);
+    --tag-bg-color: var(--u-pink-100);
     --tag-border-color: var(--u-pink-300);
   }
 
@@ -217,39 +188,40 @@ export const styles = css`
     --tag-border-color: var(--u-pink-300);
   }
 
-  /* === Slots === */
-  ::slotted([slot="prefix"]) {
+  :host {
     display: inline-flex;
     align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 0.25em 0.5em;
+    border: 1px solid var(--tag-border-color);
+    border-radius: 4px;
+    color: var(--tag-color);
+    background-color: var(--tag-bg-color);
+    line-height: 1.5em;
+    white-space: nowrap;
+    user-select: none;
+    box-sizing: border-box;
+  }
+  :host([rounded]) {
+    border-radius: 999px;
+  }
+
+  /* === Slots === */
+  ::slotted([slot="prefix"]) {
     margin-right: 0.15em;
   }
   ::slotted([slot="suffix"]) {
-    display: inline-flex;
-    align-items: center;
     margin-left: 0.15em;
   }
 
-  /* === Remove button === */
-  .remove-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4em;
-    width: 1em;
-    height: 1em;
-    line-height: 1;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    color: currentColor;
-    background-color: transparent;
-    transition: background-color 0.2s ease;
-    cursor: pointer;
-  }
-  .remove-btn:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-  }
-  .remove-btn:active {
-    background-color: rgba(0, 0, 0, 0.2);
+  /* === Content === */
+  .content {
+    display: inline-block;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `;

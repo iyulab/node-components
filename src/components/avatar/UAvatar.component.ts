@@ -21,7 +21,7 @@ export class UAvatar extends UElement {
   @property({ type: Boolean, reflect: true }) outline: boolean = false;
   /** 이미지 URL */
   @property({ type: String }) image?: string;
-  /** 라벨 텍스트 (이미지가 없을 때 표시) */
+  /** 이니셜 라벨 텍스트 (이미지가 없을 때 표시) */
   @property({ type: String }) label?: string;
 
   /** 이미지 로드 실패 여부 */

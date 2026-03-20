@@ -89,10 +89,10 @@ export class UElement extends LitElement {
    * ```
    */
   protected replace(value: unknown, options?: RenderOptions): void {
-    if (!this.shadowRoot) return;
+    if (!this.renderRoot) return;
 
     // STYLE 노드만 보존하고 나머지 노드 제, Lit 스타일 유지 목적
-    Array.from(this.shadowRoot.childNodes).forEach(node => {
+    Array.from(this.renderRoot.childNodes).forEach(node => {
       if (!(node instanceof HTMLStyleElement)) {
         node.parentNode?.removeChild(node);
       }
@@ -101,7 +101,7 @@ export class UElement extends LitElement {
     // Lit이 관리할 렌더 컨테이너 생성
     const container = document.createElement('div');
     container.style.display = 'contents';
-    this.shadowRoot.appendChild(container);
+    this.renderRoot.appendChild(container);
 
     // Lit 템플릿 렌더
     render(value, container, options);

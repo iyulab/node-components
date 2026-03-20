@@ -2,62 +2,150 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --selected-color: var(--u-txt-color-inverse, #ffffff);
-    --selected-bg-color: var(--u-blue-600, #0078d4);
+    --menu-item-height: 32px;
+    --menu-item-padding: 6px 8px;
+    --menu-item-gap: 6px;
+    --menu-item-radius: 4px;
+    --menu-indent-size: 20px;
   }
 
   :host {
     position: relative;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 0.5em 1em;
-    background-color: transparent;
-    transition: background-color 0.15s ease;
-    user-select: none;
-    cursor: pointer;
+    display: block;
   }
+  :host(:focus-visible) {
+    outline: none;
+  }
+
   :host([disabled]) {
     opacity: 0.5;
     pointer-events: none;
-    cursor: not-allowed;
   }
-  :host([selected]) {
-    color: var(--selected-color);
-    background-color: var(--selected-bg-color);
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--menu-item-gap);
+    min-height: var(--menu-item-height);
+    padding: var(--menu-item-padding);
+    border-radius: var(--menu-item-radius);
+    background-color: transparent;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    user-select: none;
+    cursor: pointer;
   }
-  :host(:not([disabled]):not([selected]):hover),
-  :host(:not([disabled]):not([selected]):focus-visible) {
+
+  /* align */
+  :host([align="left"]) .header { 
+    justify-content: flex-start; 
+  }
+  :host([align="center"]) .header { 
+    justify-content: center; 
+  }
+  :host([align="right"]) .header { 
+    justify-content: flex-end; 
+  }
+
+  /* hover & focus */
+  :host(:not([disabled])) .header:hover,
+  :host(:not([disabled]):focus-visible) .header {
     background-color: var(--u-bg-color-hover);
   }
 
-  /* 라벨 영역 */
-  .label {
-    flex: 1 1 auto;
-    font-size: 1em;
-    line-height: 1.5;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  /* indicator: highlight */
+  :host([selected][indicator="highlight"]) .header {
+    font-weight: 600;
+    color: var(--u-blue-700);
+    background-color: var(--u-blue-100);
+  }
+  :host([selected][indicator="highlight"]) .header:hover,
+  :host([selected][indicator="highlight"]:focus-visible) .header {
+    background-color: var(--u-blue-200);
   }
 
-  /* prefix/suffix 슬롯 */
-  ::slotted([slot="prefix"]) {
-    margin-right: 0.5em;
+  .toggle-icon {
+    display: inline-block;
+    margin-left: auto;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    position: relative;
   }
-  ::slotted([slot="suffix"]) {
-    margin-left: 0.5em;
+  .toggle-icon::before,
+  .toggle-icon::after {
+    content: '';
+    position: absolute;
+    background-color: currentColor;
+    border-radius: 1px;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* 기본: 오른쪽 방향 chevron (›) */
+  .toggle-icon::before {
+    width: 8px;
+    height: 1.5px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-75%, -25%) rotate(45deg);
+  }
+  .toggle-icon::after {
+    width: 8px;
+    height: 1.5px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-25%, -25%) rotate(-45deg);
+  }
+  /* expanded 상태: 아래 방향 chevron (∨) */
+  .toggle-icon[expanded]::before {
+    transform: translate(-75%, 25%) rotate(-45deg);
+  }
+  .toggle-icon[expanded]::after {
+    transform: translate(-25%, 25%) rotate(45deg);
   }
 
-  /* 아이콘 공통 스타일 */
-  .icon {
-    color: var(--u-txt-color);
-    font-size: 0.75em;
+  .expand-icon {
+    margin-left: auto;
+    flex-shrink: 0;
   }
-  .icon.prefix {
-    margin-right: 0.5em;
+
+  /* inline submenu */
+  .submenu {
+    display: none;
+    padding-left: var(--menu-indent-size);
   }
-  .icon.suffix {
-    margin-left: 0.5em;
+  .submenu[open] {
+    display: block;
+  }
+
+  /* floating submenu (popover) */
+  .popover {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: max-content;
+    min-width: 160px;
+    padding: 4px;
+    border: 1px solid var(--u-border-color);
+    border-radius: 6px;
+    background-color: var(--u-panel-bg-color);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+    opacity: 0;
+    transform: scale(0.8);
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s 0.2s;
+  }
+  .popover[open] {
+    opacity: 1;
+    transform: scale(1);
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
   }
 `;

@@ -4,7 +4,7 @@ UTab.define("u-tab");
 
 declare global {
   interface HTMLElementTagNameMap {
-    "u-tab": UTab;
+    'u-tab': UTab;
   }
 }
 

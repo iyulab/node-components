@@ -10,22 +10,21 @@ export const styles = css`
     font-family: var(--u-font-base);
     font-weight: 600;
     color: var(--u-neutral-0);
-    border-radius: 50%;
     background-color: var(--u-neutral-500);
     vertical-align: middle;
     overflow: hidden;
     user-select: none;
   }
 
-  /* shape */
+  :host([shape="circle"]) {
+    border-radius: 50%;
+  }
   :host([shape="square"]) {
     border-radius: 0;
   }
   :host([shape="rounded"]) {
     border-radius: 0.375em;
   }
-
-  /* outline */
   :host([outline]) {
     box-shadow: 0 0 0 0.125em var(--u-border-color);
   }
@@ -40,9 +39,5 @@ export const styles = css`
     font-size: 1em;
     line-height: 1;
     text-transform: uppercase;
-  }
-
-  ::slotted(*) {
-    font-size: 1.2em;
   }
 `;

@@ -39,7 +39,7 @@ export class UDrawer extends UOverlayElement {
           <u-button class="close-btn" part="close-btn"
             variant="ghost"
             ?hidden=${!this.closable}
-            @click=${() => this.requestClose('close-button')}>
+            @click=${() => this.requestClose('button')}>
             <u-icon lib="internal" name="x-lg"></u-icon>
           </u-button>
         </div>

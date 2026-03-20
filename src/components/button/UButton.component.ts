@@ -54,9 +54,7 @@ export class UButton extends UElement {
   }
 
   render() {
-    const isLink = !!this.href;
-
-    if (isLink) {
+    if (this.href) {
       return html`
         <a part="button"
           ?disabled=${this.disabled || this.loading}

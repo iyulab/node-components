@@ -9,7 +9,7 @@ import { UElement } from './UElement.js';
 import { styles } from './UOverlayElement.styles.js';
 
 /** closeOn에 지정할 수 있는 닫기 트리거 */
-export type CloseOnPolicy = 'escape' | 'backdrop' | 'close-button';
+export type CloseOnPolicy = 'escape' | 'backdrop' | 'button';
 /** 오버레이 모드 */
 export type OverlayMode = 'modal' | 'non-modal';
 
@@ -20,35 +20,44 @@ export abstract class UOverlayElement extends UElement {
   static styles: CSSResultGroup = [super.styles, styles];
   static dependencies: Record<string, typeof UElement> = {};
 
-  /** 열림/닫힘 상태 */
-  @property({ type: Boolean, reflect: true }) open = false;
+  /** 
+   * 열림/닫힘 상태 
+   * 
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true }) open: boolean = false;
 
   /**
    * contained 모드 여부
    * - true이면 position: absolute로 부모 기준 오버레이
    * - modal이어도 body scroll lock을 적용하지 않음
+   * 
+   * @default false
    */
-  @property({ type: Boolean, reflect: true }) contained = false;
+  @property({ type: Boolean, reflect: true }) contained: boolean = false;
   
   /**
    * 오버레이 모드
    * - `modal` — focus trap, scroll lock, 백드롭 차단 (기본값)
    * - `non-modal` — 주변 UI와 자유 상호작용, 배경 투명, scroll lock 없음
+   * 
+   * @default 'modal'
    */
   @property({ type: String, reflect: true }) mode: OverlayMode = 'modal';
 
   /**
-   * 사용자 상호작용에 의한 닫기 트리거 목록, 어트리뷰트는 쉼표로 구분된 문자열
-   * - `['escape', 'backdrop', 'close-button']` — 기본값 모두 허용
-   * - `[]` — 비허용
+   * 사용자 상호작용에 의한 닫기 트리거 목록, 어트리뷰트는 쉼표로 구분된 배열 형태입니다.
+   * 
+   * @default 
+   * ['escape', 'backdrop', 'button']
    */
   @property({
     type: Array,
     reflect: true,
     attribute: 'close-on',
-    converter: arrayAttrConverter<CloseOnPolicy>(v => v as CloseOnPolicy),
+    converter: arrayAttrConverter<CloseOnPolicy>(),
   })
-  closeOn: CloseOnPolicy[] = ['escape', 'backdrop', 'close-button'];
+  closeOn: CloseOnPolicy[] = ['escape', 'backdrop', 'button'];
 
   /** focus trap 인스턴스 (modal일 때만 사용) */
   private focusTrap?: FocusTrap;

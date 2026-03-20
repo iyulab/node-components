@@ -34,6 +34,20 @@ export const styles = css`
   }
 
   /* Scrollbar Styles */
+  :host([scrollable]) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--u-scrollbar-color) var(--u-scrollbar-track-color);
+  }
+  :host([scrollable])::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  :host([scrollable])::-webkit-scrollbar-thumb {
+    background: var(--u-scrollbar-color);
+  }
+  :host([scrollable])::-webkit-scrollbar-track {
+    background: var(--u-scrollbar-track-color);
+  }
   [scrollable] {
     scrollbar-width: thin;
     scrollbar-color: var(--u-scrollbar-color) var(--u-scrollbar-track-color);

@@ -46,14 +46,14 @@ export class Toast {
     return this.show('notice', content, options);
   }
 
-  /** 성공 알림 */
-  public static async success(content: string, options?: ToastOptions) {
-    return this.show('success', content, options);
-  }
-
   /** 정보 알림 */
   public static async info(content: string, options?: ToastOptions) {
     return this.show('info', content, options);
+  }
+
+  /** 성공 알림 */
+  public static async success(content: string, options?: ToastOptions) {
+    return this.show('success', content, options);
   }
 
   /** 경고 알림 */

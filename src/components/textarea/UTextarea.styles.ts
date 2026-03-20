@@ -12,7 +12,7 @@ export const styles = css`
     cursor: not-allowed;
   }
 
-  /* 헤더 영역 */
+  /* ===== 헤더 영역 ===== */
   .header {
     display: flex;
     flex-direction: row;
@@ -32,14 +32,14 @@ export const styles = css`
     cursor: pointer;
   }
 
-  /* 텍스트영역 래퍼 */
+  /* ===== 컨테이너 (outlined 기본) ===== */
   .container {
     display: flex;
     padding: 0.3em 0.6em;
     border: 1px solid var(--u-input-border-color);
     border-radius: 0.25em;
     background-color: var(--u-input-bg-color);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   }
   .container[readonly],
   .container[disabled] {
@@ -62,13 +62,80 @@ export const styles = css`
       0 0 0 3px rgba(220, 38, 38, 0.12);
   }
 
+  /* ===== Variant: filled ===== */
+  :host([variant="filled"]) .container {
+    border-color: transparent;
+    background-color: var(--u-bg-color-muted, rgba(0, 0, 0, 0.06));
+    border-radius: 0.25em 0.25em 0 0;
+    border-bottom: 2px solid var(--u-input-border-color);
+  }
+  :host([variant="filled"]) .container[readonly],
+  :host([variant="filled"]) .container[disabled] {
+    background-color: var(--u-bg-color-disabled);
+    border-bottom-color: var(--u-border-color-weak);
+  }
+  :host([variant="filled"]) .container:not([readonly]):not([disabled]):hover {
+    box-shadow: none;
+    background-color: var(--u-bg-color-muted-hover, rgba(0, 0, 0, 0.09));
+    border-bottom-color: var(--u-input-border-color-hover);
+  }
+  :host([variant="filled"]) .container:not([readonly]):not([disabled]):focus-within {
+    box-shadow: none;
+    border-bottom-color: var(--u-input-border-color-focus);
+  }
+  :host([variant="filled"]) .container:not([readonly]):not([disabled])[invalid] {
+    box-shadow: none;
+    border-bottom-color: var(--u-input-border-color-invalid);
+  }
+
+  /* ===== Variant: underlined ===== */
+  :host([variant="underlined"]) .container {
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    padding-left: 0;
+    padding-right: 0;
+    border-bottom: 1px solid var(--u-input-border-color);
+  }
+  :host([variant="underlined"]) .container[readonly],
+  :host([variant="underlined"]) .container[disabled] {
+    background-color: transparent;
+    border-bottom-color: var(--u-border-color-weak);
+  }
+  :host([variant="underlined"]) .container:not([readonly]):not([disabled]):hover {
+    box-shadow: none;
+    border-bottom-color: var(--u-input-border-color-hover);
+  }
+  :host([variant="underlined"]) .container:not([readonly]):not([disabled]):focus-within {
+    box-shadow: none;
+    border-bottom-color: var(--u-input-border-color-focus);
+    border-bottom-width: 2px;
+  }
+  :host([variant="underlined"]) .container:not([readonly]):not([disabled])[invalid] {
+    box-shadow: none;
+    border-bottom-color: var(--u-input-border-color-invalid);
+  }
+
+  /* ===== Variant: borderless ===== */
+  :host([variant="borderless"]) .container {
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    padding: 0;
+    box-shadow: none;
+  }
+  :host([variant="borderless"]) .container:hover,
+  :host([variant="borderless"]) .container:focus-within {
+    box-shadow: none;
+  }
+
+  /* ===== Textarea 요소 ===== */
   textarea {
     all: unset;
     flex: 1;
     min-width: 0;
     font-size: 1em;
     line-height: 1.5;
-    resize: vertical;
     white-space: pre-wrap;
     word-wrap: break-word;
   }
@@ -77,21 +144,54 @@ export const styles = css`
   }
   textarea:disabled {
     cursor: not-allowed;
-    resize: none;
   }
   textarea:read-only {
     cursor: default;
   }
+  textarea:focus,
+  textarea:focus-visible {
+    outline: none;
+  }
 
-  /* 유효성 검사 에러 메시지 */
-  .validation-message {
-    margin-top: 0.5em;
-    color: var(--u-red-600);
+  /* ===== Resize 모드 ===== */
+  :host([resize="none"]) textarea { 
+    resize: none; 
+  }
+  :host([resize="vertical"]) textarea { 
+    resize: vertical; 
+  }
+  :host([resize="horizontal"]) textarea { 
+    resize: horizontal; 
+  }
+  :host([resize="both"]) textarea { 
+    resize: both; 
+  }
+  :host([resize="auto"]) textarea {
+    resize: none;
+    overflow: hidden;
+  }
+  :host([disabled]) textarea,
+  :host([readonly]) textarea {
+    resize: none;
+  }
+
+  /* ===== 하단 영역 ===== */
+  .footer {
+    display: flex;
+    flex-direction: column;
+  }
+  .footer:not(:has(:not([hidden]))) {
+    display: none;
+  }
+
+  .counter {
+    margin-top: 0.25em;
+    text-align: right;
+    color: var(--u-txt-color-weak);
     font-size: 0.75em;
     line-height: 1.2;
   }
 
-  /* 설명 텍스트 */
   .description {
     margin-top: 0.5em;
     color: var(--u-txt-color-weak);
@@ -99,11 +199,9 @@ export const styles = css`
     line-height: 1.2;
   }
 
-  /* 글자수 카운터 */
-  .counter {
-    margin-top: 0.25em;
-    text-align: right;
-    color: var(--u-txt-color-weak);
+  .validation-message {
+    margin-top: 0.5em;
+    color: var(--u-red-600);
     font-size: 0.75em;
     line-height: 1.2;
   }

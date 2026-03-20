@@ -33,7 +33,8 @@
       "types": "./src/*.d.ts",
       "import": "./src/*"
     },
-    "./*": "./*"
+    "./react-components": "./dist/react-components/index.js",
+    "./react-components/*": "./dist/react-components/*"
   },
   "scripts": {
     "test": "vite --force",

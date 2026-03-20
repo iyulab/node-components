@@ -11,7 +11,7 @@ export const styles = css`
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.3s ease, visibility 0s 0.3s;
+    transition: opacity 0.2s ease, visibility 0s 0.2s;
     overflow: hidden;
   }
   :host([open]) {

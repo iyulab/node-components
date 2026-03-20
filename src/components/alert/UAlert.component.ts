@@ -107,8 +107,8 @@ export class UAlert extends UElement {
     switch (status) {
       case 'error': return 'exclamation-circle-fill';
       case 'warning': return 'exclamation-triangle-fill';
-      case 'info': return 'info-circle-fill';
       case 'success': return 'check-circle-fill';
+      case 'info': return 'info-circle-fill';
       case 'notice': return 'bell-fill';
       default: return 'bell-fill';
     }
