@@ -1,16 +1,14 @@
-# using owned workflow file: ./.github/workflows/shared-publish-npm.yml
-
-name: Publish to npm
+name: Release
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "v*"
-  workflow_dispatch:
 
 jobs:
-  call-publish:
-    uses: ./.github/workflows/shared-publish-npm.yml
+  publish:
+    uses: iyulab/shared/.github/workflows/publish-npm.yml@main
     with:
       node_version: "20"
     secrets:
