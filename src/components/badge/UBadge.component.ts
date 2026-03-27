@@ -29,7 +29,7 @@ export class UBadge extends UElement {
   @property({ type: String, reflect: true }) variant: BadgeVariant = "pill";
   /** 배지 색상 */
   @property({ type: String, reflect: true }) color: BadgeColor = "neutral";
-  /** 부모 요소 구석에 위치 (설정 시 position: absolute) */
+  /** 부모 요소 기준 위치 (설정 시 position: absolute) */
   @property({ type: String, reflect: true }) anchor?: BadgeAnchor;
 
   render() {

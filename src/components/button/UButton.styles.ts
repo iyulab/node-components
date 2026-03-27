@@ -162,6 +162,18 @@ export const styles = css`
     margin-left: 0.5em;
   }
 
+  .content {
+    flex: 1 0 auto;
+    min-width: 0;
+    line-height: 1.5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   /* === Mask (로딩 오버레이) === */
   .mask {
     position: absolute;

@@ -16,8 +16,7 @@ import { styles } from "./UChip.styles.js";
  * @slot suffix - 칩의 접미사로 표시할 콘텐츠를 삽입합니다.
  * @slot tooltip - 툴팁 표시
  *
- * @fires u-remove - 삭제 버튼 클릭 시 발생
- * @fires u-select - 선택 상태 변경 시 발생
+ * @event u-remove - 삭제 버튼 클릭 시 발생
  */
 export class UChip extends UElement {
   static styles = [super.styles, styles];
@@ -28,9 +27,9 @@ export class UChip extends UElement {
     'u-tooltip': UTooltip,
   };
 
-  /** 칩의 스타일 변형 (u-tag variant와 동일) */
+  /** 칩의 스타일 변형 */
   @property({ type: String, reflect: true }) variant: TagVariant = 'filled';
-  /** 칩의 색상 (u-tag color와 동일) */
+  /** 칩의 색상 */
   @property({ type: String, reflect: true }) color: TagColor = 'neutral';
   /** 둥근 모서리 여부 */
   @property({ type: Boolean, reflect: true }) rounded = false;
@@ -41,22 +40,13 @@ export class UChip extends UElement {
   /** 선택 상태 */
   @property({ type: Boolean, reflect: true }) selected = false;
 
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.addEventListener('click', this.handleClick);
-  }
-
-  disconnectedCallback(): void {
-    this.removeEventListener('click', this.handleClick);
-    super.disconnectedCallback();
-  }
-
   render() {
     return html`
       <u-tag part="tag"
         .variant=${this.variant}
         .color=${this.color}
         .rounded=${this.rounded}
+        @click=${this.handleTagClick}
       >
         <u-icon class="check-icon" part="check" slot="prefix"
           ?hidden=${!this.selectable || !this.selected}  
@@ -85,14 +75,15 @@ export class UChip extends UElement {
     `;
   }
 
-  private handleClick = () => {
+  private handleTagClick = (_: PointerEvent) => {
     if (!this.selectable) return;
+    
     this.selected = !this.selected;
     this.emit('u-select');
   }
 
-  private handleRemoveClick = (e: MouseEvent) => {
-    e.stopPropagation();
+  private handleRemoveClick = (e: PointerEvent) => {
+    e.stopImmediatePropagation();
     if(this.emit('u-remove')) {
       this.remove();
     }

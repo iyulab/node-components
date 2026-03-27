@@ -7,30 +7,6 @@ export const styles = css`
     font-size: inherit;
     font-family: var(--u-font-base);
   }
-  :host([disabled]) {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  /* ===== 헤더 영역 ===== */
-  .header {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 0.5em;
-    font-size: 0.8em;
-    user-select: none;
-  }
-  .header .required {
-    color: var(--u-red-600);
-    margin-right: 0.25em;
-  }
-  .header .label {
-    font-weight: 500;
-    line-height: 1.25;
-    cursor: pointer;
-  }
 
   /* ===== 컨테이너 (outlined 기본) ===== */
   .container {
@@ -41,49 +17,43 @@ export const styles = css`
     background-color: var(--u-input-bg-color);
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   }
-  .container[readonly],
-  .container[disabled] {
+  :host([readonly]) .container,
+  :host([disabled]) .container {
     border-color: var(--u-border-color-weak);
     background-color: var(--u-bg-color-disabled);
   }
-  .container:not([readonly]):not([disabled]):hover {
-    box-shadow:
-      0 0 0 1px var(--u-input-border-color-hover),
-      0 0 0 3px rgba(59, 130, 246, 0.12);
+  :host(:not([readonly]):not([disabled])) .container:hover {
+    box-shadow: 0 0 0 1px var(--u-input-border-color-hover);
   }
-  .container:not([readonly]):not([disabled]):focus-within {
-    box-shadow:
-      0 0 0 1px var(--u-input-border-color-focus),
-      0 0 0 3px rgba(59, 130, 246, 0.22);
+  :host(:not([readonly]):not([disabled])) .container:focus-within {
+    box-shadow: 0 0 0 1px var(--u-input-border-color-focus);
   }
-  .container:not([readonly]):not([disabled])[invalid] {
-    box-shadow:
-      0 0 0 1px var(--u-input-border-color-invalid),
-      0 0 0 3px rgba(220, 38, 38, 0.12);
+  :host([invalid]:not([readonly]):not([disabled])) .container {
+    box-shadow: 0 0 0 1px var(--u-input-border-color-invalid);
   }
 
   /* ===== Variant: filled ===== */
   :host([variant="filled"]) .container {
     border-color: transparent;
-    background-color: var(--u-bg-color-muted, rgba(0, 0, 0, 0.06));
+    background-color: var(--u-neutral-200);
     border-radius: 0.25em 0.25em 0 0;
     border-bottom: 2px solid var(--u-input-border-color);
   }
-  :host([variant="filled"]) .container[readonly],
-  :host([variant="filled"]) .container[disabled] {
+  :host([variant="filled"][readonly]) .container,
+  :host([variant="filled"][disabled]) .container {
     background-color: var(--u-bg-color-disabled);
     border-bottom-color: var(--u-border-color-weak);
   }
-  :host([variant="filled"]) .container:not([readonly]):not([disabled]):hover {
+  :host([variant="filled"]:not([readonly]):not([disabled])) .container:hover {
     box-shadow: none;
-    background-color: var(--u-bg-color-muted-hover, rgba(0, 0, 0, 0.09));
+    background-color: var(--u-neutral-300);
     border-bottom-color: var(--u-input-border-color-hover);
   }
-  :host([variant="filled"]) .container:not([readonly]):not([disabled]):focus-within {
+  :host([variant="filled"]:not([readonly]):not([disabled])) .container:focus-within {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-focus);
   }
-  :host([variant="filled"]) .container:not([readonly]):not([disabled])[invalid] {
+  :host([variant="filled"][invalid]:not([readonly]):not([disabled])) .container {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-invalid);
   }
@@ -97,21 +67,21 @@ export const styles = css`
     padding-right: 0;
     border-bottom: 1px solid var(--u-input-border-color);
   }
-  :host([variant="underlined"]) .container[readonly],
-  :host([variant="underlined"]) .container[disabled] {
+  :host([variant="underlined"][readonly]) .container,
+  :host([variant="underlined"][disabled]) .container {
     background-color: transparent;
     border-bottom-color: var(--u-border-color-weak);
   }
-  :host([variant="underlined"]) .container:not([readonly]):not([disabled]):hover {
+  :host([variant="underlined"]:not([readonly]):not([disabled])) .container:hover {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-hover);
   }
-  :host([variant="underlined"]) .container:not([readonly]):not([disabled]):focus-within {
+  :host([variant="underlined"]:not([readonly]):not([disabled])) .container:focus-within {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-focus);
     border-bottom-width: 2px;
   }
-  :host([variant="underlined"]) .container:not([readonly]):not([disabled])[invalid] {
+  :host([variant="underlined"][invalid]:not([readonly]):not([disabled])) .container {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-invalid);
   }
@@ -124,8 +94,8 @@ export const styles = css`
     padding: 0;
     box-shadow: none;
   }
-  :host([variant="borderless"]) .container:hover,
-  :host([variant="borderless"]) .container:focus-within {
+  :host([variant="borderless"]:not([readonly]):not([disabled])) .container:hover,
+  :host([variant="borderless"]:not([readonly]):not([disabled])) .container:focus-within {
     box-shadow: none;
   }
 
@@ -153,7 +123,6 @@ export const styles = css`
     outline: none;
   }
 
-  /* ===== Resize 모드 ===== */
   :host([resize="none"]) textarea { 
     resize: none; 
   }
@@ -175,33 +144,11 @@ export const styles = css`
     resize: none;
   }
 
-  /* ===== 하단 영역 ===== */
-  .footer {
-    display: flex;
-    flex-direction: column;
-  }
-  .footer:not(:has(:not([hidden]))) {
-    display: none;
-  }
-
+  /* ===== 카운터 ===== */
   .counter {
     margin-top: 0.25em;
     text-align: right;
     color: var(--u-txt-color-weak);
-    font-size: 0.75em;
-    line-height: 1.2;
-  }
-
-  .description {
-    margin-top: 0.5em;
-    color: var(--u-txt-color-weak);
-    font-size: 0.75em;
-    line-height: 1.2;
-  }
-
-  .validation-message {
-    margin-top: 0.5em;
-    color: var(--u-red-600);
     font-size: 0.75em;
     line-height: 1.2;
   }

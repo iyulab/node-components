@@ -18,14 +18,8 @@ export type PopoverDismiss = 'click' | 'escape' | 'scroll' | 'resize';
 export class UPopover extends UFloatingElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof UElement> = {};
-  static shadowRootOptions = { ...UFloatingElement.shadowRootOptions, delegatesFocus: true };
 
   private static readonly SAFE_TIMER_DELAY = 200;
-
-  /**
-   * 테두리, 배경, 그림자 등 기본 패널 스타일을 제거합니다.
-   */
-  @property({ type: Boolean, reflect: true }) borderless: boolean = false;
 
   /**
    * 팝오버가 열릴 때 내부의 첫 번째 포커스 가능한 요소에 자동으로 포커스합니다.
@@ -86,15 +80,15 @@ export class UPopover extends UFloatingElement {
     super.updated(changedProperties);
 
     if (changedProperties.has('open') && this.open && this.autofocus) {
-      requestAnimationFrame(() => this.focus());
+      this.focusTo(0);
     }
 
-    if (changedProperties.has('anchors') || changedProperties.has('trigger') || changedProperties.has('dismiss')) {
+    if (['anchors', 'trigger', 'dismiss'].some(k => changedProperties.has(k))) {
       const oldAnchors = changedProperties.get('anchors') as HTMLElement[] | undefined;
       const newAnchors = this.anchors as HTMLElement[] | undefined;
 
       // trigger나 dismiss가 변경된 경우 기존 앵커 재바인딩
-      if (changedProperties.has('trigger') || changedProperties.has('dismiss')) {
+      if (['trigger', 'dismiss'].some(k => changedProperties.has(k))) {
         this.unbind(newAnchors || []);
       } else if (oldAnchors) {
         this.unbind(oldAnchors);
@@ -108,6 +102,33 @@ export class UPopover extends UFloatingElement {
     return html`<slot></slot>`;
   }
 
+  /**
+   * 팝오버 내부의 focusable 요소 중 index에 해당하는 요소에 포커스합니다. 
+   * index가 유효하지 않으면 첫 번째 요소에 포커스합니다.
+   * 
+   * @param index 포커스할 요소의 인덱스
+   */
+  public focusTo(index: number): void {
+    const slot = this.renderRoot.querySelector('slot') as HTMLSlotElement | null;
+    const focusables = slot?.assignedElements({ flatten: true }).filter(el => {
+      if (!(el instanceof HTMLElement)) return false;
+      if (el.hasAttribute('disabled') || el.hasAttribute('hidden')) return false;
+      return el.matches('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    }) as HTMLElement[] | undefined;
+
+    if (!focusables || focusables.length === 0) {
+      this.focus();
+      return;
+    }
+
+    const target = focusables[index];
+    if (target) {
+      target.focus();
+    } else {
+      focusables[0].focus();
+    }
+  }
+
   private bind(anchors: HTMLElement[]): void {
     // trigger 리스너
     switch (this.trigger) {
@@ -118,7 +139,7 @@ export class UPopover extends UFloatingElement {
         }
         break;
       case 'contextmenu':
-        document.addEventListener('contextmenu', this.handleContextMenu);
+        document.addEventListener('contextmenu', this.handleDocumentContextMenu);
         break;
       case 'hover':
         for (const anchor of anchors) {
@@ -170,7 +191,7 @@ export class UPopover extends UFloatingElement {
       anchor.removeEventListener('focusin', this.handleAnchorFocusIn);
       anchor.removeEventListener('focusout', this.handleAnchorFocusOut);
     }
-    document.removeEventListener('contextmenu', this.handleContextMenu);
+    document.removeEventListener('contextmenu', this.handleDocumentContextMenu);
     this.removeEventListener('pointerenter', this.handlePopoverPointerEnter);
     this.removeEventListener('pointerleave', this.handlePopoverPointerLeave);
     this.removeEventListener('focusin', this.handlePopoverFocusIn);
@@ -208,7 +229,7 @@ export class UPopover extends UFloatingElement {
     }
   };
 
-  private handleContextMenu = async (e: PointerEvent) => {
+  private handleDocumentContextMenu = async (e: PointerEvent) => {
     if (this.open) {
       await this.hide();
     }

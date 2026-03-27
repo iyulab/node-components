@@ -2,39 +2,21 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
+    --select-popover-min-width: 100%;
+    --select-popover-max-width: 90vw;
+    --select-popover-min-height: 40px;
+    --select-popover-max-height: 50vh;
+  }
+
+  :host {
     position: relative;
     display: inline-block;
     color: var(--u-txt-color);
     font-size: inherit;
     font-family: var(--u-font-base);
   }
-  :host([disabled]) {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
 
-  /* 헤더 영역 */
-  .header {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 0.5em;
-    font-size: 0.8em;
-    user-select: none;
-  }
-  .header .required {
-    color: var(--u-red-600);
-    margin-right: 0.25em;
-  }
-  .header .label {
-    font-weight: 500;
-    line-height: 1.25;
-    cursor: pointer;
-  }
-
-  /* 트리거 영역 */
-  .trigger {
+  .container {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -43,63 +25,59 @@ export const styles = css`
     border-radius: 0.25em;
     background-color: var(--u-input-bg-color);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    cursor: pointer;
+    overflow: hidden;
     user-select: none;
+    cursor: pointer;
   }
-  .trigger[disabled] {
+  :host([readonly]) .container,
+  :host([disabled]) .container {
     border-color: var(--u-border-color-weak);
     background-color: var(--u-bg-color-disabled);
+  }
+  :host([disabled]) .container {
     cursor: not-allowed;
   }
-  .trigger[readonly] {
-    border-color: var(--u-border-color-weak);
-    background-color: var(--u-bg-color-disabled);
+  :host([readonly]) .container {
     cursor: default;
   }
-  .trigger:not([disabled]):not([readonly]):hover {
-    box-shadow:
-      0 0 0 1px var(--u-input-border-color-hover),
-      0 0 0 3px rgba(59, 130, 246, 0.12);
+  :host(:not([readonly]):not([disabled])) .container:hover {
+    box-shadow: 0 0 0 1px var(--u-input-border-color-hover);
   }
-  .trigger:not([disabled]):not([readonly]):focus-within {
-    box-shadow:
-      0 0 0 1px var(--u-input-border-color-focus),
-      0 0 0 3px rgba(59, 130, 246, 0.22);
+  :host(:not([readonly]):not([disabled])) .container:focus-within {
+    box-shadow: 0 0 0 1px var(--u-input-border-color-focus);
   }
-  .trigger[invalid] {
-    box-shadow:
-      0 0 0 1px var(--u-input-border-color-invalid),
-      0 0 0 3px rgba(220, 38, 38, 0.12);
+  :host([invalid]:not([readonly]):not([disabled])) .container {
+    box-shadow: 0 0 0 1px var(--u-input-border-color-invalid);
   }
 
   /* ===== Variant: filled ===== */
-  :host([variant="filled"]) .trigger {
-    border-color: transparent;
-    background-color: var(--u-bg-color-muted, rgba(0, 0, 0, 0.06));
+  :host([variant="filled"]) .container {
+    border: none;
     border-radius: 0.25em 0.25em 0 0;
     border-bottom: 2px solid var(--u-input-border-color);
+    background-color: var(--u-neutral-200);
   }
-  :host([variant="filled"]) .trigger[readonly],
-  :host([variant="filled"]) .trigger[disabled] {
+  :host([variant="filled"][readonly]) .container,
+  :host([variant="filled"][disabled]) .container {
     background-color: var(--u-bg-color-disabled);
     border-bottom-color: var(--u-border-color-weak);
   }
-  :host([variant="filled"]) .trigger:not([disabled]):not([readonly]):hover {
+  :host([variant="filled"]:not([readonly]):not([disabled])) .container:hover {
     box-shadow: none;
-    background-color: var(--u-bg-color-muted-hover, rgba(0, 0, 0, 0.09));
+    background-color: var(--u-neutral-300);
     border-bottom-color: var(--u-input-border-color-hover);
   }
-  :host([variant="filled"]) .trigger:not([disabled]):not([readonly]):focus-within {
+  :host([variant="filled"]:not([readonly]):not([disabled])) .container:focus-within {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-focus);
   }
-  :host([variant="filled"]) .trigger[invalid] {
+  :host([variant="filled"][invalid]:not([readonly]):not([disabled])) .container {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-invalid);
   }
 
   /* ===== Variant: underlined ===== */
-  :host([variant="underlined"]) .trigger {
+  :host([variant="underlined"]) .container {
     border: none;
     border-radius: 0;
     background-color: transparent;
@@ -107,155 +85,114 @@ export const styles = css`
     padding-right: 0;
     border-bottom: 1px solid var(--u-input-border-color);
   }
-  :host([variant="underlined"]) .trigger[readonly],
-  :host([variant="underlined"]) .trigger[disabled] {
+  :host([variant="underlined"][readonly]) .container,
+  :host([variant="underlined"][disabled]) .container {
     background-color: transparent;
     border-bottom-color: var(--u-border-color-weak);
   }
-  :host([variant="underlined"]) .trigger:not([disabled]):not([readonly]):hover {
+  :host([variant="underlined"]:not([readonly]):not([disabled])) .container:hover {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-hover);
   }
-  :host([variant="underlined"]) .trigger:not([disabled]):not([readonly]):focus-within {
+  :host([variant="underlined"]:not([readonly]):not([disabled])) .container:focus-within {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-focus);
     border-bottom-width: 2px;
   }
-  :host([variant="underlined"]) .trigger[invalid] {
+  :host([variant="underlined"][invalid]:not([readonly]):not([disabled])) .container {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-invalid);
   }
 
   /* ===== Variant: borderless ===== */
-  :host([variant="borderless"]) .trigger {
+  :host([variant="borderless"]) .container {
     border: none;
     border-radius: 0;
     background-color: transparent;
     padding: 0;
     box-shadow: none;
   }
-  :host([variant="borderless"]) .trigger:hover,
-  :host([variant="borderless"]) .trigger:focus-within {
+  :host([variant="borderless"]:not([readonly]):not([disabled])) .container:hover,
+  :host([variant="borderless"]:not([readonly]):not([disabled])) .container:focus-within {
     box-shadow: none;
   }
 
-  /* 검색 입력 필드 */
-  .search-input {
-    all: unset;
-    flex: 1;
-    min-width: 0;
-    font-size: 1em;
-    line-height: 1.5;
-  }
-  .search-input::placeholder {
+  .count {
     color: var(--u-txt-color-weak);
-  }
-  .search-input:disabled {
-    cursor: not-allowed;
+    line-height: 1.25;
   }
 
-  /* 표시 텍스트 */
-  .display-text {
+  .text-content {
     flex: 1;
     min-width: 0;
-    font-size: 1em;
     line-height: 1.5;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
   }
-  .display-text.placeholder {
+  .text-content.placeholder {
     color: var(--u-txt-color-weak);
   }
 
-  /* 태그 (multiple 모드) */
-  .tags {
+  .chips-content {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    flex: 1;
-    min-width: 0;
-  }
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    padding: 0 6px;
-    border-radius: 3px;
-    background-color: var(--u-blue-100);
-    color: var(--u-blue-700);
-    font-size: 0.85em;
-    line-height: 1.6;
-    white-space: nowrap;
-  }
-  .tag-remove {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 14px;
-    height: 14px;
-    border: none;
-    background: none;
-    padding: 0;
-    cursor: pointer;
-    color: inherit;
-    opacity: 0.6;
-    font-size: 12px;
-    line-height: 1;
-  }
-  .tag-remove:hover {
-    opacity: 1;
   }
 
-  /* 아이콘 */
-  .icon {
-    color: var(--u-icon-color);
-    font-size: 1em;
-    transition: color 0.2s ease, transform 0.2s ease;
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-left: 0.5em;
+  ::slotted([slot="prefix"]) {
+    margin-right: 0.25em;
   }
-  .icon:hover {
+  ::slotted([slot="suffix"]) {
+    margin-left: 0.25em;
+  }
+
+  .suffix-item {
+    margin-left: 0.25em;
+    font-size: 1em;
+    color: var(--u-icon-color);
+    transition: color 0.2s ease;
+    cursor: pointer;
+  }
+  .suffix-item:hover {
     color: var(--u-icon-color-hover);
   }
-  .chevron {
-    transition: transform 0.2s ease;
-  }
-  :host([open]) .chevron {
-    transform: rotate(180deg);
+  .suffix-item:active {
+    color: var(--u-icon-color-active);
   }
 
-  /* 드롭다운 패널 (u-popover) */
-  u-popover.dropdown {
-    min-width: 100%;
-    max-height: 240px;
+  /* 드롭다운 패널 */
+  u-popover {
+    min-width: var(--select-popover-min-width);
+    max-width: var(--select-popover-max-width);
+    min-height: var(--select-popover-min-height);
+    max-height: var(--select-popover-max-height);
+    padding: 4px;
+    border: 1px solid var(--u-border-color);
+    border-radius: 6px;
+    background-color: var(--u-panel-bg-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     overflow-x: hidden;
     overflow-y: auto;
   }
 
-  /* 빈 상태 메시지 */
-  .empty-message {
-    padding: 8px 12px;
+  .search-input {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.3em 0.6em;
     color: var(--u-txt-color-weak);
-    font-size: 0.85em;
-    text-align: center;
-    user-select: none;
+    border-bottom: 1px solid var(--u-border-color);
   }
-
-  /* 유효성 검사 에러 메시지 */
-  .validation-message {
-    margin-top: 0.5em;
-    color: var(--u-red-600);
-    font-size: 0.75em;
-    line-height: 1.2;
+  .search-input input {
+    all: unset;
+    flex: 1;
+    min-width: 0;
+    line-height: 1.5;
   }
-
-  /* 설명 텍스트 */
-  .description {
-    margin-top: 0.5em;
+  .search-input input::placeholder {
     color: var(--u-txt-color-weak);
-    font-size: 0.75em;
-    line-height: 1.2;
   }
 `;

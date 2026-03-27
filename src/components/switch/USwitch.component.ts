@@ -1,6 +1,8 @@
 import { html } from "lit";
 import { property } from "lit/decorators.js";
+import { live } from "lit/directives/live.js";
 
+import { UFormControlElement } from "../UFormControlElement.js";
 import { UElement } from "../UElement.js";
 import { styles } from "./USwitch.styles.js";
 
@@ -13,8 +15,6 @@ import { styles } from "./USwitch.styles.js";
  * @slot track-unchecked - 체크 해제 상태에서 트랙에 표시할 콘텐츠
  * @slot thumb-checked - 체크 상태에서 썸에 표시할 콘텐츠
  * @slot thumb-unchecked - 체크 해제 상태에서 썸에 표시할 콘텐츠
- *
- * @event u-change - 체크 상태 변경 시 발생
  *
  * @csspart track - 트랙 요소
  * @csspart thumb - 썸 요소
@@ -31,35 +31,21 @@ import { styles } from "./USwitch.styles.js";
  * @cssprop --switch-radius - border-radius (9999px, pill 형태)
  * @cssprop --switch-duration - 트랜지션 시간 (0.25s)
  */
-export class USwitch extends UElement {
+export class USwitch extends UFormControlElement<string> {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof UElement> = {};
 
   /** 체크 여부 */
   @property({ type: Boolean, reflect: true }) checked: boolean = false;
-  /** 비활성화 여부 */
-  @property({ type: Boolean, reflect: true }) disabled: boolean = false;
-  /** 읽기 전용 여부 */
-  @property({ type: Boolean, reflect: true }) readonly: boolean = false;
-  /** 필수 여부 */
-  @property({ type: Boolean, reflect: true }) required: boolean = false;
-  /** 유효하지 않음 표시 */
-  @property({ type: Boolean, reflect: true }) invalid: boolean = false;
-  /** 컴포넌트 하단 설명 텍스트 */
-  @property({ type: String }) description?: string;
-  /** 폼 제출 시 전송 이름 */
-  @property({ type: String }) name?: string;
-  /** 폼 제출 시 전송 값 */
-  @property({ type: String }) value: string = '';
 
   render() {
     return html`
       <label class="wrapper">
-        <input type="checkbox"
-          .checked=${this.checked}
-          ?disabled=${this.disabled}
-          ?readonly=${this.readonly}
+        <input 
+          type="checkbox"
+          ?disabled=${this.disabled || this.readonly}
           ?required=${this.required}
+          .checked=${live(this.checked)}
           @change=${this.handleInputChange}
         />
         <span class="track" part="track">
@@ -83,26 +69,30 @@ export class USwitch extends UElement {
           <span class="required" ?hidden=${!this.required}>*</span>
         </span>
       </label>
+
       <div class="description" ?hidden=${!this.description}>
         ${this.description}
       </div>
     `;
   }
 
-  /** 유효성 검사 */
-  protected validate(): boolean {
-    if (this.required && !this.checked) {
-      this.invalid = true;
-      return false;
+  public validate(): boolean {
+    if (this.internals) {
+      this.invalid = !this.internals.reportValidity();
+    } else {
+      this.invalid = this.required && !this.checked;
     }
+    return !this.invalid;
+  }
+
+  public reset(): void {
+    this.checked = false;
     this.invalid = false;
-    return true;
   }
 
   /** 기존 이벤트를 대체하여 change 이벤트 발생 */
   private handleInputChange = (e: Event) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.stopImmediatePropagation();
 
     if (this.readonly || this.disabled) {
       return;
@@ -110,7 +100,22 @@ export class USwitch extends UElement {
 
     const input = e.target as HTMLInputElement;
     this.checked = input.checked;
-    this.validate();
-    this.emit('u-change');
+    this.internals?.setFormValue(
+      this.checked
+      ? this.value || String(this.checked)
+      : String(this.checked));
+    this.internals?.setValidity(
+      input.validity,
+      this.validationMessage || input.validationMessage,
+      this.shadowRoot?.querySelector('.track') || undefined
+    );
+
+    if (!this.novalidate) {
+      this.validate();
+    }
+    this.dispatchEvent(new Event('change', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 }

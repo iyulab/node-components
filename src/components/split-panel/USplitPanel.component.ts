@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, PropertyValues } from "lit";
 import { property, query } from "lit/decorators.js";
 
 import { arrayAttrConverter } from "../../utilities/converters.js";
@@ -11,9 +11,9 @@ import { styles } from "./USplitPanel.styles.js";
  * @slot - 분할할 패널 요소들을 삽입합니다.
  * @slot splitter - 핸들(스플리터) UI를 주입합니다 (복사하여 적용).
  *
- * @fires u-resize-start - 리사이즈 시작 시 발생
- * @fires u-resize - 리사이즈 중 발생
- * @fires u-resize-end - 리사이즈 완료 시 발생
+ * @event u-resize-start - 리사이즈 시작 시 발생
+ * @event u-resize - 리사이즈 중 발생
+ * @event u-resize-end - 리사이즈 완료 시 발생
  *
  * @cssprop --splitter-size - 스플리터 크기 (default: 4px)
  * @cssprop --splitter-color - 스플리터 색상
@@ -80,12 +80,10 @@ export class USplitPanel extends UElement {
     return Math.max(0, this.panels.length - 1);
   }
 
-  willUpdate(changedProperties: Map<string, unknown>): void {
+  protected willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('orientation')
-      || changedProperties.has('ratio')
-      || changedProperties.has('defaultRatio')) {
+    if (['orientation','defaultRatio','ratio'].some(k => changedProperties.has(k))) {
       this.updatePanelLayout();
     }
   }

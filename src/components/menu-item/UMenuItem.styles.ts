@@ -2,11 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --menu-item-height: 32px;
-    --menu-item-padding: 6px 8px;
-    --menu-item-gap: 6px;
-    --menu-item-radius: 4px;
-    --menu-indent-size: 20px;
+    --menu-item-depth: 0;
   }
 
   :host {
@@ -16,7 +12,6 @@ export const styles = css`
   :host(:focus-visible) {
     outline: none;
   }
-
   :host([disabled]) {
     opacity: 0.5;
     pointer-events: none;
@@ -26,15 +21,9 @@ export const styles = css`
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: var(--menu-item-gap);
-    min-height: var(--menu-item-height);
-    padding: var(--menu-item-padding);
-    border-radius: var(--menu-item-radius);
+    padding: 0.25em 0.5em;
+    padding-left: calc(var(--menu-indent-size) * var(--menu-item-depth) + 0.5em);
     background-color: transparent;
-    line-height: 1.5;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     transition: background-color 0.15s ease, color 0.15s ease;
     user-select: none;
     cursor: pointer;
@@ -68,54 +57,74 @@ export const styles = css`
     background-color: var(--u-blue-200);
   }
 
-  .toggle-icon {
-    display: inline-block;
-    margin-left: auto;
-    width: 16px;
-    height: 16px;
+  .prefix-checker {
+    margin-right: 0.25em;
+    font-size: 1em;
+  }
+
+  .suffix-toggler {
     flex-shrink: 0;
     position: relative;
+    display: inline-block;
+    margin-left: 0.25em;
+    width: 1em;
+    height: 1em;
   }
-  .toggle-icon::before,
-  .toggle-icon::after {
+  .suffix-toggler::before,
+  .suffix-toggler::after {
     content: '';
     position: absolute;
-    background-color: currentColor;
     border-radius: 1px;
+    background-color: currentColor;
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  /* 기본: 오른쪽 방향 chevron (›) */
-  .toggle-icon::before {
-    width: 8px;
-    height: 1.5px;
+  /* 기본: 위 방향 chevron (∧) */
+  .suffix-toggler::before {
+    width: 0.5em;
+    height: 0.1em;
     top: 50%;
     left: 50%;
     transform: translate(-75%, -25%) rotate(45deg);
   }
-  .toggle-icon::after {
-    width: 8px;
-    height: 1.5px;
+  .suffix-toggler::after {
+    width: 0.5em;
+    height: 0.1em;
     top: 50%;
     left: 50%;
     transform: translate(-25%, -25%) rotate(-45deg);
   }
   /* expanded 상태: 아래 방향 chevron (∨) */
-  .toggle-icon[expanded]::before {
+  .suffix-toggler[expanded]::before {
     transform: translate(-75%, 25%) rotate(-45deg);
   }
-  .toggle-icon[expanded]::after {
+  .suffix-toggler[expanded]::after {
     transform: translate(-25%, 25%) rotate(45deg);
   }
 
-  .expand-icon {
-    margin-left: auto;
-    flex-shrink: 0;
+  .suffix-chevron {
+    font-size: 1em;
+    margin-left: 0.25em;
+  }
+
+  ::slotted([slot="prefix"]) {
+    margin-right: 0.25em;
+  }
+  ::slotted([slot="suffix"]) {
+    margin-left: 0.25em;
+  }
+
+  .content {
+    flex: 1 1 auto;
+    line-height: 1.5;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   /* inline submenu */
   .submenu {
     display: none;
-    padding-left: var(--menu-indent-size);
   }
   .submenu[open] {
     display: block;
@@ -123,29 +132,18 @@ export const styles = css`
 
   /* floating submenu (popover) */
   .popover {
-    position: fixed;
-    z-index: 1000;
-    top: 0;
-    left: 0;
-    width: max-content;
-    min-width: 160px;
+    display: flex;
+    flex-direction: column;
     padding: 4px;
     border: 1px solid var(--u-border-color);
-    border-radius: 6px;
+    border-radius: 4px;
     background-color: var(--u-panel-bg-color);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-
-    opacity: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     transform: scale(0.8);
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s 0.2s;
+    transition: opacity 0.2s ease, visibility 0s 0.2s, transform 0.2s ease;
   }
   .popover[open] {
-    opacity: 1;
     transform: scale(1);
-    visibility: visible;
-    pointer-events: auto;
     transition-delay: 0s;
   }
 `;

@@ -1,4 +1,5 @@
 // Base Components
+export * from './components/UFormControlElement.js';
 export * from './components/UDataElement.js';
 export * from './components/UElement.js';
 export * from './components/UFloatingElement.js';
@@ -19,6 +20,7 @@ export * from './components/chip/UChip.js';
 export * from './components/dialog/UDialog.js';
 export * from './components/divider/UDivider.js';
 export * from './components/drawer/UDrawer.js';
+export * from './components/field/UField.js';
 export * from './components/form/UForm.js';
 export * from './components/icon/UIcon.js';
 export * from './components/icon-button/UIconButton.js';

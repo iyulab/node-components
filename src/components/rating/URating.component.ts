@@ -1,8 +1,9 @@
-import { html, TemplateResult } from "lit";
+import { html, PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
+import { UFormControlElement } from "../UFormControlElement.js";
 import { UElement } from "../UElement.js";
+import { UField } from "../field/UField.component.js";
 import { styles } from "./URating.styles.js";
 
 /**
@@ -13,203 +14,215 @@ import { styles } from "./URating.styles.js";
  * @csspart label - 라벨 영역
  * @cssprop --symbol-color - 채워진 심볼 색상 (기본: var(--u-yellow-500))
  */
-export class URating extends UElement {
+export class URating extends UFormControlElement<number> {
   static styles = [super.styles, styles];
-  static dependencies: Record<string, typeof UElement> = {};
-  
-  @property({ type: Boolean, reflect: true }) required = false;
-  @property({ type: Boolean, reflect: true }) readonly = false;
-  @property({ type: Boolean, reflect: true }) disabled = false;
-  @property({ type: String }) label = '';
-  @property({ type: Number }) precision = 1;
+  static dependencies: Record<string, typeof UElement> = {
+    'u-field': UField,
+  };
+
+  /** 최소 값 (기본: 0) */
+  @property({ type: Number }) min = 0;
+  /** 최대 값 (기본: 5) */
   @property({ type: Number }) max = 5;
-  @property({ type: Number }) value = 0;
-  
-  @state() private hoverValue = -1;
+  /** 정밀도 (기본: 1, 예: 0.5) */
+  @property({ type: Number }) precision = 1;
+
+  // 마우스 오버 시 임시로 표시할 값 (버퍼)
+  @state() private buffer = -1;
+  // 커스텀 심볼 노드 참조 (슬롯에서 할당)
+  @state() private symbol: Node | null = null;
+  @state() private symbolOff: Node | null = null;
+
+  private get interactive() {
+    return !this.disabled && !this.readonly;
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('value')) {
+      this.onChangeValue();
+    }
+  }
 
   render() {
-    const active = this.hoverValue >= 0 ? this.hoverValue : this.value;
-    const interactive = !this.disabled && !this.readonly;
-    const fractional = this.precision < 1;
-    const hasCustom = this.querySelectorAll('[slot="symbol"]').length > 0;
-
-    const symbols: TemplateResult[] = [];
-    for (let i = 1; i <= this.max; i++) {
-      symbols.push(fractional
-        ? this.renderFractionalSymbol(i, active, interactive, hasCustom)
-        : this.renderIntegerSymbol(i, active, interactive, hasCustom)
-      );
-    }
+    const value = this.buffer >= 0 ? this.buffer : this.value || 0;
 
     return html`
-      <label class="label" part="label" ?hidden=${!this.label}>
-        ${this.label}
-        <span class="required" ?hidden=${!this.required}>*</span>
-      </label>
-      <div class="symbols" role="radiogroup" aria-label=${this.label || 'Rating'}>
-        ${symbols}
-      </div>
+      <u-field
+        ?required=${this.required}
+        ?disabled=${this.disabled}
+        ?invalid=${this.invalid}
+        .label=${this.label}
+        .description=${this.description}
+        .validationMessage=${this.validationMessage}
+      >
+        <div class="symbols" role="radiogroup">
+          ${Array.from({ length: this.max }, (_, i) => {
+            const score = i + 1;
+            const fill = Math.max(0, Math.min(1, value - score + 1));
+            return html`
+              <span class="symbol"
+                role="radio"
+                tabindex=${this.interactive ? '0' : '-1'}
+                data-score=${score}
+                @pointermove=${this.handleSymbolPointerMove}
+                @pointerleave=${this.handleSymbolPointerLeave}
+                @click=${this.handleSymbolClick}
+                @keydown=${this.handleSymbolKeydown}
+              >
+                ${this.symbolOff
+                  ? this.symbolOff.cloneNode(true)
+                  : html`<u-icon lib="internal" name="star"></u-icon>`}
+
+                <span class="symbol-fg" ?hidden=${fill <= 0} style="width: ${fill * 100}%">
+                  ${this.symbol
+                    ? this.symbol.cloneNode(true)
+                    : html`<u-icon lib="internal" name="star-fill"></u-icon>`}
+                </span>
+              </span>
+            `;
+          })}
+        </div>
+      </u-field>
 
       <div hidden>
-        <slot name="symbol"></slot>
-        <slot name="symbol-off"></slot>
+        <slot name="symbol" @slotchange=${this.handleSlotChange}></slot>
+        <slot name="symbol-off" @slotchange=${this.handleSlotChange}></slot>
       </div>
     `;
   }
 
-  // ── 렌더링 ──
-
-  private renderIntegerSymbol(
-    i: number, active: number, interactive: boolean, hasCustom: boolean
-  ) {
-    const filled = active >= i;
-    return html`
-      <span class="symbol" 
-        role="radio" 
-        aria-checked=${filled ? 'true' : 'false'} 
-        aria-label="${i}"
-        tabindex=${interactive ? '0' : '-1'}
-        data-index=${i} 
-        ?filled=${filled}
-        @click=${this.handleSymbolClick}
-        @pointerenter=${this.handleSymbolPointerEnter}
-        @pointerleave=${this.handleSymbolPointerLeave}
-        @keydown=${this.handleSymbolKeydown}>
-        ${this.renderSymbolContent(i, filled, hasCustom)}
-      </span>
-    `;
-  }
-
-  private renderFractionalSymbol(
-    i: number, active: number, interactive: boolean, hasCustom: boolean
-  ) {
-    const fill = Math.max(0, Math.min(1, active - (i - 1)));
-    return html`
-      <span class="symbol"
-        role="radio"
-        aria-checked=${fill >= 1 ? 'true' : fill > 0 ? 'mixed' : 'false'}
-        aria-label="${i}"
-        tabindex=${interactive ? '0' : '-1'}
-        data-index=${i}
-        @click=${this.handleSymbolClick}
-        @pointermove=${this.handleSymbolPointerMove}
-        @pointerleave=${this.handleSymbolPointerLeave}
-        @keydown=${this.handleSymbolKeydown}>
-        <span class="symbol-bg">
-          ${this.renderSymbolContent(i, false, hasCustom)}
-        </span>
-        <span class="symbol-fg" ?hidden=${fill <= 0} style="width: ${fill * 100}%">
-          ${this.renderSymbolContent(i, true, hasCustom)}
-        </span>
-      </span>
-    `;
-  }
-
-  private renderSymbolContent(
-    i: number, filled: boolean, hasCustom: boolean
-  ): TemplateResult {
-    if (hasCustom) {
-      const slotName = filled ? 'symbol' : 'symbol-off';
-      const els = this.querySelectorAll<HTMLElement>(`[slot="${slotName}"]`);
-      if (els.length === 0) {
-        return this.renderSymbolContent(i, filled, false) as any;
-      }
-      const node = (els.length >= this.max ? els[i - 1] : els[0]);
-      return html`${unsafeHTML(node ? node.innerHTML : '')}`;
+  public validate(): boolean {
+    if (this.internals) {
+      this.invalid = !this.internals.checkValidity();
     } else {
-      return html`<u-icon lib="internal" name=${filled ? 'star-fill' : 'star'}></u-icon>`;
+      const { flags } = this.getValidity();
+      this.invalid = Object.values(flags).some(Boolean);
     }
+    return !this.invalid;
   }
 
-  // ── 값 계산 ──
-
-  private valueFromPointer(e: PointerEvent, starIndex: number): number {
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const raw = (starIndex - 1) + ratio;
-    const p = Math.max(0.01, Math.min(1, this.precision));
-    return Math.max(p, Math.min(this.max, Math.ceil(raw / p) * p));
+  public reset(): void {
+    this.value = 0;
+    this.invalid = false;
   }
 
-  private quantize(val: number): number {
-    const p = Math.max(0.01, Math.min(1, this.precision));
-    return Math.round(val / p) * p;
-  }
+  private onChangeValue() {
+    this.buffer = -1;
+    this.internals?.setFormValue(this.value?.toString() || '');
+    const { flags, message } = this.getValidity();
+    this.internals?.setValidity(
+      flags, 
+      this.validationMessage || message, 
+      this.renderRoot.querySelector('.symbols') as HTMLElement || undefined
+    );
 
-  // ── 이벤트 핸들러 ──
-
-  private handleSymbolClick = (e: PointerEvent) => {
-    if (this.disabled || this.readonly) return;
-    const i = Number((e.currentTarget as HTMLElement).dataset.index);
-    const val = this.precision < 1 ? this.valueFromPointer(e, i) : i;
-    this.value = this.value === val ? 0 : val;
+    if (!this.novalidate) {
+      this.validate();
+    }
     this.emit('u-change');
   }
 
-  private handleSymbolPointerEnter = (e: PointerEvent) => {
-    if (this.disabled || this.readonly) return;
-    this.hoverValue = Number((e.currentTarget as HTMLElement).dataset.index);
+  private getValidity(): { flags: ValidityStateFlags; message: string } {
+    const v = this.value || 0;
+    if (this.required && !v) {
+      return { flags: { valueMissing: true }, message: 'This field is required' };
+    }
+    if (v && v < this.min) {
+      return { flags: { rangeUnderflow: true }, message: `Value must be at least ${this.min}` };
+    }
+    if (v && v > this.max) {
+      return { flags: { rangeOverflow: true }, message: `Value must be no more than ${this.max}` };
+    }
+    if (v && this.precision < 1) {
+      const remainder = Math.abs(v % this.precision);
+      if (remainder > 0.001 && Math.abs(remainder - this.precision) > 0.001) {
+        return { flags: { stepMismatch: true }, message: `Value must be a multiple of ${this.precision}` };
+      }
+    }
+    return { flags: {}, message: '' };
+  }
+
+  private handleSlotChange = (e: Event) => {
+    const slot = e.target as HTMLSlotElement;
+    const name = slot.name;
+    const node = slot.assignedNodes({ flatten: true }).at(0);
+    if (!node) return;
+    
+    if (name === 'symbol') {
+      this.symbol = node;
+    } else if (name === 'symbol-off') {
+      this.symbolOff = node;
+    }
   }
 
   private handleSymbolPointerMove = (e: PointerEvent) => {
     if (this.disabled || this.readonly) return;
-    const i = Number((e.currentTarget as HTMLElement).dataset.index);
-    this.hoverValue = this.valueFromPointer(e, i);
+    const score = Number((e.currentTarget as HTMLElement).dataset.score);
+    this.buffer = this.calibrate(e, score);
   }
 
-  private handleSymbolPointerLeave = () => {
+  private handleSymbolPointerLeave = (_: PointerEvent) => {
     if (this.disabled || this.readonly) return;
-    this.hoverValue = -1;
+    this.buffer = -1;
+  }
+
+  private handleSymbolClick = (e: PointerEvent) => {
+    if (this.disabled || this.readonly) return;
+    const score = Number((e.currentTarget as HTMLElement).dataset.score);
+    const val = this.precision < 1 ? this.calibrate(e, score) : score;
+    this.value = this.value === val ? 0 : val;
   }
 
   private handleSymbolKeydown = (e: KeyboardEvent) => {
     if (this.disabled || this.readonly) return;
 
-    const step = this.precision;
-    let next = this.value;
+    const symbols = Array.from(this.renderRoot.querySelectorAll('.symbol')) as HTMLElement[];
+    const currentSymbol = e.currentTarget as HTMLElement;
+    const currentIndex = symbols.indexOf(currentSymbol);
+    if (currentIndex === -1) return;
 
     switch (e.key) {
       case 'ArrowRight':
       case 'ArrowUp':
         e.preventDefault();
-        next = Math.min(this.max, this.quantize(this.value + step));
+        const nextIndex = Math.min(symbols.length - 1, currentIndex + 1);
+        symbols[nextIndex].focus();
         break;
       case 'ArrowLeft':
       case 'ArrowDown':
         e.preventDefault();
-        next = Math.max(0, this.quantize(this.value - step));
+        const prevIndex = Math.max(0, currentIndex - 1);
+        symbols[prevIndex].focus();
         break;
       case 'Home':
         e.preventDefault();
-        next = 0;
+        symbols[0].focus();
         break;
       case 'End':
         e.preventDefault();
-        next = this.max;
+        symbols[symbols.length - 1].focus();
         break;
       case ' ':
       case 'Enter': {
         e.preventDefault();
-        const i = Number((e.currentTarget as HTMLElement).dataset.index);
-        if (i) {
-          this.value = this.value === i ? 0 : i;
-          this.emit('u-change');
-        }
+        const score = Number((e.currentTarget as HTMLElement).dataset.score);
+        this.value = this.value === score ? 0 : score;
         return;
       }
       default:
         return;
     }
+  }
 
-    if (next !== this.value) {
-      this.value = next;
-      this.emit('u-change');
-    }
-
-    const symbols = this.renderRoot?.querySelectorAll('.symbol');
-    const idx = Math.ceil(next) - 1;
-    if (symbols && idx >= 0 && idx < symbols.length) {
-      (symbols[idx] as HTMLElement).focus();
-    }
+  private calibrate(e: PointerEvent, score: number): number {
+    // 실제 점수 계산
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const raw = (score - 1) + ratio;
+    // 정밀도에 맞게 반올림
+    const p = Math.max(0.01, Math.min(1, this.precision));
+    return Math.max(p, Math.min(this.max, Math.round(raw / p) * p));
   }
 }

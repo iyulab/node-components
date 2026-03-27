@@ -1,9 +1,10 @@
 import { html, PropertyValues } from "lit";
-import { property, query, state } from "lit/decorators.js";
-import { computePosition, flip, shift, offset } from "@floating-ui/dom";
+import { property, state } from "lit/decorators.js";
+import { live } from 'lit/directives/live.js';
 
 import { UElement } from "../UElement.js";
 import { UIcon } from "../icon/UIcon.component.js";
+import { UPopover } from "../popover/UPopover.component.js";
 import { UDivider } from "../divider/UDivider.component.js";
 import { styles } from "./UMenuItem.styles.js";
 
@@ -15,32 +16,40 @@ export type MenuItemAlign = 'left' | 'center' | 'right';
 /**
  * MenuItem 컴포넌트는 메뉴 내부의 개별 항목을 나타냅니다.
  *
- * @slot - 기본 슬롯 (라벨 텍스트)
+ * @slot - 기본 슬롯 (라벨 텍스트, 자식 menu-item/divider는 자동으로 children 슬롯으로 재배정)
  * @slot prefix - 라벨 앞에 표시되는 아이콘 등
  * @slot suffix - 라벨 뒤에 표시되는 추가 콘텐츠
+ * @slot children - 하위 메뉴 아이템
  */
 export class UMenuItem extends UElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof UElement> = {
     'u-icon': UIcon,
+    'u-popover': UPopover,
+    'u-divider': UDivider,
   };
 
+  /** 서브메뉴 확장 여부 */
   @property({ type: Boolean, reflect: true }) expanded: boolean = false;
+  /** 비활성화 여부 */
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
+  /** 선택 여부 */
   @property({ type: Boolean, reflect: true }) selected: boolean = false;
+  /** 선택된 아이템 표시 방식 */
   @property({ type: String, reflect: true }) indicator: MenuItemIndicator = 'highlight';
+  /** 아이템 텍스트 정렬 방식 */
   @property({ type: String, reflect: true }) align: MenuItemAlign = 'left';
+  /** 아이템의 고유 값 */
   @property({ type: String }) value: string = '';
 
+  /** 내부 상태 */
   @state() inline: boolean = true;
-  @state() nested: boolean = false;
+  @state() leaf: boolean = true;
+  @state() depth: number = 0;
 
-  @query('.header') headerEl?: HTMLElement;
-  @query('.popover') popoverEl?: HTMLElement;
-
-  /** 부모 메뉴 아이템 (상위 메뉴가 있을 때) */
-  private _parentItem?: UMenuItem;
-  public get parentItem(): UMenuItem | undefined {
+  /** 부모 메뉴 아이템 */
+  private _parentItem: UMenuItem | null = null;
+  public get parentItem(): UMenuItem | null {
     return this._parentItem;
   }
 
@@ -50,21 +59,17 @@ export class UMenuItem extends UElement {
     return this._childItems;
   }
 
-  /** 닫기 지연 타이머 (서브메뉴 삼각형 문제 방지) */
-  private closeTimer?: number;
-
   connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute('role', 'menuitem');
     this.setAttribute('tabindex', this.disabled ? '-1' : '0');
     if (this.parentElement instanceof UMenuItem) {
       this._parentItem = this.parentElement;
+      this.depth = this._parentItem.depth + 1;
+      if (!this.hasAttribute('slot')) {
+        this.setAttribute('slot', 'children');
+      }
     }
-  }
-
-  disconnectedCallback(): void {
-    clearTimeout(this.closeTimer);
-    super.disconnectedCallback();
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -73,12 +78,12 @@ export class UMenuItem extends UElement {
     if (changedProperties.has('disabled')) {
       this.setAttribute('tabindex', this.disabled ? '-1' : '0');
     }
-
-    // 서브메뉴가 닫힐 때 모든 자식 메뉴도 닫기
+    // 서브메뉴가 닫힐 때 자식 메뉴도 닫기
     if (changedProperties.has('expanded') && !this.expanded) {
-      for (const child of this.childItems) {
-        child.expanded = false;
-      }
+      this._childItems.forEach(c => c.expanded = false);
+    }
+    if (changedProperties.has('depth') || changedProperties.has('inline')) {
+      this.style.setProperty('--menu-item-depth', String(this.inline ? this.depth : 0));
     }
   }
 
@@ -86,61 +91,73 @@ export class UMenuItem extends UElement {
     return html`
       <div class="header"
         @click=${this.handleHeaderClick}
-        @pointerenter=${this.handleHeaderPointerEnter}
-        @pointerleave=${this.handleHeaderPointerLeave}
       >
-        <u-icon 
-          ?hidden=${this.indicator !== 'check' || !this.selected} 
-          lib="internal" 
+        <u-icon class="prefix-checker"
+          ?hidden=${this.indicator !== 'check' || !this.selected}
+          lib="internal"
           name="check-lg"
         ></u-icon>
 
         <slot name="prefix"></slot>
-        <slot @slotchange=${this.handleSlotChange}></slot>
+        <div class="content" part="content">
+          <slot @slotchange=${this.handleSlotChange}></slot>
+        </div>
         <slot name="suffix"></slot>
 
         ${this.inline
           ? html`
-            <span class="toggle-icon"
-              ?hidden=${!this.nested}
+            <span class="suffix-toggler"
+              ?hidden=${this.leaf}
               ?expanded=${this.expanded}
             ></span>`
           : html`
-            <u-icon class="expand-icon"
-              ?hidden=${!this.nested}
+            <u-icon class="suffix-chevron"
+              ?hidden=${this.leaf}
               lib="internal"
               name="chevron-right"
             ></u-icon>`
           }
       </div>
 
-      ${this.inline 
+      ${this.inline
         ? html`
           <div class="submenu"
-            ?hidden=${!this.nested}
-            ?open=${this.expanded}>
-            <slot name="children" @slotchange=${this.handleChildrenSlotChange}></slot>
-          </div>`
-        : html`
-          <div class="popover"
-            ?hidden=${!this.nested}
+            ?hidden=${this.leaf}
             ?open=${this.expanded}
-            @pointerenter=${this.handlePopoverPointerEnter}
-            @pointerleave=${this.handlePopoverPointerLeave}
           >
             <slot name="children" @slotchange=${this.handleChildrenSlotChange}></slot>
           </div>`
+        : html`
+          <u-popover class="popover"
+            ?hidden=${this.leaf}
+            ?open=${live(this.expanded)}
+            for=".header"
+            trigger="hover"
+            placement="right-start"
+            offset="4"
+          >
+            <slot name="children" @slotchange=${this.handleChildrenSlotChange}></slot>
+          </u-popover>`
         }
     `;
+  }
+
+  /** 자식 아이템에 속성 전파 */
+  private propagate() {
+    this._childItems.forEach(child => {
+      child.inline = this.inline;
+      child.indicator = this.indicator;
+      child.align = this.align;
+    });
   }
 
   /** slot의 menu-item/divider를 children slot으로 재배정 */
   private handleSlotChange = (e: Event) => {
     const slot = e.target as HTMLSlotElement;
-    const nodes = slot.assignedNodes({ flatten: true });
-    for (const node of nodes) {
-      if ((node instanceof UMenuItem || node instanceof UDivider)) {
-        node.setAttribute('slot', 'children');
+    const elements = slot.assignedElements({ flatten: true });
+    for (const el of elements) {
+      if ((el instanceof UMenuItem || el instanceof UDivider) && !el.hasAttribute('slot')) {
+        el.setAttribute('slot', 'children');
       }
     }
   };
@@ -151,74 +168,18 @@ export class UMenuItem extends UElement {
     this._childItems = slot.assignedElements({ flatten: true }).filter(
       (el): el is UMenuItem => el instanceof UMenuItem
     );
-    this.nested = this.childItems.length > 0;
-
-    for (const child of this.childItems) {
-      child.indicator = this.indicator;
-      child.align = this.align;
-      child.inline = this.inline;
-    }
+    this.leaf = this._childItems.length === 0;
+    this.propagate();
   };
 
-  private handleHeaderClick = async (e: MouseEvent) => {
+  private handleHeaderClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (this.disabled) return;
 
-    if (this.nested) {
-      await this.repositionPopover();
+    if (!this.leaf) {
       this.expanded = !this.expanded;
+      return;
     }
     this.emit('u-select');
   };
-
-  private handleHeaderPointerEnter = async (_: PointerEvent) => {
-    if (this.inline || !this.nested) return;
-    clearTimeout(this.closeTimer);
-    if (this.expanded) return;
-    await this.repositionPopover();
-    this.expanded = true;
-  };
-
-  private handleHeaderPointerLeave = (_: PointerEvent) => {
-    if (this.inline) return;
-    this.scheduleClose();
-  };
-
-  private handlePopoverPointerEnter = (_: PointerEvent) => {
-    if (this.inline) return;
-    clearTimeout(this.closeTimer);
-  }
-
-  private handlePopoverPointerLeave = (_: PointerEvent) => {
-    if (this.inline) return;
-    this.scheduleClose();
-  };
-  
-  private async repositionPopover(): Promise<void> {
-    const popover = this.popoverEl;
-    const header = this.headerEl;
-    if (!popover) return;
-    if (!header) return;
-
-    const { x, y } = await computePosition(header, popover, {
-      strategy: 'fixed',
-      placement: 'right-start',
-      middleware: [
-        offset(4),
-        flip({ fallbackPlacements: ['left-start'] }),
-        shift({ padding: 8 }),
-      ],
-    });
-    Object.assign(popover.style, { 
-      left: `${x}px`, 
-      top: `${y}px` 
-    });
-  }
-
-  private scheduleClose(): void {
-    clearTimeout(this.closeTimer);
-    this.closeTimer = window.setTimeout(() => {
-      this.expanded = false;
-    }, 150);
-  }
 }

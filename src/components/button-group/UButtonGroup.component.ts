@@ -26,9 +26,7 @@ export class UButtonGroup extends UElement {
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('variant') 
-      || changedProperties.has('disabled') 
-      || changedProperties.has('vertical')) {
+    if (['variant','disabled','vertical'].some(k => changedProperties.has(k))) {
       this.propagate();
     }
   }

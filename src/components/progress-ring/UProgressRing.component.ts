@@ -60,13 +60,12 @@ export class UProgressRing extends UElement {
   protected willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('min') || changedProperties.has('max') ||
-        changedProperties.has('value') || changedProperties.has('buffer')) {
+    if (['min','max','buffer','value'].some(k => changedProperties.has(k))) {
       this.progress = this.calcProgress(this.value);
       this.bufferProgress = this.buffer !== undefined ? this.calcProgress(this.buffer) : 0;
     }
 
-    if (changedProperties.has('segments') || changedProperties.has('segmentGap')) {
+    if (['segments','segmentGap'].some(k => changedProperties.has(k))) {
       this.dasharray = this.calcDasharray(this.segments, this.segmentGap);
     }
   }

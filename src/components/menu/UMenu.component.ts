@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, PropertyValues } from "lit";
 import { property } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
@@ -18,20 +18,21 @@ export class UMenu extends UElement {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof UElement> = {};
 
+  /** 테두리 없는 스타일 여부 */
+  @property({ type: Boolean, reflect: true }) borderless: boolean = false;
   /** 선택 모드 */
   @property({ type: String, reflect: true }) selection: MenuSelection = 'none';
+  /** 키보드 탐색 시 재순환 여부 */
+  @property({ type: Boolean, reflect: true }) loop: boolean = false;
+  /** 아이템의 인라인(트리) 모드 여부 */
+  @property({ type: Boolean, reflect: true }) inline: boolean = false;
   /** 선택된 아이템 표시 방식 */
   @property({ type: String, reflect: true }) indicator: MenuItemIndicator = 'highlight';
   /** 아이템 텍스트 정렬 방식 */
   @property({ type: String, reflect: true }) align: MenuItemAlign = 'left';
-  /** 키보드 탐색 시 재순환 여부 */
-  @property({ type: Boolean, reflect: true }) loop: boolean = false;
-  /** 아이템의 인라인(트리) 모드 여부. false면 플로팅 서브메뉴 모드. */
-  @property({ type: Boolean }) inline: boolean = true;
 
-  private _items: UMenuItem[] = [];
-  
   /** 메뉴 아이템 목록 (UMenuItem 요소만 포함) */
+  private _items: UMenuItem[] = [];
   public get items(): readonly UMenuItem[] {
     return this._items;
   }
@@ -49,127 +50,149 @@ export class UMenu extends UElement {
     super.disconnectedCallback();
   }
 
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+
+    if (['indicator', 'align', 'inline'].some(k => changedProperties.has(k))) {
+      this.propagate();
+    }
+  }
+
   render() {
     return html`<slot @slotchange=${this.handleSlotChange}></slot>`;
   }
 
-  /** 아이템에 속성을 재전파 (외부 slot 구성 변경 시 호출) */
-  public propagate(): void {
-    for (const item of this.items) {
-      item.indicator = this.indicator;
-      item.align = this.align;
-      item.inline = this.inline;
-    }
+  /** 특정 조건에 맞는 아이템들 반환 */
+  public getItems(fn: (item: UMenuItem) => boolean): UMenuItem[] {
+    const result: UMenuItem[] = [];
+    const filter = (items: readonly UMenuItem[]) => {
+      for (const item of items) {
+        if (fn(item)) result.push(item);
+        if (item.childItems.length > 0) filter(item.childItems);
+      }
+    };
+    filter(this.items);
+    return result;
   }
 
-  /** 모든 메뉴를 재귀적으로 닫기 */
-  public collapseAll(): void {
-    for (const item of this.items) {
-      item.expanded = false;
-    }
+  /** 모든 아이템에 함수 적용 */
+  public mapItems(fn: (item: UMenuItem) => void): void {
+    const map = (items: readonly UMenuItem[]) => {
+      for (const item of items) {
+        fn(item);
+        if (item.childItems.length > 0) map(item.childItems);
+      }
+    };
+    map(this.items);
+  }
+
+  /** 직계 자식 아이템에 속성 전파 */
+  private propagate(): void {
+    this._items.forEach(item => {
+      item.inline = this.inline;
+      item.indicator = this.indicator;
+      item.align = this.align;
+    });
   }
 
   private handleSlotChange = (e: Event) => {
     const slot = e.target as HTMLSlotElement;
-    this._items = slot.assignedNodes({ flatten: true })
-      .filter(n => n instanceof UMenuItem) as UMenuItem[];
+    this._items = slot.assignedElements({ flatten: true })
+      .filter((el): el is UMenuItem => el instanceof UMenuItem);
     this.propagate();
   };
 
   private handleSelect = (e: Event) => {
-    const item = e.target as UMenuItem;
+    if (this.selection === 'none') return;
+    e.stopPropagation();
+
+    const item = e.composedPath().find(el => el instanceof UMenuItem) as UMenuItem;
+    if (!item) return;
 
     if (this.selection === 'single') {
-      this.items.forEach(i => i.selected = false);
+      this.mapItems(i => i.selected = false);
       item.selected = true;
     } else if (this.selection === 'multiple') {
       item.selected = !item.selected;
-    } else {
-      item.selected = false;
     }
+
+    this.emit('u-select');
   };
-
-  /** 포커스된 아이템의 레벨에 맞는 형제 목록 */
-  private getSiblingItems(focused: UMenuItem | undefined): UMenuItem[] {
-    if (focused?.parentItem) {
-      return [...focused.parentItem.childItems].filter(i => !i.disabled);
-    }
-    return this.items.filter(i => !i.disabled);
-  }
-
-  /** 재귀적으로 펼쳐진 아이템 포함하여 수집 */
-  private getExpandedInlineItems(): UMenuItem[] {
-    const result: UMenuItem[] = [];
-    const collect = (items: readonly UMenuItem[]) => {
-      for (const item of items) {
-        if (item.disabled) continue;
-        result.push(item);
-        if (item.expanded && item.childItems.length > 0) {
-          collect(item.childItems);
-        }
-      }
-    };
-    collect(this.items);
-    return result;
-  }
 
   private handleKeydown = (e: KeyboardEvent) => {
     const focused = e.composedPath().find(el => el instanceof UMenuItem) as UMenuItem | undefined;
+    if (!focused) return;
 
-    // inline 모드: 전체 플랫 리스트에서 탐색
+    // inline 모드: 펼쳐져 보여지는 전체 항목에서 탐색
     // floating 모드: 현재 레벨의 형제에서 탐색
     const items = this.inline
-      ? this.getExpandedInlineItems()
-      : this.getSiblingItems(focused);
+      ? this.getItems(item => {
+        if (item.disabled) return false;
+        let current = item.parentItem;
+        while (current) {
+          if (!current.expanded) return false;
+          current = current.parentItem;
+        }
+        return true;
+      })
+      : this.getItems(item => {
+        if (item.disabled) return false;
+        if (focused?.parentItem) return item.parentItem === focused.parentItem;
+        return item.parentItem === null;
+      });
     if (items.length === 0) return;
 
-    const current = focused ? items.indexOf(focused) : -1;
+    const current = items.indexOf(focused);
+    if (current === -1) return;
 
-    let next: number | undefined;
     switch (e.key) {
-      case 'ArrowDown':
+      case 'ArrowDown': {
         e.preventDefault();
-        next = current < items.length - 1 ? current + 1 : (this.loop ? 0 : undefined);
+        const next = current < items.length - 1 ? items[current + 1] : (this.loop ? items[0] : undefined);
+        next?.focus();
         break;
-      case 'ArrowUp':
+      }
+      case 'ArrowUp': {
         e.preventDefault();
-        next = current > 0 ? current - 1 : (this.loop ? items.length - 1 : undefined);
+        const prev = current > 0 ? items[current - 1] : (this.loop ? items[items.length - 1] : undefined);
+        prev?.focus();
         break;
+      }
       case 'Home':
         e.preventDefault();
-        next = 0;
+        items[0]?.focus();
         break;
       case 'End':
         e.preventDefault();
-        next = items.length - 1;
+        items[items.length - 1]?.focus();
         break;
       case 'Enter':
-      case ' ':
+      case ' ': {
         e.preventDefault();
         e.stopPropagation();
-        focused?.headerEl?.click();
-        return;
+        const header = focused.shadowRoot?.querySelector('.header');
+        if (header) (header as HTMLElement).click();
+        break;
+      }
       case 'ArrowRight':
-        if (focused?.nested) {
-          e.preventDefault();
-          e.stopPropagation();
-          focused.expanded = true;
-          const firstChild = focused.childItems.find(c => !c.disabled);
-          firstChild?.focus();
+        e.preventDefault();
+        if (!focused.leaf) {
+          if (!focused.expanded) {
+            focused.expanded = true;
+          } else {
+            const firstChild = focused.childItems.find(c => !c.disabled);
+            firstChild?.focus();
+          }
         }
-        return;
+        break;
       case 'ArrowLeft':
         e.preventDefault();
-        e.stopPropagation();
-        if (focused?.nested && focused.expanded) {
+        if (!focused.leaf && focused.expanded) {
           focused.expanded = false;
-        } else if (focused?.parentItem) {
-          focused.parentItem.expanded = false;
+        } else if (focused.parentItem) {
           focused.parentItem.focus();
         }
-        return;
+        break;
     }
-
-    if (next !== undefined) items[next].focus();
   };
 }

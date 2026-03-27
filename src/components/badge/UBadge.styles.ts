@@ -102,9 +102,10 @@ export const styles = css`
   }
 
   /* === Slots === */
-  ::slotted([slot="prefix"]),
+  ::slotted([slot="prefix"]) {
+    margin-right: 0.25em;
+  }
   ::slotted([slot="suffix"]) {
-    display: inline-flex;
-    align-items: center;
+    margin-left: 0.25em;
   }
 `;

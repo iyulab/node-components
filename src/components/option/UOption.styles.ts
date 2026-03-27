@@ -1,21 +1,25 @@
 import { css } from "lit";
 
 export const styles = css`
-  /* ===== Select / Combobox 모드 (기본) ===== */
+  :host {
+    --option-color-interactive: inherit;
+    --option-border-color-interactive: var(--u-border-color-hover);
+    --option-background-color-interactive: var(--u-bg-color-hover);
+
+    --option-color-active: inherit;
+    --option-border-color-active: var(--u-blue-600);
+    --option-background-color-active: var(--u-blue-100);
+
+    --option-color-active-interactive: inherit;
+    --option-border-color-active-interactive: var(--u-blue-600);
+    --option-background-color-active-interactive: var(--u-blue-200);
+  }
 
   :host {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 6px;
-    min-height: 32px;
-    padding: 6px 8px;
-    border-radius: 4px;
-    background-color: transparent;
-    line-height: 1.5;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    padding: 0.25em 0.5em;
     transition: background-color 0.15s ease, color 0.15s ease;
     user-select: none;
     cursor: pointer;
@@ -28,74 +32,78 @@ export const styles = css`
     pointer-events: none;
   }
 
-  /* hover & focus */
   :host(:not([disabled]):hover),
   :host(:not([disabled]):focus-visible) {
-    background-color: var(--u-bg-color-hover);
+    color: var(--option-color-interactive);
+    border-color: var(--option-border-color-interactive);
+    background-color: var(--option-background-color-interactive);
   }
-
-  /* selected */
   :host([selected]) {
     font-weight: 600;
-    color: var(--u-blue-700);
-    background-color: var(--u-blue-100);
+    color: var(--option-color-active);
+    border-color: var(--option-border-color-active);
+    background-color: var(--option-background-color-active);
   }
   :host([selected]:hover),
   :host([selected]:focus-visible) {
-    background-color: var(--u-blue-200);
+    color: var(--option-color-active-interactive);
+    border-color: var(--option-border-color-active-interactive);
+    background-color: var(--option-background-color-active-interactive);
   }
 
-  u-icon {
-    flex-shrink: 0;
-  }
-
-  /* ===== Radio 모드 ===== */
-
-  :host([mode="radio"]) {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5em;
-    min-height: unset;
-    padding: 0;
-    border-radius: 0;
-    background-color: transparent;
-    font-size: inherit;
-    cursor: pointer;
-  }
-  :host([mode="radio"]:not([disabled]):hover),
-  :host([mode="radio"]:not([disabled]):focus-visible) {
+  :host([marker="radio"]:not([disabled]):hover),
+  :host([marker="radio"]:not([disabled]):focus-visible) {
+    color: inherit;
+    border-color: transparent;
     background-color: transparent;
   }
-  :host([mode="radio"][selected]) {
+  :host([marker="radio"][selected]) {
     font-weight: inherit;
     color: inherit;
+    border-color: transparent;
     background-color: transparent;
   }
-  :host([mode="radio"][selected]:hover),
-  :host([mode="radio"][selected]:focus-visible) {
+  :host([marker="radio"][selected]:hover),
+  :host([marker="radio"][selected]:focus-visible) {
+    color: inherit;
+    border-color: transparent;
     background-color: transparent;
   }
-  :host([mode="radio"][disabled]) {
-    opacity: 0.6;
-    cursor: not-allowed;
+
+  .content {
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* 라디오 마커 (원형) */
   .radio-marker {
+    flex-shrink: 0;
+    margin-right: 0.5em;
     position: relative;
-    display: var(--u-option-marker-display, inline-flex);
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 1.25em;
     height: 1.25em;
-    border: 2px solid var(--u-option-marker-border-color, var(--u-input-border-color));
+    border: 2px solid var(--u-neutral-400);
     border-radius: 50%;
-    background-color: var(--u-option-marker-bg-color, var(--u-input-bg-color));
+    background-color: var(--u-bg-color);
     transition: border-color 0.2s ease, background-color 0.2s ease;
-    flex-shrink: 0;
   }
-  :host([mode="radio"]:not([disabled]):hover) .radio-marker {
-    border-color: var(--u-input-border-color-hover);
+  :host([marker="radio"]:not([disabled]):hover) .radio-marker,
+  :host([marker="radio"]:not([disabled]):focus-visible) .radio-marker {
+    border-color: var(--option-border-color-interactive);
+  }
+  :host([marker="radio"][selected]) .radio-marker {
+    border-color: var(--option-border-color-active);
+    background-color: var(--option-background-color-active);
+  }
+  :host([marker="radio"][selected]:hover) .radio-marker,
+  :host([marker="radio"][selected]:focus-visible) .radio-marker {
+    border-color: var(--option-border-color-active-interactive);
+    background-color: var(--option-background-color-active-interactive);
   }
 
   /* 라디오 마커 내부 원 */
@@ -105,28 +113,18 @@ export const styles = css`
     width: 0.45em;
     height: 0.45em;
     border-radius: 50%;
-    background-color: var(--u-option-marker-dot-color, var(--u-neutral-0));
+    background-color: var(--option-color-active);
     transform: scale(0);
     transition: transform 0.15s ease;
   }
-  :host([mode="radio"][selected]) .radio-marker::after {
+  :host([marker="radio"][selected]) .radio-marker::after {
     transform: scale(1);
   }
 
-  /* filled variant (기본) - CSS 변수로 부모가 제어 */
-  :host([mode="radio"][selected]) .radio-marker {
-    border-color: var(--u-option-marker-active-border-color, var(--u-blue-600));
-    background-color: var(--u-option-marker-active-bg-color, var(--u-blue-600));
-  }
-
-  /* 포커스 링 */
-  :host([mode="radio"]:focus-visible) .radio-marker {
-    box-shadow:
-      0 0 0 1px var(--u-input-border-color-focus),
-      0 0 0 3px rgba(59, 130, 246, 0.22);
-  }
-
-  .radio-label {
-    line-height: 1.5;
+  /* 체크 아이콘 */
+  .check-marker {
+    flex-shrink: 0;
+    margin-right: 0.5em;
+    color: var(--option-color-active);
   }
 `;

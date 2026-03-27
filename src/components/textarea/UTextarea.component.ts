@@ -3,7 +3,9 @@ import { property, query } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { live } from "lit/directives/live.js";
 
+import { UFormControlElement } from "../UFormControlElement.js";
 import { UElement } from "../UElement.js";
+import { UField } from "../field/UField.component.js";
 import type { AutoCapitalize, EnterKeyHint, InputModeOption } from "../input/UInput.component.js";
 import { styles } from "./UTextarea.styles.js";
 
@@ -16,24 +18,26 @@ type TextareaResize = 'none' | 'vertical' | 'horizontal' | 'both' | 'auto';
  * Textarea 컴포넌트는 여러 줄의 텍스트 입력을 받는 필드입니다.
  * 라벨, 유효성 검사, 글자수 카운터 등의 기능을 제공합니다.
  */
-export class UTextarea extends UElement {
+export class UTextarea extends UFormControlElement<string> {
   static styles = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {};
+  static dependencies: Record<string, typeof UElement> = {
+    'u-field': UField,
+  };
 
-  /** 필수 입력 여부 */
-  @property({ type: Boolean, reflect: true }) required: boolean = false;
-  /** 읽기 전용 여부 */
-  @property({ type: Boolean, reflect: true }) readonly: boolean = false;
-  /** 비활성화 여부 */
-  @property({ type: Boolean, reflect: true }) disabled: boolean = false;
-  /** 유효성 검사 실패 상태 (외부 제어) */
-  @property({ type: Boolean, reflect: true }) invalid: boolean = false;
-  /** 글자수 표시 여부 */
-  @property({ type: Boolean, reflect: true }) counter: boolean = false;
   /** 외형 변형 */
   @property({ type: String, reflect: true }) variant: TextareaVariant = 'outlined';
   /** 리사이즈 모드 */
-  @property({ type: String, reflect: true }) resize: TextareaResize = 'vertical';
+  @property({ type: String, reflect: true }) resize: TextareaResize = 'auto';
+  /** 최소 행 수 (resize: auto일 때 최소 높이로 사용) */
+  @property({ type: Number, attribute: 'min-rows' }) minRows?: number;
+  /** 최대 행 수 (resize: auto일 때 최대 높이로 사용) */
+  @property({ type: Number, attribute: 'max-rows' }) maxRows?: number;
+  /** 글자수 표시 여부 */
+  @property({ type: Boolean, reflect: true }) counter: boolean = false;
+  /** 최소 길이 */
+  @property({ type: Number }) minlength?: number;
+  /** 최대 길이 */
+  @property({ type: Number }) maxlength?: number;
   /** 입력 방향 정보 (dir 속성) */
   @property({ type: String }) dirname?: string;
   /** 모바일 가상 키보드 종류 */
@@ -50,128 +54,79 @@ export class UTextarea extends UElement {
   @property({ type: String }) autocapitalize: AutoCapitalize = 'off';
   /** 자동 완성 기능 설정 */
   @property({ type: String }) autocomplete?: AutoFill;
-  /** form 요소와의 연결 (form 속성) */
-  @property({ type: String }) form?: string;
-  /** 최소 길이 */
-  @property({ type: Number }) minlength?: number;
-  /** 최대 길이 */
-  @property({ type: Number }) maxlength?: number;
-  /** 최소 행 수 (resize: auto일 때 최소 높이로 사용) */
-  @property({ type: Number }) minRows: number = 3;
-  /** 최대 행 수 (resize: auto일 때 최대 높이로 사용) */
-  @property({ type: Number }) maxRows?: number;
-  /** 라벨 텍스트 */
-  @property({ type: String }) label?: string;
   /** placeholder 텍스트 */
   @property({ type: String }) placeholder?: string;
-  /** 설명 텍스트 */
-  @property({ type: String }) description?: string;
-  /** 유효성 검사 실패 메시지 */
-  @property({ type: String }) validationMessage?: string;
-  /** name 속성 */
-  @property({ type: String }) name?: string;
-  /** 입력값 */
-  @property({ type: String }) value: string = '';
 
-  @query('textarea') textareaEl!: HTMLTextAreaElement;
-
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
-    if (this.resize === 'auto') {
-      this.resizeHeight();
-    }
-  }
+  @query('textarea', true) textareaEl?: HTMLTextAreaElement;
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (changedProperties.has('value') && this.textareaEl) {
-      if (this.textareaEl.value !== this.value) {
-        this.textareaEl.value = this.value;
-      }
-    }
-
-    if (this.resize === 'auto' && (
-      changedProperties.has('value') ||
-      changedProperties.has('minRows') ||
-      changedProperties.has('maxRows') ||
-      changedProperties.has('resize')
+    if (this.resize === 'auto' && (['value','minRows','maxRows','resize']
+      .some(k => changedProperties.has(k))
     )) {
-      this.resizeHeight();
+      this.resizeTextarea();
     }
   }
 
   render() {
     return html`
-      <div class="header" ?hidden=${!this.label}>
-        <span class="required" ?hidden=${!this.required}>*</span>
-        <label class="label" @click=${this.focus}>
-          ${this.label}
-        </label>
-      </div>
-
-      <div class="container"
-        ?invalid=${this.invalid}
+      <u-field
+        ?required=${this.required}
         ?disabled=${this.disabled}
-        ?readonly=${this.readonly}>
-        <textarea part="textarea"
-          ?required=${this.required}
-          ?disabled=${this.disabled}
-          ?readonly=${this.readonly}
-          rows=${this.minRows}
-          minlength=${ifDefined(this.minlength)}
-          maxlength=${ifDefined(this.maxlength)}
-          dirname=${ifDefined(this.dirname)}
-          spellcheck=${this.spellcheck}
-          ?autofocus=${this.autofocus}
-          ?autocorrect=${this.autocorrect}
-          autocapitalize=${ifDefined(this.autocapitalize)}
-          autocomplete=${ifDefined(this.autocomplete as any)}
-          enterkeyhint=${ifDefined(this.enterkeyhint)}
-          inputmode=${ifDefined(this.inputmode)}
-          form=${ifDefined(this.form)}
-          placeholder=${ifDefined(this.placeholder)}
-          name=${ifDefined(this.name)}
-          .value=${live(this.value)}
-          @input=${this.handleTextareaInput}
-          @change=${this.handleTextareaChange}
-          @blur=${this.handleTextareaBlur}
-        ></textarea>
-      </div>
+        ?invalid=${this.invalid}
+        .label=${this.label}
+        .description=${this.description}
+        .validationMessage=${this.validationMessage}
+      >
+        <div class="container">
+          <textarea part="textarea"
+            scrollable
+            ?required=${this.required}
+            ?disabled=${this.disabled}
+            ?readonly=${this.readonly}
+            rows=${this.minRows || 1}
+            minlength=${ifDefined(this.minlength)}
+            maxlength=${ifDefined(this.maxlength)}
+            dirname=${ifDefined(this.dirname)}
+            spellcheck=${this.spellcheck}
+            ?autofocus=${this.autofocus}
+            ?autocorrect=${this.autocorrect}
+            autocapitalize=${ifDefined(this.autocapitalize)}
+            autocomplete=${ifDefined(this.autocomplete as any)}
+            enterkeyhint=${ifDefined(this.enterkeyhint)}
+            inputmode=${ifDefined(this.inputmode)}
+            placeholder=${ifDefined(this.placeholder)}
+            name=${ifDefined(this.name)}
+            .value=${live(this.value || '')}
+            @input=${this.handleTextareaInput}
+            @change=${this.handleTextareaChange}
+          ></textarea>
+        </div>
 
-      <div class="footer">
         <div class="counter" ?hidden=${!this.counter}>
-          ${this.value.length}${this.maxlength ? ` / ${this.maxlength}` : ''}
+          ${this.value?.length}${this.maxlength ? ` / ${this.maxlength}` : ''}
         </div>
-        <div class="description" ?hidden=${!this.description}>
-          ${this.description}
-        </div>
-        <div class="validation-message" ?hidden=${!this.invalid || !this.validationMessage}>
-          ${this.validationMessage}
-        </div>
-      </div>
+      </u-field>
     `;
   }
 
-  public focus(): void {
-    this.textareaEl?.focus();
-  }
-
-  public blur(): void {
-    this.textareaEl?.blur();
-  }
-
   public validate(): boolean {
-    if (!this.textareaEl) return true;
-    this.invalid = !this.textareaEl.validity.valid;
-    if (this.invalid && !this.validationMessage) {
-      this.validationMessage = this.textareaEl.validationMessage;
+    if (this.internals) {
+      this.invalid = !this.internals.checkValidity();
+    } else {
+      this.invalid = !this.textareaEl?.checkValidity();
     }
     return !this.invalid;
   }
 
+  public reset(): void {
+    this.value = undefined;
+    this.invalid = false;
+  }
+
   /** resize: auto 모드에서 textarea 높이를 내용에 맞게 조절 */
-  private resizeHeight(): void {
+  private resizeTextarea(): void {
     const textarea = this.textareaEl;
     if (!textarea) return;
 
@@ -181,7 +136,9 @@ export class UTextarea extends UElement {
     const borderY = parseFloat(computed.borderTopWidth) + parseFloat(computed.borderBottomWidth);
     const extra = paddingY + borderY;
 
-    const minHeight = lineHeight * this.minRows + extra;
+    const minHeight = this.minRows
+      ? lineHeight * this.minRows + extra
+      : lineHeight + extra;
     const maxHeight = this.maxRows
       ? lineHeight * this.maxRows + extra
       : Infinity;
@@ -195,19 +152,23 @@ export class UTextarea extends UElement {
     textarea.style.overflowY = scrollHeight > maxHeight ? 'auto' : 'hidden';
   }
 
-  private handleTextareaInput = (e: Event) => {
-    const textarea = e.target as HTMLTextAreaElement;
-    this.value = textarea.value;
-    this.emit('u-input', { value: this.value });
+  private handleTextareaInput = (_: InputEvent) => {
+    this.value = this.textareaEl?.value;
+    this.emit('u-input');
   }
 
-  private handleTextareaChange = (e: Event) => {
-    const textarea = e.target as HTMLTextAreaElement;
-    this.value = textarea.value;
-    this.emit('u-change', { value: this.value });
-  }
+  private handleTextareaChange = (_: Event) => {
+    this.value = this.textareaEl?.value;
+    this.internals?.setFormValue(this.value || '');
+    this.internals?.setValidity(
+      this.textareaEl?.validity,
+      this.textareaEl?.validationMessage,
+      this.textareaEl
+    )
 
-  private handleTextareaBlur = () => {
-    this.validate();
+    if (!this.novalidate) {
+      this.validate();
+    }
+    this.emit('u-change');
   }
 }

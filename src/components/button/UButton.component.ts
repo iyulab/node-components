@@ -85,7 +85,9 @@ export class UButton extends UElement {
   private renderContent(): TemplateResult {
     return html`
       <slot name="prefix"></slot>
-      <slot></slot>
+      <div class="content" part="content">
+        <slot></slot>
+      </div>
       <slot name="suffix"></slot>
     `;
   }

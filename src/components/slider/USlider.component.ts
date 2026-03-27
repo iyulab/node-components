@@ -1,8 +1,9 @@
-import { html, nothing, PropertyValues, TemplateResult } from "lit";
+import { html, PropertyValues, TemplateResult } from "lit";
 import { property, query, state } from "lit/decorators.js";
-import type { Placement } from "@floating-ui/dom";
 
+import { UFormControlElement } from "../UFormControlElement.js";
 import { UElement } from "../UElement.js";
+import { UField } from "../field/UField.component.js";
 import { UTooltip } from "../tooltip/UTooltip.component.js";
 import { styles } from "./USlider.styles.js";
 
@@ -10,27 +11,28 @@ import { styles } from "./USlider.styles.js";
 export interface SliderMark {
   /** 마크 위치 값 */
   value: number;
-  /** 마크 하단 라벨 */
+  /** 마크 하단 디스플레이 */
   label?: string;
 }
 
 /** 값 포맷터 함수 타입 */
 export type SliderFormatter = (value: number) => string;
-/** 방향 타입 */
-export type SliderOrientation = 'horizontal' | 'vertical';
 
-/** thumb 식별자 */
+/** thumb 내부 식별자 */
 type ThumbId = 'min' | 'max';
 
 /**
  * Slider 컴포넌트는 범위 내에서 값을 선택할 수 있는 입력 요소입니다.
  * 단일 thumb 및 range(dual-thumb) 모드를 지원합니다.
  *
+ * - 단일 모드: value는 number
+ * - range 모드: value는 [min, max] number[]
+ *
  * @slot thumb - 커스텀 thumb 엘리먼트
  * @slot thumb-end - range 모드에서 두 번째 커스텀 thumb 엘리먼트
  *
- * @fires u-input - 드래그 중 값이 변경될 때
- * @fires u-change - 드래그 완료 후 값이 확정될 때
+ * @event u-input - 드래그 중 값이 변경될 때
+ * @event u-change - 드래그 완료 후 값이 확정될 때
  *
  * @csspart track - 트랙 영역
  * @csspart fill - 채워진 영역
@@ -46,200 +48,214 @@ type ThumbId = 'min' | 'max';
  * @cssproperty --slider-thumb-size - thumb 크기
  * @cssproperty --slider-track-height - 트랙 높이
  */
-export class USlider extends UElement {
+export class USlider extends UFormControlElement<number | number[]> {
   static styles = [super.styles, styles];
   static dependencies: Record<string, typeof UElement> = {
+    'u-field': UField,
     'u-tooltip': UTooltip,
   };
 
-  /** 비활성화 여부 */
-  @property({ type: Boolean, reflect: true }) disabled: boolean = false;
-  /** 읽기 전용 여부 */
-  @property({ type: Boolean, reflect: true }) readonly: boolean = false;
-  /** 필수 여부 */
-  @property({ type: Boolean, reflect: true }) required: boolean = false;
-  /** 유효하지 않은 상태 */
-  @property({ type: Boolean, reflect: true }) invalid: boolean = false;
-  /** 방향 */
-  @property({ type: String, reflect: true }) orientation: SliderOrientation = 'horizontal';
   /** range 모드 (dual-thumb) */
   @property({ type: Boolean, reflect: true }) range: boolean = false;
+  /** 슬라이더 옆에 현재 값 표시 여부 */
+  @property({ type: Boolean, attribute: 'show-value' }) showValue: boolean = false;
   /** 드래그/호버 시 값 툴팁 표시 여부 */
   @property({ type: Boolean, attribute: 'show-tooltip' }) showTooltip: boolean = false;
-  /** 헤더에 현재 값 표시 여부 */
-  @property({ type: Boolean, attribute: 'show-value' }) showValue: boolean = false;
-  /** 툴팁 위치 */
-  @property({ type: String, attribute: 'tooltip-placement' }) tooltipPlacement: Placement = 'top';
-  /** 툴팁 거리 (px) */
-  @property({ type: Number, attribute: 'tooltip-distance' }) tooltipDistance: number = 8;
-  /** 채우기 시작 오프셋 (단일 모드 전용) */
-  @property({ type: Number }) offset?: number;
   /** 커스텀 값 포맷터 */
   @property({ attribute: false }) formatter?: SliderFormatter;
   /** 마크 배열 */
   @property({ attribute: false }) marks?: SliderMark[];
-  /** 라벨 텍스트 */
-  @property({ type: String }) label?: string;
-  /** 설명 텍스트 */
-  @property({ type: String }) description?: string;
-  /** name 속성 (폼 연동용) */
-  @property({ type: String }) name?: string;
+  /** 시작값 오프셋 (single value only) */
+  @property({ type: Number }) offset?: number;
   /** 최소값 */
   @property({ type: Number }) min: number = 0;
   /** 최대값 */
   @property({ type: Number }) max: number = 100;
   /** 값 변화 단위 */
   @property({ type: Number }) step: number = 1;
-  /** 현재 값 (단일 모드) */
-  @property({ type: Number }) value: number = 0;
-  /** range 모드에서의 최소 선택 값 */
-  @property({ type: Number, attribute: 'min-value' }) minValue: number = 0;
-  /** range 모드에서의 최대 선택 값 */
-  @property({ type: Number, attribute: 'max-value' }) maxValue: number = 100;
-  
+
   @state() private dragging: ThumbId | null = null;
-  @state() private hoverThumb: ThumbId | null = null;
   @query('.track') private trackEl!: HTMLElement;
-  private activeTooltip: UTooltip | null = null;
+
+  public get valueAsNumber(): number {
+    return Array.isArray(this.value) ? this.value[0] : this.value || 0;
+  }
+
+  public get valueAsArray(): number[] {
+    return Array.isArray(this.value) ? this.value : [this.value || 0, this.value || 0];
+  }
+
+  private get minVal(): number {
+    return Array.isArray(this.value) ? this.value[0] : this.min;
+  }
+  private set minVal(v: number) {
+    this.value = [v, this.maxVal];
+  }
+
+  private get maxVal(): number {
+    return Array.isArray(this.value) ? this.value[1] : this.max;
+  }
+  private set maxVal(v: number) {
+    this.value = [this.minVal, v];
+  }
 
   private get fillStart(): number {
-    if (this.range) return this.valToPercent(Math.min(this.minValue, this.maxValue));
-    if (this.offset !== undefined) return this.valToPercent(Math.min(this.offset, this.value));
+    if (this.range) return this.valToPercent(Math.min(this.minVal, this.maxVal));
+    if (this.offset !== undefined) return this.valToPercent(Math.min(this.offset, this.valueAsNumber));
     return 0;
   }
 
   private get fillEnd(): number {
-    if (this.range) return this.valToPercent(Math.max(this.minValue, this.maxValue));
-    if (this.offset !== undefined) return this.valToPercent(Math.max(this.offset, this.value));
-    return this.valToPercent(this.value);
+    if (this.range) return this.valToPercent(Math.max(this.minVal, this.maxVal));
+    if (this.offset !== undefined) return this.valToPercent(Math.max(this.offset, this.valueAsNumber));
+    return this.valToPercent(this.valueAsNumber);
+  }
+
+  private get hasMarks(): boolean {
+    return !!this.marks && this.marks.length > 0;
   }
 
   protected willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('value')) {
-      this.value = this.snap(this.value);
-    } 
-    if (changedProperties.has('minValue')) {
-      this.minValue = this.snap(this.minValue);
-    }
-    if (changedProperties.has('maxValue')) {
-      this.maxValue = this.snap(this.maxValue);
+      this.onChangeValue();
     }
   }
 
   render() {
-    const vertical = this.orientation === 'vertical';
-    const posAxis = vertical ? 'bottom' : 'left';
-    const sizeAxis = vertical ? 'height' : 'width';
-    const hasMark = !!this.marks?.length;
-
     return html`
-      <div class="header" ?hidden=${!this.label && !this.showValue}>
-        <label class="label" ?hidden=${!this.label}>
-          ${this.label}
-          <span class="required" ?hidden=${!this.required}>*</span>
-        </label>
-        <span class="value-display" ?hidden=${!this.showValue}>
-          ${this.range
-            ? `${this.formatValue(Math.min(this.minValue, this.maxValue))} – ${this.formatValue(Math.max(this.minValue, this.maxValue))}`
-            : this.formatValue(this.value)}
-        </span>
-      </div>
-
-      <div class="slider-container"
-        ?dragging=${this.dragging !== null}
-        @pointerdown=${this.handleTrackPointerDown}
+      <u-field
+        ?required=${this.required}
+        ?disabled=${this.disabled}
+        ?invalid=${this.invalid}
+        .label=${this.label}
+        .description=${this.description}
+        .validationMessage=${this.validationMessage}
       >
-        <div class="track" part="track">
-          <div class="fill" part="fill"
-            style="${posAxis}: ${this.fillStart}%; ${sizeAxis}: ${this.fillEnd - this.fillStart}%">
+        <span slot="label-aside" ?hidden=${!this.showValue}>
+          ${this.formatDisplay()}
+        </span>
+
+        <div class="container"
+          @pointerdown=${this.handleContainerPointerDown}
+        >
+          <div class="track" part="track">
+            <div class="fill" part="fill"
+              style="left: ${this.fillStart}%; width: ${this.fillEnd - this.fillStart}%">
+            </div>
           </div>
+
+          <div class="marks" ?hidden=${!this.hasMarks}>
+            ${this.marks?.map(m => html`
+                <span class="mark" part="mark" 
+                  style="left: ${this.valToPercent(m.value)}%"
+                ></span>`
+              )}
+          </div>
+
+          ${this.renderThumb('min')}
+          ${this.renderThumb('max')}
         </div>
 
-        <div class="marks" ?hidden=${!hasMark}>
-          ${this.marks?.map(m => this.renderMark(m, posAxis))}
+        <div class="mark-labels" ?hidden=${!this.hasMarks}>
+          ${this.marks?.map(m => html`
+              <span class="mark-label" part="mark-label"
+                style="left: ${this.valToPercent(m.value)}%">
+                ${m.label}
+              </span>`
+            )}
         </div>
-
-        ${this.renderThumb('min', posAxis)}
-        ${this.renderThumb('max', posAxis)}
-      </div>
-
-      <div class="mark-labels" ?hidden=${!hasMark}>
-        ${this.marks?.map(m => this.renderMarkLabel(m, posAxis))}
-      </div>
-
-      <div class="description" ?hidden=${!this.description}>
-        ${this.description}
-      </div>
+      </u-field>
     `;
   }
 
-  private renderThumb(thumb: ThumbId, posAxis: string): TemplateResult {
+  public validate(): boolean {
+    if (this.internals) {
+      this.invalid = !this.internals.checkValidity();
+    } else {
+      const { flags } = this.getValidity();
+      this.invalid = Object.values(flags).some(Boolean);
+    }
+    return !this.invalid;
+  }
+
+  public reset(): void {
+    if (this.range) {
+      this.value = [this.min, this.max];
+    } else {
+      this.value = this.offset ?? this.min;
+    }
+    this.invalid = false;
+  }
+
+  private onChangeValue() {
+    // snap 처리 및 유효성 검사
+    if (Array.isArray(this.value)) {
+      this.value = [this.snap(this.value[0]), this.snap(this.value[1])];
+    } else if (typeof this.value === 'number') {
+      this.value = this.snap(this.value);
+    }
+
+    this.internals?.setFormValue(this.valueAsNumber.toString());
+    const { flags, message } = this.getValidity();
+    this.internals?.setValidity(
+      flags,
+      this.validationMessage || message,
+      this.renderRoot.querySelector('.container') as HTMLElement || undefined
+    );
+    
+    this.emit('u-change');
+  }
+
+  private getValidity(): { flags: ValidityStateFlags; message: string } {
+    const v = this.valueAsNumber;
+    if (this.required && !v) {
+      return { flags: { valueMissing: true }, message: 'This field is required' };
+    }
+    if (v < this.min) {
+      return { flags: { rangeUnderflow: true }, message: `Value must be at least ${this.min}` };
+    }
+    if (v > this.max) {
+      return { flags: { rangeOverflow: true }, message: `Value must be at most ${this.max}` };
+    }
+    return { flags: {}, message: '' };
+  }
+
+  private renderThumb(thumb: ThumbId): TemplateResult {
     const isEnd = thumb === 'max';
-    const val = this.thumbValue(thumb);
+    const val = this.getThumbValue(thumb);
     const pct = this.valToPercent(val);
 
     return html`
-      <div class="thumb-container"
-        part=${isEnd ? 'thumb-end' : 'thumb'}
-        data-thumb=${isEnd ? 'end' : 'start'}
-        ?hidden=${isEnd && !this.range}
-        ?active=${this.dragging === thumb}
-        ?hover=${this.hoverThumb === thumb}
-        style="${posAxis}: ${pct}%"
-        tabindex=${this.disabled || (isEnd && !this.range) ? -1 : 0}
+      <div class="thumb" part=${isEnd ? 'thumb-end' : 'thumb'}
         role="slider"
-        aria-label=${isEnd ? (this.label ? `${this.label} end` : 'slider end') : (this.label || 'slider')}
-        aria-valuemin=${isEnd ? this.minValue : this.min}
-        aria-valuemax=${isEnd ? this.max : (this.range ? this.maxValue : this.max)}
-        aria-valuenow=${val}
-        aria-valuetext=${this.formatValue(val)}
-        aria-orientation=${this.orientation}
-        aria-disabled=${this.disabled ? 'true' : 'false'}
-        aria-readonly=${this.readonly ? 'true' : 'false'}
-        aria-required=${this.required ? 'true' : 'false'}
-        aria-invalid=${this.invalid ? 'true' : 'false'}
-        @keydown=${(e: KeyboardEvent) => this.handleKeyDown(e, thumb)}
-        @pointerenter=${() => this.setHover(thumb)}
-        @pointerleave=${() => this.clearHover(thumb)}
-        @focus=${() => this.setHover(thumb)}
-        @blur=${() => this.clearHover(thumb)}
+        ?hidden=${isEnd && !this.range}
+        style="left: ${pct}%"
+        tabindex=${this.disabled || (isEnd && !this.range) ? -1 : 0}
+        data-thumb=${thumb}
+        @keydown=${this.handleThumbKeyDown}
       >
-        <div class="thumb"><slot name=${isEnd ? 'thumb-end' : 'thumb'}></slot></div>
-        ${this.showTooltip ? html`
-          <u-tooltip placement=${this.tooltipPlacement} .distance=${this.tooltipDistance}>
-            ${this.formatValue(val)}
-          </u-tooltip>
-        ` : nothing}
+        <div class="thumb-content">
+          <slot name=${isEnd ? 'thumb-end' : 'thumb'}></slot>
+        </div>
+        <u-tooltip
+          ?disabled=${!this.showTooltip} 
+          placement="top"
+          offset="8"
+        >
+          ${this.formatValue(val)}
+        </u-tooltip>
       </div>
     `;
   }
 
-  private renderMark(mark: SliderMark, posAxis: string): TemplateResult {
-    const pct = this.valToPercent(mark.value);
-    const v = mark.value;
-    const inRange = this.range
-      ? v >= Math.min(this.minValue, this.maxValue) && v <= Math.max(this.minValue, this.maxValue)
-      : this.offset !== undefined
-        ? v >= Math.min(this.offset, this.value) && v <= Math.max(this.offset, this.value)
-        : v <= this.value;
-
-    return html`
-      <div class="mark" part="mark" ?in-range=${inRange}
-        style="${posAxis}: ${pct}%">
-      </div>
-    `;
-  }
-
-  private renderMarkLabel(mark: SliderMark, posAxis: string): TemplateResult | typeof nothing {
-    if (!mark.label) return nothing;
-    return html`
-      <span class="mark-label" part="mark-label"
-        style="${posAxis}: ${this.valToPercent(mark.value)}%">
-        ${mark.label}
-      </span>
-    `;
+  private formatDisplay(): string {
+    if (this.range) {
+      return `${this.formatValue(this.minVal)} – ${this.formatValue(this.maxVal)}`;
+    } else {
+      return this.formatValue(this.valueAsNumber);
+    }
   }
 
   private formatValue(val: number): string {
@@ -255,136 +271,98 @@ export class USlider extends UElement {
     return this.snap(this.min + (pct / 100) * (this.max - this.min));
   }
 
+  // 값을 step 단위로 보정하고, min/max 범위 내로 클램핑
   private snap(val: number): number {
     const stepped = Math.round((val - this.min) / this.step) * this.step + this.min;
     return Math.min(this.max, Math.max(this.min, parseFloat(stepped.toFixed(10))));
   }
 
-  private thumbValue(thumb: ThumbId): number {
-    if (thumb === 'max') return this.maxValue;
-    return this.range ? this.minValue : this.value;
+  private getThumbValue(thumb: ThumbId): number {
+    if (thumb === 'max') return this.maxVal;
+    return this.range ? this.minVal : this.valueAsNumber;
   }
 
-  // ── hover 관리 ──
-
-  private setHover(thumb: ThumbId): void {
-    this.hoverThumb = thumb;
-  }
-
-  private clearHover(thumb: ThumbId): void {
-    if (this.dragging !== thumb) this.hoverThumb = null;
-  }
-
-  // ── 포인터 이벤트 ──
-
-  private handleTrackPointerDown = (e: PointerEvent) => {
+  private handleContainerPointerDown = (e: PointerEvent) => {
     if (this.disabled || this.readonly) return;
 
-    const val = this.percentToVal(this.getPointerPercent(e));
+    const getPointerValue = (ev: PointerEvent) => {
+      if (!this.trackEl) return 0;
+      const rect = this.trackEl.getBoundingClientRect();
+      const pct = (Math.max(0, Math.min(rect.width, ev.clientX - rect.left)) / rect.width) * 100;
+      return this.percentToVal(pct);
+    }
 
+    const val = getPointerValue(e);
     if (this.range) {
-      const closer = Math.abs(val - this.minValue) <= Math.abs(val - this.maxValue) ? 'min' : 'max';
+      const closer = Math.abs(val - this.minVal) <= Math.abs(val - this.maxVal) ? 'min' : 'max';
       this.dragging = closer;
-      if (closer === 'min') this.minValue = val; else this.maxValue = val;
+      if (closer === 'min') this.minVal = val; 
+      else this.maxVal = val;
     } else {
       this.dragging = 'min';
       this.value = val;
     }
 
-    this.emit('u-input');
-    this.focusThumbAndShowTooltip();
-
-    const handleMove = (ev: PointerEvent) => {
+    const handleDocumentMove = (ev: PointerEvent) => {
       ev.preventDefault();
-      this.applyDragValue(this.percentToVal(this.getPointerPercent(ev)));
-      this.emit('u-input');
-      this.keepTooltipVisible();
+      const val = getPointerValue(ev);
+      if (this.dragging === 'min') {
+        if (this.range) this.minVal = Math.min(val, this.maxVal);
+        else this.value = val;
+      } else if (this.dragging === 'max') {
+        this.maxVal = Math.max(val, this.minVal);
+      }
     };
 
-    const handleUp = () => {
-      document.removeEventListener('pointermove', handleMove);
-      document.removeEventListener('pointerup', handleUp);
-      this.activeTooltip?.hide();
-      this.activeTooltip = null;
+    const handleDocumentUp = () => {
+      document.removeEventListener('pointermove', handleDocumentMove);
+      document.removeEventListener('pointerup', handleDocumentUp);
       this.dragging = null;
-      this.hoverThumb = null;
-      this.emit('u-change');
     };
 
-    document.addEventListener('pointermove', handleMove);
-    document.addEventListener('pointerup', handleUp);
+    document.addEventListener('pointermove', handleDocumentMove);
+    document.addEventListener('pointerup', handleDocumentUp);
   };
 
-  private applyDragValue(val: number): void {
-    if (this.dragging === 'min') {
-      if (this.range) this.minValue = Math.min(val, this.maxValue);
-      else this.value = val;
-    } else if (this.dragging === 'max') {
-      this.maxValue = Math.max(val, this.minValue);
-    }
-  }
-
-  private getPointerPercent(e: PointerEvent): number {
-    if (!this.trackEl) return 0;
-    const rect = this.trackEl.getBoundingClientRect();
-    if (this.orientation === 'vertical') {
-      return (Math.max(0, Math.min(rect.height, rect.bottom - e.clientY)) / rect.height) * 100;
-    }
-    return (Math.max(0, Math.min(rect.width, e.clientX - rect.left)) / rect.width) * 100;
-  }
-
-  private focusThumbAndShowTooltip(): void {
-    this.updateComplete.then(() => {
-      const thumbEl = this.shadowRoot?.querySelector(
-        `[data-thumb="${this.dragging === 'max' ? 'end' : 'start'}"]`
-      ) as HTMLElement | null;
-      thumbEl?.focus();
-
-      if (this.showTooltip && thumbEl) {
-        this.activeTooltip = thumbEl.querySelector('u-tooltip') as UTooltip | null;
-        this.activeTooltip?.show(thumbEl);
-      }
-    });
-  }
-
-  private keepTooltipVisible(): void {
-    if (!this.activeTooltip) return;
-    this.updateComplete.then(() => {
-      const parent = this.activeTooltip?.parentElement as Element;
-      if (parent) this.activeTooltip?.show(parent);
-    });
-  }
-
-  // ── 키보드 이벤트 ──
-
-  private handleKeyDown = (e: KeyboardEvent, thumb: ThumbId) => {
+  private handleThumbKeyDown = (e: KeyboardEvent) => {
     if (this.disabled || this.readonly) return;
 
-    const currentVal = this.thumbValue(thumb);
+    const thumb = (e.currentTarget as HTMLElement).dataset.thumb as ThumbId;
+    const currentVal = this.getThumbValue(thumb);
     const bigStep = (this.max - this.min) / 10;
 
     let delta: number;
     switch (e.key) {
-      case 'ArrowRight': case 'ArrowUp':    delta = this.step;           break;
-      case 'ArrowLeft':  case 'ArrowDown':   delta = -this.step;          break;
-      case 'PageUp':                         delta = bigStep;             break;
-      case 'PageDown':                       delta = -bigStep;            break;
-      case 'Home':                           delta = this.min - currentVal; break;
-      case 'End':                            delta = this.max - currentVal; break;
-      default: return;
+      case 'ArrowRight': case 'ArrowUp':
+        delta = this.step;
+        break;
+      case 'ArrowLeft':  case 'ArrowDown':
+        delta = -this.step;
+        break;
+      case 'PageUp':
+        delta = bigStep;
+        break;
+      case 'PageDown':
+        delta = -bigStep;              
+        break;
+      case 'Home':
+        delta = this.min - currentVal; 
+        break;
+      case 'End':
+        delta = this.max - currentVal; 
+        break;
+      default:
+        return;
     }
 
     e.preventDefault();
     const newVal = this.snap(currentVal + delta);
 
     if (thumb === 'min') {
-      if (this.range) this.minValue = Math.min(newVal, this.maxValue);
+      if (this.range) this.minVal = Math.min(newVal, this.maxVal);
       else this.value = newVal;
     } else {
-      this.maxValue = Math.max(newVal, this.minValue);
+      this.maxVal = Math.max(newVal, this.minVal);
     }
-
-    this.emit('u-input');
-    this.emit('u-change');
   };
 }

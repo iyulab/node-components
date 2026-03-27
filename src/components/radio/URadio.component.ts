@@ -1,7 +1,9 @@
 import { html, PropertyValues } from "lit";
 import { property } from "lit/decorators.js";
 
+import { UFormControlElement } from "../UFormControlElement.js";
 import { UElement } from "../UElement.js";
+import { UField } from "../field/UField.component.js";
 import { UOption } from "../option/UOption.component.js";
 import { styles } from "./URadio.styles.js";
 
@@ -17,102 +19,168 @@ export type RadioOrientation = "vertical" | "horizontal";
  *
  * @event u-change - 선택 값이 변경될 때 발생
  */
-export class URadio extends UElement {
+export class URadio extends UFormControlElement<string> {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof UElement> = {
+    'u-field': UField,
     'u-option': UOption,
   };
 
-  /** 필수 입력 여부 */
-  @property({ type: Boolean, reflect: true }) required: boolean = false;
-  /** 비활성화 여부 */
-  @property({ type: Boolean, reflect: true }) disabled: boolean = false;
-  /** 읽기 전용 여부 */
-  @property({ type: Boolean, reflect: true }) readonly: boolean = false;
-  /** 유효하지 않음 표시 */
-  @property({ type: Boolean, reflect: true }) invalid: boolean = false;
   /** 라디오 타입 */
   @property({ type: String, reflect: true }) type: RadioType = "default";
   /** 스타일 변형 */
   @property({ type: String, reflect: true }) variant: RadioVariant = "filled";
   /** 배치 방향 */
   @property({ type: String, reflect: true }) orientation: RadioOrientation = "vertical";
-  /** 라벨 텍스트 */
-  @property({ type: String }) label?: string;
-  /** 설명 텍스트 */
-  @property({ type: String }) description?: string;
-  /** 폼에서 사용할 name 속성 */
-  @property({ type: String }) name?: string;
-  /** 현재 선택된 값 */
-  @property({ type: String }) value: string = '';
 
   /** 슬롯에서 수집된 옵션 목록 */
   private options: UOption[] = [];
 
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.addEventListener('u-select', this.handleOptionSelect);
-  }
-
   disconnectedCallback(): void {
-    this.removeEventListener('u-select', this.handleOptionSelect);
+    this.cleanup(this.options);
     super.disconnectedCallback();
   }
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (changedProperties.has('value')
-      || changedProperties.has('disabled')
-      || changedProperties.has('readonly')) {
-      this.propagate();
+    if (['type','disabled','readonly'].some(k => changedProperties.has(k))) {
+      this.options.forEach(option => {
+        option.marker = this.type === 'button' ? undefined : 'radio';
+        if (this.disabled) option.disabled = true;
+        if (this.readonly) option.disabled = true;
+      });
+    }
+    if (changedProperties.has('value')) {
+      this.onChangeValue();
     }
   }
 
   render() {
     return html`
-      <div class="header" ?hidden=${!this.label}>
-        <span class="required" ?hidden=${!this.required}>*</span>
-        <span class="label">${this.label}</span>
-      </div>
-      <div class="options">
-        <slot @slotchange=${this.handleSlotChange}></slot>
-      </div>
-      <div class="description" ?hidden=${!this.description}>
-        ${this.description}
-      </div>
+      <u-field
+        ?required=${this.required}
+        ?disabled=${this.disabled}
+        ?invalid=${this.invalid}
+        .label=${this.label}
+        .description=${this.description}
+        .validationMessage=${this.validationMessage}
+      >
+        <div class="container">
+          <slot @slotchange=${this.handleSlotChange}></slot>
+        </div>
+      </u-field>
     `;
   }
 
-  /** 자식 옵션들의 상태를 동기화 */
-  private propagate(): void {
-    for (const option of this.options) {
-      option.mode = 'radio';
+  public validate(): boolean {
+    if (this.internals) {
+      this.invalid = !this.internals.checkValidity();
+    } else {
+      this.invalid = this.required && !this.value;
+    }
+    return !this.invalid;
+  }
+
+  public reset(): void {
+    this.value = undefined;
+    this.invalid = false;
+  }
+
+  private setup(options: UOption[]) {
+    for (const option of options) {
+      option.removeEventListener('click', this.handleOptionClick);
+      option.removeEventListener('keydown', this.handleOptionKeyDown);
+      option.addEventListener('click', this.handleOptionClick);
+      option.addEventListener('keydown', this.handleOptionKeyDown);
       option.selected = option.value === this.value;
+      option.marker = this.type === 'button' ? undefined : 'radio';
       if (this.disabled) option.disabled = true;
       if (this.readonly) option.disabled = true;
     }
   }
 
-  /** 슬롯 변경 시 옵션 수집 및 mode 주입 */
+  private cleanup(options: UOption[]) {
+    for (const option of options) {
+      option.removeEventListener('click', this.handleOptionClick);
+      option.removeEventListener('keydown', this.handleOptionKeyDown);
+    }
+  }
+
+  private onChangeValue() {
+    this.options.forEach(option => {
+      option.selected = option.value === this.value;
+    });
+
+    this.internals?.setFormValue(this.value || '');
+    this.internals?.setValidity(
+      this.required && !this.value ? { valueMissing: true } : {},
+      this.validationMessage || '',
+      this
+    );
+
+    if (!this.novalidate) {
+      this.validate();
+    }
+    this.emit('u-change');
+  }
+
   private handleSlotChange = (e: Event) => {
+    this.cleanup(this.options);
     const slot = e.target as HTMLSlotElement;
     this.options = slot.assignedElements({ flatten: true }).filter(
       (el): el is UOption => el instanceof UOption
     );
-    this.propagate();
+    this.setup(this.options);
   };
 
-  /** 옵션 선택 이벤트 핸들러 */
-  private handleOptionSelect = (e: Event) => {
-    e.stopPropagation();
+  private handleOptionClick = (e: PointerEvent) => {
     if (this.readonly || this.disabled) return;
 
-    const option = e.target as UOption;
-    if (!(option instanceof UOption)) return;
+    const option = e.currentTarget as UOption;
+    if (option.disabled) return;
 
     this.value = option.value;
-    this.propagate();
-    this.emit('u-change');
+  };
+
+  private handleOptionKeyDown = (e: KeyboardEvent) => {
+    if (this.readonly || this.disabled) return;
+
+    const options = this.options.filter(o => !o.disabled);
+    const currentOption = e.currentTarget as UOption;
+    const currentIndex = options.indexOf(currentOption);
+    if (currentIndex === -1) return;
+
+    switch (e.key) {
+      case ' ':
+      case 'Enter':
+        e.preventDefault();
+        currentOption.click();
+        break;
+      case 'ArrowDown':
+      case 'ArrowRight': {
+        e.preventDefault();
+        const next = options[(currentIndex + 1) % options.length];
+        next.focus();
+        break;
+      }
+      case 'ArrowUp':
+      case 'ArrowLeft': {
+        e.preventDefault();
+        const prev = options[(currentIndex - 1 + options.length) % options.length];
+        prev.focus();
+        break;
+      }
+      case 'Home': {
+        e.preventDefault();
+        options[0].focus();
+        break;
+      }
+      case 'End': {
+        e.preventDefault();
+        options[options.length - 1].focus();
+        break;
+      }
+    }
   };
 }

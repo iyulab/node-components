@@ -151,7 +151,6 @@ export class UFloatingElement extends UElement {
    * @returns 표시 성공 여부를 나타내는 Promise입니다.
    */
   public async show(target: Element | VirtualElement): Promise<boolean> {
-    if (this.open) return true;
     if (this.disabled) return false;
 
     // hide 타이머가 있으면 취소
@@ -161,16 +160,21 @@ export class UFloatingElement extends UElement {
     }
     // 이미 대기 중이면 무시
     if (this.showTimer) return true;
+    // 자동 위치 업데이트 정리 
+    if (this.cleanup !== null) {
+      this.cleanup();
+      this.cleanup = null;
+    }
 
     // 위치 계산 및 스타일 적용
     await this.reposition(target);
+    this.cleanup = autoUpdate(target, this, () => {
+      this.reposition(target);
+    });
     this.targetEl = target;
+    if (this.open) return true;
 
     if (this.emit('u-show')) {
-      this.cleanup = autoUpdate(target, this, () => {
-        this.reposition(target);
-      });
-
       // show 딜레이 적용
       if (this.showDelay > 0) {
         this.showTimer = window.setTimeout(() => {
@@ -191,7 +195,6 @@ export class UFloatingElement extends UElement {
    * @returns 숨김 성공 여부를 나타내는 Promise입니다.
    */
   public async hide(): Promise<boolean> {
-    if (!this.open) return true;
     if (this.disabled) return false;
 
     // show 타이머가 있으면 취소
@@ -210,7 +213,8 @@ export class UFloatingElement extends UElement {
     // 타겟 엘리먼트 초기화
     await this.updateComplete;
     this.targetEl = undefined;
-    
+    if (!this.open) return true;
+
     if (this.emit('u-hide')) {
       // hide 딜레이 적용
       if (this.hideDelay > 0) {
@@ -231,7 +235,7 @@ export class UFloatingElement extends UElement {
    * 
    * @param target - 위치 계산에 사용할 타겟 엘리먼트입니다.
    */
-  protected async reposition(target: Element | VirtualElement) {
+  public async reposition(target: Element | VirtualElement) {
     const position = await computePosition(target, this, {
       strategy: this.strategy,
       placement: this.placement,

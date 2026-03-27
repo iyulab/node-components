@@ -1,10 +1,14 @@
-import { html, PropertyValues, nothing } from "lit";
-import { property, query, state } from "lit/decorators.js";
+import { html, PropertyValues } from "lit";
+import { property, query } from "lit/decorators.js";
 
+import { UFormControlElement } from "../UFormControlElement.js";
 import { UElement } from "../UElement.js";
+import { UChip } from "../chip/UChip.component.js";
+import { UField } from "../field/UField.component.js";
 import { UIcon } from "../icon/UIcon.component.js";
 import { UOption } from "../option/UOption.component.js";
 import { UPopover } from "../popover/UPopover.component.js";
+import { USpinner } from "../spinner/USpinner.component.js";
 import { styles } from "./USelect.styles.js";
 
 export type SelectVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
@@ -19,463 +23,334 @@ export type SelectVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
  * @event u-show - 드롭다운이 열릴 때 발생
  * @event u-hide - 드롭다운이 닫힐 때 발생
  */
-export class USelect extends UElement {
+export class USelect extends UFormControlElement<string | string[]> {
   static styles = [ super.styles, styles ];
   static dependencies: Record<string, typeof UElement> = {
+    'u-chip': UChip,
+    'u-field': UField,
     'u-icon': UIcon,
     'u-option': UOption,
     'u-popover': UPopover,
+    'u-spinner': USpinner,
   };
 
   /** 트리거 영역의 스타일 변형 */
   @property({ type: String, reflect: true }) variant: SelectVariant = 'outlined';
-  /** 드롭다운 열림 상태 */
-  @property({ type: Boolean, reflect: true }) open: boolean = false;
-  /** 비활성화 여부 */
-  @property({ type: Boolean, reflect: true }) disabled: boolean = false;
-  /** 읽기 전용 여부 */
-  @property({ type: Boolean, reflect: true }) readonly: boolean = false;
-  /** 필수 입력 여부 */
-  @property({ type: Boolean, reflect: true }) required: boolean = false;
-  /** 유효성 검사 실패 여부 */
-  @property({ type: Boolean, reflect: true }) invalid: boolean = false;
   /** 다중 선택 여부 */
   @property({ type: Boolean, reflect: true }) multiple: boolean = false;
   /** 검색 가능 여부 */
   @property({ type: Boolean, reflect: true }) searchable: boolean = false;
   /** 클리어 버튼 표시 여부 */
   @property({ type: Boolean, reflect: true }) clearable: boolean = false;
-  /** 라벨 텍스트 */
-  @property({ type: String }) label?: string;
+  /** 로딩 상태 표시 여부 */
+  @property({ type: Boolean, reflect: true }) loading: boolean = false;
+  /** 최소 선택 개수 (다중 선택 시) */
+  @property({ type: Number, attribute: 'min-count' }) minCount?: number;
+  /** 최대 선택 개수 (다중 선택 시) */
+  @property({ type: Number, attribute: 'max-count' }) maxCount?: number;
   /** placeholder 텍스트 */
   @property({ type: String }) placeholder?: string;
-  /** 컴포넌트 하단 설명 텍스트 */
-  @property({ type: String }) description?: string;
-  /** 유효성 검사 실패 시 표시할 메시지 */
-  @property({ type: String }) validationMessage?: string;
-  /** 옵션이 없을 때 표시할 메시지 */
-  @property({ type: String }) emptyMessage: string = '선택할 수 있는 항목이 없습니다';
-  /** input 요소의 name 속성 */
-  @property({ type: String }) name?: string;
-  /** 현재 선택된 값 (단일 선택 시) */
-  @property({ type: String }) value: string = '';
-  /** 현재 선택된 값 배열 (다중 선택 시) */
-  @property({ type: Array }) values: string[] = [];
 
-  /** 옵션 목록 */
-  @state() private options: UOption[] = [];
-  /** 검색어 */
-  @state() private searchText: string = '';
+  @query('.container', true) containerEl?: HTMLElement;
+  @query('u-popover', true) popoverEl?: UPopover;
 
-  /** 현재 표시할 유효성 검사 메시지 */
-  @state() currentValidationMessage: string = '';
+  private options: UOption[] = [];
 
-  @query('.trigger') triggerEl!: HTMLElement;
-  @query('u-popover') popoverEl!: UPopover;
-  @query('.search-input') searchInputEl?: HTMLInputElement;
+  private get valueAsString(): string {
+    return Array.isArray(this.value) ? this.value.join(',') : this.value ?? '';
+  }
 
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.addEventListener('u-select', this.handleOptionSelect);
+  private get valueAsArray(): string[] {
+    return Array.isArray(this.value) ? this.value : this.value ? [this.value] : [];
+  }
+
+  private get hasValue(): boolean {
+    return this.multiple ? this.valueAsArray.length > 0 : !!this.value;
   }
 
   disconnectedCallback(): void {
-    this.removeEventListener('u-select', this.handleOptionSelect);
-    document.removeEventListener('keydown', this.handleDocumentKeydown);
+    this.cleanup(this.options);
     super.disconnectedCallback();
   }
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (changedProperties.has('value') || changedProperties.has('values')) {
-      this.syncOptions();
+    if (changedProperties.has('value')) {
+      this.onChangeValue();
     }
   }
 
   render() {
-    const hasValue = this.multiple
-      ? this.values.length > 0
-      : this.value !== '';
-
     return html`
-      <div class="header" ?hidden=${!this.label}>
-        <span class="required" ?hidden=${!this.required}>*</span>
-        <label class="label" @click=${this.handleTriggerClick}>
-          ${this.label}
-        </label>
-      </div>
-
-      <div class="trigger"
-        tabindex=${this.disabled ? '-1' : '0'}
+      <u-field
+        ?required=${this.required}
         ?disabled=${this.disabled}
-        ?readonly=${this.readonly}
         ?invalid=${this.invalid}
-        @click=${this.handleTriggerClick}
-        @keydown=${this.handleTriggerKeydown}
+        .label=${this.label}
+        .description=${this.description}
+        .validationMessage=${this.validationMessage}
       >
-        ${this.multiple ? this.renderMultipleDisplay() : this.renderSingleDisplay()}
+        <span slot="label-aside" class="count" ?hidden=${!this.multiple || !this.maxCount}>
+          ${this.valueAsArray.length} / ${this.maxCount}
+        </span>
 
-        <u-icon class="icon" tabindex="-1"
-          ?hidden=${!this.clearable || !hasValue || this.disabled || this.readonly}
-          lib="internal"
-          name="x-lg"
-          @click=${this.handleClear}
-        ></u-icon>
-        <u-icon class="icon chevron" tabindex="-1"
-          ?hidden=${this.disabled}
-          lib="internal"
-          name="chevron-down"
-        ></u-icon>
-      </div>
+        <div class="container" tabindex=${this.disabled ? '-1' : '0'}>
+          <slot name="prefix"></slot>
+          ${this.renderContent()}
+          <slot name="suffix"></slot>
 
-      <u-popover class="dropdown"
-        trigger="manual"
-        .dismiss=${['click', 'scroll', 'resize'] as any}
-        placement="bottom-start"
-        .offset=${4}
+          <u-icon class="suffix-item"
+            ?hidden=${!this.clearable || !this.hasValue || this.disabled || this.readonly}
+            lib="internal"
+            name="x-lg"
+            @click=${this.handleClearClick}
+          ></u-icon>
+          <u-icon class="suffix-item"
+            ?hidden=${this.loading}
+            lib="internal"
+            name="chevron-down"
+          ></u-icon>
+          <u-spinner class="suffix-item"
+            ?hidden=${!this.loading}
+          ></u-spinner>
+        </div>
+      </u-field>
+
+      <u-popover part="popover"
         role="listbox"
-        @u-show=${this.handlePopoverShow}
-        @u-hide=${this.handlePopoverHide}
+        scrollable
+        autofocus
+        for=".container"
+        trigger="click"
+        placement="bottom-start"
+        offset="1"
       >
-        ${this.searchable ? html`
-          <div style="padding: 4px 4px 6px;">
-            <input class="search-input"
-              type="text"
-              placeholder="검색..."
-              .value=${this.searchText}
-              @input=${this.handleSearchInput}
-              @click=${(e: Event) => e.stopPropagation()}
-            />
-          </div>
-        ` : nothing}
+        <div class="search-input" ?hidden=${!this.searchable}>
+          <u-icon lib="internal" name="search"></u-icon>
+          <input
+            type="text"
+            @input=${this.handleSearchInput}
+            @keydown=${this.handleSearchKeydown}
+          />
+        </div>
         <slot @slotchange=${this.handleSlotChange}></slot>
-        <div class="empty-message"
-          ?hidden=${this.getVisibleOptions().length > 0}
-        >${this.emptyMessage}</div>
       </u-popover>
-
-      <div class="validation-message" ?hidden=${!this.currentValidationMessage}>
-        ${this.currentValidationMessage}
-      </div>
-
-      <div class="description" ?hidden=${!this.description}>
-        ${this.description}
-      </div>
     `;
   }
 
-  /** 단일 선택 모드의 표시 영역 */
-  private renderSingleDisplay() {
-    const selectedOption = this.options.find(o => o.value === this.value);
-    const displayText = selectedOption?.getLabel() ?? '';
-
-    if (!displayText) {
-      return html`<span class="display-text placeholder">${this.placeholder ?? ''}</span>`;
-    }
-    return html`<span class="display-text">${displayText}</span>`;
-  }
-
-  /** 다중 선택 모드의 표시 영역 */
-  private renderMultipleDisplay() {
-    if (this.values.length === 0) {
-      return html`<span class="display-text placeholder">${this.placeholder ?? ''}</span>`;
-    }
-
-    return html`
-      <div class="tags">
-        ${this.values.map(v => {
-          const option = this.options.find(o => o.value === v);
-          const label = option?.getLabel() ?? v;
-          return html`
-            <span class="tag">
-              ${label}
-              <button class="tag-remove"
-                tabindex="-1"
-                @click=${(e: MouseEvent) => this.handleTagRemove(e, v)}
-              >&times;</button>
-            </span>
-          `;
-        })}
-      </div>
-    `;
-  }
-
-  /** 드롭다운을 엽니다. */
-  public async show(): Promise<boolean> {
-    if (this.open || this.disabled || this.readonly) return false;
-    if (!this.emit('u-show')) return false;
-
-    this.open = true;
-    await this.popoverEl.show(this.triggerEl);
-
-    document.addEventListener('keydown', this.handleDocumentKeydown);
-
-    if (this.searchable) {
-      this.searchText = '';
-      this.filterOptions();
-      await this.updateComplete;
-      this.searchInputEl?.focus();
-    }
-
-    return true;
-  }
-
-  /** 드롭다운을 닫습니다. */
-  public async hide(): Promise<boolean> {
-    if (!this.open) return true;
-    if (!this.emit('u-hide')) return false;
-
-    this.open = false;
-    this.searchText = '';
-    this.filterOptions();
-    await this.popoverEl.hide();
-
-    document.removeEventListener('keydown', this.handleDocumentKeydown);
-
-    return true;
-  }
-
-  /** 선택값을 초기화합니다. */
-  public clear(): void {
+  private renderContent() {
     if (this.multiple) {
-      this.values = [];
+      const values = this.valueAsArray;
+      if (values.length === 0) {
+        return html`<span class="text-content placeholder">${this.placeholder ?? ''}</span>`;
+      }
+      
+      return html`
+        <div class="chips-content">
+          ${values.map(v => html`
+              <u-chip 
+                removable
+                data-value=${v} 
+                @u-remove=${this.handleChipRemove}
+              >
+                ${this.options.find(o => o.value === v)?.getText() ?? v}
+              </u-chip>`
+            )}
+        </div>
+      `;
     } else {
-      this.value = '';
+      const text = this.options.find(o => o.value === this.value)?.getText();
+      if (!text) {
+        return html`
+          <span class="text-content placeholder">${this.placeholder ?? ''}</span>`;
+      }
+      
+      return html`<span class="text-content">${text}</span>`;
     }
-    this.syncOptions();
-    this.emit('u-change');
   }
 
-  /** 유효성 검사를 수행합니다. */
   public validate(): boolean {
-    if (!this.required) {
-      this.invalid = false;
-      this.currentValidationMessage = '';
-      return true;
+    if (this.internals) {
+      this.invalid = !this.internals.checkValidity();
+    } else {
+      const { flags } = this.getValidity(this.valueAsArray);
+      this.invalid = Object.keys(flags).length > 0;
     }
-
-    const hasValue = this.multiple ? this.values.length > 0 : this.value !== '';
-    this.invalid = !hasValue;
-    this.currentValidationMessage = this.invalid
-      ? (this.validationMessage || '필수 항목입니다')
-      : '';
-
     return !this.invalid;
   }
 
-  /** 옵션의 selected 상태를 현재 value와 동기화 */
-  private syncOptions(): void {
+  public reset(): void {
+    this.value = this.multiple ? [] : '';
+    this.invalid = false;
+  }
+
+  private setup(options: UOption[]) {
+    for (const option of options) {
+      option.removeEventListener('click', this.handleOptionClick);
+      option.removeEventListener('keydown', this.handleOptionKeydown);
+      option.addEventListener('click', this.handleOptionClick);
+      option.addEventListener('keydown', this.handleOptionKeydown);
+      option.marker = this.multiple ? 'check' : undefined;
+      option.disabled = this.disabled;
+      option.selected = this.multiple 
+        ? this.valueAsArray.includes(option.value) 
+        : option.value === this.value;
+    }
+  }
+
+  private cleanup(options: UOption[]) {
+    for (const option of options) {
+      option.removeEventListener('click', this.handleOptionClick);
+      option.removeEventListener('keydown', this.handleOptionKeydown);
+    }
+  }
+
+  private onChangeValue(): void {
+    const values = this.valueAsArray;
     for (const option of this.options) {
       if (this.multiple) {
-        option.selected = this.values.includes(option.value);
+        option.selected = values.includes(option.value);
       } else {
         option.selected = option.value === this.value;
       }
     }
-  }
+    this.internals?.setFormValue(this.valueAsString);
+    const { flags, message } = this.getValidity(values);
+    this.internals?.setValidity(
+      flags, 
+      this.validationMessage || message, 
+      this.containerEl || undefined
+    );
 
-  /** 검색 필터에 따라 옵션을 표시/숨김 */
-  private filterOptions(): void {
-    const query = this.searchText.toLowerCase().trim();
-    for (const option of this.options) {
-      if (!query) {
-        option.hidden = false;
-      } else {
-        const label = option.getLabel().toLowerCase();
-        const value = option.value.toLowerCase();
-        option.hidden = !label.includes(query) && !value.includes(query);
-      }
+    if (!this.novalidate) {
+      this.validate();
     }
+    this.emit('u-change');
   }
 
-  /** 보이는 옵션 목록 반환 */
-  private getVisibleOptions(): UOption[] {
-    return this.options.filter(o => !o.hidden && !o.disabled);
+  private getValidity(values: string[]): { flags: ValidityStateFlags; message: string } {
+    if (this.required && !values.length) {
+      return { flags: { valueMissing: true }, message:  'This field is required' };
+    }
+    if (this.multiple && this.minCount != null && values.length > 0 && values.length < this.minCount) {
+      return { flags: { rangeUnderflow: true }, message: `Please select at least ${this.minCount} items` };
+    }
+    if (this.multiple && this.maxCount != null && values.length > this.maxCount) {
+      return { flags: { rangeOverflow: true }, message: `Please select no more than ${this.maxCount} items` };
+    }
+    return { flags: {}, message: '' };
   }
 
-//#region Event Handlers
-
-  /** popover의 u-show 이벤트 전파 차단 */
-  private handlePopoverShow = (e: Event) => {
-    e.stopPropagation();
-  };
-
-  /** popover가 외부 요인(클릭, 스크롤, 리사이즈)으로 닫힐 때 상태 동기화 */
-  private handlePopoverHide = (e: Event) => {
-    e.stopPropagation();
-    if (!this.open) return;
-
-    this.open = false;
-    this.searchText = '';
-    this.filterOptions();
-    document.removeEventListener('keydown', this.handleDocumentKeydown);
-    this.emit('u-hide');
-  };
-
-  /** 슬롯 변경 시 옵션 목록 갱신 */
   private handleSlotChange = (e: Event) => {
+    this.cleanup(this.options);
     const slot = e.target as HTMLSlotElement;
     this.options = slot.assignedElements({ flatten: true }).filter(
       (el): el is UOption => el instanceof UOption
     );
-    this.syncOptions();
+    this.setup(this.options);
   };
 
-  /** 옵션 선택 이벤트 핸들러 */
-  private handleOptionSelect = (e: Event) => {
-    e.stopPropagation();
-    const option = e.target as UOption;
-    if (!(option instanceof UOption)) return;
+  private handleOptionClick = (e: PointerEvent) => {
+    const option = e.currentTarget as UOption;
+    if (option.disabled) return;
 
     if (this.multiple) {
-      const index = this.values.indexOf(option.value);
-      if (index >= 0) {
-        this.values = this.values.filter(v => v !== option.value);
+      const values = this.valueAsArray;
+      if (values.includes(option.value)) {
+        this.value = values.filter(v => v !== option.value);
       } else {
-        this.values = [...this.values, option.value];
+        if (this.maxCount != null && values.length >= this.maxCount) return;
+        this.value = [...values, option.value];
       }
-      this.syncOptions();
     } else {
       this.value = option.value;
-      this.syncOptions();
-      this.hide();
-    }
-
-    this.emit('u-change');
-  };
-
-  /** 트리거 클릭 핸들러 */
-  private handleTriggerClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    if (this.disabled || this.readonly) return;
-
-    if (this.open) {
-      this.hide();
-    } else {
-      this.show();
+      this.popoverEl?.hide();
     }
   };
 
-  /** 트리거 키보드 핸들러 */
-  private handleTriggerKeydown = (e: KeyboardEvent) => {
-    if (this.disabled || this.readonly) return;
+  private handleOptionKeydown = (e: KeyboardEvent) => {
+    const options = this.options.filter(o => !o.hidden && !o.disabled);
+    const currentOption = e.currentTarget as UOption;
+    const currentIndex = options.indexOf(currentOption);
+    if (currentIndex === -1) return;
 
     switch (e.key) {
       case 'Enter':
       case ' ':
+        currentOption.click();
+        break;
       case 'ArrowDown':
         e.preventDefault();
-        if (!this.open) {
-          this.show();
-        } else {
-          this.focusFirstOption();
-        }
+        const nextIndex = (currentIndex + 1) % options.length;
+        options[nextIndex].focus();
         break;
       case 'ArrowUp':
         e.preventDefault();
-        if (!this.open) {
-          this.show();
-        } else {
-          this.focusLastOption();
-        }
+        const prevIndex = (currentIndex - 1 + options.length) % options.length;
+        options[prevIndex].focus();
+        break;
+      case 'Home':
+        e.preventDefault();
+        options[0].focus();
+        break;
+      case 'End':
+        e.preventDefault();
+        options[options.length - 1].focus();
         break;
       case 'Escape':
-        if (this.open) {
-          e.preventDefault();
-          this.hide();
-        }
+        e.preventDefault();
+        this.popoverEl?.hide();
         break;
     }
   };
 
-  /** 문서 키보드 핸들러 */
-  private handleDocumentKeydown = (e: KeyboardEvent) => {
-    if (!this.open) return;
+  private handleSearchInput = (e: InputEvent) => {
+    const input = e.target as HTMLInputElement;
+    const query = input.value.toLowerCase().trim();
+    for (const option of this.options) {
+      if (!query) {
+        option.hidden = false;
+      } else {
+        const label = option.getText().toLowerCase();
+        const value = option.value.toLowerCase();
+        option.hidden = !label.includes(query) && !value.includes(query);
+      }
+    }
+  };
+
+  private handleSearchKeydown = (e: KeyboardEvent) => {
+    const options = this.options.filter(o => !o.hidden && !o.disabled);
+    if (options.length === 0) return;
 
     switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        options[0].focus();
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        options[options.length - 1].focus();
+        break;
       case 'Escape':
         e.preventDefault();
-        this.hide();
-        this.triggerEl?.focus();
+        this.popoverEl?.hide();
         break;
-      case 'ArrowDown': {
-        e.preventDefault();
-        this.focusNextOption();
-        break;
-      }
-      case 'ArrowUp': {
-        e.preventDefault();
-        this.focusPrevOption();
-        break;
-      }
-      case 'Enter':
-      case ' ': {
-        if (this.searchable && e.key === ' ') break;
-        e.preventDefault();
-        const focused = this.options.find(o => o.matches(':focus'));
-        if (focused && !focused.disabled) {
-          focused.click();
-        }
-        break;
-      }
     }
   };
 
-  /** 검색 입력 핸들러 */
-  private handleSearchInput = (e: Event) => {
-    const input = e.target as HTMLInputElement;
-    this.searchText = input.value;
-    this.filterOptions();
-  };
-
-  /** 클리어 버튼 핸들러 */
-  private handleClear = (e: MouseEvent) => {
+  private handleClearClick = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    this.clear();
+    this.reset();
+    this.containerEl?.click();
   };
 
-  /** 태그 제거 핸들러 (다중 선택 모드) */
-  private handleTagRemove = (e: MouseEvent, value: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    this.values = this.values.filter(v => v !== value);
-    this.syncOptions();
-    this.emit('u-change');
+  private handleChipRemove = (e: Event) => {
+    e.stopImmediatePropagation();
+    const chip = e.currentTarget as UChip;
+    const value = chip.dataset.value;
+    if (!value) return;
+    this.value = this.valueAsArray.filter(v => v !== value);
   };
-
-//#endregion
-
-  /** 첫 번째 옵션에 포커스 */
-  private focusFirstOption(): void {
-    const visible = this.getVisibleOptions();
-    if (visible.length > 0) visible[0].focus();
-  }
-
-  /** 마지막 옵션에 포커스 */
-  private focusLastOption(): void {
-    const visible = this.getVisibleOptions();
-    if (visible.length > 0) visible[visible.length - 1].focus();
-  }
-
-  /** 다음 옵션에 포커스 */
-  private focusNextOption(): void {
-    const visible = this.getVisibleOptions();
-    if (visible.length === 0) return;
-
-    const currentIndex = visible.findIndex(o => o.matches(':focus'));
-    const nextIndex = currentIndex < visible.length - 1 ? currentIndex + 1 : 0;
-    visible[nextIndex].focus();
-  }
-
-  /** 이전 옵션에 포커스 */
-  private focusPrevOption(): void {
-    const visible = this.getVisibleOptions();
-    if (visible.length === 0) return;
-
-    const currentIndex = visible.findIndex(o => o.matches(':focus'));
-    const prevIndex = currentIndex > 0 ? currentIndex - 1 : visible.length - 1;
-    visible[prevIndex].focus();
-  }
 }

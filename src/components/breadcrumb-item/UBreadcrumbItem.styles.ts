@@ -29,4 +29,11 @@ export const styles = css`
     transition: color 0.2s ease;
     cursor: inherit;
   }
+
+  ::slotted([slot="prefix"]) {
+    margin-right: 0.2em;
+  }
+  ::slotted([slot="suffix"]) {
+    margin-left: 0.2em;
+  }
 `;
