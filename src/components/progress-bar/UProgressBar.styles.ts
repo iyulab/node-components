@@ -2,36 +2,36 @@ import { css } from 'lit';
 
 export const styles = css`
   :host {
-    --bar-height: 0.5em;
-    --bar-color: var(--u-blue-600);
-    --buffer-color: var(--u-blue-200);
-    --track-color: var(--u-neutral-200);
+    --progress-bar-height: 0.5em;
+    --progress-bar-color: var(--u-blue-600);
+    --progress-bar-buffer-color: var(--u-blue-200);
+    --progress-bar-track-color: var(--u-neutral-200);
   }
 
   /* === Status Colors === */
   :host([status="success"]) { 
-    --bar-color: var(--u-green-600); 
-    --buffer-color: var(--u-green-200); 
+    --progress-bar-color: var(--u-green-600); 
+    --progress-bar-buffer-color: var(--u-green-200); 
   }
   :host([status="warning"]) { 
-    --bar-color: var(--u-yellow-500); 
-    --buffer-color: var(--u-yellow-200); 
+    --progress-bar-color: var(--u-yellow-500); 
+    --progress-bar-buffer-color: var(--u-yellow-200); 
   }
   :host([status="error"]) { 
-    --bar-color: var(--u-red-600); 
-    --buffer-color: var(--u-red-200); 
+    --progress-bar-color: var(--u-red-600); 
+    --progress-bar-buffer-color: var(--u-red-200); 
   }
   :host([status="info"]) { 
-    --bar-color: var(--u-blue-500); 
-    --buffer-color: var(--u-blue-200); 
+    --progress-bar-color: var(--u-blue-500); 
+    --progress-bar-buffer-color: var(--u-blue-200); 
   }
 
   :host {
     position: relative;
     display: block;
     width: 100%;
-    height: var(--bar-height);
-    background-color: var(--track-color);
+    height: var(--progress-bar-height);
+    background-color: var(--progress-bar-track-color);
     overflow: hidden;
   }
 
@@ -74,7 +74,7 @@ export const styles = css`
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background-color: var(--bar-color);
+    background-color: var(--progress-bar-color);
     transform-origin: left center;
     transform: scaleX(0);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -86,7 +86,7 @@ export const styles = css`
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background-color: var(--buffer-color);
+    background-color: var(--progress-bar-buffer-color);
     transform-origin: left center;
     transform: scaleX(0);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -104,7 +104,7 @@ export const styles = css`
     position: absolute;
     top: 0;
     bottom: 0;
-    background-color: var(--track-color);
+    background-color: var(--progress-bar-track-color);
     transform: translateX(-50%);
   }
 

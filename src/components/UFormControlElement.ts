@@ -10,7 +10,6 @@ import { styles } from './UFormControlElement.styles.js';
  */
 export abstract class UFormControlElement<T> extends UElement {
   static styles: CSSResultGroup = [super.styles, styles];
-  static dependencies: Record<string, typeof UElement> = {};
   static formAssociated = true;
   
   /** 비활성 상태 */

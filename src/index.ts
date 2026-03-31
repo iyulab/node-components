@@ -49,12 +49,15 @@ export * from './components/tree/UTree.js';
 export * from './components/tree-item/UTreeItem.js';
 
 // Events
-export * from './events/UChangeEvent';
-export * from './events/UHideEvent';
-export * from './events/UInputEvent';
-export * from './events/UResizeEvent';
-export * from './events/USelectEvent';
-export * from './events/UShowEvent';
+export * from './events/CheckEvent';
+export * from './events/CollapseEvent';
+export * from './events/ExpandEvent';
+export * from './events/HideEvent';
+export * from './events/NavigateEvent';
+export * from './events/PickEvent';
+export * from './events/RemoveEvent';
+export * from './events/ShiftEvent';
+export * from './events/ShowEvent';
 
 // Utilities
 export * from './utilities/BrowserStorage.js';

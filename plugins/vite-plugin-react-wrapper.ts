@@ -1,304 +1,260 @@
 import type { Plugin } from 'vite';
-import { resolve, join, relative } from 'path';
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs';
+import { resolve, join, relative, dirname, basename } from 'path';
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { gzipSync } from 'zlib';
+import { globSync } from 'glob';
+
+interface ComponentEvent {
+  name: string;         // 원본 이벤트명 (예: show, shift-start)
+  reactName: string;    // React prop명 (예: onShow, onShiftStart)
+  detailType: string;   // 이벤트 detail 타입 (예: ShiftEventDetail, 없으면 unknown)
+  importPath: string;   // detail 타입의 소스 import 경로 (예: ../../events/ShowEvent.js)
+}
 
 interface ComponentInfo {
-  componentName: string;    // 클래스명 (예: Button)
-  reactName: string;         // React 컴포넌트명 (예: UButton)
-  tagName: string;          // 태그명 (예: u-button)
-  filePath: string;         // 원본 파일 경로
-  relativePath: string;     // src 기준 상대 경로
+  className: string;     // 클래스명 (예: UButton)
+  tagName: string;       // 태그명 (예: u-button)
+  filePath: string;      // 원본 파일 절대 경로
+  events: ComponentEvent[];
 }
 
 interface PluginOptions {
-  /**
-   * 컴포넌트가 위치한 폴더 경로 (기본값: 'src/components')
-   */
-  componentsDir?: string;
-  
-  /**
-   * React 래퍼를 생성할 출력 폴더 (기본값: 'react-components')
-   * 빌드 outDir 내부에 생성됩니다
-   */
-  outDir?: string;
+  /** 컴포넌트 소스 디렉토리 경로 (기본값: 'src/components') */
+  input?: string;
+  /** React 래퍼 출력 폴더 - 빌드 outDir 기준 상대 경로 (기본값: 'react') */
+  output?: string;
 }
 
 /**
- * Lit Element 컴포넌트를 React 래퍼 컴포넌트로 자동 생성하는 Vite 플러그인
+ * Lit Element 컴포넌트를 React 래퍼로 자동 생성하는 Vite 플러그인
  */
-export default function reactWrapperPlugin(options: PluginOptions = {}): Plugin {
+export default function reactWrapperPlugin(options: PluginOptions): Plugin {
   let rootDir: string;
   let buildOutDir: string;
-  let componentsDir: string;
   let outDir: string;
 
   return {
     name: 'vite-plugin-react-wrapper',
-    
+
     configResolved(config) {
       rootDir = config.root;
       buildOutDir = resolve(rootDir, config.build.outDir);
-      
-      // 옵션에서 componentsDir 가져오기 또는 기본값
-      const componentsDirPath = options.componentsDir || 'src/components';
-      componentsDir = resolve(rootDir, componentsDirPath);
-      
-      // 옵션에서 outDir 가져오기 또는 기본값 (빌드 폴더 내부)
-      const outDirPath = options.outDir || 'react-components';
-      outDir = resolve(buildOutDir, outDirPath);
+      outDir = resolve(buildOutDir, options.output || 'react');
     },
 
     closeBundle() {
-      console.log('');
-      console.log('\x1b[36m[vite:react-wrapper]\x1b[0m Start generating React wrapper components...');
-      
-      try {
-        // react-components 폴더 생성
-        if (!existsSync(outDir)) {
-          mkdirSync(outDir, { recursive: true });
-        }
+      const log = (msg: string) => console.log(`\x1b[36m[react-wrapper]\x1b[0m ${msg}`);
+      log('Generating React wrappers...');
 
-        // 컴포넌트 정보 수집
-        const components = collectComponents(componentsDir);
-        
-        if (components.length === 0) {
-          console.warn('⚠️  No components found to wrap');
-          return;
-        }
+      // 컴포넌트 수집
+      const inputPattern = (options.input || 'src/components') + '/**/*.ts';
+      const files = globSync(inputPattern, { cwd: rootDir, absolute: true });
+      const components = files.flatMap((f: string) => parseComponent(f));
 
-        // 각 컴포넌트의 React 래퍼 생성
-        const generatedFiles: Array<{ path: string; size: number; gzipSize: number }> = [];
-        
-        components.forEach(component => {
-          const files = generateReactWrapper(component, outDir, buildOutDir);
-          generatedFiles.push(...files);
-        });
-
-        // index.ts 생성
-        const indexFiles = generateIndexFile(components, outDir, buildOutDir);
-        generatedFiles.push(...indexFiles);
-
-        // 파일 크기 기준으로 정렬
-        generatedFiles.sort((a, b) => a.size - b.size);
-
-        // Vite 스타일로 출력
-        generatedFiles.forEach(file => {
-          const sizeKB = (file.size / 1024).toFixed(2);
-          const gzipKB = (file.gzipSize / 1024).toFixed(2);
-          const padding = ' '.repeat(Math.max(0, 50 - file.path.length));
-          console.log(`${file.path}${padding}${sizeKB.padStart(6)} kB │ gzip: ${gzipKB.padStart(6)} kB`);
-        });
-
-        console.log('\x1b[36m[vite:react-wrapper]\x1b[0m React wrapper components generated successfully!');
-        
-      } catch (error) {
-        console.error('❌ Error generating React wrappers:', error);
-        throw error;
+      if (components.length === 0) {
+        log('No components found.');
+        return;
       }
+
+      // 출력 디렉토리 생성
+      mkdirSync(outDir, { recursive: true });
+
+      // 래퍼 생성
+      const generated: FileInfo[] = [];
+      for (const comp of components) {
+        generated.push(...writeWrapper(comp, outDir, buildOutDir));
+      }
+      generated.push(...writeIndex(components, outDir, buildOutDir));
+
+      // 결과 출력
+      generated.sort((a, b) => a.size - b.size);
+      for (const f of generated) {
+        const kb = (f.size / 1024).toFixed(2);
+        const gzKb = (f.gzipSize / 1024).toFixed(2);
+        const pad = ' '.repeat(Math.max(0, 50 - f.path.length));
+        console.log(`${f.path}${pad}${kb.padStart(6)} kB │ gzip: ${gzKb.padStart(6)} kB`);
+      }
+
+      log(`Generated ${components.length} React wrappers.`);
     }
   };
 }
 
-/**
- * components 폴더에서 모든 컴포넌트 정보 수집
- */
-function collectComponents(componentsDir: string): ComponentInfo[] {
-  const components: ComponentInfo[] = [];
-  
-  // components 폴더의 하위 디렉토리 순회
-  const entries = readdirSync(componentsDir);
-  
-  for (const entry of entries) {
-    const entryPath = join(componentsDir, entry);
-    const stat = statSync(entryPath);
-    
-    // 디렉토리인 경우에만 처리
-    if (stat.isDirectory()) {
-      // U로 시작하는 .ts 파일 찾기 (예: UButton.ts, UTree.ts)
-      const files = readdirSync(entryPath);
-      const componentFile = files.find(f => 
-        f.startsWith('U') && 
-        f.endsWith('.ts') && 
-        !f.includes('.component') && 
-        !f.includes('.styles')
-      );
-      
-      if (componentFile) {
-        const filePath = join(entryPath, componentFile);
-        const content = readFileSync(filePath, 'utf-8');
-        const componentInfo = parseComponentInfo(content, entry, filePath, componentFile);
-        
-        if (componentInfo) {
-          components.push(componentInfo);
-        }
-      }
-    }
-  }
-  
-  return components;
-}
+// --- 컴포넌트 파싱 ---
 
-/**
- * 컴포넌트 파일에서 정보 추출 (예: UButton.ts)
- */
-function parseComponentInfo(content: string, folderName: string, filePath: string, fileName: string): ComponentInfo | null {
-  // 클래스명 추출 (예: export { UButton })
-  const exportMatch = content.match(/export\s*\{\s*([^}\s]+)\s*\}/);
-  if (!exportMatch) {
-    return null;
-  }
-  
-  const componentName = exportMatch[1]; // UButton
-  const reactName = componentName; // UButton (이미 U 접두사가 있음)
-  
-  // 태그명 추출 (예: UButton.define("u-button"))
-  const tagMatch = content.match(/\.define\s*\(\s*["']([^"']+)["']/);
-  if (!tagMatch) {
-    return null;
-  }
-  
-  const tagName = tagMatch[1]; // u-button
-  
-  // 파일명에서 확장자 제거 (UButton.ts -> UButton)
-  const fileBaseName = fileName.replace('.ts', '');
-  
-  return {
-    componentName,
-    reactName,
-    tagName,
+function parseComponent(filePath: string): ComponentInfo[] {
+  const content = readFileSync(filePath, 'utf-8');
+
+  // @customElement('tag-name') 데코레이터 확인
+  const tagMatch = content.match(/@customElement\s*\(\s*['"]([^'"]+)['"]\s*\)/);
+  if (!tagMatch) return [];
+
+  // export class ClassName 추출
+  const classMatch = content.match(/export\s+class\s+(\w+)/);
+  if (!classMatch) return [];
+
+  const events = collectEvents(content);
+
+  return [{
+    className: classMatch[1],
+    tagName: tagMatch[1],
     filePath,
-    relativePath: `components/${folderName}/${fileBaseName}`
+    events,
+  }];
+}
+
+function collectEvents(content: string): ComponentEvent[] {
+  // import 구문에서 타입명 → 소스 경로 매핑 수집
+  // 예: import { ShowEventDetail } from '../../events/ShowEvent.js';
+  const typeImportMap = new Map<string, string>();
+  for (const m of content.matchAll(/import\s+\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/g)) {
+    const importPath = m[2];
+    for (const name of m[1].split(',')) {
+      const typeName = name.replace(/type\s+/, '').trim();
+      if (typeName) typeImportMap.set(typeName, importPath);
+    }
+  }
+
+  const eventMap = new Map<string, { detailType: string; importPath: string }>();
+
+  // JSDoc @event 패턴: @event eventName
+  for (const m of content.matchAll(/@event\s+([\w-]+)/g)) {
+    if (!eventMap.has(m[1])) eventMap.set(m[1], { detailType: 'unknown', importPath: '' });
+  }
+
+  // this.fire<DetailType>('eventName') 패턴 - 제네릭 타입 추출
+  for (const m of content.matchAll(/this\.fire\s*(?:<([^>]+)>)?\s*\(\s*['"]([\w-]+)['"]/g)) {
+    const detailType = m[1] || 'unknown';
+    const importPath = typeImportMap.get(detailType) || '';
+    eventMap.set(m[2], { detailType, importPath });
+  }
+
+  return Array.from(eventMap, ([name, { detailType, importPath }]) => ({
+    name,
+    reactName: toCamelEvent(name),
+    detailType,
+    importPath,
+  }));
+}
+
+/** kebab-case 이벤트명을 onCamelCase로 변환 (예: shift-start → onShiftStart) */
+function toCamelEvent(name: string): string {
+  return 'on' + name.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('');
+}
+
+// --- 파일 생성 ---
+
+type FileInfo = { path: string; size: number; gzipSize: number };
+
+function writeFile(filePath: string, content: string, buildOutDir: string): FileInfo {
+  writeFileSync(filePath, content, 'utf-8');
+  return {
+    path: relative(buildOutDir, filePath).replace(/\\/g, '/'),
+    size: Buffer.byteLength(content, 'utf-8'),
+    gzipSize: gzipSync(content).length,
   };
 }
 
-/**
- * 개별 컴포넌트의 React 래퍼 파일 생성
- */
-function generateReactWrapper(
-  component: ComponentInfo, 
-  outDir: string, 
-  buildOutDir: string
-): Array<{ path: string; size: number; gzipSize: number }> {
-  const { reactName, componentName, tagName, relativePath } = component;
-  const files: Array<{ path: string; size: number; gzipSize: number }> = [];
-  
-  // import 경로 계산 (상대 경로)
-  // dist/react-components/UButton.js 에서 dist/components/button/UButton.js 로 가는 경로
-  const targetPath = resolve(outDir, '..', relativePath + '.js');
-  let importPath = relative(outDir, targetPath).replace(/\\/g, '/');
-  
-  // 상대 경로가 ./ 또는 ../로 시작하지 않으면 추가
-  if (!importPath.startsWith('.')) {
-    importPath = './' + importPath;
-  }
-  
-  // .js 확장자 제거 (import에서 자동으로 해석됨)
-  importPath = importPath.replace(/\.js$/, '');
-  
-  // .js 파일 생성
-  const jsFileName = `${reactName}.js`;
-  const jsFilePath = join(outDir, jsFileName);
-  
-  const jsContent = `import React from 'react';
-import { createComponent } from '@lit/react';
-import { ${componentName} } from '${importPath}';
+function computeImportPath(from: string, to: string): string {
+  let rel = relative(dirname(from), to).replace(/\\/g, '/').replace(/\.ts$/, '');
+  if (!rel.startsWith('.')) rel = './' + rel;
+  return rel;
+}
 
-export const ${reactName} = createComponent({
+function writeWrapper(comp: ComponentInfo, outDir: string, buildOutDir: string): FileInfo[] {
+  const { className, tagName, events } = comp;
+  const jsPath = join(outDir, `${className}.js`);
+  const dtsPath = join(outDir, `${className}.d.ts`);
+
+  // 소스 파일의 빌드 출력 경로 추정 (src/ → 빌드 outDir 매핑)
+  const srcIndex = comp.filePath.replace(/\\/g, '/').indexOf('/src/');
+  const relFromSrc = srcIndex >= 0
+    ? comp.filePath.substring(srcIndex + 5).replace(/\\/g, '/').replace(/\.ts$/, '')
+    : basename(comp.filePath, '.ts');
+  const builtModulePath = resolve(buildOutDir, relFromSrc + '.js');
+  const importPath = computeImportPath(jsPath, builtModulePath);
+
+  // events 객체 생성
+  const eventsObj = events.length > 0
+    ? `{\n${events.map(e => `    ${e.reactName}: '${e.name}',`).join('\n')}\n  }`
+    : '{}';
+
+  // .js
+  const js = `import React from 'react';
+import { createComponent } from '@lit/react';
+import { ${className} } from '${importPath}';
+
+export const ${className} = createComponent({
   react: React,
   tagName: '${tagName}',
-  elementClass: ${componentName},
-  events: {}
+  elementClass: ${className},
+  events: ${eventsObj},
 });
 `;
 
-  writeFileSync(jsFilePath, jsContent, 'utf-8');
-  const jsSize = Buffer.byteLength(jsContent, 'utf-8');
-  const jsGzipSize = gzipSync(jsContent).length;
-  files.push({
-    path: relative(buildOutDir, jsFilePath).replace(/\\/g, '/'),
-    size: jsSize,
-    gzipSize: jsGzipSize
-  });
-  
-  // .d.ts 파일 생성
-  const dtsFileName = `${reactName}.d.ts`;
-  const dtsFilePath = join(outDir, dtsFileName);
-  
-  const dtsContent = `import React from 'react';
-import { ${componentName} } from '${importPath}';
+  // .d.ts - import 구문 생성
+  const dtsImportPath = importPath.replace(/\.js$/, '');
+  const dtsImports = [
+    `import React from 'react';`,
+    `import { ${className} as ${className}Element } from '${dtsImportPath}';`,
+  ];
 
-export declare const ${reactName}: React.ForwardRefExoticComponent<
-  Partial<${componentName}> & React.HTMLAttributes<${componentName}>
+  // 이벤트 detail 타입별 import - 소스 원본 경로 기준으로 빌드 경로 계산
+  const srcDir = dirname(comp.filePath);
+  const detailImportMap = new Map<string, string[]>(); // 빌드경로 → [타입명]
+  for (const e of events) {
+    if (e.detailType === 'unknown' || !e.importPath) continue;
+    // 소스 상대경로를 절대경로로 변환 후 빌드 경로 계산
+    const absEventSrc = resolve(srcDir, e.importPath).replace(/\\/g, '/');
+    const eventSrcIndex = absEventSrc.indexOf('/src/');
+    const relFromSrc = eventSrcIndex >= 0
+      ? absEventSrc.substring(eventSrcIndex + 5).replace(/\.js$/, '')
+      : '';
+    if (!relFromSrc) continue;
+    const absEventBuilt = resolve(buildOutDir, relFromSrc);
+    const eventImportPath = computeImportPath(dtsPath, absEventBuilt + '.js').replace(/\.js$/, '');
+    const types = detailImportMap.get(eventImportPath) || [];
+    if (!types.includes(e.detailType)) types.push(e.detailType);
+    detailImportMap.set(eventImportPath, types);
+  }
+  for (const [path, types] of detailImportMap) {
+    dtsImports.push(`import { type ${types.join(', type ')} } from '${path}';`);
+  }
+
+  const eventTypes = events.length > 0
+    ? events.map(e => {
+        const type = e.detailType !== 'unknown' ? `CustomEvent<${e.detailType}>` : 'CustomEvent';
+        return `  ${e.reactName}?: (event: ${type}) => void;`;
+      }).join('\n') + '\n'
+    : '';
+
+  const dts = `${dtsImports.join('\n')}
+
+export declare const ${className}: React.ForwardRefExoticComponent<
+  Partial<${className}Element> & React.HTMLAttributes<${className}Element> & {
+${eventTypes}  }
 >;
 
-export type ${reactName}Props = React.ComponentProps<typeof ${reactName}>;
+export type ${className}Props = React.ComponentProps<typeof ${className}>;
 `;
 
-  writeFileSync(dtsFilePath, dtsContent, 'utf-8');
-  const dtsSize = Buffer.byteLength(dtsContent, 'utf-8');
-  const dtsGzipSize = gzipSync(dtsContent).length;
-  files.push({
-    path: relative(buildOutDir, dtsFilePath).replace(/\\/g, '/'),
-    size: dtsSize,
-    gzipSize: dtsGzipSize
-  });
-  
-  return files;
+  return [
+    writeFile(jsPath, js, buildOutDir),
+    writeFile(dtsPath, dts, buildOutDir),
+  ];
 }
 
-/**
- * index 파일 생성 (모든 React 래퍼 export)
- */
-function generateIndexFile(
-  components: ComponentInfo[], 
-  outDir: string, 
-  buildOutDir: string
-): Array<{ path: string; size: number; gzipSize: number }> {
-  const files: Array<{ path: string; size: number; gzipSize: number }> = [];
-  
-  const exports = components
-    .map(c => `export { ${c.reactName} } from './${c.reactName}.js';`)
+function writeIndex(components: ComponentInfo[], outDir: string, buildOutDir: string): FileInfo[] {
+  const jsExports = components
+    .map(c => `export { ${c.className} } from './${c.className}.js';`)
     .join('\n');
-  
-  // index.js 생성
-  const jsContent = `${exports}
-`;
 
-  const jsIndexPath = join(outDir, 'index.js');
-  writeFileSync(jsIndexPath, jsContent, 'utf-8');
-  const jsSize = Buffer.byteLength(jsContent, 'utf-8');
-  const jsGzipSize = gzipSync(jsContent).length;
-  files.push({
-    path: relative(buildOutDir, jsIndexPath).replace(/\\/g, '/'),
-    size: jsSize,
-    gzipSize: jsGzipSize
-  });
-  
-  // index.d.ts 생성
   const dtsExports = components
-    .map(c => `export { ${c.reactName}, ${c.reactName}Props } from './${c.reactName}';`)
+    .map(c => `export { ${c.className}, ${c.className}Props } from './${c.className}';`)
     .join('\n');
-  
-  const dtsContent = `/**
- * React wrapper components for @iyulab/components
- * 
- * This file is automatically generated.
- * Each component is prefixed with 'U' (e.g., UButton, UInput, etc.)
- */
 
-${dtsExports}
-`;
-
-  const dtsIndexPath = join(outDir, 'index.d.ts');
-  writeFileSync(dtsIndexPath, dtsContent, 'utf-8');
-  const dtsSize = Buffer.byteLength(dtsContent, 'utf-8');
-  const dtsGzipSize = gzipSync(dtsContent).length;
-  files.push({
-    path: relative(buildOutDir, dtsIndexPath).replace(/\\/g, '/'),
-    size: dtsSize,
-    gzipSize: dtsGzipSize
-  });
-  
-  return files;
+  return [
+    writeFile(join(outDir, 'index.js'), jsExports + '\n', buildOutDir),
+    writeFile(join(outDir, 'index.d.ts'), dtsExports + '\n', buildOutDir),
+  ];
 }

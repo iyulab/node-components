@@ -7,16 +7,20 @@ import type { OffsetOptions, Placement, VirtualElement } from '@floating-ui/dom'
 import { getParentElement, querySelectorAllWithin } from '../utilities/elements.js';
 import { UElement } from './UElement.js';
 import { styles } from './UFloatingElement.styles.js';
+import { ShowEventDetail } from '../events/ShowEvent.js';
+import { HideEventDetail } from '../events/HideEvent.js';
 
 export type FloatingStrategy = 'absolute' | 'fixed';
 
 /**
  * UFloatingElement는 팝오버, 툴팁 등 화면에 떠 있는 엘리먼트를 구현하기 위한 기본 클래스입니다.
  * 이 클래스를 상속하여 커스텀 팝오버 컴포넌트를 만들 수 있습니다.
+ * 
+ * @event show - 엘리먼트가 표시되기 전에 발생합니다. 이벤트 핸들러에서 false를 반환하면 표시가 취소됩니다.
+ * @event hide - 엘리먼트가 숨겨지기 전에 발생합니다. 이벤트 핸들러에서 false를 반환하면 숨김이 취소됩니다.
  */
 export class UFloatingElement extends UElement {
   static styles: CSSResultGroup = [ super.styles, styles ];
-  static dependencies: Record<string, typeof UElement> = {};
   
   /** 
    * 현재 엘리먼트가 보여지는지 여부입니다. 
@@ -174,7 +178,7 @@ export class UFloatingElement extends UElement {
     this.targetEl = target;
     if (this.open) return true;
 
-    if (this.emit('u-show')) {
+    if (this.fire<ShowEventDetail>('show')) {
       // show 딜레이 적용
       if (this.showDelay > 0) {
         this.showTimer = window.setTimeout(() => {
@@ -215,7 +219,7 @@ export class UFloatingElement extends UElement {
     this.targetEl = undefined;
     if (!this.open) return true;
 
-    if (this.emit('u-hide')) {
+    if (this.fire<HideEventDetail>('hide')) {
       // hide 딜레이 적용
       if (this.hideDelay > 0) {
         this.hideTimer = window.setTimeout(() => {

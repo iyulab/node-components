@@ -5,32 +5,32 @@ export const styles = css`
   :host {
     --alert-icon-color: var(--u-neutral-700);
     --alert-border-color: var(--u-neutral-300);
-    --alert-bg-color: var(--u-neutral-200);
+    --alert-background-color: var(--u-neutral-200);
   }
   :host([status="error"]) {
     --alert-icon-color: var(--u-red-700);
     --alert-border-color: var(--u-red-300);
-    --alert-bg-color: var(--u-red-200);
+    --alert-background-color: var(--u-red-200);
   }
   :host([status="warning"]) {
     --alert-icon-color: var(--u-yellow-700);
     --alert-border-color: var(--u-yellow-300);
-    --alert-bg-color: var(--u-yellow-200);
+    --alert-background-color: var(--u-yellow-200);
   }
   :host([status="info"]) {
     --alert-icon-color: var(--u-blue-700);
     --alert-border-color: var(--u-blue-300);
-    --alert-bg-color: var(--u-blue-200);
+    --alert-background-color: var(--u-blue-200);
   }
   :host([status="success"]) {
     --alert-icon-color: var(--u-green-700);
     --alert-border-color: var(--u-green-300);
-    --alert-bg-color: var(--u-green-200);
+    --alert-background-color: var(--u-green-200);
   }
   :host([status="notice"]) {
     --alert-icon-color: var(--u-neutral-700);
     --alert-border-color: var(--u-neutral-300);
-    --alert-bg-color: var(--u-neutral-200);
+    --alert-background-color: var(--u-neutral-200);
   }
 
   :host {
@@ -63,11 +63,11 @@ export const styles = css`
   /* === Variant Styles === */
   :host([variant="solid"]) {
     border: 1px solid var(--alert-border-color);
-    background-color: var(--alert-bg-color);
+    background-color: var(--alert-background-color);
   }
   :host([variant="filled"]) {
     border: 1px solid transparent;
-    background-color: var(--alert-bg-color);
+    background-color: var(--alert-background-color);
   }
   :host([variant="outlined"]) {
     border: 1px solid var(--alert-border-color);

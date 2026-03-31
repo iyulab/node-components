@@ -30,7 +30,7 @@ export const styles = css`
     margin-left: 0.2em;
   }
 
-  .close-btn {
+  .remove-btn {
     flex-shrink: 0;
     margin-left: 0.2em;
     font-size: 0.75em;
@@ -38,7 +38,7 @@ export const styles = css`
     opacity: 0.5;
     transition: opacity 0.15s ease;
   }
-  .close-btn:hover {
+  .remove-btn:hover {
     opacity: 1;
   }
 `;

@@ -43,7 +43,6 @@
   "include": [
     "src/**/*",
     "tests/**/*",
-    "plugins/**/*",
     "vite.config.ts",
     "vite-env.d.ts",
   ],

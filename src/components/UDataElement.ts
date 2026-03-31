@@ -1,8 +1,8 @@
 import { html } from 'lit';
+import "./icon/UIcon.js";
 
 import { buildElementHTML } from '../utilities/elements.js';
 import { UElement } from './UElement.js';
-import { UIcon } from './icon/UIcon.component.js';
 import { styles } from './UDataElement.styles.js';
 
 /**
@@ -20,9 +20,6 @@ import { styles } from './UDataElement.styles.js';
  */
 export class UDataElement extends UElement {
   static styles = [super.styles, styles];
-  static dependencies: Record<string, typeof UElement> = {
-    'u-icon': UIcon,
-  };
 
   connectedCallback() {
     super.connectedCallback();

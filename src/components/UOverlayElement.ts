@@ -7,6 +7,8 @@ import { OverlayManager } from '../utilities/OverlayManager.js';
 import { arrayAttrConverter } from '../utilities/converters.js';
 import { UElement } from './UElement.js';
 import { styles } from './UOverlayElement.styles.js';
+import { ShowEventDetail } from '../events/ShowEvent.js';
+import { HideEventDetail } from '../events/HideEvent.js';
 
 /** closeOn에 지정할 수 있는 닫기 트리거 */
 export type CloseOnPolicy = 'escape' | 'backdrop' | 'button';
@@ -18,7 +20,6 @@ export type OverlayMode = 'modal' | 'non-modal';
  */
 export abstract class UOverlayElement extends UElement {
   static styles: CSSResultGroup = [super.styles, styles];
-  static dependencies: Record<string, typeof UElement> = {};
 
   /** 
    * 열림/닫힘 상태 
@@ -91,7 +92,7 @@ export abstract class UOverlayElement extends UElement {
   public show(): boolean {
     if (this.open) return true;
     
-    if (this.emit('u-show')) {
+    if (this.fire<ShowEventDetail>('show')) {
       this.open = true;
       return true;
     }
@@ -104,7 +105,7 @@ export abstract class UOverlayElement extends UElement {
   public hide(): boolean {
     if (!this.open) return true;
     
-    if (this.emit('u-hide')) {
+    if (this.fire<HideEventDetail>('hide')) {
       this.open = false;
       return true;
     }

@@ -2,22 +2,22 @@ import { css } from 'lit';
 
 export const styles = css`
   :host {
-    --track-width: 0.125em;
-    --track-color: var(--u-neutral-200);
-    --indicator-color: var(--u-neutral-800);
-    --indicator-speed: 2s;
+    --spinner-track-width: 0.125em;
+    --spinner-track-color: var(--u-neutral-200);
+    --spinner-indicator-color: var(--u-neutral-800);
+    --spinner-indicator-speed: 2s;
   }
 
   /* Color variants */
-  :host([color="blue"]) { --indicator-color: var(--u-blue-600); }
-  :host([color="green"]) { --indicator-color: var(--u-green-600); }
-  :host([color="yellow"]) { --indicator-color: var(--u-yellow-600); }
-  :host([color="red"]) { --indicator-color: var(--u-red-600); }
-  :host([color="orange"]) { --indicator-color: var(--u-orange-600); }
-  :host([color="teal"]) { --indicator-color: var(--u-teal-600); }
-  :host([color="cyan"]) { --indicator-color: var(--u-cyan-600); }
-  :host([color="purple"]) { --indicator-color: var(--u-purple-600); }
-  :host([color="pink"]) { --indicator-color: var(--u-pink-600); }
+  :host([color="blue"]) { --spinner-indicator-color: var(--u-blue-600); }
+  :host([color="green"]) { --spinner-indicator-color: var(--u-green-600); }
+  :host([color="yellow"]) { --spinner-indicator-color: var(--u-yellow-600); }
+  :host([color="red"]) { --spinner-indicator-color: var(--u-red-600); }
+  :host([color="orange"]) { --spinner-indicator-color: var(--u-orange-600); }
+  :host([color="teal"]) { --spinner-indicator-color: var(--u-teal-600); }
+  :host([color="cyan"]) { --spinner-indicator-color: var(--u-cyan-600); }
+  :host([color="purple"]) { --spinner-indicator-color: var(--u-purple-600); }
+  :host([color="pink"]) { --spinner-indicator-color: var(--u-pink-600); }
 
   :host {
     display: inline-flex;
@@ -34,28 +34,28 @@ export const styles = css`
   }
   .spinner circle {
     fill: none;
-    stroke-width: var(--track-width);
-    r: calc(0.5em - var(--track-width) / 2);
+    stroke-width: var(--spinner-track-width);
+    r: calc(0.5em - var(--spinner-track-width) / 2);
     cx: 0.5em;
     cy: 0.5em;
   }
 
   .track {
-    stroke: var(--track-color);
+    stroke: var(--spinner-track-color);
     transform-origin: 0% 0%;
   }
 
   .indicator {
-    stroke: var(--indicator-color);
+    stroke: var(--spinner-indicator-color);
     stroke-linecap: round;
     stroke-dasharray: 150% 75%;
     transform-origin: 50% 50%;
-    animation: spin var(--indicator-speed) linear infinite;
+    animation: spin var(--spinner-indicator-speed) linear infinite;
   }
 
   .label {
     font-size: 0.5em;
-    color: var(--indicator-color);
+    color: var(--spinner-indicator-color);
     user-select: none;
   }
 

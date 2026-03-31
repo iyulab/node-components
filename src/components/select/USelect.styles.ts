@@ -3,8 +3,8 @@ import { css } from "lit";
 export const styles = css`
   :host {
     --select-popover-min-width: 100%;
-    --select-popover-max-width: 90vw;
-    --select-popover-min-height: 40px;
+    --select-popover-max-width: 80vw;
+    --select-popover-min-height: 0px;
     --select-popover-max-height: 50vh;
   }
 

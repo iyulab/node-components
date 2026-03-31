@@ -6,10 +6,11 @@ import { BrowserStorage, BrowserStorageOptions } from './BrowserStorage.js';
  */
 const internalStyleBundle = Object.entries(import.meta.glob('../assets/styles/*.css', {
   eager: true,
-  query: '?inline',
+  query: '?raw',
+  import: 'default',
 })).map(([path, module]) => {
   const name = path.split('/').pop()?.replace('.css', '') || '';
-  return [name, (module as any).default] as [string, string];
+  return [name, module as string] as [string, string];
 }).filter(([name]) => name !== '');
 
 /** iyulab에서 제공하는 스타일 타입입니다. */

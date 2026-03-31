@@ -6,7 +6,9 @@ export const styles = css`
     --splitter-color: var(--u-neutral-200);
     --splitter-color-hover: var(--u-blue-300);
     --splitter-color-active: var(--u-blue-500);
+  }
 
+  :host {
     position: relative;
     display: flex;
     width: 100%;

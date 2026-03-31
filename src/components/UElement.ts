@@ -2,65 +2,49 @@ import { LitElement, CSSResultGroup, render, RenderOptions } from 'lit';
 import { styles } from './UElement.styles.js';
 
 /**
- * UElement는 LitElement를 확장한 기본 Web Component 클래스입니다.
- * 이 클래스는 자동으로 종속된 컴포넌트를 정의하며, 유용한 헬퍼 메서드들을 제공합니다.
+ * 모든 UI 컴포넌트의 기반 클래스.
+ * LitElement를 확장하여 이벤트 발행 및 렌더 교체 헬퍼를 제공합니다.
  */
 export class UElement extends LitElement {
-  /**
-   * 기본 스타일을 정의합니다.
-   */
   static styles: CSSResultGroup = styles;
 
   /**
-   * 현재 컴포넌트에 종속된 컴포넌트들을 정의하는 정적 속성입니다.
-   * 이 속성은 컴포넌트가 정의될 때 자동으로 호출되어
-   * 종속된 컴포넌트를 등록합니다.
+   * 커스텀 이벤트를 생성하여 발행합니다.
+   * 기본적으로 bubbles, composed, cancelable이 활성화됩니다.
+   *
+   * @typeParam T - 이벤트 detail의 타입
+   * @param name - 이벤트 이름 (예: 'show')
+   * @param options - CustomEventInit 오버라이드
+   * @returns preventDefault가 호출되지 않았으면 true
    */
-  static dependencies: Record<string, typeof UElement> = {};
-
-  constructor() {
-    super();
-    Object.entries((this.constructor as typeof UElement).dependencies).forEach(([name, component]) => {
-      component.define(name);
-    });
+  protected fire<T>(name: string, options?: CustomEventInit): boolean {
+    return this.dispatchEvent(new CustomEvent<T>(name, {
+        bubbles: true,
+        composed: true,
+        cancelable: true,
+        ...options,
+      }),
+    );
   }
 
   /**
-   * 커스텀 엘리먼트를 정의합니다.
-   * 이미 정의된 엘리먼트는 다시 정의하지 않습니다.
-   * @param name - 커스텀 엘리먼트의 이름
-   * @param options - 엘리먼트 정의 옵션
+   * 네이티브 이벤트를 호스트 엘리먼트에서 (재)발행합니다.
+   * 기존 이벤트를 전달하면 원본을 중단하고 동일 타입으로 재발행하며,
+   * 새 이벤트를 직접 전달할 수도 있습니다.
+   *
+   * @param event - 재발행할 이벤트 또는 새로 생성한 네이티브 이벤트
+   * @param options - EventInit 오버라이드
+   * @returns preventDefault가 호출되지 않았으면 true
    */
-  static define(name: string, options: ElementDefinitionOptions = {}) {
-    const element = customElements.get(name);
-    if (element) return element;
+  protected relay(event: Event, options?: EventInit): boolean {
+    event.stopImmediatePropagation();
 
-    try {
-      customElements.define(name, this, options);
-      return this;
-    } catch (error: any) {
-      console.warn(`Failed to register component "${name}":`, error);
-      return undefined;
-    }
-  }
-
-  /**
-   * 커스텀 이벤트를 디스패치합니다.
-   * @param name - 이벤트 이름
-   * @param value - 이벤트의 detail에 포함될 데이터
-   * @param options - 추가 이벤트 옵션 (예: bubbles, composed 등)
-   * @returns 이벤트가 성공적으로 디스패치되었는지 여부
-   */
-  protected emit(name: string, value?: any, options?: CustomEventInit): boolean {
-    const event = new CustomEvent(name, {
-      bubbles: true,
-      composed: true,
-      cancelable: true,
-      detail: value,
-      ...options,
-    });
-
-    return this.dispatchEvent(event);
+    const ctor = event.constructor as typeof Event;
+    return this.dispatchEvent(new ctor(event.type, {
+        ...event,
+        ...options,
+      }),
+    );
   }
 
   /**

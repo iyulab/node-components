@@ -17,6 +17,8 @@
   },
   "files": [
     "dist",
+    "plugins/**/*.js",
+    "plugins/**/*.d.ts",
     "skills",
     "LICENSE",
     "README.md",
@@ -30,16 +32,16 @@
       "types": "./src/index.d.ts",
       "import": "./src/index.js"
     },
-    "./dist/*": {
-      "types": "./src/*.d.ts",
-      "import": "./src/*"
-    },
-    "./react-components": "./dist/react-components/index.js",
-    "./react-components/*": "./dist/react-components/*"
+    "./dist/*": "./src/*",
+    "./react": "./dist/react/index.js",
+    "./react/*": "./dist/react/*",
+    "./styles/*": "./dist/styles/*",
+    "./plugins/*": "./plugins/*"
   },
   "scripts": {
     "test": "vite --force",
-    "build": "eslint && vite build"
+    "build:plugins": "tsc -p plugins/tsconfig.json",
+    "build": "eslint && vite build && npm run build:plugins"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.6",

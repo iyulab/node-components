@@ -1,16 +1,11 @@
 import { html, nothing, render, type TemplateResult } from 'lit';
-import { UDialog } from '../components/dialog/UDialog.component.js';
-import { UButton } from '../components/button/UButton.component.js';
-import { UInput } from '../components/input/UInput.component.js';
+import '../components/button/UButton.js';
+import '../components/input/UInput.js';
 
-import type { DialogPlacement } from '../components/dialog/UDialog.component.js';
-import type { ButtonVariant } from '../components/button/UButton.component.js';
+import { UDialog } from '../components/dialog/UDialog.js';
+import type { DialogPlacement } from '../components/dialog/UDialog.js';
+import type { ButtonVariant } from '../components/button/UButton.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-
-// 커스텀 엘리먼트 정의 확인
-UDialog.define('u-dialog');
-UButton.define('u-button');
-UInput.define('u-input');
 
 /** 공통 Dialog 옵션 */
 export interface DialogOptions {

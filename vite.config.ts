@@ -1,8 +1,10 @@
 import { resolve } from 'path';
-import { defineConfig, normalizePath } from 'vite';
+import { rmSync } from 'fs';
+import { defineConfig } from 'vite';
 import dts from "vite-plugin-dts";
 import { viteStaticCopy as copy } from 'vite-plugin-static-copy';
-import wrapper from './plugins/vite-plugin-react-wrapper';
+import react from './plugins/vite-plugin-react-wrapper';
+import glob from './plugins/vite-plugin-glob-resolve';
 
 export default defineConfig({
   // 개발 서버 설정
@@ -27,17 +29,19 @@ export default defineConfig({
         return format === 'es' ? `${entry}.js` : `${entry}.${format}.js`;
       },
     },
-    rollupOptions: {
-      // 외부 종속성 라이브러리 (react, @lit/react는 직접 사용되지 않음)
+    rolldownOptions: {
+      // 외부 종속성 라이브러리
       external: [
         /^@floating-ui.*/,
         /^lit.*/,
-        /^reflect-metadata.*/
+        /^focus-trap.*/,
+        /^tabbable.*/,
       ],
       output: {
         preserveModules: true,
-        preserveModulesRoot: 'src',
+        preserveModulesRoot: resolve(__dirname, 'src'),
       },
+      preserveEntrySignatures: 'strict',
       treeshake: {
         moduleSideEffects: true
       }
@@ -47,19 +51,30 @@ export default defineConfig({
   // 플러그인 설정
   plugins: [
     dts({
-      include: ["src/**/*"] 
+      include: ["src/**/*"]
     }),
     copy({
       targets: [
         {
-          src: normalizePath(resolve(__dirname, './src/assets/styles')),
-          dest: 'assets'
+          src: 'src/assets/styles/*.css',
+          dest: 'styles',
+          rename: { stripBase: true }
         }
       ]
     }),
-    wrapper({
-      componentsDir: 'src/components',  // 컴포넌트 소스 폴더
-      outDir: 'react-components',     // dist/react-components 폴더에 생성
-    })
+    glob(),
+    react({
+      input: 'src/components',
+      output: 'react',
+    }),
+    // 빌드 완료 후 불필요한 산출물 정리
+    {
+      name: 'vite:build-cleanup',
+      closeBundle() {
+        const outDir = resolve(__dirname, 'dist');
+        // Vite 8(Rolldown)이 CSS import를 자동 추출하여 생성하는 파일 제거
+        rmSync(resolve(outDir, 'components.css'), { force: true });
+      }
+    }
   ]
 });

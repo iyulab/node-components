@@ -1,15 +1,15 @@
-# Ignore Logs
+# Logs
 logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Ignore cache directory
+# cache directory
 .npm
 .eslintcache
 
-# Ignore VSCode
+# VSCode
 .vscode/*
 .vscode-test
 !.vscode/settings.json
@@ -17,9 +17,11 @@ yarn-error.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# node dependencies
+# dependencies
 package-lock.json
 node_modules
 
-# Ignore distribution directory
+# build output
 dist
+plugins/*.js
+plugins/*.d.ts

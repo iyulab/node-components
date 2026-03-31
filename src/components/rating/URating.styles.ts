@@ -2,8 +2,8 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --symbol-color: var(--u-yellow-500);
-    --symbol-off-color: var(--u-neutral-300);
+    --rating-symbol-color: var(--u-yellow-500);
+    --rating-symbol-off-color: var(--u-neutral-300);
   }
 
   :host {
@@ -28,7 +28,7 @@ export const styles = css`
     font-size: 1.2em;
     outline: none;
     border-radius: 0.15em;
-    color: var(--symbol-off-color);
+    color: var(--rating-symbol-off-color);
     transition: color 0.15s ease, transform 0.15s ease;
   }
   .symbol:focus-visible {
@@ -46,7 +46,7 @@ export const styles = css`
     height: 100%;
     display: flex;
     align-items: center;
-    color: var(--symbol-color);
+    color: var(--rating-symbol-color);
     pointer-events: none;
     overflow: hidden;
   }

@@ -30,10 +30,11 @@ const internalIconBundle = new Map<string, string>(
   Object.entries(import.meta.glob('../assets/icons/*.svg', {
     eager: true,
     query: '?raw',
+    import: 'default',
   }))
   .map(([path, module]) => {
     const name = path.split('/').pop()?.replace('.svg', '') || '';
-    return [name, (module as any).default] as [string, string];
+    return [name, module as string] as [string, string];
   })
   .filter(([name]) => name !== ''),
 );

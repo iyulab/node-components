@@ -1,8 +1,5 @@
-import type { AlertVariant, AlertStatus } from "../components/alert/UAlert.component.js";
-import { UAlert } from "../components/alert/UAlert.component.js";
-
-// Alert 커스텀 엘리먼트 정의 확인
-UAlert.define("u-alert");
+import type { AlertVariant, AlertStatus } from "../components/alert/UAlert.js";
+import { UAlert } from "../components/alert/UAlert.js";
 
 /** 토스트 알림의 화면 위치 타입 */
 export type ToastPosition =
