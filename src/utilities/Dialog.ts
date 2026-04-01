@@ -112,8 +112,8 @@ export class Dialog {
           <u-input
             type=${(options?.type || 'text') as any}
             placeholder=${options?.placeholder || ''}
-            value=${inputValue}
-            @u-input=${(e: CustomEvent) => { 
+            .value=${inputValue as any}
+            @input=${(e: InputEvent) => { 
               const input = e.target as any;
               inputValue = input.value || '';
             }}

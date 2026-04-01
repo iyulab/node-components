@@ -61,8 +61,9 @@ export class UTextarea extends UFormControlElement<string> {
 
   @query('textarea', true) textareaEl?: HTMLTextAreaElement;
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected async updated(changedProperties: PropertyValues): Promise<void> {
     super.updated(changedProperties);
+    await this.updateComplete;
 
     if (this.resize === 'auto' && (['value','minRows','maxRows','resize']
       .some(k => changedProperties.has(k))
@@ -145,11 +146,13 @@ export class UTextarea extends UFormControlElement<string> {
       : Infinity;
 
     textarea.style.height = 'auto';
-    const scrollHeight = textarea.scrollHeight;
-    const newHeight = Math.min(Math.max(scrollHeight, minHeight), maxHeight);
+    requestAnimationFrame(() => {
+      const scrollHeight = textarea.scrollHeight;
+      const newHeight = Math.min(Math.max(scrollHeight, minHeight), maxHeight);
 
-    textarea.style.height = `${newHeight}px`;
-    textarea.style.overflowY = scrollHeight > maxHeight ? 'auto' : 'hidden';
+      textarea.style.height = `${newHeight}px`;
+      textarea.style.overflowY = scrollHeight > maxHeight ? 'auto' : 'hidden';
+    });
   }
 
   private handleTextareaInput = (e: InputEvent) => {

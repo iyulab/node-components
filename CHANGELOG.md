@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.1 (2026-04-01)
+
+### Bug Fixes
+
+- **`UIcon`**: Auto-apply `fill="currentColor"` only for fill-based icons; skip when `stroke="currentColor"` is set. Removed global `fill: currentColor` CSS rule.
+- **`URadio`** / **`USelect`**: `options` field is now a `@state()` so UI re-renders when options change. `onChangeValue()` is now triggered on both `value` and `options` changes.
+- **`UTextarea`**: Replaced `all: unset` with explicit CSS reset for better cross-browser compatibility. Height recalculation moved inside `requestAnimationFrame` to stabilize auto-resize.
+- **`Dialog`**: Fixed `prompt()` input not capturing user text — switched to property binding (`.value`) and native `@input` event.
+
+### Dependencies
+
+- **`@lit/react`**: Moved from `dependencies` to optional `peerDependencies`.
+
+---
+
 ## 1.0.0 (2026-04-01)
 
 ### Breaking Changes

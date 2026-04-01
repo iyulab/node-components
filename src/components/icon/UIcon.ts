@@ -72,6 +72,12 @@ export class UIcon extends UElement {
       if (svg?.tagName.toLowerCase() !== "svg") return undefined;
 
       svg.setAttribute("part", "svg");
+
+      // stroke 기반 아이콘이 아니면 fill 적용
+      if (svg.getAttribute("stroke") !== "currentColor") {
+        svg.setAttribute("fill", "currentColor");
+      }
+
       return svg.outerHTML;
     } catch {
       return undefined;

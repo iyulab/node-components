@@ -1,5 +1,5 @@
 import { html, PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import '../field/UField.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
@@ -31,7 +31,7 @@ export class URadio extends UFormControlElement<string> {
   /** 배치 방향 */
   @property({ type: String, reflect: true }) orientation: RadioOrientation = "vertical";
 
-  private options: UOption[] = [];
+  @state() private options: UOption[] = [];
 
   disconnectedCallback(): void {
     this.cleanup(this.options);
@@ -48,7 +48,7 @@ export class URadio extends UFormControlElement<string> {
         if (this.readonly) option.disabled = true;
       });
     }
-    if (changedProperties.has('value')) {
+    if (['value','options'].some(k => changedProperties.has(k))) {
       this.onChangeValue();
     }
   }

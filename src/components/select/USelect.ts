@@ -1,5 +1,5 @@
 import { html, PropertyValues } from "lit";
-import { customElement, property, query } from "lit/decorators.js";
+import { customElement, property, query, state } from "lit/decorators.js";
 import '../field/UField.js';
 import '../icon/UIcon.js';
 import '../spinner/USpinner.js';
@@ -54,7 +54,7 @@ export class USelect extends UFormControlElement<string | string[]> {
   @query('.container', true) containerEl?: HTMLElement;
   @query('u-popover', true) popoverEl?: UPopover;
 
-  private options: UOption[] = [];
+  @state() private options: UOption[] = [];
 
   private get valueAsString(): string {
     return Array.isArray(this.value) ? this.value.join(',') : this.value ?? '';
@@ -76,7 +76,7 @@ export class USelect extends UFormControlElement<string | string[]> {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (changedProperties.has('value')) {
+    if (['value','options'].some(k => changedProperties.has(k))) {
       this.onChangeValue();
     }
   }

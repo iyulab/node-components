@@ -101,7 +101,14 @@ export const styles = css`
 
   /* ===== Textarea 요소 ===== */
   textarea {
-    all: unset;
+    display: block;
+    border: none;
+    background: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    font: inherit;
     flex: 1;
     min-width: 0;
     font-size: 1em;

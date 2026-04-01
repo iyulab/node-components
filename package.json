@@ -1,7 +1,7 @@
 {
   "name": "@iyulab/components",
   "description": "web-components library based on lit-element made by iyulab",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "keywords": [
     "iyulab",
     "components",
@@ -45,17 +45,16 @@
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.6",
-    "@lit/react": "^1.0.8",
     "focus-trap": "^8.0.1",
     "lit": "^3.3.2"
   },
   "peerDependencies": {
+    "@lit/react": ">=1.0.8",
     "react": ">=18.0.0"
   },
   "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    }
+    "@lit/react": { "optional": true },
+    "react": { "optional": true }
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

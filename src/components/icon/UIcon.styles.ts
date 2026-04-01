@@ -10,6 +10,5 @@ export const styles = css`
   svg {
     width: 1em;
     height: 1em;
-    fill: currentColor;
   }
 `;
