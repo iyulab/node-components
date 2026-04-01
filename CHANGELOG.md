@@ -1,5 +1,49 @@
 # Changelog
 
+## 1.0.0 (2026-04-01)
+
+### Breaking Changes
+
+- **Event type renames**: Removed `U`-prefixed event types (`UChangeEvent`, `UInputEvent`, `UShowEvent`, `UHideEvent`, `USelectEvent`, `UResizeEvent`) in favour of action-based names
+  - `ShowEvent` / `HideEvent` / `PickEvent` / `CheckEvent` / `ExpandEvent` / `CollapseEvent` / `NavigateEvent` / `RemoveEvent` / `ShiftEvent`
+- **Utility API overhaul**: `Notifier` replaced by `Toast`; `IconRegistry` rewritten as `icons.ts` — existing API is not compatible, migration required
+- **`UModalElement` removed**: Merged into `UOverlayElement`. Components that extended `UModalElement` must now extend `UOverlayElement`
+
+### New Components
+
+- `u-avatar` — user avatar with image or initials fallback
+- `u-badge` — numeric or status badge
+- `u-breadcrumb` / `u-breadcrumb-item` — navigation breadcrumb trail
+- `u-chip` — selectable chip with `pick` and `remove` events
+- `u-field` — form field layout wrapper (label, description, validation message)
+- `u-icon-button` — icon-only button
+- `u-option` — option item for `u-select` and combobox inputs
+- `u-panel` — general-purpose container panel
+- `u-radio` — single-choice radio button
+- `u-rating` — star/score input
+- `u-select` — dropdown select control
+- `u-slider` — range slider
+- `u-switch` — toggle switch
+- `u-tab` / `u-tab-panel` — tab navigation
+
+### Improvements
+
+- **Component file split**: Heavy components extract render logic into a separate `U<Name>.component.ts`, keeping the class declaration lean
+- **`Toast` utility**: Replaces `Notifier.toast()` with a semantic API — `Toast.show()`, `Toast.success()`, `Toast.error()`, etc.
+- **`Dialog` utility**: Imperative dialog API added — `Dialog.confirm()`, `Dialog.prompt()`, etc.
+- **`OverlayManager`**: Built-in overlay stack management and ESC key handling
+- **`icons.ts`**: Full rewrite of `IconRegistry` with bundled SVG support via Vite `import.meta.glob` and built-in CDN resolvers for Tabler, Heroicons, Lucide, and Bootstrap Icons
+- **`converters.ts`**: Extended type conversion utilities
+- **Vite plugins**: Added `vite-plugin-glob-resolve` and `vite-plugin-react-wrapper` for automatic React wrapper generation
+
+### Documentation
+
+- `skills/iyulab-components/` — full agent skill added with 39 component references, 9 utility references, and 5 extension references
+- `docs/` — developer documentation added (architecture, guidelines, events, theming, form-controls, icons)
+- `README.md` overhauled with Agent Skills installation guide
+
+---
+
 ## 0.4.0 (2026-03-02)
 
 ### Breaking Changes

@@ -41,7 +41,6 @@ export default defineConfig({
         preserveModules: true,
         preserveModulesRoot: resolve(__dirname, 'src'),
       },
-      preserveEntrySignatures: 'strict',
       treeshake: {
         moduleSideEffects: true
       }
