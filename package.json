@@ -17,13 +17,13 @@
   },
   "files": [
     "dist",
+    "skills",
     "plugins/**/*.js",
     "plugins/**/*.d.ts",
-    "skills",
-    "LICENSE",
+    "package.json",
     "README.md",
     "CHANGELOG.md",
-    "package.json"
+    "LICENSE"
   ],
   "type": "module",
   "types": "./dist/index.d.ts",
