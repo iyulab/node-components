@@ -170,8 +170,8 @@ export class Dialog {
       await dialog.updateComplete;
       dialog.show();
 
-      // u-hide 이벤트로 resolve (자식 컴포넌트의 이벤트 무시)
-      dialog.addEventListener('u-hide', (e: Event) => {
+      // hide 이벤트로 resolve (자식 컴포넌트의 이벤트 무시)
+      dialog.addEventListener('hide', (e: Event) => {
         if (e.target !== dialog) return;
         setTimeout(() => dialog.remove(), 300);
         resolve(closeValue);

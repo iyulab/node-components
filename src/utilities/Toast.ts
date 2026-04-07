@@ -83,7 +83,7 @@ export class Toast {
     el.show();
 
     // UAlert 내장 duration으로 자동 hide 후, DOM에서 제거합니다.
-    el.addEventListener('u-hide', async () => {
+    el.addEventListener('hide', async () => {
       await new Promise((resolve) => setTimeout(resolve, 200));
       el.remove();
       this.elements.delete(el);

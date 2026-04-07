@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.2] - 2026-04-07
+
+### Fixed
+- `Toast`: Fixed toast not being removed from DOM after hide — changed event listener from `'u-hide'` to `'hide'` to match actual event dispatched by `UAlert`
+- `Dialog`: Fixed dialog promise never resolving after close — changed event listener from `'u-hide'` to `'hide'` to match actual event dispatched by `UOverlayElement`
+
 ## [1.0.1] - 2026-04-01
 
 ### Changed
