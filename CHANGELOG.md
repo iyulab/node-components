@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.3] - 2026-04-08
+
+### Fixed
+- `UDrawer` / `UOverlayElement`: Unified transition to `0.35s cubic-bezier(0.22, 1, 0.36, 1)` — mismatched durations (`0.2s ease` backdrop vs `0.55s easeOutExpo` panel) caused a "boing" visual artifact on open/close
+
 ## [1.0.2] - 2026-04-07
 
 ### Fixed
