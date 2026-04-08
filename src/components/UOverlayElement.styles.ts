@@ -11,7 +11,8 @@ export const styles = css`
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.2s ease, visibility 0s 0.2s;
+    /* 패널 슬라이드와 동일 duration + easing으로 맞춰 '띠요옹' 느낌 제거 (타이밍 미스매치 방지) */
+    transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.35s;
     overflow: hidden;
   }
   :host([open]) {

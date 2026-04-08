@@ -44,7 +44,14 @@ export const styles = css`
     background: var(--u-panel-bg-color);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     pointer-events: auto;
-    transition: transform 0.3s ease;
+    /*
+     * easeOutQuart (cubic-bezier(0.22, 1, 0.36, 1)) — 빠르게 시작해서 부드럽게 정착.
+     * 운영자 선호: 거의 90% 빠르게 패널이 표시되고 점점 천천히 완성, 빠릿빠릿한 느낌.
+     * 13차 run: 0.55s easeOutExpo는 "띠요옹" 떨림 느낌 → 0.35s easeOutQuart로 단축.
+     * UOverlayElement의 backdrop opacity transition과 동일 duration/easing으로 맞춤.
+     * 호스트 앱이 ::part(panel) { transition: ... }로 추가 override 가능.
+     */
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .header {
