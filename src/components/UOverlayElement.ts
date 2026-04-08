@@ -99,8 +99,9 @@ export abstract class UOverlayElement extends UElement {
     return false;
   }
 
-  /** 
-   * 오버레이를 숨깁니다. u-hide 이벤트가 취소되면 닫히지 않습니다. 
+  /**
+   * 오버레이를 숨깁니다. `hide` 이벤트가 취소되면 닫히지 않습니다.
+   * (이벤트 이름은 `hide`, prefix 없음 — `addEventListener('hide', ...)`로 수신)
    */
   public hide(): boolean {
     if (!this.open) return true;
