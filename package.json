@@ -29,10 +29,10 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
-      "import": "./src/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
-    "./dist/*": "./src/*",
+    "./dist/*": "./dist/*",
     "./react": "./dist/react/index.js",
     "./react/*": "./dist/react/*",
     "./styles/*": "./dist/styles/*",

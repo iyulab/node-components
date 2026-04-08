@@ -4,7 +4,7 @@ description: Web component library built on Lit. Covers all u-* custom elements 
 license: MIT
 metadata:
   author: iyulab
-  version: "1.0.3"
+  version: "1.0.1"
 ---
 
 # @iyulab/components
