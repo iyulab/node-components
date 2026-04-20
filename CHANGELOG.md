@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.4] - 2026-04-20
+
+### Fixed
+- `UButton`: Fixed `type="submit"`/`"reset"` not triggering ancestor `<form>` actions. The button rendered inside Shadow DOM cannot propagate submit/reset to the host form by default. Implemented form-associated custom element pattern (`static formAssociated = true` + `attachInternals()`) so `type="submit"` calls `requestSubmit()` and `type="reset"` calls `reset()` on the associated form. Adds `form` (ID), `name`, `value` properties for HTML `<button>` standard parity. Exposes `associatedForm` getter for inspection.
+
 ## [1.0.2] - 2026-04-07
 
 ### Fixed
