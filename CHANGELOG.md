@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.5] - 2026-05-07
+
+### Fixed
+- `UCheckbox`: `label` attribute/property가 slot fallback으로 렌더되지 않던 버그 수정. `<u-checkbox label="활성">` 형태의 attribute 방식이 이제 동작함. slot에 children이 있는 기존 사용은 영향 없음
+
 ## [1.0.4] - 2026-04-20
 
 ### Fixed

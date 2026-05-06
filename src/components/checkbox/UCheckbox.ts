@@ -13,7 +13,7 @@ export type CheckboxColor = "blue" | "green" | "red" | "orange" | "teal" | "cyan
  * 선택/해제 상태를 토글하는 체크박스 컴포넌트입니다.
  * indeterminate 상태도 지원합니다.
  *
- * @slot - 체크박스 옆에 표시할 라벨 텍스트
+ * @slot - 체크박스 옆에 표시할 라벨 텍스트 (`label` attribute가 slot fallback으로 사용됨)
  * 
  * @csspart wrapper - 체크박스 전체 래퍼
  * @csspart input - 실제 체크박스 input 요소
@@ -55,7 +55,7 @@ export class UCheckbox extends UFormControlElement<string> {
           ></u-icon>
         </span>
         <span class="label" part="label">
-          <slot></slot>
+          <slot>${this.label}</slot>
           <span class="required" ?hidden=${!this.required}>*</span>
         </span>
       </label>
