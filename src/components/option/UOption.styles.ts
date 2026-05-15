@@ -127,4 +127,11 @@ export const styles = css`
     margin-right: 0.5em;
     color: var(--option-color-active);
   }
+
+  ::slotted([slot="prefix"]) {
+    margin-right: 0.25em;
+  }
+  ::slotted([slot="suffix"]) {
+    margin-left: 0.25em;
+  }
 `;

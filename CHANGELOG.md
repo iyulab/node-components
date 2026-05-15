@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.6] - 2026-05-15
+
+### Changed
+- `UButton`: Updated form-association handling and aligned submit/reset actions to use the element internals form reference.
+- Theme tokens: adjusted `--u-txt-color-weak` in light theme to improve weak-text contrast behavior.
+
+### Fixed
+- `URadio`: Option disabled state is now consistently synchronized for both `disabled` and `readonly` states.
+- `UOption`: Added spacing rules for slotted `prefix` and `suffix` content to improve option layout consistency.
+
+### Removed
+- `UButton`: Removed the `associatedForm` getter from the public API.
+
 ## [1.0.5] - 2026-05-07
 
 ### Fixed

@@ -138,7 +138,7 @@
   --u-txt-color-hover:       var(--u-blue-600);
   --u-txt-color-active:      var(--u-blue-600);
   --u-txt-color-disabled:    var(--u-neutral-400);
-  --u-txt-color-weak:        var(--u-neutral-700);
+  --u-txt-color-weak:        var(--u-neutral-500);
   --u-txt-color-strong:      var(--u-neutral-1000);
 
   --u-link-txt-color:        var(--u-blue-700);

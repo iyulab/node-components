@@ -25,15 +25,7 @@ export type ButtonType = "button" | "submit" | "reset";
 @customElement('u-button')
 export class UButton extends UElement {
   static styles = [ super.styles, styles ];
-
-  /**
-   * Form-associated custom element 활성화. Shadow DOM 내부 native <button>은 외부
-   * <form>의 submit/reset을 자동 트리거하지 못하므로, ElementInternals.form을 통해
-   * type="submit"/"reset" 클릭 시 호스트 요소가 명시적으로 form을 조작한다.
-   */
   static formAssociated = true;
-
-  private readonly _internals: ElementInternals;
 
   /** 버튼 스타일 변형 */
   @property({ type: String, reflect: true }) variant: ButtonVariant = "solid";
@@ -54,25 +46,33 @@ export class UButton extends UElement {
   /** 다운로드 파일명 */
   @property({ type: String }) download?: string;
 
-  /** 연결 form ID — 외부 form을 ID로 명시 연결 (HTML <button form> 표준 호환) */
-  @property({ type: String, reflect: true }) form?: string;
   /** form data에 포함될 name */
   @property({ type: String, reflect: true }) name?: string;
   /** form data에 포함될 value */
   @property({ type: String, reflect: true }) value?: string;
 
-  constructor() {
-    super();
-    this._internals = this.attachInternals();
+  /**
+   * ElementInternals는 폼과의 연동, 유효성 검사 상태 관리 등을 지원하는 네이티브 API입니다. 
+   */
+  public internals?: ElementInternals;
+
+  set form(val: string) {
+    if (val) {
+      this.setAttribute('form', val);
+    } else {
+      this.removeAttribute('form');
+    }
   }
 
-  /** 연결된 form (ancestor form 또는 form attribute로 지정된 form) */
-  get associatedForm(): HTMLFormElement | null {
-    return this._internals.form;
+  get form(): HTMLFormElement | null {
+    return this.internals?.form ?? null;
   }
 
   connectedCallback(): void {
     super.connectedCallback();
+    if ('attachInternals' in this) {
+      this.internals = this.attachInternals();
+    }
     this.addEventListener('click', this.handleClick);
   }
 
@@ -134,14 +134,11 @@ export class UButton extends UElement {
       e.stopImmediatePropagation();
       return;
     }
-    // Shadow DOM 내부 <button>의 submit/reset은 호스트 form까지 전파되지 않는다.
-    // formAssociated + ElementInternals.form 으로 명시 호출.
-    const form = this._internals.form;
-    if (!form) return;
+
     if (this.type === 'submit') {
-      form.requestSubmit();
+      this.form?.requestSubmit();
     } else if (this.type === 'reset') {
-      form.reset();
+      this.form?.reset();
     }
   }
 

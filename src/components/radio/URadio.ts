@@ -44,8 +44,7 @@ export class URadio extends UFormControlElement<string> {
     if (['type','disabled','readonly'].some(k => changedProperties.has(k))) {
       this.options.forEach(option => {
         option.marker = this.type === 'button' ? undefined : 'radio';
-        if (this.disabled) option.disabled = true;
-        if (this.readonly) option.disabled = true;
+        option.disabled = this.disabled || this.readonly;
       });
     }
     if (['value','options'].some(k => changedProperties.has(k))) {
@@ -92,8 +91,7 @@ export class URadio extends UFormControlElement<string> {
       option.addEventListener('keydown', this.handleOptionKeyDown);
       option.selected = option.value === this.value;
       option.marker = this.type === 'button' ? undefined : 'radio';
-      if (this.disabled) option.disabled = true;
-      if (this.readonly) option.disabled = true;
+      option.disabled = this.disabled || this.readonly;
     }
   }
 
