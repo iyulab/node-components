@@ -39,7 +39,7 @@ export const styles = css`
     min-width: 200px;
     max-width: 100%;
     max-height: 50vh;
-    padding: 8px 12px;
+    padding: 12px 16px;
     border-radius: 8px;
     box-shadow: 0 4px 12px var(--u-shadow-color-normal);
     
