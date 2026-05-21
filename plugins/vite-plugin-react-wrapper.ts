@@ -23,6 +23,8 @@ interface PluginOptions {
   input?: string;
   /** React 래퍼 출력 폴더 - 빌드 outDir 기준 상대 경로 (기본값: 'react') */
   output?: string;
+  /** 래퍼 생성에서 제외할 glob 패턴 목록 (cwd: 프로젝트 루트) */
+  exclude?: string[];
 }
 
 /**
@@ -48,7 +50,13 @@ export default function reactWrapperPlugin(options: PluginOptions): Plugin {
 
       // 컴포넌트 수집
       const inputPattern = (options.input || 'src/components') + '/**/*.ts';
-      const files = globSync(inputPattern, { cwd: rootDir, absolute: true });
+      let files = globSync(inputPattern, { cwd: rootDir, absolute: true });
+      if (options.exclude?.length) {
+        const excluded = new Set(
+          options.exclude.flatMap(p => globSync(p, { cwd: rootDir, absolute: true }))
+        );
+        files = files.filter((f: string) => !excluded.has(f));
+      }
       const components = files.flatMap((f: string) => parseComponent(f));
 
       if (components.length === 0) {
