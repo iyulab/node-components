@@ -71,7 +71,7 @@ export class Toast {
     el.variant = options?.variant || 'solid';
     el.title = options?.title || '';
     el.closable = options?.closable ?? true;
-    el.duration = options?.duration && options.duration > 0 ? options.duration : 3000;
+    el.duration = options?.duration && options.duration > 0 ? options.duration : 4000;
     this.elements.add(el);
 
     // 토스트 알림을 컨테이너에 추가합니다.
