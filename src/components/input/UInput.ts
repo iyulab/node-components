@@ -136,6 +136,8 @@ export class UInput extends UFormControlElement<string> {
             @change=${this.handleInputChange}
             @blur=${this.handleInputBlur}
             @keydown=${this.handleInputKeydown}
+            @compositionstart=${this.handleCompositionStart}
+            @compositionend=${this.handleCompositionEnd}
           />
 
           <slot name="suffix"></slot>
@@ -222,8 +224,30 @@ export class UInput extends UFormControlElement<string> {
     }
   };
 
+  // IME(한글·일본어·중국어 등) 조합 상태. 조합 중에는 value 동기화를 보류한다.
+  private composing = false;
+
+  private handleCompositionStart = () => {
+    this.composing = true;
+  };
+
+  private handleCompositionEnd = () => {
+    this.composing = false;
+    // 조합 완료 후 동기화·relay는 뒤따르는 native input 이벤트(handleInputInput)가 수행한다.
+    // 일부 환경은 compositionend 후 input을 발생시키지 않으므로 input 요소에서 한 번 재발행해
+    // 보강하되, native input이 뒤따르는 브라우저에서는 handleInputInput의 값 비교로 걸러져
+    // 이중 발화하지 않는다. (여기서 host에 직접 input을 dispatch하면 후속 native input과 중복된다)
+    this.inputEl?.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  };
+
   private handleInputInput = (e: InputEvent) => {
-    this.value = this.inputEl?.value;
+    // 조합 중(IME) value를 다시 쓰면 .value=live()가 조합을 취소시켜
+    // 한글 입력·띄어쓰기가 깨진다. 조합 완료(compositionend) 시점에만 동기화한다.
+    if (this.composing) return;
+    const next = this.inputEl?.value;
+    // compositionend 보강 dispatch와 후속 native input의 이중 relay를 값 비교로 차단한다.
+    if (next === this.value) return;
+    this.value = next;
     this.relay(e);
   }
 
