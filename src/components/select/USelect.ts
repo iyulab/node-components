@@ -5,6 +5,7 @@ import '../icon/UIcon.js';
 import '../spinner/USpinner.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
+import { getLocaleStrings, resolveLocale, formatTemplate } from "../../core/locale.js";
 import { UChip } from "../chip/UChip.js";
 import { UOption } from "../option/UOption.js";
 import { UPopover } from "../popover/UPopover.js";
@@ -236,14 +237,15 @@ export class USelect extends UFormControlElement<string | string[]> {
   }
 
   private getValidity(values: string[]): { flags: ValidityStateFlags; message: string } {
+    const s = getLocaleStrings(resolveLocale(this.locale));
     if (this.required && !values.length) {
-      return { flags: { valueMissing: true }, message:  'This field is required' };
+      return { flags: { valueMissing: true }, message: s.required };
     }
     if (this.multiple && this.minCount != null && values.length > 0 && values.length < this.minCount) {
-      return { flags: { rangeUnderflow: true }, message: `Please select at least ${this.minCount} items` };
+      return { flags: { rangeUnderflow: true }, message: formatTemplate(s.minCount, { min: this.minCount }) };
     }
     if (this.multiple && this.maxCount != null && values.length > this.maxCount) {
-      return { flags: { rangeOverflow: true }, message: `Please select no more than ${this.maxCount} items` };
+      return { flags: { rangeOverflow: true }, message: formatTemplate(s.maxCount, { max: this.maxCount }) };
     }
     return { flags: {}, message: '' };
   }

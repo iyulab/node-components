@@ -4,6 +4,7 @@ import '../field/UField.js';
 import '../tooltip/UTooltip.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
+import { getLocaleStrings, resolveLocale, formatTemplate } from "../../core/locale.js";
 import { styles } from "./USlider.styles.js";
 
 export interface SliderMark {
@@ -205,14 +206,15 @@ export class USlider extends UFormControlElement<number | number[]> {
 
   private getValidity(): { flags: ValidityStateFlags; message: string } {
     const v = this.valueAsNumber;
+    const s = getLocaleStrings(resolveLocale(this.locale));
     if (this.required && !v) {
-      return { flags: { valueMissing: true }, message: 'This field is required' };
+      return { flags: { valueMissing: true }, message: s.required };
     }
     if (v < this.min) {
-      return { flags: { rangeUnderflow: true }, message: `Value must be at least ${this.min}` };
+      return { flags: { rangeUnderflow: true }, message: formatTemplate(s.minValue, { min: this.min }) };
     }
     if (v > this.max) {
-      return { flags: { rangeOverflow: true }, message: `Value must be at most ${this.max}` };
+      return { flags: { rangeOverflow: true }, message: formatTemplate(s.maxValue, { max: this.max }) };
     }
     return { flags: {}, message: '' };
   }

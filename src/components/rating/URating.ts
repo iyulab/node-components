@@ -4,6 +4,7 @@ import '../field/UField.js';
 import '../icon/UIcon.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
+import { getLocaleStrings, resolveLocale, formatTemplate } from "../../core/locale.js";
 import { styles } from "./URating.styles.js";
 
 /**
@@ -135,19 +136,20 @@ export class URating extends UFormControlElement<number> {
 
   private getValidity(): { flags: ValidityStateFlags; message: string } {
     const v = this.value || 0;
+    const s = getLocaleStrings(resolveLocale(this.locale));
     if (this.required && !v) {
-      return { flags: { valueMissing: true }, message: 'This field is required' };
+      return { flags: { valueMissing: true }, message: s.required };
     }
     if (v && v < this.min) {
-      return { flags: { rangeUnderflow: true }, message: `Value must be at least ${this.min}` };
+      return { flags: { rangeUnderflow: true }, message: formatTemplate(s.minValue, { min: this.min }) };
     }
     if (v && v > this.max) {
-      return { flags: { rangeOverflow: true }, message: `Value must be no more than ${this.max}` };
+      return { flags: { rangeOverflow: true }, message: formatTemplate(s.maxValue, { max: this.max }) };
     }
     if (v && this.precision < 1) {
       const remainder = Math.abs(v % this.precision);
       if (remainder > 0.001 && Math.abs(remainder - this.precision) > 0.001) {
-        return { flags: { stepMismatch: true }, message: `Value must be a multiple of ${this.precision}` };
+        return { flags: { stepMismatch: true }, message: formatTemplate(s.stepMismatch, { step: this.precision }) };
       }
     }
     return { flags: {}, message: '' };

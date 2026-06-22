@@ -183,7 +183,11 @@ export class UMyInput extends UFormControlElement<string> {
   validate(): boolean {
     if (this.required && !this.value) {
       this.invalid = true;
-      this.internals?.setValidity({ valueMissing: true }, '필수 항목입니다.');
+      const s = getLocaleStrings(resolveLocale(this.locale));
+      this.internals?.setValidity(
+        { valueMissing: true },
+        this.validationMessage || s.required,
+      );
       return false;
     }
     this.invalid = false;
@@ -200,6 +204,23 @@ export class UMyInput extends UFormControlElement<string> {
 
 - `novalidate`가 `false`일 때 값이 변경되면 자동으로 `validate()`가 호출된다.
 - `internals.setValidity()`로 네이티브 폼 유효성 상태를 갱신한다.
+
+### 검증 메시지 로케일
+
+검증 메시지는 하드코딩하지 않고 **로케일 레지스트리**(`src/core/locale.ts`)를 경유한다.
+
+- **영어가 내장 기본값**이다. 새 메시지 키는 영어 템플릿(`'{label} is required'`)으로 `UComponentsLocaleStrings`에 추가한다.
+- 메시지 해석 우선순위: per-instance `validationMessage` prop → 컴포넌트 `locale` → `setDefaultLocale()` → `document.lang` → 영어.
+- 한국어 등 도메인 로케일은 라이브러리에 박지 않고 **consumer 가 등록**한다.
+
+```ts
+import { registerLocale, setDefaultLocale } from '@iyulab/components';
+
+registerLocale('ko', { required: '필수 항목입니다.' });
+setDefaultLocale('ko'); // 앱 전역 기본 로케일
+```
+
+자세한 표준은 모노레포 `claudedocs/plans/locale-standard.md` 참조.
 
 ---
 

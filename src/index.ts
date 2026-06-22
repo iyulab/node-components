@@ -1,3 +1,6 @@
+// Core
+export * from './core/locale.js';
+
 // Base Components
 export * from './components/UFormControlElement.js';
 export * from './components/UDataElement.js';

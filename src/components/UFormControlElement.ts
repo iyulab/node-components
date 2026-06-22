@@ -28,6 +28,8 @@ export abstract class UFormControlElement<T> extends UElement {
   @property({ type: String }) description?: string;
   /** 커스텀 유효성 검증 메시지 */
   @property({ type: String }) validationMessage?: string;
+  /** chrome 문자열(검증 메시지 등)에 사용할 로케일 태그 (예: 'ko-KR'). 미지정 시 전역 기본/문서 언어를 따른다. */
+  @property({ type: String }) locale?: string;
   /** 폼 제출 시 사용되는 이름 */
   @property({ type: String }) name?: string;
   /** 폼 제출 시 사용되는 값 */
