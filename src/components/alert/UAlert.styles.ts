@@ -41,7 +41,7 @@ export const styles = css`
     max-height: 50vh;
     /*
      * 내부 여백은 .container 에 둔다(:host 아님).
-     * 소비앱의 light-DOM 리셋(예: Tailwind preflight 의 `*{padding:0}`)은
+     * 소비앱의 light-DOM 리셋(예: Tailwind preflight 의 *{padding:0})은
      * 호스트 엘리먼트의 :host padding 을 덮어버리므로, Shadow DOM 내부
      * 엘리먼트(.container)에 패딩을 두어 외부 리셋으로부터 보호한다.
      */

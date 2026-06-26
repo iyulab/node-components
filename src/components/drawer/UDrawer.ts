@@ -19,6 +19,10 @@ export type DrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
  * @csspart header - 헤더 영역
  * @csspart body - 본문 영역
  * @csspart close-btn - 닫기 버튼
+ *
+ * @cssproperty [--drawer-size=28rem] - 드로어 패널의 슬라이드 축 방향 크기.
+ *   좌우(left/right) placement는 너비, 상하(top/bottom) placement는 높이로 적용된다(상하 기본 16rem).
+ *   화면이 좁으면 max-width/max-height:100%로 자동 축소된다.
  */
 @customElement('u-drawer')
 export class UDrawer extends UOverlayElement {

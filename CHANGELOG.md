@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.1.1] - 2026-06-26
+
+### Fixed
+- `UAlert`: Moved padding from `:host` to the Shadow DOM `.container`. A consumer-side light-DOM reset (e.g. Tailwind preflight's `*{padding:0}`) targets the host element directly and overrode the `:host` padding, collapsing toast/alert spacing to zero. Padding on a Shadow DOM inner element is immune to outer-tree resets.
+- `UDrawer`: `.panel` now honors `--drawer-size`. Previously the panel never referenced the variable, so setting `--drawer-size` had no effect and the panel sized to its intrinsic content width. Slide-axis size is now `width: var(--drawer-size, 28rem)` (left/right) / `height: var(--drawer-size, 16rem)` (top/bottom), with `max-width`/`max-height: 100%` for narrow viewports.
+
+### Added
+- `UDrawer`: Documented `--drawer-size` as a public CSS custom property (`@cssproperty`).
+
+## [1.1.0] - 2026-06-22
+
+### Added
+- Validation messages: Introduced a locale registry (English default + `registerLocale`) so consumers can register and switch validation-message locales.
+
+## [1.0.10] - 2026-06-09
+
+### Fixed
+- `UInput`: Fixed broken IME composition input and prevented duplicate `input` event dispatch.
+
+## [1.0.9] - 2026-05-27
+
+### Changed
+- `Toast`: Default duration changed from 3000ms to 4000ms.
+
+## [1.0.8] - 2026-05-21
+
+### Added
+- `vite-plugin-react-wrapper`: Added an `exclude` option.
+
+## [1.0.7] - 2026-05-21
+
+### Changed
+- `UAlert`: Increased padding (8px→12px vertical, 12px→16px horizontal) to improve toast spacing.
+
 ## [1.0.6] - 2026-05-15
 
 ### Changed
