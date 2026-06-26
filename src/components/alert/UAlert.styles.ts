@@ -39,7 +39,12 @@ export const styles = css`
     min-width: 200px;
     max-width: 100%;
     max-height: 50vh;
-    padding: 12px 16px;
+    /*
+     * 내부 여백은 .container 에 둔다(:host 아님).
+     * 소비앱의 light-DOM 리셋(예: Tailwind preflight 의 `*{padding:0}`)은
+     * 호스트 엘리먼트의 :host padding 을 덮어버리므로, Shadow DOM 내부
+     * 엘리먼트(.container)에 패딩을 두어 외부 리셋으로부터 보호한다.
+     */
     border-radius: 8px;
     box-shadow: 0 4px 12px var(--u-shadow-color-normal);
     
@@ -87,6 +92,7 @@ export const styles = css`
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    padding: 12px 16px;
   }
 
   .header {
