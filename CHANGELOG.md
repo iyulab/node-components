@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.2] - 2026-07-02
+
+### Documentation
+- `docs/form-controls.md`: `UCheckbox`의 `label` attribute가 다른 폼 컨트롤과 달리 default slot의 fallback content로 쓰인다는 점(slot이 있으면 attribute보다 우선)을 "Common Properties" 표 아래에 명시.
+
 ## [1.3.1] - 2026-07-02
 
 ### Added

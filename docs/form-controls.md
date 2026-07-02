@@ -110,9 +110,11 @@ Set `novalidate` to skip automatic validation on change:
 | `required` | `boolean` | Marks as required |
 | `invalid` | `boolean` | Validation failure state (auto-set by `validate()`) |
 | `novalidate` | `boolean` | Skip auto-validate on change |
-| `label` | `string` | Field label |
+| `label` | `string` | Field label (see note below for slot-based controls) |
 | `description` | `string` | Helper text |
 | `validationMessage` | `string` | Custom error message shown when `invalid` |
+
+> **`label` on slot-based controls (e.g. `UCheckbox`):** most form controls render `label` as a standalone field label. `UCheckbox` instead uses it as **default slot fallback content** — `<slot>${this.label}</slot>` — so an explicit `<u-checkbox>...</u-checkbox>` slot child always takes precedence over the `label` attribute. Set one or the other, not both, to avoid confusion.
 
 ---
 
