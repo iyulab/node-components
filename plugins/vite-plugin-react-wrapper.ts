@@ -190,12 +190,12 @@ function writeWrapper(comp: ComponentInfo, outDir: string, buildOutDir: string):
   // .js
   const js = `import React from 'react';
 import { createComponent } from '@lit/react';
-import { ${className} } from '${importPath}';
+import { ${className} as ${className}Element } from '${importPath}';
 
 export const ${className} = createComponent({
   react: React,
   tagName: '${tagName}',
-  elementClass: ${className},
+  elementClass: ${className}Element,
   events: ${eventsObj},
 });
 `;

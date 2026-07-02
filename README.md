@@ -21,6 +21,23 @@ import '@iyulab/components/u-button';
 import '@iyulab/components/u-input';
 ```
 
+## React
+
+React 프로젝트에서는 `@iyulab/components/react` 서브패스가 모든 컴포넌트를 `forwardRef` 래퍼로 제공합니다. Web Component를 직접 다루지 않고도 JSX props(`color`, `size`, 이벤트 `onXxx` 등)로 사용할 수 있습니다.
+
+```tsx
+import { UButton, UInput } from '@iyulab/components/react';
+
+function Form() {
+  return (
+    <>
+      <UInput label="Name" />
+      <UButton variant="solid" color="primary" size="sm">Submit</UButton>
+    </>
+  );
+}
+```
+
 ## Skills Usage
 
 LLM 코딩 에이전트(Claude Code, GitHub Copilot, Cursor 등)를 위한 스킬을 제공합니다.
