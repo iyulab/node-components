@@ -8,6 +8,10 @@ import { styles } from "./UButton.styles.js";
 
 export type ButtonVariant = "solid" | "surface" | "filled" | "outlined" | "ghost" | "link";
 export type ButtonType = "button" | "submit" | "reset";
+export type ButtonColor =
+  | "neutral" | "blue" | "green" | "red"
+  | "orange" | "teal" | "cyan" | "purple" | "pink";
+export type ButtonSize = "sm" | "md" | "lg";
 
 /**
  * 클릭 가능한 버튼 컴포넌트입니다. href가 설정되면 앵커 태그로 렌더링됩니다.
@@ -29,6 +33,18 @@ export class UButton extends UElement {
 
   /** 버튼 스타일 변형 */
   @property({ type: String, reflect: true }) variant: ButtonVariant = "solid";
+  /**
+   * Semantic 색상. 기본값 `"neutral"`은 기존(v1.1.x 이전) 렌더링과 동일 — 하위 호환.
+   * `variant`가 사용하는 색상 스케일을 이 값으로 교체한다(예: `color="red"` + `variant="solid"` → 파괴적 액션 버튼).
+   * `variant="link"`는 `color="neutral"`(기본값)일 때 기존 동작(파랑)을 유지하고, 다른 색을 명시하면 그 색으로 재정의된다.
+   * `variant="ghost"`는 hover/active 배경이 중립 팔레트에 묶여 있지 않아 이 속성의 영향을 받지 않는다.
+   */
+  @property({ type: String, reflect: true }) color: ButtonColor = "neutral";
+  /**
+   * 버튼 크기. 기본값 `"md"`는 기존(v1.2.0 이전) 렌더링과 동일 — 하위 호환.
+   * `font-size`만 변경하며, padding/spinner/prefix·suffix 여백은 이미 `em` 단위라 함께 비례 축소·확대된다.
+   */
+  @property({ type: String, reflect: true }) size: ButtonSize = "md";
   /** 경계선 둥글게 여부 */
   @property({ type: Boolean, reflect: true }) rounded = false;
   /** 비활성화 여부 */

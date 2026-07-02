@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.0] - 2026-07-02
+
+### Added
+- `UButton`: `color` property (`"neutral" | "blue" | "green" | "red" | "orange" | "teal" | "cyan" | "purple" | "pink"`, default `"neutral"`) — semantic color axis independent of `variant`, e.g. `variant="solid" color="red"` for a destructive action button.
+  - Default `"neutral"` renders identically to the previous (pre-1.2.0) output — fully backward compatible.
+  - Applies to `solid`/`surface`/`filled`/`outlined` (background/border) and `link` (text color, only when explicitly set to a non-neutral color — the default blue `link` look is preserved). `ghost` is unaffected: its hover/active backgrounds use the generic `--u-bg-color-hover`/`--u-bg-color-active` tokens rather than the neutral color scale, so there is no palette to redirect.
+  - Verified visually via a live browser render (all variant × color combinations) in addition to `npm run build`/`npm test`.
+- `UButton`: `size` property (`"sm" | "md" | "lg"`, default `"md"`) — scales the button by changing `font-size` only; padding, the spinner, and prefix/suffix margins are already `em`-relative so they scale proportionally with zero extra CSS.
+  - Default `"md"` (14px) renders identically to the previous (pre-1.2.0) output — fully backward compatible. `sm` = 12px, `lg` = 16px.
+  - Verified visually via a live browser render (sm/md/lg, including with `loading` and prefix icon slots).
+
 ## [1.1.1] - 2026-06-26
 
 ### Fixed
