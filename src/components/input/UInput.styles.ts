@@ -10,7 +10,7 @@ export const styles = css`
 
   :host {
     position: relative;
-    display: inline-block;
+    display: var(--u-input-display, inline-block);
     color: var(--u-txt-color);
     font-size: inherit;
     font-family: var(--u-font-base);

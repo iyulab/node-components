@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.1] - 2026-07-02
+
+### Added
+- `UInput`: `--u-input-display` CSS 커스텀 프로퍼티 추가(기본값 `inline-block`, 기존과 동일). 폼/그리드 셀에서 전체 폭을 채우려는 소비자는 `u-input { --u-input-display: block; }`로 오버라이드 가능 — 이전에는 전역 `u-input{ display:block; width:100% }` 같은 하드코딩 우회가 필요했다.
+
 ## [1.3.0] - 2026-07-02
 
 ### Fixed
