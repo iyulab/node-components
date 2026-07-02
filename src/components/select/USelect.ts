@@ -126,6 +126,7 @@ export class USelect extends UFormControlElement<string | string[]> {
         trigger="click"
         placement="bottom-start"
         offset="1"
+        strategy="fixed"
         @show=${this.handlePopoverEvent}
         @hide=${this.handlePopoverEvent}
       >

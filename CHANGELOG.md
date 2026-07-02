@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0] - 2026-07-02
+
+### Fixed
+- `UFloatingElement.strategy`에 `reflect: true` 누락 수정 — JS로 `.strategy = 'fixed'`를 설정해도 host 속성이 갱신되지 않아 `:host([strategy="fixed"])` CSS 셀렉터가 매치되지 않던 버그.
+
+### Changed
+- `USelect` 내부 `<u-popover>`의 기본 위치 전략을 `strategy="fixed"`로 변경. 기존 `absolute` 기본값은 `UDrawer` body(`overflow:auto`)처럼 스크롤 컨테이너 안에 `u-select`가 놓이면 팝오버가 잘리는 문제가 있었다(흔한 "폼 드로어 + 셀렉트" 조합에서 재현). `fixed`는 뷰포트 기준으로 그려져 조상의 `overflow`에 클리핑되지 않으며, `@floating-ui/dom`의 `autoUpdate`가 스크롤/리사이즈 시 위치를 계속 재계산하므로 기존 동작과 시각적으로 동일하게 보인다.
+
 ## [1.2.1] - 2026-07-02
 
 ### Fixed

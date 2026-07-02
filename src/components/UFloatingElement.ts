@@ -55,7 +55,7 @@ export class UFloatingElement extends UElement {
    * - `absolute`: 엘리먼트가 문서 흐름에 따라 배치됩니다.
    * - `fixed`: 엘리먼트가 뷰포트에 고정되어 스크롤과 무관하게 위치합니다. 
    */
-  @property({ type: String }) strategy: FloatingStrategy = 'absolute';
+  @property({ type: String, reflect: true }) strategy: FloatingStrategy = 'absolute';
 
   /** 
    * 대상 엘리먼트로부터의 배치 위치입니다.
