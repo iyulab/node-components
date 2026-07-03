@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.4] - 2026-07-03
+
+### Documentation
+- `README.md`의 `## React` 섹션에 peerDependency 설치 안내(`npm install @iyulab/components @lit/react react`)를 추가. 기존 문서는 래퍼 사용 예제만 있어 `@lit/react`·`react`를 별도 설치해야 한다는 전제가 누락되어 있었고, 예제를 그대로 따라하면 `@lit/react` 미설치로 모듈 해석 오류가 났다. `@iyulab/data-components` README의 `/react` 안내와 형식을 통일.
+
 ## [1.3.3] - 2026-07-03
 
 ### Fixed

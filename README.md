@@ -25,6 +25,12 @@ import '@iyulab/components/u-input';
 
 React 프로젝트에서는 `@iyulab/components/react` 서브패스가 모든 컴포넌트를 `forwardRef` 래퍼로 제공합니다. Web Component를 직접 다루지 않고도 JSX props(`color`, `size`, 이벤트 `onXxx` 등)로 사용할 수 있습니다.
 
+`@lit/react`·`react`는 peerDependency이므로 소비 앱에 함께 설치해야 합니다.
+
+```bash
+npm install @iyulab/components @lit/react react
+```
+
 ```tsx
 import { UButton, UInput } from '@iyulab/components/react';
 
