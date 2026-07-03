@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.3] - 2026-07-03
+
+### Fixed
+- `UCheckbox`: 클래스 JSDoc에 `@event change` 태그 누락으로 공식 React 래퍼(`@iyulab/components/react`)의 `UCheckbox` props가 빈 `{}`로 생성되어 `onChange`가 노출되지 않던 결함 수정. 런타임은 `this.relay(e)`로 `change`를 정상 발생시키지만, 래퍼 생성기가 `@event` 태그(또는 `this.fire<T>('name')` 리터럴)로만 이벤트 맵을 도출하므로 태그가 없으면 이벤트가 누락된다. (`USwitch`/`UInput`/`UTextarea`는 태그 보유 — `relay()`를 쓰는 폼 컨트롤 중 `UCheckbox`만 누락되어 있었음.) yesung-oms dogfooding에서 발견.
+
+### Changed
+- `plugins/vite-plugin-react-wrapper.ts`: `@customElement` 컴포넌트가 `this.relay(...)`/`this.dispatchEvent(...)`로 이벤트를 발생시키지만 수집된 이벤트가 0건이면 빌드 시 경고를 출력하도록 개선 — 위 `UCheckbox`류의 "태그 누락으로 이벤트가 조용히 사라지는" 결함 재발 방지. (`this.fire<T>('name')`은 이름이 정적으로 잡히므로 경고 대상이 아님.)
+
 ## [1.3.2] - 2026-07-02
 
 ### Documentation

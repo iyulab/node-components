@@ -103,6 +103,17 @@ function parseComponent(filePath: string): ComponentInfo[] {
 
   const events = collectEvents(content);
 
+  // 이벤트를 발생시키지만(relay/dispatchEvent) 정적으로 이름을 도출할 수 없는 컴포넌트가
+  // @event 태그도 없으면 events 맵이 빈 채로 생성되어 React 소비자가 이벤트를 구독할 수 없다.
+  // (this.fire<T>('name')은 이름이 문자열 리터럴로 잡히므로 이 경고 대상이 아님)
+  if (events.length === 0 && /this\.(relay|dispatchEvent)\s*\(/.test(content)) {
+    console.warn(
+      `\x1b[33m[react-wrapper]\x1b[0m ${classMatch[1]} (${tagMatch[1]}): ` +
+      `이벤트를 발생시키지만(relay/dispatchEvent) @event 태그가 없어 React 래퍼에 이벤트 prop이 노출되지 않습니다. ` +
+      `클래스 JSDoc에 '@event <name>'을 추가하세요.`,
+    );
+  }
+
   return [{
     className: classMatch[1],
     tagName: tagMatch[1],

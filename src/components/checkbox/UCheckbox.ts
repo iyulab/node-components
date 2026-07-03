@@ -24,6 +24,8 @@ export type CheckboxColor = "blue" | "green" | "red" | "orange" | "teal" | "cyan
  * @cssprop --checkbox-color - 체크 표시 색상 (outline variant)
  * @cssprop --checkbox-border-color - 체크박스 테두리 색상
  * @cssprop --checkbox-background-color - 체크박스 배경색 (filled variant)
+ *
+ * @event change - 체크 상태 변경 시 발생
  */
 @customElement('u-checkbox')
 export class UCheckbox extends UFormControlElement<string> {
