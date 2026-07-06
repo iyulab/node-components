@@ -71,16 +71,10 @@ export class UIconButton extends UElement {
       <u-tooltip part="tooltip"
         .placement=${this.tooltipPlacement}
         .offset=${this.tooltipOffset}
-        @show=${this.handleStopTooltipEvent}
-        @hide=${this.handleStopTooltipEvent}
       >
         <slot></slot>
       </u-tooltip>
     `;
-  }
-
-  private handleStopTooltipEvent(e: Event) {
-    e.stopImmediatePropagation();
   }
 }
 

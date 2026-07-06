@@ -57,13 +57,6 @@ export class UOption extends UElement {
     `;
   }
 
-  public getText(): string {
-    const slot = this.renderRoot.querySelector('slot:not([name])') as HTMLSlotElement | null;
-    const text = slot?.assignedNodes({ flatten: true })
-      .map(n => n.textContent?.trim()).filter(Boolean).join('');
-    return text || this.value;
-  }
-
   private renderMarker() {
     if (this.marker === 'radio') {
       return html`<span class="radio-marker" part="radio-marker"></span>`;
@@ -80,6 +73,25 @@ export class UOption extends UElement {
     }
 
     return nothing;
+  }
+
+  /** 라벨(기본 slot)의 텍스트 노드만 추출한다 — 엘리먼트 자식(예: 설명용 `<p>`)은 제외. */
+  public getText(): string {
+    const slot = this.renderRoot.querySelector('slot:not([name])') as HTMLSlotElement | null;
+    const text = slot?.assignedNodes({ flatten: true })
+      .filter(n => n.nodeType === Node.TEXT_NODE)
+      .map(n => n.textContent ?? '')
+      .join('')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return text || this.value;
+  }
+
+  /** 라벨(기본 slot) 노드를 clone해서 반환한다 — 원본은 옵션 목록에 계속 slot돼 있어야 하므로. */
+  public getContent(): Node[] {
+    const slot = this.renderRoot.querySelector('slot:not([name])') as HTMLSlotElement | null;
+    const nodes = slot?.assignedNodes({ flatten: true }).map(n => n.cloneNode(true)) ?? [];
+    return nodes.length > 0 ? nodes : [document.createTextNode(this.value)];
   }
 }
 

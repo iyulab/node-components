@@ -250,15 +250,10 @@ export * from './events/MyEvent';
 ## 핵심 원칙
 
 - Shadow DOM을 유지한다. `createRenderRoot()`로 Shadow DOM을 우회하지 않는다.
-- **내부 여백(padding)은 `:host`가 아닌 Shadow DOM 내부 래퍼(`.container` 등)에 둔다.**
-  호스트 엘리먼트는 light-DOM 노드라, 소비앱의 전역 reset(예: Tailwind preflight `*{padding:0}`)이
-  호스트를 직접 겨냥해 `:host{padding}`을 덮어버린다(scoping 규칙상 outer-tree 우선). Shadow 내부
-  엘리먼트의 padding은 외부 reset에 면역이다. (`margin`은 호스트 바깥 간격이라 `:host`에 두는 게 정상.)
-  배경·테두리·radius는 `:host`에 두어도 무방하다. — UAlert 토스트 여백 0 결함(v1.1.1) 사례 참조.
+- 여백(margin)·테두리(border)·색상(color)·글자 크기(font-size)·배경(background)등을 `:host`에 위치시켜 소비앱이 `u-button { padding: 8px; color: red; }`처럼 커스텀 엘리먼트 태그를 직접 셀렉터로 잡아 손쉽게 커스터마이징할 수 있게 의도 한다.
 - 슬롯 이름은 `prefix` / `suffix` / `footer` 등 역할 기반으로 통일한다.
 - CSS part 이름은 내부 구조를 반영하되 구현 세부사항을 노출하지 않는다.
 - 다른 컴포넌트를 내부에서 사용할 때는 파일 상단에 사이드이펙트 import를 추가한다.
-
-  ```ts
-  import '../spinner/USpinner.js';
-  ```
+```ts
+import '../spinner/USpinner.js';
+```

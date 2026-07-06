@@ -178,7 +178,7 @@ export class UFloatingElement extends UElement {
     this.targetEl = target;
     if (this.open) return true;
 
-    if (this.fire<ShowEventDetail>('show')) {
+    if (this.fire<ShowEventDetail>('show', { bubbles: false, composed: false })) {
       // show 딜레이 적용
       if (this.showDelay > 0) {
         this.showTimer = window.setTimeout(() => {
@@ -219,7 +219,7 @@ export class UFloatingElement extends UElement {
     this.targetEl = undefined;
     if (!this.open) return true;
 
-    if (this.fire<HideEventDetail>('hide')) {
+    if (this.fire<HideEventDetail>('hide', { bubbles: false, composed: false })) {
       // hide 딜레이 적용
       if (this.hideDelay > 0) {
         this.hideTimer = window.setTimeout(() => {
@@ -240,6 +240,12 @@ export class UFloatingElement extends UElement {
    * @param target - 위치 계산에 사용할 타겟 엘리먼트입니다.
    */
   public async reposition(target: Element | VirtualElement) {
+    // strategy(absolute/fixed)에 따라 containing block이 달라져 CSS %가 앵커 크기와
+    // 어긋날 수 있어(예: fixed는 뷰포트 기준), 앵커의 실제 픽셀 크기를 변수로 노출한다.
+    const targetRect = target.getBoundingClientRect();
+    this.style.setProperty('--anchor-width', `${targetRect.width}px`);
+    this.style.setProperty('--anchor-height', `${targetRect.height}px`);
+
     const position = await computePosition(target, this, {
       strategy: this.strategy,
       placement: this.placement,

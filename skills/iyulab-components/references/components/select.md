@@ -80,7 +80,6 @@ Dropdown select with single or multiple selection, search, and clear support. Fo
 
 | Property | Description |
 |----------|-------------|
-| `--select-popover-min-width` | Dropdown min-width |
-| `--select-popover-max-width` | Dropdown max-width |
+| `--select-popover-width` | Dropdown width (fixed to anchor width by default; long option text ellipsizes instead of widening the popover) |
 | `--select-popover-min-height` | Dropdown min-height |
 | `--select-popover-max-height` | Dropdown max-height |

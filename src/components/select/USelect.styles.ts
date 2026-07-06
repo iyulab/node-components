@@ -2,8 +2,8 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --select-popover-min-width: 100%;
-    --select-popover-max-width: 80vw;
+    /* --anchor-width는 u-popover(자식) 자신에게 JS로 설정되므로 여기서는 참조할 수 없다
+       (커스텀 프로퍼티는 조상→자손으로만 상속). 실제 폴백은 아래 u-popover 규칙에서 처리. */
     --select-popover-min-height: 0px;
     --select-popover-max-height: 50vh;
   }
@@ -163,10 +163,10 @@ export const styles = css`
     color: var(--u-icon-color-active);
   }
 
-  /* 드롭다운 패널 */
+  /* 드롭다운 패널 — 옵션 텍스트가 길어도 팝오버가 앵커보다 넓어지지 않도록 고정 너비로
+     맞춘다(긴 텍스트는 UOption 자체의 ellipsis로 처리). */
   u-popover {
-    min-width: var(--select-popover-min-width);
-    max-width: var(--select-popover-max-width);
+    width: var(--select-popover-width, var(--anchor-width, 100%));
     min-height: var(--select-popover-min-height);
     max-height: var(--select-popover-max-height);
     padding: 4px;

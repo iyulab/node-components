@@ -2,8 +2,6 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --input-popover-min-width: 100%;
-    --input-popover-max-width: 80vw;
     --input-popover-min-height: 0px;
     --input-popover-max-height: 50vh;
   }
@@ -167,8 +165,7 @@ export const styles = css`
   }
 
   u-popover {
-    min-width: var(--input-popover-min-width);
-    max-width: var(--input-popover-max-width);
+    width: var(--input-popover-width, var(--anchor-width, 100%));
     min-height: var(--input-popover-min-height);
     max-height: var(--input-popover-max-height);
     padding: 4px;

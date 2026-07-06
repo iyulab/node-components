@@ -86,13 +86,13 @@ export abstract class UOverlayElement extends UElement {
     }
   }
 
-  /** 
-   * 오버레이를 표시합니다. u-show 이벤트가 취소되면 열리지 않습니다. 
+  /**
+   * 오버레이를 표시합니다. u-show 이벤트가 취소되면 열리지 않습니다.
    */
   public show(): boolean {
     if (this.open) return true;
-    
-    if (this.fire<ShowEventDetail>('show')) {
+
+    if (this.fire<ShowEventDetail>('show', { bubbles: false, composed: false })) {
       this.open = true;
       return true;
     }
@@ -102,11 +102,15 @@ export abstract class UOverlayElement extends UElement {
   /**
    * 오버레이를 숨깁니다. `hide` 이벤트가 취소되면 닫히지 않습니다.
    * (이벤트 이름은 `hide`, prefix 없음 — `addEventListener('hide', ...)`로 수신)
+   *
+   * bubbles:false — 중첩된 다이얼로그/드로어/팝오버 조합에서 자식의 hide가
+   * 조상 오버레이까지 버블링되어 조상이 자신의 hide로 오인해 닫히는 사고를 방지한다.
+   * 이 이벤트는 항상 자기 자신(target)에 리스너를 붙이는 패턴으로만 소비된다.
    */
   public hide(): boolean {
     if (!this.open) return true;
-    
-    if (this.fire<HideEventDetail>('hide')) {
+
+    if (this.fire<HideEventDetail>('hide', { bubbles: false, composed: false })) {
       this.open = false;
       return true;
     }

@@ -30,6 +30,16 @@ export class Toast {
   private static containers = new Map<string, HTMLDivElement>();
   private static elements = new Set<UAlert>();
 
+  /**
+   * 모든 Toast 호출에 적용될 전역 기본 옵션입니다. 개별 호출의 `options`가 우선합니다.
+   *
+   * @example
+   * ```ts
+   * Toast.DefaultOptions = { position: 'bottom-center', duration: 3000 };
+   * ```
+   */
+  public static DefaultOptions: Partial<ToastOptions> = {};
+
   /** 개별 인스턴스 생성을 방지합니다. */
   private constructor() {}
 
@@ -65,25 +75,31 @@ export class Toast {
 
   /** 토스트 알림을 생성합니다. */
   public static async show(status?: AlertStatus, content?: string, options?: ToastOptions) {
+    // 매 호출 시점의 DefaultOptions를 반영해야 하므로(런타임에 재설정 가능) 여기서 병합한다.
+    const merged: ToastOptions = { ...this.DefaultOptions, ...options };
+
     const el = new UAlert();
     el.status = status;
     el.innerHTML = content || '';
-    el.variant = options?.variant || 'solid';
-    el.title = options?.title || '';
-    el.closable = options?.closable ?? true;
-    el.duration = options?.duration && options.duration > 0 ? options.duration : 4000;
+    el.variant = merged.variant || 'solid';
+    el.title = merged.title || '';
+    el.closable = merged.closable ?? true;
+    // duration 0 이하는 "자동으로 안 닫힘"을 의미(UAlert 자체 계약) — 필터링하지 않고 그대로 전달.
+    el.duration = merged.duration ?? 4000;
     this.elements.add(el);
 
     // 토스트 알림을 컨테이너에 추가합니다.
-    const position = options?.position || "top-right";
-    const target = options?.target || document.body;
+    const position = merged.position || "top-right";
+    const target = merged.target || document.body;
     const container = this.getOrCreateContainer(position, target);
     container.appendChild(el);
     await el.updateComplete;
     el.show();
 
     // UAlert 내장 duration으로 자동 hide 후, DOM에서 제거합니다.
-    el.addEventListener('hide', async () => {
+    // content가 임의의 HTML이라 내부에 자체 hide를 쏘는 엘리먼트가 섞여있을 수 있어 target을 확인한다.
+    el.addEventListener('hide', async (e) => {
+      if (e.target !== el) return;
       await new Promise((resolve) => setTimeout(resolve, 200));
       el.remove();
       this.elements.delete(el);

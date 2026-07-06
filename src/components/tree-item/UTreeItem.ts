@@ -136,7 +136,7 @@ export class UTreeItem extends UElement {
   public expand(): boolean {
     if (this.disabled || this.leaf) return false;
 
-    if(this.fire<ExpandEventDetail>('expand')) {
+    if(this.fire<ExpandEventDetail>('expand', { bubbles: false, composed: false })) {
       this.expanded = true;
       return true;
     }
@@ -146,7 +146,7 @@ export class UTreeItem extends UElement {
   public collapse(): boolean {
     if (this.disabled || this.leaf) return false;
     
-    if(this.fire<CollapseEventDetail>('collapse')) {
+    if(this.fire<CollapseEventDetail>('collapse', { bubbles: false, composed: false })) {
       this.expanded = false;
       return true;
     }

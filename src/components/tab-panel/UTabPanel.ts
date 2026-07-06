@@ -14,11 +14,15 @@ export type TabPanelPlacement = 'top' | 'bottom' | 'left' | 'right';
  *
  * @slot - u-tab 및 u-panel 요소들
  * @slot toolbar - 탭 영역에 있는 공간에 표시할 콘텐츠
- * 
+ *
  * @csspart header - 탭 버튼들이 있는 헤더 영역
  * @csspart nav - 탭 버튼들이 실제로 배치되는 네비게이션 영역
  * @csspart toolbar - 탭 헤더 내 툴바 영역
  * @csspart content - 탭 패널이 있는 콘텐츠 영역
+ *
+ * @event change - 탭을 클릭하거나 키보드로 선택했을 때만 발생한다. 최초 마운트 시 첫 탭이
+ *   자동 선택되는 경우나 `value` 프로퍼티를 직접 대입하는 경우는 사용자 조작이 아니므로
+ *   발생시키지 않는다(네이티브 select가 프로그래밍적 대입에는 change를 내지 않는 것과 동일한 관례).
  */
 @customElement('u-tab-panel')
 export class UTabPanel extends UElement {
@@ -65,6 +69,12 @@ export class UTabPanel extends UElement {
         <slot @slotchange=${this.handleSlotChange}></slot>
       </div>
     `;
+  }
+
+  private change(value: string) {
+    if (this.value === value) return;
+    this.value = value;
+    this.fire('change', { bubbles: false, composed: false });
   }
 
   private updateTabPanel() {
@@ -114,7 +124,7 @@ export class UTabPanel extends UElement {
   private handleTabClick = (e: PointerEvent) => {
     const tab = (e.currentTarget || e.target) as UTab;
     if (tab.disabled || this.disabled) return;
-    this.value = tab.value;
+    this.change(tab.value);
   }
 
   private handleTabKeydown = (e: KeyboardEvent) => {
@@ -138,7 +148,7 @@ export class UTabPanel extends UElement {
         break;
       case 'Enter':
       case ' ':
-        this.value = enabledTabs[currentIndex].value;
+        this.change(enabledTabs[currentIndex].value);
         return;
       default:
         return;
@@ -147,7 +157,7 @@ export class UTabPanel extends UElement {
     if (targetIndex >= 0) {
       e.preventDefault();
       enabledTabs[targetIndex].focus();
-      this.value = enabledTabs[targetIndex].value;
+      this.change(enabledTabs[targetIndex].value);
     }
   }
 

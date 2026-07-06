@@ -89,7 +89,6 @@ Text input field with prefix/suffix slots and label. Add `u-option` children for
 
 | Property | Description |
 |----------|-------------|
-| `--input-popover-min-width` | Combobox popover min-width |
-| `--input-popover-max-width` | Combobox popover max-width |
+| `--input-popover-width` | Combobox popover width (fixed to anchor width by default) |
 | `--input-popover-min-height` | Combobox popover min-height |
 | `--input-popover-max-height` | Combobox popover max-height |

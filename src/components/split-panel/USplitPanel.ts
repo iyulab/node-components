@@ -204,11 +204,13 @@ export class USplitPanel extends UElement {
     document.body.style.userSelect = 'none';
     document.body.style.cursor = this.orientation === 'horizontal' ? 'col-resize' : 'row-resize';
 
-    this.fire<ShiftEventDetail>('shift-start', { 
-      detail: { 
+    this.fire<ShiftEventDetail>('shift-start', {
+      bubbles: false,
+      composed: false,
+      detail: {
         index: this.dragState.index,
-        ratio: [...this.percentages], 
-      } 
+        ratio: [...this.percentages],
+      }
     });
   }
 
@@ -242,11 +244,13 @@ export class USplitPanel extends UElement {
       this.ratio = newRatio;
     }
 
-    this.fire<ShiftEventDetail>('shift', { 
-      detail: { 
+    this.fire<ShiftEventDetail>('shift', {
+      bubbles: false,
+      composed: false,
+      detail: {
         index: this.dragState.index,
-        ratio: this.lazy ? this.percentages : [...this.ratio], 
-      } 
+        ratio: this.lazy ? this.percentages : [...this.ratio],
+      }
     });
   }
 
@@ -275,8 +279,10 @@ export class USplitPanel extends UElement {
     document.body.style.userSelect = '';
     document.body.style.cursor = '';
 
-    this.fire<ShiftEventDetail>('shift-end', { 
-      detail: { 
+    this.fire<ShiftEventDetail>('shift-end', {
+      bubbles: false,
+      composed: false,
+      detail: {
         index: this.dragState.index,
         ratio: [...this.percentages],
       }

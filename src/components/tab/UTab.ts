@@ -62,7 +62,7 @@ export class UTab extends UElement {
     e.stopPropagation();
     if (this.disabled) return;
 
-    if(this.fire<RemoveEventDetail>('remove')) {
+    if(this.fire<RemoveEventDetail>('remove', { bubbles: false, composed: false })) {
       this.remove();
     }
   }

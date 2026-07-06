@@ -97,7 +97,7 @@ export class UAlert extends UElement {
   public show(): boolean {
     if (this.open) return true;
 
-    if(this.fire<ShowEventDetail>("show")) {
+    if(this.fire<ShowEventDetail>("show", { bubbles: false, composed: false })) {
       this.open = true;
       return true;
     }
@@ -110,7 +110,7 @@ export class UAlert extends UElement {
   public hide(): boolean {
     if (!this.open) return true;
     
-    if(this.fire<HideEventDetail>("hide")) {
+    if(this.fire<HideEventDetail>("hide", { bubbles: false, composed: false })) {
       this.open = false;
       return true;
     }

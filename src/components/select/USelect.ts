@@ -18,14 +18,18 @@ export type SelectVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
  * 단일 선택 및 다중 선택, 검색 기능을 지원합니다.
  *
  * @slot - u-option 아이템
- * 
+ * @slot display - 트리거에 표시할 콘텐츠를 직접 지정. 비워두면 선택값 텍스트를 자동 생성해 보여준다.
+ *   (u-option을 그대로 옮겨 꽂을 수는 없다 — 하나의 노드는 slot에 동시에 두 곳 렌더링될 수 없어서
+ *   팝오버 목록에서 사라지기 때문. 리치 콘텐츠가 필요하면 이 slot에 별도 마크업을 할당하고
+ *   `change` 이벤트에서 직접 갱신한다.)
+ *
  * @csspart field - u-field 요소
  * @csspart container - 트리거 영역을 감싸는 요소
  * @csspart popover - 옵션 목록이 표시되는 팝오버 요소
  * @csspart search-input - 검색 입력 영역
  * 
- * @cssprop --select-popover-min-width - 팝오버의 최소 너비 (기본값: 100%)
- * @cssprop --select-popover-max-width - 팝오버의 최대 너비 (기본값: 80vw)
+ * @cssprop --select-popover-width - 팝오버의 너비 (기본값: 앵커(트리거) 너비, strategy와 무관하게 동일).
+ *   옵션 텍스트가 길어도 이 값을 넘겨 넓어지지 않으며, 넘치는 텍스트는 UOption에서 ellipsis 처리된다.
  * @cssprop --select-popover-min-height - 팝오버의 최소 높이 (기본값: 0px)
  * @cssprop --select-popover-max-height - 팝오버의 최대 높이 (기본값: 50vh)
  * 
@@ -98,7 +102,7 @@ export class USelect extends UFormControlElement<string | string[]> {
 
         <div class="container" part="container" tabindex=${this.disabled ? "-1" : "0"}>
           <slot name="prefix"></slot>
-          ${this.renderContent()}
+          <slot name="display">${this.renderContent()}</slot>
           <slot name="suffix"></slot>
 
           <u-icon class="suffix-item"
@@ -124,11 +128,9 @@ export class USelect extends UFormControlElement<string | string[]> {
         autofocus
         for=".container"
         trigger="click"
+        strategy="fixed"
         placement="bottom-start"
         offset="1"
-        strategy="fixed"
-        @show=${this.handlePopoverEvent}
-        @hide=${this.handlePopoverEvent}
       >
         <div class="search-input" part="search-input" 
           ?hidden=${!this.searchable}>
@@ -165,13 +167,13 @@ export class USelect extends UFormControlElement<string | string[]> {
         </div>
       `;
     } else {
-      const text = this.options.find(o => o.value === this.value)?.getText();
-      if (!text) {
+      const option = this.options.find(o => o.value === this.value);
+      if (!option) {
         return html`
           <span class="text-content placeholder">${this.placeholder ?? ''}</span>`;
       }
-      
-      return html`<span class="text-content">${text}</span>`;
+
+      return html`<span class="text-content">${option.getContent()}</span>`;
     }
   }
 
@@ -356,16 +358,11 @@ export class USelect extends UFormControlElement<string | string[]> {
   };
 
   private handleChipRemove = (e: Event) => {
-    e.stopImmediatePropagation();
     const chip = e.currentTarget as UChip;
     const value = chip.dataset.value;
     if (!value) return;
     this.value = this.valueAsArray.filter(v => v !== value);
   };
-
-  private handlePopoverEvent = (e: Event) => {
-    e.stopPropagation();
-  }
 }
 
 declare global {

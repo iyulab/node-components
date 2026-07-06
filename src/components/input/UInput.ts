@@ -31,8 +31,7 @@ export type InputVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
  * @csspart input - 네이티브 input 요소
  * @csspart popover - 드롭다운 팝오버 요소
  * 
- * @cssprop --input-popover-min-width - 드롭다운 팝오버의 최소 너비 (기본값: 100%)
- * @cssprop --input-popover-max-width - 드롭다운 팝오버의 최대 너비 (기본값: 80vw)
+ * @cssprop --input-popover-width - 드롭다운 팝오버의 너비 (기본값: 앵커(트리거) 너비)
  * @cssprop --input-popover-min-height - 드롭다운 팝오버의 최소 높이 (기본값: 0px)
  * @cssprop --input-popover-max-height - 드롭다운 팝오버의 최대 높이 (기본값: 50vh)
  * 
@@ -162,6 +161,7 @@ export class UInput extends UFormControlElement<string> {
         scrollable
         for=".container"
         trigger="focus"
+        strategy="fixed"
         placement="bottom-start"
         offset="1"
         @show=${this.handlePopoverShow}
@@ -349,14 +349,12 @@ export class UInput extends UFormControlElement<string> {
   };
 
   private handlePopoverShow = (e: Event) => {
-    e.stopPropagation();
     if (this.options.length === 0) {
       e.preventDefault();
     }
   };
 
   private handlePopoverHide = (e: Event) => {
-    e.stopPropagation();
     if (this.options.length === 0) {
       e.preventDefault();
     }

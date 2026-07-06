@@ -98,7 +98,7 @@ export class UChip extends UElement {
 
   private handleRemoveClick = (e: PointerEvent) => {
     e.stopImmediatePropagation();
-    if(this.fire<RemoveEventDetail>('remove')) {
+    if(this.fire<RemoveEventDetail>('remove', { bubbles: false, composed: false })) {
       this.remove();
     }
   }
