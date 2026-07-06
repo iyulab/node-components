@@ -1,0 +1,11 @@
+{
+  "valueMissing": "Kolom ini wajib diisi",
+  "badInput": "Masukkan nilai yang valid",
+  "typeMismatch": "Masukkan nilai dengan format yang benar",
+  "patternMismatch": "Sesuaikan dengan format yang diminta",
+  "rangeUnderflow": "Nilai harus minimal {min}",
+  "rangeOverflow": "Nilai harus maksimal {max}",
+  "stepMismatch": "Nilai harus kelipatan dari {step}",
+  "tooShort": "Harus minimal {min}",
+  "tooLong": "Harus maksimal {max}"
+}

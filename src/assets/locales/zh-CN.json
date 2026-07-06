@@ -1,0 +1,11 @@
+{
+  "valueMissing": "此项为必填项",
+  "badInput": "请输入有效的值",
+  "typeMismatch": "请输入正确格式的值",
+  "patternMismatch": "请按照要求的格式输入",
+  "rangeUnderflow": "值必须大于或等于{min}",
+  "rangeOverflow": "值必须小于或等于{max}",
+  "stepMismatch": "值必须是{step}的倍数",
+  "tooShort": "至少需要{min}",
+  "tooLong": "最多不能超过{max}"
+}

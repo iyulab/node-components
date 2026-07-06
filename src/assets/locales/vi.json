@@ -1,0 +1,11 @@
+{
+  "valueMissing": "Trường này là bắt buộc",
+  "badInput": "Vui lòng nhập giá trị hợp lệ",
+  "typeMismatch": "Vui lòng nhập giá trị đúng định dạng",
+  "patternMismatch": "Vui lòng nhập đúng định dạng yêu cầu",
+  "rangeUnderflow": "Giá trị phải lớn hơn hoặc bằng {min}",
+  "rangeOverflow": "Giá trị phải nhỏ hơn hoặc bằng {max}",
+  "stepMismatch": "Giá trị phải là bội số của {step}",
+  "tooShort": "Phải lớn hơn hoặc bằng {min}",
+  "tooLong": "Phải nhỏ hơn hoặc bằng {max}"
+}

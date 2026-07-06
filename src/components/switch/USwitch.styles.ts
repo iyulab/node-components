@@ -186,4 +186,8 @@ export const styles = css`
     font-size: 0.75em;
     line-height: 1.3;
   }
+
+  :host([invalid]) .description {
+    color: var(--u-red-600);
+  }
 `;

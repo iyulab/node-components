@@ -1,0 +1,11 @@
+{
+  "valueMissing": "필수 항목입니다",
+  "badInput": "올바른 값을 입력하세요",
+  "typeMismatch": "올바른 형식의 값을 입력하세요",
+  "patternMismatch": "요청된 형식에 맞게 입력하세요",
+  "rangeUnderflow": "값은 {min} 이상이어야 합니다",
+  "rangeOverflow": "값은 {max} 이하여야 합니다",
+  "stepMismatch": "값은 {step}의 배수여야 합니다",
+  "tooShort": "최소 {min} 이상이어야 합니다",
+  "tooLong": "최대 {max} 이하여야 합니다"
+}

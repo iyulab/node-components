@@ -1,0 +1,11 @@
+{
+  "valueMissing": "Este campo es obligatorio",
+  "badInput": "Introduzca un valor válido",
+  "typeMismatch": "Introduzca un valor con el formato correcto",
+  "patternMismatch": "Ajuste el valor al formato solicitado",
+  "rangeUnderflow": "El valor debe ser como mínimo {min}",
+  "rangeOverflow": "El valor debe ser como máximo {max}",
+  "stepMismatch": "El valor debe ser múltiplo de {step}",
+  "tooShort": "Debe ser como mínimo {min}",
+  "tooLong": "Debe ser como máximo {max}"
+}

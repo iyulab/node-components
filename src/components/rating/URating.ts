@@ -4,7 +4,7 @@ import '../field/UField.js';
 import '../icon/UIcon.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
-import { getLocaleStrings, resolveLocale, formatTemplate } from "../../core/locale.js";
+import { Locale } from "../../utilities/Locale.js";
 import { styles } from "./URating.styles.js";
 
 /**
@@ -37,6 +37,11 @@ export class URating extends UFormControlElement<number> {
   @state() private buffer = -1;
   @state() private symbol: Node | null = null;
   @state() private symbolOff: Node | null = null;
+
+  protected shouldValidate(changed: PropertyValues): boolean {
+    return super.shouldValidate(changed)
+      || ['min', 'max', 'precision'].some(k => changed.has(k));
+  }
 
   private get interactive() {
     return !this.disabled && !this.readonly;
@@ -100,14 +105,31 @@ export class URating extends UFormControlElement<number> {
     `;
   }
 
-  public validate(): boolean {
-    if (this.internals) {
-      this.invalid = !this.internals.checkValidity();
-    } else {
-      const { flags } = this.getValidity();
-      this.invalid = Object.values(flags).some(Boolean);
+  protected setValidity(): void {
+    const v = this.value || 0;
+    let flags: ValidityStateFlags = {};
+    let message = '';
+
+    if (this.required && !v) {
+      flags = { valueMissing: true };
+      message = Locale.getValue('valueMissing');
+    } else if (v && v < this.min) {
+      flags = { rangeUnderflow: true };
+      message = Locale.getValue('rangeUnderflow', { min: this.min });
+    } else if (v && v > this.max) {
+      flags = { rangeOverflow: true };
+      message = Locale.getValue('rangeOverflow', { max: this.max });
+    } else if (v && this.precision < 1 && this.isStepMismatch(v)) {
+      flags = { stepMismatch: true };
+      message = Locale.getValue('stepMismatch', { step: this.precision });
     }
-    return !this.invalid;
+
+    this.commit(flags, message, this.renderRoot.querySelector('.symbols') as HTMLElement ?? undefined);
+  }
+
+  private isStepMismatch(v: number): boolean {
+    const remainder = Math.abs(v % this.precision);
+    return remainder > 0.001 && Math.abs(remainder - this.precision) > 0.001;
   }
 
   public reset(): void {
@@ -118,41 +140,14 @@ export class URating extends UFormControlElement<number> {
   private onChangeValue() {
     this.buffer = -1;
     this.internals?.setFormValue(this.value?.toString() || '');
-    const { flags, message } = this.getValidity();
-    this.internals?.setValidity(
-      flags, 
-      this.validationMessage || message, 
-      this.renderRoot.querySelector('.symbols') as HTMLElement || undefined
-    );
 
     if (!this.novalidate) {
       this.validate();
     }
-    this.dispatchEvent(new Event('change', { 
-      bubbles: true, 
-      composed: true 
+    this.dispatchEvent(new Event('change', {
+      bubbles: true,
+      composed: true
     }));
-  }
-
-  private getValidity(): { flags: ValidityStateFlags; message: string } {
-    const v = this.value || 0;
-    const s = getLocaleStrings(resolveLocale(this.locale));
-    if (this.required && !v) {
-      return { flags: { valueMissing: true }, message: s.required };
-    }
-    if (v && v < this.min) {
-      return { flags: { rangeUnderflow: true }, message: formatTemplate(s.minValue, { min: this.min }) };
-    }
-    if (v && v > this.max) {
-      return { flags: { rangeOverflow: true }, message: formatTemplate(s.maxValue, { max: this.max }) };
-    }
-    if (v && this.precision < 1) {
-      const remainder = Math.abs(v % this.precision);
-      if (remainder > 0.001 && Math.abs(remainder - this.precision) > 0.001) {
-        return { flags: { stepMismatch: true }, message: formatTemplate(s.stepMismatch, { step: this.precision }) };
-      }
-    }
-    return { flags: {}, message: '' };
   }
 
   private handleSlotChange = (e: Event) => {

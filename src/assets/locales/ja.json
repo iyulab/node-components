@@ -1,0 +1,11 @@
+{
+  "valueMissing": "この項目は必須です",
+  "badInput": "有効な値を入力してください",
+  "typeMismatch": "正しい形式の値を入力してください",
+  "patternMismatch": "指定された形式で入力してください",
+  "rangeUnderflow": "値は{min}以上である必要があります",
+  "rangeOverflow": "値は{max}以下である必要があります",
+  "stepMismatch": "値は{step}の倍数である必要があります",
+  "tooShort": "{min}以上である必要があります",
+  "tooLong": "{max}以下である必要があります"
+}

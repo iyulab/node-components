@@ -155,7 +155,7 @@ this.relay(event);
 
 ## 폼 컨트롤 구현
 
-`UFormControlElement<T>`를 상속할 때는 `validate()`와 `reset()`을 반드시 구현한다.
+`UFormControlElement<T>`를 상속할 때는 `setValidity()`와 `reset()`을 반드시 구현한다. `validate()`는 기반 클래스가 공통 제공하므로 override하지 않는다.
 
 ```ts
 @customElement('u-my-input')
@@ -180,19 +180,13 @@ export class UMyInput extends UFormControlElement<string> {
     `;
   }
 
-  validate(): boolean {
-    if (this.required && !this.value) {
-      this.invalid = true;
-      const s = getLocaleStrings(resolveLocale(this.locale));
-      this.internals?.setValidity(
-        { valueMissing: true },
-        this.validationMessage || s.required,
-      );
-      return false;
-    }
-    this.invalid = false;
-    this.internals?.setValidity({});
-    return true;
+  protected setValidity(): void {
+    const missing = this.required && !this.value;
+    this.commit(
+      missing ? { valueMissing: true } : {},
+      missing ? Locale.getValue('valueMissing') : '',
+      this.containerEl ?? undefined, // @query로 얻은 앵커. null일 수 있으니 항상 `?? undefined`로 넘긴다.
+    );
   }
 
   reset(): void {
@@ -202,25 +196,44 @@ export class UMyInput extends UFormControlElement<string> {
 }
 ```
 
-- `novalidate`가 `false`일 때 값이 변경되면 자동으로 `validate()`가 호출된다.
-- `internals.setValidity()`로 네이티브 폼 유효성 상태를 갱신한다.
+- `setValidity()`는 지금 상태를 검증해 `this.commit(flags, message, anchor)`를 호출한다. `flags`는 네이티브 `ValidityStateFlags`를 그대로 쓰고, `message`는 `Locale.getValue(key, params)`로 조회한다(항상 전역 활성 로케일 기준). `internals.setValidity()`를 직접 부르지 않는다 — `commit()`이 `setCustomValidity()`로 주입된 커스텀 메시지가 있는지 먼저 확인하고 있으면 그걸 최우선으로 반영한다.
+- `UFormControlElement.validationMessage`는 **읽기 전용 getter**로, `internals.validationMessage`(즉 `setValidity()`가 마지막으로 넘긴 문자열)를 그대로 반환한다. 별도로 저장하는 상태가 없다 — `render()`에서 `<u-field .validationMessage=${this.validationMessage}>`처럼 바로 바인딩하면 된다.
+  - 이 getter는 Lit 리액티브 속성이 아니므로, `internals.validationMessage`만 바뀌고 `invalid`가 `true→true`로 그대로면(예: `invalid`는 유지된 채 로케일만 바뀌어 문구가 달라지는 경우) 재렌더가 안 일어나 화면이 갱신되지 않는다. 그래서 기반 클래스의 `updated()`/`validate()`는 `setValidity()` 직후 `this.requestUpdate()`를 호출해 강제로 재렌더한다 — 새 필드를 추가하는 대신 이미 있는 Lit API로 리액티브 갭을 메운 것.
+- **anchor 인자는 항상 `?? undefined`로 넘긴다.** Lit `@query`의 TS 타입은 `T | undefined`라고 선언돼 있지만 실제로 못 찾으면 `null`을 반환한다. `internals.setValidity(flags, message, null)`은 `HTMLElement`가 아니라며 런타임에 `TypeError`를 던진다 — 컴파일은 통과하니 놓치기 쉽다.
+- `value`가 바뀌면 기반 클래스의 `updated()`가 자동으로 `setValidity()`를 호출한다 — 컴포넌트가 change/blur 핸들러에서 직접 호출할 필요는 없다.
+- `checked`처럼 `value` 외의 속성으로 상태를 표현하는 컴포넌트는 `protected shouldValidate(changed)`를 override한다: `return super.shouldValidate(changed) || changed.has('checked');`
+- `novalidate`가 `false`일 때 값이 변경되면 자동으로 `validate()`가 호출되어 `invalid`를 갱신한다. `validate()`는 내부적으로 `setValidity()`를 먼저 호출해 최신 상태를 반영한 뒤 `internals.checkValidity()`로 판정한다.
+- `validate(report = true)`: `report`가 `false`면 반환값(유효 여부)만 조용히 확인하고 `invalid`/화면 표시는 건드리지 않는다 — 네이티브 `checkValidity()`(조용히 확인) vs `reportValidity()`(UI 갱신)와 같은 관계. 예: 제출 버튼 활성화 여부를 매 입력마다 확인하되, 에러 표시는 실제 제출 시도 시에만 하고 싶을 때 `field.validate(false)`로 미리 확인한다.
+
+### 커스텀 메시지 주입 — `setCustomValidity()`
+
+네이티브 `HTMLInputElement.setCustomValidity()`와 동일한 계약이다.
+
+```ts
+const input = document.querySelector('u-input')!;
+input.setCustomValidity('이미 사용 중인 아이디입니다.');
+input.validate(); // 이 시점에 비로소 invalid=true + 화면에 메시지가 표시된다
+```
+
+- `setCustomValidity(message)`는 **상태(`internals`)만 갱신**하고 화면에는 아무 영향을 주지 않는다. 빈 문자열이 아니면 저장해두고, 다음 `setValidity()` 호출(자동이든 `validate()`를 통해서든) 때부터 `commit()`이 이 메시지를 다른 모든 검증 결과보다 우선해 반영한다.
+- `invalid`를 화면에 반영하는 건 언제나 `validate()`의 몫이다 — `setCustomValidity()`를 부르는 것만으로는 아무것도 안 보인다. 스스로 화면에 드러내고 싶으면 이어서 `validate()`를 호출한다.
+- 빈 문자열(`''`)을 넘기면 커스텀 메시지가 해제되어 원래 자동 계산된 메시지(네이티브 제약 또는 `Locale`)로 돌아간다.
 
 ### 검증 메시지 로케일
 
-검증 메시지는 하드코딩하지 않고 **로케일 레지스트리**(`src/core/locale.ts`)를 경유한다.
+검증 메시지는 하드코딩하지 않고 **`Locale`** 유틸리티(`src/utilities/Locale.ts`)를 경유한다.
 
-- **영어가 내장 기본값**이다. 새 메시지 키는 영어 템플릿(`'{label} is required'`)으로 `UComponentsLocaleStrings`에 추가한다.
-- 메시지 해석 우선순위: per-instance `validationMessage` prop → 컴포넌트 `locale` → `setDefaultLocale()` → `document.lang` → 영어.
-- 한국어 등 도메인 로케일은 라이브러리에 박지 않고 **consumer 가 등록**한다.
+- `en`/`ko`/`ja`/`zh-CN`/`zh-TW`/`es`/`fr`/`de`/`pt-BR`/`vi`/`th`/`id`/`ru`/`ar` 14개 로케일은 `src/assets/locales/*.json`으로 빌드 시점에 내장된다. 새 메시지 키는 `LocaleMessageKey`에 추가하고 모든 JSON 파일에 반영한다.
+- 활성 로케일은 초기에 `navigator.language`/`document.lang`으로 자동 추측되고(브라우저 환경), 실패 시 영어로 폴백한다. `Locale.set()`으로 언제든 명시적으로 바꿀 수 있다.
+- 메시지 조회 순서: `Locale.getValue()`가 찾는 값(활성 로케일 → base 언어 → 영어).
+- 그 외 언어나 문구 오버라이드는 `Locale.register()`로 등록한다. 이미 있는 값(내장 포함) 위에 병합되므로 일부 키만 넘겨도 나머지 키는 그대로 유지된다.
 
 ```ts
-import { registerLocale, setDefaultLocale } from '@iyulab/components';
+import { Locale } from '@iyulab/components';
 
-registerLocale('ko', { required: '필수 항목입니다.' });
-setDefaultLocale('ko'); // 앱 전역 기본 로케일
+Locale.register('de', { valueMissing: 'Pflichtfeld' }); // 미내장 언어 등록 (부분 등록 가능)
+Locale.set('ko');                                        // 앱 전역 활성 로케일 지정
 ```
-
-자세한 표준은 모노레포 `claudedocs/plans/locale-standard.md` 참조.
 
 ---
 

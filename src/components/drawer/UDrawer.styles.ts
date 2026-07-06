@@ -7,12 +7,6 @@ export const styles = css`
   :host([placement="top"])    { flex-direction: column; justify-content: flex-start; }
   :host([placement="bottom"]) { flex-direction: column; justify-content: flex-end; }
 
-  /*
-   * 패널 크기 — 슬라이드 축 방향 크기를 --drawer-size 로 제어한다.
-   *   좌우(left/right): 너비 = --drawer-size (기본 28rem), 높이 100%
-   *   상하(top/bottom): 높이 = --drawer-size (기본 16rem), 너비 100%
-   * 호스트 앱이 style="--drawer-size: 600px" 로 오버라이드한다.
-   */
   /* 좌우: 높이 100%, 너비 = --drawer-size */
   :host([placement="left"]) .panel,
   :host([placement="right"]) .panel {

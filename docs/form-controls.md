@@ -112,7 +112,7 @@ Set `novalidate` to skip automatic validation on change:
 | `novalidate` | `boolean` | Skip auto-validate on change |
 | `label` | `string` | Field label (see note below for slot-based controls) |
 | `description` | `string` | Helper text |
-| `validationMessage` | `string` | Custom error message shown when `invalid` |
+| `validationMessage` | `string` (read-only getter) | The message currently set on `internals.validationMessage`, shown when `invalid` |
 
 > **`label` on slot-based controls (e.g. `UCheckbox`):** most form controls render `label` as a standalone field label. `UCheckbox` instead uses it as **default slot fallback content** — `<slot>${this.label}</slot>` — so an explicit `<u-checkbox>...</u-checkbox>` slot child always takes precedence over the `label` attribute. Set one or the other, not both, to avoid confusion.
 
@@ -120,7 +120,7 @@ Set `novalidate` to skip automatic validation on change:
 
 ## Implementing a custom form control
 
-Extend `UFormControlElement<T>` and implement the two abstract methods:
+Extend `UFormControlElement<T>` and implement the two abstract methods, `setValidity()` and `reset()`. `validate()` is provided by the base class — don't override it.
 
 ```ts
 import { UFormControlElement } from '@iyulab/components';
@@ -130,23 +130,23 @@ import { customElement, property } from 'lit/decorators.js';
 export class MyColorPicker extends UFormControlElement<string> {
   @property() value = '#000000';
 
-  render() { /* ... */ }
+  render() { /* .validationMessage=${this.validationMessage} on your <u-field> or footer element */ }
 
-  validate(): boolean {
+  protected setValidity(): void {
     const valid = /^#[0-9A-Fa-f]{6}$/.test(this.value ?? '');
-    this.invalid = !valid;
-    // report to ElementInternals for native form validation
-    this.internals?.setValidity(
+    this.commit(
       valid ? {} : { customError: true },
-      this.validationMessage ?? 'Invalid color',
+      valid ? '' : 'Invalid color',
     );
-    return valid;
   }
 
   reset(): void {
     this.value = '#000000';
     this.invalid = false;
-    this.internals?.setValidity({});
   }
 }
 ```
+
+`setValidity()` runs automatically whenever `value`/`required` change (via the base class's `updated()`), and again inside `validate()` right before it checks `internals.checkValidity()`. Call `this.commit(flags, message, anchor?)` instead of `internals.setValidity()` directly — `commit()` checks whether a consumer injected a message via `setCustomValidity()` and, if so, reports that instead (matching native `customError` priority).
+
+`validationMessage` on `UFormControlElement` is a read-only getter over `internals.validationMessage` — there's no writable per-instance override prop. To inject a custom message, consumers call `element.setCustomValidity('...')` (mirrors native `HTMLInputElement.setCustomValidity()`): it only updates internal state, and stays invisible until the next `validate()` call actually reports it. Pass `''` to clear it.

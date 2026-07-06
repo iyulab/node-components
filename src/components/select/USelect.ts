@@ -5,7 +5,7 @@ import '../icon/UIcon.js';
 import '../spinner/USpinner.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
-import { getLocaleStrings, resolveLocale, formatTemplate } from "../../core/locale.js";
+import { Locale } from "../../utilities/Locale.js";
 import { UChip } from "../chip/UChip.js";
 import { UOption } from "../option/UOption.js";
 import { UPopover } from "../popover/UPopover.js";
@@ -60,6 +60,11 @@ export class USelect extends UFormControlElement<string | string[]> {
   @query('u-popover', true) popoverEl?: UPopover;
 
   @state() private options: UOption[] = [];
+
+  protected shouldValidate(changed: PropertyValues): boolean {
+    return super.shouldValidate(changed)
+      || ['minCount', 'maxCount', 'multiple'].some(k => changed.has(k));
+  }
 
   private get valueAsString(): string {
     return Array.isArray(this.value) ? this.value.join(',') : this.value ?? '';
@@ -177,14 +182,23 @@ export class USelect extends UFormControlElement<string | string[]> {
     }
   }
 
-  public validate(): boolean {
-    if (this.internals) {
-      this.invalid = !this.internals.checkValidity();
-    } else {
-      const { flags } = this.getValidity(this.valueAsArray);
-      this.invalid = Object.keys(flags).length > 0;
+  protected setValidity(): void {
+    const values = this.valueAsArray;
+    let flags: ValidityStateFlags = {};
+    let message = '';
+
+    if (this.required && !values.length) {
+      flags = { valueMissing: true };
+      message = Locale.getValue('valueMissing');
+    } else if (this.multiple && this.minCount != null && values.length > 0 && values.length < this.minCount) {
+      flags = { tooShort: true };
+      message = Locale.getValue('tooShort', { min: this.minCount });
+    } else if (this.multiple && this.maxCount != null && values.length > this.maxCount) {
+      flags = { tooLong: true };
+      message = Locale.getValue('tooLong', { max: this.maxCount });
     }
-    return !this.invalid;
+
+    this.commit(flags, message, this.containerEl ?? undefined);
   }
 
   public reset(): void {
@@ -223,34 +237,14 @@ export class USelect extends UFormControlElement<string | string[]> {
       }
     }
     this.internals?.setFormValue(this.valueAsString);
-    const { flags, message } = this.getValidity(values);
-    this.internals?.setValidity(
-      flags, 
-      this.validationMessage || message, 
-      this.containerEl || undefined
-    );
 
     if (!this.novalidate) {
       this.validate();
     }
-    this.dispatchEvent(new Event('change', { 
-      bubbles: true, 
-      composed: true 
+    this.dispatchEvent(new Event('change', {
+      bubbles: true,
+      composed: true
     }));
-  }
-
-  private getValidity(values: string[]): { flags: ValidityStateFlags; message: string } {
-    const s = getLocaleStrings(resolveLocale(this.locale));
-    if (this.required && !values.length) {
-      return { flags: { valueMissing: true }, message: s.required };
-    }
-    if (this.multiple && this.minCount != null && values.length > 0 && values.length < this.minCount) {
-      return { flags: { rangeUnderflow: true }, message: formatTemplate(s.minCount, { min: this.minCount }) };
-    }
-    if (this.multiple && this.maxCount != null && values.length > this.maxCount) {
-      return { flags: { rangeOverflow: true }, message: formatTemplate(s.maxCount, { max: this.maxCount }) };
-    }
-    return { flags: {}, message: '' };
   }
 
   private handleSlotChange = (e: Event) => {

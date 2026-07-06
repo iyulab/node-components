@@ -3,6 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import '../field/UField.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
+import { Locale } from "../../utilities/Locale.js";
 import { UOption } from "../option/UOption.js";
 import { styles } from "./URadio.styles.js";
 
@@ -69,13 +70,13 @@ export class URadio extends UFormControlElement<string> {
     `;
   }
 
-  public validate(): boolean {
-    if (this.internals) {
-      this.invalid = !this.internals.checkValidity();
-    } else {
-      this.invalid = this.required && !this.value;
-    }
-    return !this.invalid;
+  protected setValidity(): void {
+    const missing = this.required && !this.value;
+    this.commit(
+      missing ? { valueMissing: true } : {},
+      missing ? Locale.getValue('valueMissing') : '',
+      this,
+    );
   }
 
   public reset(): void {
@@ -108,11 +109,6 @@ export class URadio extends UFormControlElement<string> {
     });
 
     this.internals?.setFormValue(this.value || '');
-    this.internals?.setValidity(
-      this.required && !this.value ? { valueMissing: true } : {},
-      this.validationMessage || '',
-      this
-    );
 
     if (!this.novalidate) {
       this.validate();

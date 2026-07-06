@@ -1,8 +1,9 @@
-import { html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { html, PropertyValues } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
 import { live } from "lit/directives/live.js";
 
 import { UFormControlElement } from "../UFormControlElement.js";
+import { Locale } from "../../utilities/Locale.js";
 import { styles } from "./USwitch.styles.js";
 
 /**
@@ -40,6 +41,12 @@ export class USwitch extends UFormControlElement<string> {
   /** 체크 여부 */
   @property({ type: Boolean, reflect: true }) checked: boolean = false;
 
+  @query('input', true) inputEl?: HTMLInputElement;
+
+  protected shouldValidate(changed: PropertyValues): boolean {
+    return super.shouldValidate(changed) || changed.has('checked');
+  }
+
   render() {
     return html`
       <label class="wrapper" part="wrapper">
@@ -72,19 +79,19 @@ export class USwitch extends UFormControlElement<string> {
         </span>
       </label>
 
-      <div class="description" ?hidden=${!this.description}>
-        ${this.description}
+      <div class="description" ?hidden=${!(this.invalid && this.validationMessage) && !this.description}>
+        ${this.invalid && this.validationMessage ? this.validationMessage : this.description}
       </div>
     `;
   }
 
-  public validate(): boolean {
-    if (this.internals) {
-      this.invalid = !this.internals.reportValidity();
-    } else {
-      this.invalid = this.required && !this.checked;
-    }
-    return !this.invalid;
+  protected setValidity(): void {
+    const missing = !!this.inputEl?.validity.valueMissing;
+    this.commit(
+      missing ? { valueMissing: true } : {},
+      missing ? Locale.getValue('valueMissing') : '',
+      this.shadowRoot?.querySelector('.track') as HTMLElement ?? undefined,
+    );
   }
 
   public reset(): void {
@@ -105,11 +112,6 @@ export class USwitch extends UFormControlElement<string> {
       this.checked
       ? this.value || String(this.checked)
       : String(this.checked));
-    this.internals?.setValidity(
-      input.validity,
-      this.validationMessage || input.validationMessage,
-      this.shadowRoot?.querySelector('.track') || undefined
-    );
 
     if (!this.novalidate) {
       this.validate();

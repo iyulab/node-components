@@ -4,7 +4,7 @@ import '../field/UField.js';
 import '../tooltip/UTooltip.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
-import { getLocaleStrings, resolveLocale, formatTemplate } from "../../core/locale.js";
+import { Locale } from "../../utilities/Locale.js";
 import { styles } from "./USlider.styles.js";
 
 export interface SliderMark {
@@ -70,6 +70,11 @@ export class USlider extends UFormControlElement<number | number[]> {
 
   @state() private dragging: ThumbId | null = null;
   @query('.track') private trackEl!: HTMLElement;
+  @query('.container') private containerEl?: HTMLElement;
+
+  protected shouldValidate(changed: PropertyValues): boolean {
+    return super.shouldValidate(changed) || changed.has('min') || changed.has('max');
+  }
 
   public get valueAsNumber(): number {
     return Array.isArray(this.value) ? this.value[0] : this.value || 0;
@@ -164,14 +169,23 @@ export class USlider extends UFormControlElement<number | number[]> {
     `;
   }
 
-  public validate(): boolean {
-    if (this.internals) {
-      this.invalid = !this.internals.checkValidity();
-    } else {
-      const { flags } = this.getValidity();
-      this.invalid = Object.values(flags).some(Boolean);
+  protected setValidity(): void {
+    const v = this.valueAsNumber;
+    let flags: ValidityStateFlags = {};
+    let message = '';
+
+    if (this.required && !v) {
+      flags = { valueMissing: true };
+      message = Locale.getValue('valueMissing');
+    } else if (v < this.min) {
+      flags = { rangeUnderflow: true };
+      message = Locale.getValue('rangeUnderflow', { min: this.min });
+    } else if (v > this.max) {
+      flags = { rangeOverflow: true };
+      message = Locale.getValue('rangeOverflow', { max: this.max });
     }
-    return !this.invalid;
+
+    this.commit(flags, message, this.containerEl ?? undefined);
   }
 
   public reset(): void {
@@ -191,32 +205,11 @@ export class USlider extends UFormControlElement<number | number[]> {
     }
 
     this.internals?.setFormValue(this.valueAsNumber.toString());
-    const { flags, message } = this.getValidity();
-    this.internals?.setValidity(
-      flags,
-      this.validationMessage || message,
-      this.renderRoot.querySelector('.container') as HTMLElement || undefined
-    );
-    
-    this.dispatchEvent(new Event('change', { 
+
+    this.dispatchEvent(new Event('change', {
       bubbles: true,
       composed: true
     }));
-  }
-
-  private getValidity(): { flags: ValidityStateFlags; message: string } {
-    const v = this.valueAsNumber;
-    const s = getLocaleStrings(resolveLocale(this.locale));
-    if (this.required && !v) {
-      return { flags: { valueMissing: true }, message: s.required };
-    }
-    if (v < this.min) {
-      return { flags: { rangeUnderflow: true }, message: formatTemplate(s.minValue, { min: this.min }) };
-    }
-    if (v > this.max) {
-      return { flags: { rangeOverflow: true }, message: formatTemplate(s.maxValue, { max: this.max }) };
-    }
-    return { flags: {}, message: '' };
   }
 
   private renderThumb(thumb: ThumbId): TemplateResult {

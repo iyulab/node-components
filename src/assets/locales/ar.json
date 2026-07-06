@@ -1,0 +1,11 @@
+{
+  "valueMissing": "هذا الحقل مطلوب",
+  "badInput": "يرجى إدخال قيمة صالحة",
+  "typeMismatch": "يرجى إدخال قيمة بالتنسيق الصحيح",
+  "patternMismatch": "يرجى اتباع التنسيق المطلوب",
+  "rangeUnderflow": "يجب أن تكون القيمة {min} على الأقل",
+  "rangeOverflow": "يجب ألا تتجاوز القيمة {max}",
+  "stepMismatch": "يجب أن تكون القيمة من مضاعفات {step}",
+  "tooShort": "يجب أن تكون {min} على الأقل",
+  "tooLong": "يجب ألا تتجاوز {max}"
+}

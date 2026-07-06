@@ -7,6 +7,7 @@ import '../icon/UIcon.js';
 import '../spinner/USpinner.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
+import { Locale } from "../../utilities/Locale.js";
 import { UOption } from "../option/UOption.js";
 import { UPopover } from "../popover/UPopover.js";
 import { styles } from "./UInput.styles.js";
@@ -172,13 +173,41 @@ export class UInput extends UFormControlElement<string> {
     `;
   }
 
-  public validate(): boolean {
-    if (this.internals) {
-      this.invalid = !this.internals.checkValidity();
-    } else {
-      this.invalid = !this.inputEl?.checkValidity();
+  protected setValidity(): void {
+    const v = this.inputEl?.validity;
+    let flags: ValidityStateFlags = {};
+    let message = '';
+
+    if (v?.valueMissing) {
+      flags = { valueMissing: true };
+      message = Locale.getValue('valueMissing');
+    } else if (v?.badInput) {
+      flags = { badInput: true };
+      message = Locale.getValue('badInput');
+    } else if (v?.typeMismatch) {
+      flags = { typeMismatch: true };
+      message = Locale.getValue('typeMismatch');
+    } else if (v?.patternMismatch) {
+      flags = { patternMismatch: true };
+      message = Locale.getValue('patternMismatch', { pattern: this.pattern ?? '' });
+    } else if (v?.tooShort) {
+      flags = { tooShort: true };
+      message = Locale.getValue('tooShort', { min: this.minlength ?? 0 });
+    } else if (v?.tooLong) {
+      flags = { tooLong: true };
+      message = Locale.getValue('tooLong', { max: this.maxlength ?? 0 });
+    } else if (v?.rangeUnderflow) {
+      flags = { rangeUnderflow: true };
+      message = Locale.getValue('rangeUnderflow', { min: this.min ?? '' });
+    } else if (v?.rangeOverflow) {
+      flags = { rangeOverflow: true };
+      message = Locale.getValue('rangeOverflow', { max: this.max ?? '' });
+    } else if (v?.stepMismatch) {
+      flags = { stepMismatch: true };
+      message = Locale.getValue('stepMismatch', { step: this.step ?? 1 });
     }
-    return !this.invalid;
+
+    this.commit(flags, message, this.containerEl ?? undefined);
   }
 
   public reset(): void {
@@ -258,11 +287,6 @@ export class UInput extends UFormControlElement<string> {
   private handleInputBlur = (_: FocusEvent) => {
     this.value = this.inputEl?.value || '';
     this.internals?.setFormValue(this.value);
-    this.internals?.setValidity(
-      this.inputEl?.validity,
-      this.validationMessage || this.inputEl?.validationMessage,
-      this.containerEl
-    );
 
     if (!this.novalidate) {
       this.validate();

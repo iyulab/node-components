@@ -5,6 +5,7 @@ import { live } from "lit/directives/live.js";
 import '../field/UField.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
+import { Locale } from "../../utilities/Locale.js";
 import type { AutoCapitalize, EnterKeyHint, InputModeOption } from "../input/UInput.js";
 import { styles } from "./UTextarea.styles.js";
 
@@ -114,13 +115,23 @@ export class UTextarea extends UFormControlElement<string> {
     `;
   }
 
-  public validate(): boolean {
-    if (this.internals) {
-      this.invalid = !this.internals.checkValidity();
-    } else {
-      this.invalid = !this.textareaEl?.checkValidity();
+  protected setValidity(): void {
+    const v = this.textareaEl?.validity;
+    let flags: ValidityStateFlags = {};
+    let message = '';
+
+    if (v?.valueMissing) {
+      flags = { valueMissing: true };
+      message = Locale.getValue('valueMissing');
+    } else if (v?.tooShort) {
+      flags = { tooShort: true };
+      message = Locale.getValue('tooShort', { min: this.minlength ?? 0 });
+    } else if (v?.tooLong) {
+      flags = { tooLong: true };
+      message = Locale.getValue('tooLong', { max: this.maxlength ?? 0 });
     }
-    return !this.invalid;
+
+    this.commit(flags, message, this.textareaEl ?? undefined);
   }
 
   public reset(): void {
@@ -163,11 +174,6 @@ export class UTextarea extends UFormControlElement<string> {
   private handleTextareaChange = (e: Event) => {
     this.value = this.textareaEl?.value;
     this.internals?.setFormValue(this.value || '');
-    this.internals?.setValidity(
-      this.textareaEl?.validity,
-      this.textareaEl?.validationMessage,
-      this.textareaEl
-    )
 
     if (!this.novalidate) {
       this.validate();
