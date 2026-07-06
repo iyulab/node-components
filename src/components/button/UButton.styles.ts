@@ -2,6 +2,21 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
+    /* --btn-color 하나만 정해지면 hover/active/surface/outline 톤이 전부 자동 파생 */
+    --btn-color: var(--u-primary-color, var(--u-blue-600));
+    --btn-color-hover: color-mix(in srgb, var(--btn-color) 85%, black);
+    --btn-color-active: color-mix(in srgb, var(--btn-color) 70%, black);
+    --btn-color-surface: color-mix(in srgb, var(--btn-color) 12%, var(--u-bg-color));
+    --btn-color-surface-hover: color-mix(in srgb, var(--btn-color) 22%, var(--u-bg-color));
+    --btn-color-surface-active: color-mix(in srgb, var(--btn-color) 32%, var(--u-bg-color));
+    --btn-color-border: color-mix(in srgb, var(--btn-color) 45%, var(--u-bg-color));
+    --btn-color-border-hover: color-mix(in srgb, var(--btn-color) 60%, var(--u-bg-color));
+    --btn-color-border-active: color-mix(in srgb, var(--btn-color) 75%, var(--u-bg-color));
+    --btn-color-outline-hover: color-mix(in srgb, var(--btn-color) 6%, var(--u-bg-color));
+    --btn-color-outline-active: color-mix(in srgb, var(--btn-color) 12%, var(--u-bg-color));
+  }
+
+  :host {
     position: relative;
     display: inline-flex;
 
@@ -17,35 +32,19 @@ export const styles = css`
     overflow: hidden;
     user-select: none;
     cursor: pointer;
-
-    /* Semantic color tokens consumed by variant rules below. Default (color="neutral")
-       maps 1:1 onto the neutral scale — zero visual change for existing consumers. */
-    --btn-c-50: var(--u-neutral-50);
-    --btn-c-100: var(--u-neutral-100);
-    --btn-c-200: var(--u-neutral-200);
-    --btn-c-300: var(--u-neutral-300);
-    --btn-c-400: var(--u-neutral-400);
-    --btn-c-500: var(--u-neutral-500);
-    --btn-c-600: var(--u-neutral-600);
-    --btn-c-700: var(--u-neutral-700);
-    --btn-c-800: var(--u-neutral-800);
   }
 
-  /* === Color tokens ===
-     Non-neutral colors have no "50" tier in the design system (see assets/styles/light.css) —
-     tier "0" (the palest stop) is used in that slot instead of inventing a non-existent token. */
-  :host([color="blue"])   { --btn-c-50: var(--u-blue-0);   --btn-c-100: var(--u-blue-100);   --btn-c-200: var(--u-blue-200);   --btn-c-300: var(--u-blue-300);   --btn-c-400: var(--u-blue-400);   --btn-c-500: var(--u-blue-500);   --btn-c-600: var(--u-blue-600);   --btn-c-700: var(--u-blue-700);   --btn-c-800: var(--u-blue-800); }
-  :host([color="green"])  { --btn-c-50: var(--u-green-0);  --btn-c-100: var(--u-green-100);  --btn-c-200: var(--u-green-200);  --btn-c-300: var(--u-green-300);  --btn-c-400: var(--u-green-400);  --btn-c-500: var(--u-green-500);  --btn-c-600: var(--u-green-600);  --btn-c-700: var(--u-green-700);  --btn-c-800: var(--u-green-800); }
-  :host([color="red"])    { --btn-c-50: var(--u-red-0);    --btn-c-100: var(--u-red-100);    --btn-c-200: var(--u-red-200);    --btn-c-300: var(--u-red-300);    --btn-c-400: var(--u-red-400);    --btn-c-500: var(--u-red-500);    --btn-c-600: var(--u-red-600);    --btn-c-700: var(--u-red-700);    --btn-c-800: var(--u-red-800); }
-  :host([color="orange"]) { --btn-c-50: var(--u-orange-0); --btn-c-100: var(--u-orange-100); --btn-c-200: var(--u-orange-200); --btn-c-300: var(--u-orange-300); --btn-c-400: var(--u-orange-400); --btn-c-500: var(--u-orange-500); --btn-c-600: var(--u-orange-600); --btn-c-700: var(--u-orange-700); --btn-c-800: var(--u-orange-800); }
-  :host([color="teal"])   { --btn-c-50: var(--u-teal-0);   --btn-c-100: var(--u-teal-100);   --btn-c-200: var(--u-teal-200);   --btn-c-300: var(--u-teal-300);   --btn-c-400: var(--u-teal-400);   --btn-c-500: var(--u-teal-500);   --btn-c-600: var(--u-teal-600);   --btn-c-700: var(--u-teal-700);   --btn-c-800: var(--u-teal-800); }
-  :host([color="cyan"])   { --btn-c-50: var(--u-cyan-0);   --btn-c-100: var(--u-cyan-100);   --btn-c-200: var(--u-cyan-200);   --btn-c-300: var(--u-cyan-300);   --btn-c-400: var(--u-cyan-400);   --btn-c-500: var(--u-cyan-500);   --btn-c-600: var(--u-cyan-600);   --btn-c-700: var(--u-cyan-700);   --btn-c-800: var(--u-cyan-800); }
-  :host([color="purple"]) { --btn-c-50: var(--u-purple-0); --btn-c-100: var(--u-purple-100); --btn-c-200: var(--u-purple-200); --btn-c-300: var(--u-purple-300); --btn-c-400: var(--u-purple-400); --btn-c-500: var(--u-purple-500); --btn-c-600: var(--u-purple-600); --btn-c-700: var(--u-purple-700); --btn-c-800: var(--u-purple-800); }
-  :host([color="pink"])   { --btn-c-50: var(--u-pink-0);   --btn-c-100: var(--u-pink-100);   --btn-c-200: var(--u-pink-200);   --btn-c-300: var(--u-pink-300);   --btn-c-400: var(--u-pink-400);   --btn-c-500: var(--u-pink-500);   --btn-c-600: var(--u-pink-600);   --btn-c-700: var(--u-pink-700);   --btn-c-800: var(--u-pink-800); }
+  /* === Color tokens === */
+  :host([color="blue"])   { --btn-color: var(--u-blue-600); }
+  :host([color="green"])  { --btn-color: var(--u-green-600); }
+  :host([color="red"])    { --btn-color: var(--u-red-600); }
+  :host([color="orange"]) { --btn-color: var(--u-orange-600); }
+  :host([color="teal"])   { --btn-color: var(--u-teal-600); }
+  :host([color="cyan"])   { --btn-color: var(--u-cyan-600); }
+  :host([color="purple"]) { --btn-color: var(--u-purple-600); }
+  :host([color="pink"])   { --btn-color: var(--u-pink-600); }
 
-  /* === Size ===
-     padding (0.5em), the spinner (1em/0.5em), and prefix/suffix margins (0.5em) are all
-     em-relative already, so changing font-size alone scales the whole button proportionally. */
+  /* === Size === */
   :host([size="sm"]) {
     font-size: 12px;
   }
@@ -83,59 +82,59 @@ export const styles = css`
   /* solid: 강한 채움 (기본 color="neutral") */
   :host([variant="solid"]) {
     color: #fff;
-    background-color: var(--btn-c-600);
-    border-color: var(--btn-c-600);
+    background-color: var(--btn-color);
+    border-color: var(--btn-color);
   }
   :host([variant="solid"]:hover) {
-    background-color: var(--btn-c-700);
-    border-color: var(--btn-c-700);
+    background-color: var(--btn-color-hover);
+    border-color: var(--btn-color-hover);
   }
   :host([variant="solid"]:active) {
-    background-color: var(--btn-c-800);
-    border-color: var(--btn-c-800);
+    background-color: var(--btn-color-active);
+    border-color: var(--btn-color-active);
   }
 
   /* surface: 채우기 + 경계 */
   :host([variant="surface"]) {
     color: var(--u-txt-color);
-    background-color: var(--btn-c-100);
-    border-color: var(--btn-c-300);
+    background-color: var(--btn-color-surface);
+    border-color: var(--btn-color-border);
   }
   :host([variant="surface"]:hover) {
-    background-color: var(--btn-c-200);
-    border-color: var(--btn-c-400);
+    background-color: var(--btn-color-surface-hover);
+    border-color: var(--btn-color-border-hover);
   }
   :host([variant="surface"]:active) {
-    background-color: var(--btn-c-300);
-    border-color: var(--btn-c-500);
+    background-color: var(--btn-color-surface-active);
+    border-color: var(--btn-color-border-active);
   }
 
   /* filled: 채우기만 */
   :host([variant="filled"]) {
     color: var(--u-txt-color);
-    background-color: var(--btn-c-100);
+    background-color: var(--btn-color-surface);
     border-color: transparent;
   }
   :host([variant="filled"]:hover) {
-    background-color: var(--btn-c-200);
+    background-color: var(--btn-color-surface-hover);
   }
   :host([variant="filled"]:active) {
-    background-color: var(--btn-c-300);
+    background-color: var(--btn-color-surface-active);
   }
 
   /* outlined: 경계만 */
   :host([variant="outlined"]) {
     color: var(--u-txt-color);
-    border-color: var(--btn-c-300);
+    border-color: var(--btn-color-border);
     background-color: transparent;
   }
   :host([variant="outlined"]:hover) {
-    border-color: var(--btn-c-400);
-    background-color: var(--btn-c-50);
+    border-color: var(--btn-color-border-hover);
+    background-color: var(--btn-color-outline-hover);
   }
   :host([variant="outlined"]:active) {
-    border-color: var(--btn-c-500);
-    background-color: var(--btn-c-100);
+    border-color: var(--btn-color-border-active);
+    background-color: var(--btn-color-outline-active);
   }
 
   /* ghost: transparent */
@@ -168,13 +167,13 @@ export const styles = css`
   }
   /* link + 명시적 non-neutral color: 링크 자체 색상을 재정의 (예: 파괴적 액션 링크) */
   :host([variant="link"][color]:not([color="neutral"])) {
-    color: var(--btn-c-500);
+    color: var(--btn-color);
   }
   :host([variant="link"][color]:not([color="neutral"]):hover) {
-    color: var(--btn-c-600);
+    color: var(--btn-color-hover);
   }
   :host([variant="link"][color]:not([color="neutral"]):active) {
-    color: var(--btn-c-700);
+    color: var(--btn-color-active);
   }
 
   /* === Inner === */

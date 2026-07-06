@@ -40,7 +40,7 @@ export const styles = css`
   }
   :host([color="blue"]) {
     color: var(--u-neutral-0);
-    background-color: var(--u-blue-500);
+    background-color: var(--u-primary-color, var(--u-blue-500));
   }
   :host([color="green"]) {
     color: var(--u-neutral-0);

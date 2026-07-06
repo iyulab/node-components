@@ -26,7 +26,7 @@ export class UBadge extends UElement {
   /** 배지 유형 */
   @property({ type: String, reflect: true }) variant: BadgeVariant = "pill";
   /** 배지 색상 */
-  @property({ type: String, reflect: true }) color: BadgeColor = "neutral";
+  @property({ type: String, reflect: true }) color: BadgeColor = "blue";
   /** 부모 요소 기준 배치 위치 (설정 시 position: absolute) */
   @property({ type: String, reflect: true }) anchor?: BadgeAnchor;
 

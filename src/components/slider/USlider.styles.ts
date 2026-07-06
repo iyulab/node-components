@@ -2,11 +2,11 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --slider-fill-color: var(--u-blue-600);
+    --slider-fill-color: var(--u-primary-color, var(--u-blue-600));
     --slider-track-color: var(--u-neutral-300);
     --slider-track-height: 6px;
     --slider-thumb-size: 18px;
-    --slider-thumb-color: var(--u-blue-600);
+    --slider-thumb-color: var(--slider-fill-color);
     --slider-thumb-border-color: var(--u-neutral-0);
     --slider-mark-size: 12px;
     --slider-mark-color: var(--u-neutral-0);

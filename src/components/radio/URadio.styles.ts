@@ -2,6 +2,11 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
+    --radio-color: var(--u-primary-color, var(--u-blue-600));
+    --radio-color-active: color-mix(in srgb, var(--radio-color) 85%, black);
+  }
+
+  :host {
     display: inline-flex;
     flex-direction: column;
     gap: 0.5em;
@@ -44,40 +49,40 @@ export const styles = css`
   /* Default + Filled */
   :host([type="default"][variant="filled"]) ::slotted(u-option) {
     --option-color-active: #fff;
-    --option-border-color-active: var(--u-blue-600);
-    --option-background-color-active: var(--u-blue-600);
+    --option-border-color-active: var(--radio-color);
+    --option-background-color-active: var(--radio-color);
     --option-color-active-interactive: #fff;
-    --option-border-color-active-interactive: var(--u-blue-700);
-    --option-background-color-active-interactive: var(--u-blue-700);
+    --option-border-color-active-interactive: var(--radio-color-active);
+    --option-background-color-active-interactive: var(--radio-color-active);
   }
 
   /* Default + Outlined */
   :host([type="default"][variant="outlined"]) ::slotted(u-option) {
-    --option-color-active: var(--u-blue-700);
-    --option-border-color-active: var(--u-blue-600);
+    --option-color-active: var(--radio-color-active);
+    --option-border-color-active: var(--radio-color);
     --option-background-color-active: transparent;
-    --option-color-active-interactive: var(--u-blue-700);
-    --option-border-color-active-interactive: var(--u-blue-700);
+    --option-color-active-interactive: var(--radio-color-active);
+    --option-border-color-active-interactive: var(--radio-color-active);
     --option-background-color-active-interactive: transparent;
   }
 
   /* Button + Filled */
   :host([type="button"][variant="filled"]) ::slotted(u-option) {
     --option-color-active: #fff;
-    --option-border-color-active: var(--u-blue-600);
-    --option-background-color-active: var(--u-blue-600);
+    --option-border-color-active: var(--radio-color);
+    --option-background-color-active: var(--radio-color);
     --option-color-active-interactive: #fff;
-    --option-border-color-active-interactive: var(--u-blue-700);
-    --option-background-color-active-interactive: var(--u-blue-700);
+    --option-border-color-active-interactive: var(--radio-color-active);
+    --option-background-color-active-interactive: var(--radio-color-active);
   }
 
   /* Button + Outlined */
   :host([type="button"][variant="outlined"]) ::slotted(u-option) {
-    --option-color-active: var(--u-blue-700);
-    --option-border-color-active: var(--u-blue-600);
+    --option-color-active: var(--radio-color-active);
+    --option-border-color-active: var(--radio-color);
     --option-background-color-active: transparent;
-    --option-color-active-interactive: var(--u-blue-700);
-    --option-border-color-active-interactive: var(--u-blue-700);
+    --option-color-active-interactive: var(--radio-color-active);
+    --option-border-color-active-interactive: var(--radio-color-active);
     --option-background-color-active-interactive: transparent;
   }
 

@@ -3,6 +3,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     --tree-item-depth: 0;
+    --tree-item-color: var(--u-primary-color, var(--u-blue-600));
   }
 
   :host {
@@ -35,9 +36,9 @@ export const styles = css`
     background-color: var(--u-bg-color-hover);
   }
   .header[selected] {
-    color: var(--u-blue-700);
+    color: color-mix(in srgb, var(--tree-item-color) 85%, black);
     font-weight: 600;
-    background-color: var(--u-blue-100);
+    background-color: color-mix(in srgb, var(--tree-item-color) 15%, var(--u-bg-color));
   }
 
   ::slotted([slot="prefix"]) {
@@ -98,8 +99,8 @@ export const styles = css`
   }
   .prefix-checkbox[checked],
   .prefix-checkbox[indeterminate] {
-    border-color: var(--u-blue-600);
-    background-color: var(--u-blue-600);
+    border-color: var(--tree-item-color);
+    background-color: var(--tree-item-color);
   }
   .prefix-checkbox[checked] u-icon,
   .prefix-checkbox[indeterminate] u-icon {

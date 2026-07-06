@@ -2,6 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
+    --checkbox-fill-color: var(--u-primary-color, var(--u-blue-600));
     --checkbox-color: inherit;
     --checkbox-border-color: var(--u-input-border-color);
     --checkbox-background-color: var(--u-input-bg-color);
@@ -43,22 +44,22 @@ export const styles = css`
   :host([variant="filled"][checked]),
   :host([variant="filled"][indeterminate]) {
     --checkbox-color: var(--u-neutral-100);
-    --checkbox-border-color: var(--u-blue-600);
-    --checkbox-background-color: var(--u-blue-600);
+    --checkbox-border-color: var(--checkbox-fill-color);
+    --checkbox-background-color: var(--checkbox-fill-color);
   }
 
   /* === Variant: outline - 테두리만 === */
   :host([variant="outline"][checked]),
   :host([variant="outline"][indeterminate]) {
-    --checkbox-border-color: var(--u-blue-600);
+    --checkbox-border-color: var(--checkbox-fill-color);
     --checkbox-background-color: transparent;
   }
 
   /* === Color variants (filled) === */
   :host([variant="filled"][color="blue"][checked]),
   :host([variant="filled"][color="blue"][indeterminate]) {
-    --checkbox-border-color: var(--u-blue-600);
-    --checkbox-background-color: var(--u-blue-600);
+    --checkbox-border-color: var(--checkbox-fill-color);
+    --checkbox-background-color: var(--checkbox-fill-color);
   }
   :host([variant="filled"][color="green"][checked]),
   :host([variant="filled"][color="green"][indeterminate]) {
@@ -104,8 +105,8 @@ export const styles = css`
   /* === Color variants (outline) === */
   :host([variant="outline"][color="blue"][checked]),
   :host([variant="outline"][color="blue"][indeterminate]) {
-    --checkbox-color: var(--u-blue-600);
-    --checkbox-border-color: var(--u-blue-600);
+    --checkbox-color: var(--checkbox-fill-color);
+    --checkbox-border-color: var(--checkbox-fill-color);
   }
   :host([variant="outline"][color="green"][checked]),
   :host([variant="outline"][color="green"][indeterminate]) {

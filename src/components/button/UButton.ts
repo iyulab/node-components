@@ -25,6 +25,8 @@ export type ButtonSize = "sm" | "md" | "lg";
  * @csspart button - 내부 버튼 요소
  * @csspart content - 콘텐츠 영역
  * @csspart mask - 로딩 마스크 영역
+ *
+ * @cssprop --u-primary-color - color="neutral"일 때 버튼 기준색. 지정 시 hover/active/surface 톤이 color-mix()로 자동 파생.
  */
 @customElement('u-button')
 export class UButton extends UElement {
@@ -34,16 +36,11 @@ export class UButton extends UElement {
   /** 버튼 스타일 변형 */
   @property({ type: String, reflect: true }) variant: ButtonVariant = "solid";
   /**
-   * Semantic 색상. 기본값 `"neutral"`은 기존(v1.1.x 이전) 렌더링과 동일 — 하위 호환.
-   * `variant`가 사용하는 색상 스케일을 이 값으로 교체한다(예: `color="red"` + `variant="solid"` → 파괴적 액션 버튼).
-   * `variant="link"`는 `color="neutral"`(기본값)일 때 기존 동작(파랑)을 유지하고, 다른 색을 명시하면 그 색으로 재정의된다.
-   * `variant="ghost"`는 hover/active 배경이 중립 팔레트에 묶여 있지 않아 이 속성의 영향을 받지 않는다.
+   * Semantic 색상. 기본값 `neutral`은 --u-primary-color 미지정 시 blue로 렌더링(회색에서 변경됨).
+   * `link`는 neutral일 때 기존 파랑 유지, 다른 색 지정 시 재정의. `ghost`는 영향받지 않음.
    */
   @property({ type: String, reflect: true }) color: ButtonColor = "neutral";
-  /**
-   * 버튼 크기. 기본값 `"md"`는 기존(v1.2.0 이전) 렌더링과 동일 — 하위 호환.
-   * `font-size`만 변경하며, padding/spinner/prefix·suffix 여백은 이미 `em` 단위라 함께 비례 축소·확대된다.
-   */
+  /** 버튼 크기. `font-size`만 변경하며 나머지는 `em` 단위라 비례 조정됨. */
   @property({ type: String, reflect: true }) size: ButtonSize = "md";
   /** 경계선 둥글게 여부 */
   @property({ type: Boolean, reflect: true }) rounded = false;
@@ -67,9 +64,7 @@ export class UButton extends UElement {
   /** form data에 포함될 value */
   @property({ type: String, reflect: true }) value?: string;
 
-  /**
-   * ElementInternals는 폼과의 연동, 유효성 검사 상태 관리 등을 지원하는 네이티브 API입니다. 
-   */
+  /** 폼 연동을 위한 ElementInternals. */
   public internals?: ElementInternals;
 
   set form(val: string) {

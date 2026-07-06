@@ -2,6 +2,10 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
+    --tab-panel-color: var(--u-primary-color, var(--u-blue-600));
+  }
+
+  :host {
     display: flex;
     color: var(--u-txt-color);
     font-size: inherit;
@@ -79,12 +83,12 @@ export const styles = css`
 
   :host([variant="line"]) ::slotted(u-tab[active]) {
     position: relative;
-    color: var(--u-blue-600);
+    color: var(--tab-panel-color);
   }
   :host([variant="line"]) ::slotted(u-tab[active])::after {
     content: '';
     position: absolute;
-    background-color: var(--u-blue-600);
+    background-color: var(--tab-panel-color);
   }
 
   :host([variant="line"][placement="top"]) .header {
@@ -193,7 +197,7 @@ export const styles = css`
     gap: 0.25em;
   }
   :host([variant="plain"]) ::slotted(u-tab[active]) {
-    color: var(--u-blue-600);
+    color: var(--tab-panel-color);
     font-weight: 600;
   }
 `;

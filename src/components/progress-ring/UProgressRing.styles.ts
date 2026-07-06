@@ -3,10 +3,10 @@ import { css } from 'lit';
 export const styles = css`
   :host {
     --progress-ring-size: 6em;
-    --progress-ring-color: var(--u-blue-600);
+    --progress-ring-color: var(--u-primary-color, var(--u-blue-600));
     --progress-ring-track-width: 6;
     --progress-ring-track-color: var(--u-neutral-200);
-    --progress-ring-buffer-color: var(--u-blue-200);
+    --progress-ring-buffer-color: color-mix(in srgb, var(--progress-ring-color) 35%, var(--u-bg-color));
   }
 
   /* === Status Colors === */

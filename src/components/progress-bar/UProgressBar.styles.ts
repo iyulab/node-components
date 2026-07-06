@@ -3,8 +3,8 @@ import { css } from 'lit';
 export const styles = css`
   :host {
     --progress-bar-height: 0.5em;
-    --progress-bar-color: var(--u-blue-600);
-    --progress-bar-buffer-color: var(--u-blue-200);
+    --progress-bar-color: var(--u-primary-color, var(--u-blue-600));
+    --progress-bar-buffer-color: color-mix(in srgb, var(--progress-bar-color) 35%, var(--u-bg-color));
     --progress-bar-track-color: var(--u-neutral-200);
   }
 

@@ -2,17 +2,18 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
+    --option-color: var(--u-primary-color, var(--u-blue-600));
     --option-color-interactive: inherit;
     --option-border-color-interactive: var(--u-border-color-hover);
     --option-background-color-interactive: var(--u-bg-color-hover);
 
     --option-color-active: inherit;
-    --option-border-color-active: var(--u-blue-600);
-    --option-background-color-active: var(--u-blue-100);
+    --option-border-color-active: var(--option-color);
+    --option-background-color-active: color-mix(in srgb, var(--option-color) 15%, var(--u-bg-color));
 
     --option-color-active-interactive: inherit;
-    --option-border-color-active-interactive: var(--u-blue-600);
-    --option-background-color-active-interactive: var(--u-blue-200);
+    --option-border-color-active-interactive: var(--option-color);
+    --option-background-color-active-interactive: color-mix(in srgb, var(--option-color) 25%, var(--u-bg-color));
   }
 
   :host {

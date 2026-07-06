@@ -3,6 +3,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     --menu-item-depth: 0;
+    --menu-item-color: var(--u-primary-color, var(--u-blue-600));
   }
 
   :host {
@@ -49,12 +50,12 @@ export const styles = css`
   /* indicator: highlight */
   :host([selected][indicator="highlight"]) .header {
     font-weight: 600;
-    color: var(--u-blue-700);
-    background-color: var(--u-blue-100);
+    color: color-mix(in srgb, var(--menu-item-color) 85%, black);
+    background-color: color-mix(in srgb, var(--menu-item-color) 15%, var(--u-bg-color));
   }
   :host([selected][indicator="highlight"]) .header:hover,
   :host([selected][indicator="highlight"]:focus-visible) .header {
-    background-color: var(--u-blue-200);
+    background-color: color-mix(in srgb, var(--menu-item-color) 25%, var(--u-bg-color));
   }
 
   .prefix-checker {

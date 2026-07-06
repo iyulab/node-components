@@ -2,16 +2,17 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
+    --tag-fill-color: var(--u-primary-color, var(--u-blue-600));
     --tag-color: var(--u-neutral-800);
     --tag-bg-color: var(--u-neutral-100);
     --tag-border-color: transparent;
   }
 
-  /* Variant: solid (강한 채움) */
+  /* Variant: solid (강한 채움, 기본 색상은 --u-primary-color) */
   :host([variant="solid"]) {
     --tag-color: var(--u-neutral-0);
-    --tag-bg-color: var(--u-neutral-600);
-    --tag-border-color: var(--u-neutral-600);
+    --tag-bg-color: var(--tag-fill-color);
+    --tag-border-color: var(--tag-fill-color);
   }
   :host([variant="solid"][color="blue"]) {
     --tag-bg-color: var(--u-blue-500);
@@ -50,11 +51,11 @@ export const styles = css`
     --tag-border-color: var(--u-pink-500);
   }
 
-  /* Variant: surface (채우기 + 테두리) */
+  /* Variant: surface (채우기 + 테두리, 기본 색상은 --u-primary-color) */
   :host([variant="surface"]) {
-    --tag-color: var(--u-neutral-800);
-    --tag-bg-color: var(--u-neutral-100);
-    --tag-border-color: var(--u-neutral-300);
+    --tag-color: color-mix(in srgb, var(--tag-fill-color) 70%, black);
+    --tag-bg-color: color-mix(in srgb, var(--tag-fill-color) 15%, var(--u-bg-color));
+    --tag-border-color: color-mix(in srgb, var(--tag-fill-color) 40%, var(--u-bg-color));
   }
   :host([variant="surface"][color="blue"]) {
     --tag-color: var(--u-blue-800);
@@ -102,10 +103,10 @@ export const styles = css`
     --tag-border-color: var(--u-pink-300);
   }
 
-  /* Variant: filled (채우기만, 테두리 없음) */
+  /* Variant: filled (채우기만, 테두리 없음, 기본 색상은 --u-primary-color) */
   :host([variant="filled"]) {
-    --tag-color: var(--u-neutral-800);
-    --tag-bg-color: var(--u-neutral-100);
+    --tag-color: color-mix(in srgb, var(--tag-fill-color) 70%, black);
+    --tag-bg-color: color-mix(in srgb, var(--tag-fill-color) 15%, var(--u-bg-color));
     --tag-border-color: transparent;
   }
   :host([variant="filled"][color="blue"]) {
@@ -145,11 +146,11 @@ export const styles = css`
     --tag-bg-color: var(--u-pink-100);
   }
 
-  /* Variant: outlined (테두리만) */
+  /* Variant: outlined (테두리만, 기본 색상은 --u-primary-color) */
   :host([variant="outlined"]) {
-    --tag-color: var(--u-neutral-700);
+    --tag-color: color-mix(in srgb, var(--tag-fill-color) 85%, black);
     --tag-bg-color: transparent;
-    --tag-border-color: var(--u-neutral-300);
+    --tag-border-color: color-mix(in srgb, var(--tag-fill-color) 40%, var(--u-bg-color));
   }
   :host([variant="outlined"][color="blue"]) {
     --tag-color: var(--u-blue-600);
