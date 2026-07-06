@@ -68,10 +68,19 @@ You can override any token after `Theme.init()`:
 ```css
 /* my-theme.css */
 :root {
-  --u-blue-500: #6200EA;   /* custom brand color */
+  --u-primary-color: #6200EA; /* global brand/accent color */
   --u-neutral-50: #1A1A2E; /* dark surface */
 }
 ```
+
+### Primary Color Token (`--u-primary-color`)
+
+Interactive components now derive their accent states from `--u-primary-color`.
+
+- A single override updates hover/active/surface/outline accents across major controls.
+- Internally, components compute state colors with `color-mix()` from `--u-primary-color` instead of relying on a fixed palette token.
+
+Typical affected components include `u-button`, `u-checkbox`, `u-radio`, `u-switch`, `u-tab-panel`, `u-badge`, and `u-tag`.
 
 Or override per-component via CSS custom properties (see individual component docs):
 

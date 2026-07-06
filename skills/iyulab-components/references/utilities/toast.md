@@ -17,6 +17,11 @@ Toast.info('Update available.');
 Toast.notice('New message received.', { position: 'bottom-right' });
 Toast.message('Hello!', { title: 'Greetings' });
 
+Toast.DefaultOptions = {
+  position: 'bottom-center',
+  duration: 3000
+};
+
 // Full control
 await Toast.show('success', 'Custom message', {
   title: 'Done',
@@ -38,6 +43,7 @@ await Toast.show('success', 'Custom message', {
 | `Toast.warning(content, options?)` | Warning toast |
 | `Toast.error(content, options?)` | Error toast |
 | `Toast.show(status?, content?, options?)` | Generic toast with custom options |
+| `Toast.DefaultOptions` | Global default options applied to every toast call (per-call options win) |
 
 ## ToastOptions
 

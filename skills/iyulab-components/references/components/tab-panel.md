@@ -50,6 +50,12 @@ Tab-based content switcher. Pair each `u-tab` with a `u-panel` of the same `valu
 | `draggable` | `boolean` | `false` | ✓ | Allow reordering tabs by drag |
 | `disabled` | `boolean` | `false` | ✓ | Disable all tabs |
 
+### Events
+
+| Event | Description |
+|-------|-------------|
+| `change` | Fires on user-driven tab changes (click/keyboard). Not emitted for initial mount or direct `value` assignment. |
+
 ### CSS Parts
 
 | Part | Description |

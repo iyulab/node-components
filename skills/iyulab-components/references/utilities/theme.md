@@ -22,6 +22,18 @@ await Theme.init({
 });
 ```
 
+## Primary Color Customization
+
+Interactive components derive their accent palette from `--u-primary-color`.
+
+```css
+:root {
+  --u-primary-color: #7c3aed; /* global brand/accent color */
+}
+```
+
+With this single token override, components such as buttons, checkbox/radio/switch, tab-panel, badge, and tag recalculate hover/active/surface/outline colors automatically.
+
 ## API
 
 | Member | Type | Description |

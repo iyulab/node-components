@@ -1,8 +1,7 @@
 // Base Components
-export * from './components/UFormControlElement.js';
-export * from './components/UDataElement.js';
 export * from './components/UElement.js';
 export * from './components/UFloatingElement.js';
+export * from './components/UFormControlElement.js';
 export * from './components/UOverlayElement.js';
 
 // Components
@@ -67,6 +66,5 @@ export * from './utilities/elements.js';
 export * from './utilities/icons.js';
 export * from './utilities/Locale.js';
 export * from './utilities/OverlayManager.js';
-export * from './utilities/sanitizers.js';
 export * from './utilities/Theme.js';
 export * from './utilities/Toast.js';

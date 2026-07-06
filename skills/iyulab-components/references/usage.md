@@ -62,6 +62,16 @@ Theme.set('system');
 const current = Theme.get(); // 'system' | 'light' | 'dark' | undefined
 ```
 
+### Brand color customization
+
+```css
+:root {
+  --u-primary-color: #7c3aed;
+}
+```
+
+Interactive components derive hover/active/surface/outline styles from this token.
+
 ---
 
 ## Icon Setup
@@ -210,6 +220,7 @@ const confirmed = await Dialog.confirm('Delete this item?');
 const name = await Dialog.prompt('Enter your name:', { default: 'Alice' });
 
 // Toast
+Toast.DefaultOptions = { position: 'bottom-center', duration: 3000 };
 Toast.success('Saved!');
 Toast.error('Something went wrong.', { duration: 5000 });
 Toast.message('Hello world', { position: 'bottom-center' });

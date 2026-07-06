@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.4.0] - 2026-07-06
+
+### Changed
+- 폼 유효성 검증 아키텍처를 `UFormControlElement.validate()` 템플릿 메서드 + 컴포넌트별 `setValidity()` 구현 구조로 재정비하고, `commit(flags, message, anchor)` 헬퍼로 `setCustomValidity()` 커스텀 메시지 우선순위를 일관화. `validate(report)`로 `checkValidity`/`reportValidity`와 동일한 조용한 검증 모드도 지원.
+- 로케일 시스템을 `src/core/locale.ts` 기반 레지스트리에서 `Locale` 유틸(`Locale.register()`, `Locale.set()`, `Locale.getValue()`)로 전환하고, en/ko/ja/zh-CN/zh-TW/es/fr/de/pt-BR/vi/th/id/ru/ar 14개 로케일 JSON을 빌드 시점 내장하도록 변경.
+- 인터랙티브 컴포넌트의 색상 체계를 `--u-primary-color` 중심 토큰으로 전환해 hover/active/surface/outline 상태를 `color-mix()`로 파생하도록 개선. 이제 `--u-primary-color` 재정의만으로 전역 테마 컬러 커스터마이징 가능.
+- 개발 스크립트를 `dev`에서 `start`로 정리하고 `test:watch` 스크립트를 제거.
+
+### Fixed
+- 오버레이/컨테이너 계열 커스텀 이벤트(`show`/`hide`/`remove`/`expand`/`collapse`/`shift`)를 `bubbles:false`, `composed:false`로 조정해 중첩 컴포넌트에서 자식 이벤트를 조상 이벤트로 오인하던 문제를 해결.
+- `UFloatingElement`가 `--anchor-width`/`--anchor-height`를 실제 픽셀 기준으로 노출하도록 개선하고, `USelect`/`UInput` 팝오버 폭 계산이 strategy(`fixed`)와 무관하게 일관되게 동작하도록 수정.
+- `UOption.getText()`가 텍스트 노드만 추출하도록 보정하고 `getContent()`를 추가해 `USelect` 선택값 표시에서 리치 콘텐츠 처리를 개선.
+- `UTabPanel`의 `change` 이벤트가 초기 마운트/직접 값 대입 시 오발생하지 않도록 사용자 조작(클릭/키보드)에서만 발생하게 수정.
+- `Toast`에 전역 기본 옵션을 추가하고 hide 이벤트 처리에서 `target`을 검사하도록 바꿔 내부 엘리먼트 이벤트 오탐을 방지.
+
+### Removed
+- **Breaking:** `UDataElement` 및 관련 스타일 파일(`UDataElement.styles.ts`) 제거.
+- **Breaking:** `sanitizers` 유틸과 `buildElementHTML`(in `utilities/elements.ts`) 제거, 이에 따른 `src/index.ts` export 정리.
+- 브라우저 테스트 `tests/browser/input-display-token.browser.test.ts` 제거.
+
 ## [1.3.4] - 2026-07-03
 
 ### Documentation

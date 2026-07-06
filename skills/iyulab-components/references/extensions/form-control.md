@@ -14,6 +14,8 @@ Use when building a custom input that should participate in forms (`formAssociat
 import { UFormControlElement } from '@iyulab/components';
 import { customElement, property } from 'lit/decorators.js';
 import { html } from 'lit';
+import type { PropertyValues } from 'lit';
+import { Locale } from '@iyulab/components';
 
 @customElement('my-input')
 export class MyInput extends UFormControlElement<string> {
@@ -33,17 +35,22 @@ export class MyInput extends UFormControlElement<string> {
     `;
   }
 
-  validate(): boolean {
+  protected override setValidity(): void {
     if (this.required && !this.value) {
-      this.invalid = true;
-      return false;
+      this.commit({ valueMissing: true }, Locale.getValue('valueMissing'));
+      return;
     }
-    this.invalid = false;
-    return true;
+    this.commit({}, '');
+  }
+
+  protected override shouldValidate(changed: PropertyValues): boolean {
+    return super.shouldValidate(changed);
   }
 
   reset(): void {
     this.value = '';
+    this.setCustomValidity('');
+    this.commit({}, '');
     this.invalid = false;
   }
 }
@@ -75,5 +82,14 @@ export class MyInput extends UFormControlElement<string> {
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `validate()` | `boolean` | Run validation logic; set `this.invalid` accordingly |
+| `setValidity()` | `void` | Compute current validity and call `commit(flags, message, anchor?)` |
 | `reset()` | `void` | Reset value and clear validation state |
+
+## Validation Helpers (inherited)
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `validate(report?)` | `boolean` | Validate now (`true` = report/update invalid UI, `false` = silent check) |
+| `setCustomValidity(message)` | `void` | Set or clear custom error text (`''` clears) |
+| `commit(flags, message, anchor?)` | `void` | Apply validity state to `ElementInternals` with native-like custom-error precedence |
+| `shouldValidate(changed)` | `boolean` | Select which property updates should trigger re-validation (`value`/`required` by default) |

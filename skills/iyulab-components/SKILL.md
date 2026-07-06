@@ -4,7 +4,7 @@ description: Web component library built on Lit. Covers all u-* custom elements 
 license: MIT
 metadata:
   author: iyulab
-  version: "1.0.6"
+  version: "1.4.0"
 ---
 
 # @iyulab/components
@@ -119,7 +119,7 @@ import { UButton, UInput } from '@iyulab/components/react';
 - [`IconRegistry`](./references/utilities/icons.md) — Register and resolve icon libraries
 - [`BrowserStorage`](./references/utilities/browser-storage.md) — Unified localStorage / Cookie API
 - [`converters`](./references/utilities/converters.md) — Lit property attribute converters (array, JSON, date, url…)
-- [`sanitizers`](./references/utilities/sanitizers.md) — XSS-safe HTML/URL escape helpers
+- [`Locale`](./references/utilities/locale.md) — Validation-message locale registry and lookup utility
 - [`elements`](./references/utilities/elements.md) — Shadow-DOM-aware DOM query helpers
 - [`OverlayManager`](./references/utilities/overlay-manager.md) — Internal overlay stack and z-index manager
 
@@ -135,4 +135,3 @@ import { UButton, UInput } from '@iyulab/components/react';
 - [`UFormControlElement<T>`](./references/extensions/form-control.md) — Base for form-associated controls; handles `disabled`, `readonly`, `invalid`, validation lifecycle
 - [`UFloatingElement`](./references/extensions/floating.md) — Base for anchored floating UI (popover, tooltip); wraps `@floating-ui/dom`
 - [`UOverlayElement`](./references/extensions/overlay.md) — Base for full-screen overlays (dialog, drawer); manages focus-trap, scroll-lock, ESC/backdrop close
-- [`UDataElement`](./references/extensions/data.md) — Base for data-driven components; auto-loads JSON from inline `<script type="application/json">`

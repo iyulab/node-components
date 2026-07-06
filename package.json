@@ -1,7 +1,7 @@
 {
   "name": "@iyulab/components",
   "description": "web-components library based on lit-element made by iyulab",
-  "version": "1.3.4",
+  "version": "1.4.0",
   "keywords": [
     "iyulab",
     "components",
@@ -39,9 +39,8 @@
     "./plugins/*": "./plugins/*"
   },
   "scripts": {
-    "dev": "vite --force",
+    "start": "vite --force",
     "test": "vitest run",
-    "test:watch": "vitest",
     "test:browser": "vitest run --project=browser",
     "build:plugins": "tsc -p plugins/tsconfig.json",
     "build": "eslint && vite build && npm run build:plugins"

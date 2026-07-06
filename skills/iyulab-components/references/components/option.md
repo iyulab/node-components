@@ -51,6 +51,7 @@ Selectable option item. Used inside `u-select`, `u-radio`, and `u-input` (combob
 | Method | Returns | Description |
 |--------|---------|-------------|
 | `getText()` | `string` | Returns the visible text content of the option |
+| `getContent()` | `Node[]` | Returns cloned rich-content nodes used for display rendering |
 
 ## CSS Parts
 
