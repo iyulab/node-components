@@ -78,7 +78,7 @@ export class UAlert extends UElement {
             variant="ghost"
             ?hidden=${!this.closable}
             @click=${this.hide}>
-            <u-icon lib="internal" name="x-lg"></u-icon>
+            <u-icon lib="internal" name="x"></u-icon>
           </u-button>
         </div>
         <div class="content" part="content" scrollable>
@@ -120,9 +120,9 @@ export class UAlert extends UElement {
   /** Alert 상태에 따른 아이콘 이름을 반환합니다. */
   private mapIcon(status?: AlertStatus): string {
     switch (status) {
-      case 'error': return 'exclamation-circle-fill';
-      case 'warning': return 'exclamation-triangle-fill';
-      case 'success': return 'check-circle-fill';
+      case 'error': return 'alert-circle-fill';
+      case 'warning': return 'alert-triangle-fill';
+      case 'success': return 'circle-check-fill';
       case 'info': return 'info-circle-fill';
       case 'notice': return 'bell-fill';
       default: return 'bell-fill';

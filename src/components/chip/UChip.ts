@@ -57,7 +57,7 @@ export class UChip extends UElement {
         <u-icon class="check-icon" part="check" slot="prefix"
           ?hidden=${!this.selectable || !this.selected}  
           lib="internal" 
-          name="check-lg"
+          name="check"
         ></u-icon>
 
         <slot name="prefix" slot="prefix"></slot>
@@ -71,7 +71,7 @@ export class UChip extends UElement {
           tabindex="-1"
           aria-label="Remove"
           @click=${this.handleRemoveClick}>
-          <u-icon lib="internal" name="x-lg"></u-icon>
+          <u-icon lib="internal" name="x"></u-icon>
         </u-button>
       </u-tag>
 

@@ -53,7 +53,7 @@ export class UTab extends UElement {
         aria-label="Close tab"
         @click=${this.handleRemoveClick}
       >
-        <u-icon lib="internal" name="x-lg"></u-icon>
+        <u-icon lib="internal" name="x"></u-icon>
       </u-button>
     `;
   }

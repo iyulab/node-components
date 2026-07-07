@@ -145,13 +145,13 @@ export class UInput extends UFormControlElement<string> {
           <u-icon class="suffix-item"
             ?hidden=${this.type !== 'password' || this.disabled || this.readonly}
             lib="internal"
-            name=${this.showPassword ? 'eye-slash' : 'eye'}
+            name=${this.showPassword ? 'eye-off' : 'eye'}
             @click=${this.handlePasswordTogglerClick}
           ></u-icon>
           <u-icon class="suffix-item"
             ?hidden=${!this.clearable || this.disabled || this.readonly || !this.value}
             lib="internal"
-            name="x-lg"
+            name="x"
             @click=${this.handleClearButtonClick}
           ></u-icon>
         </div>

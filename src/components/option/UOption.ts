@@ -67,7 +67,7 @@ export class UOption extends UElement {
         <u-icon class="check-marker" part="check-marker"
           ?hidden=${!this.selected}
           lib="internal"
-          name="check-lg"
+          name="check"
         ></u-icon>
       `;
     }

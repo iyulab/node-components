@@ -26,7 +26,7 @@ function setDefaultBaseUrl(url: string): void {
  * vite의 `import.meta.glob`을 사용하여 내부 경로상의 모든 SVG 파일을 빌드 시점에 한 번에 로드합니다.
  * 이 레지스트리는 런타임 동안 불변이며, 아이콘 조회 시 재사용됩니다.
  */
-const internalIconBundle = new Map<string, string>(
+const InternalIconBundle = new Map<string, string>(
   Object.entries(import.meta.glob('../assets/icons/*.svg', {
     eager: true,
     query: '?raw',
@@ -106,12 +106,10 @@ class IconRegistry {
 
   /**
    * 지정된 아이콘 라이브러리를 등록합니다.
-   * 이미 등록된 라이브러리 이름인 경우, 경고 메시지를 출력합니다.
+   * 이미 등록된 라이브러리 이름인 경우, 기존 등록을 덮어쓰지 않고 무시합니다.
    */
   public static register(lib: string, resolver: IconResolver) {
-    if (this.libs.has(lib)) {
-      console.warn(`Icon library "${lib}" is already registered`); // eslint-disable-line no-console
-    } else {
+    if (!this.libs.has(lib)) {
       this.libs.set(lib, resolver);
     }
   }
@@ -141,7 +139,7 @@ class IconRegistry {
 // - 프로젝트 내부에서 직접 관리하는 아이콘 번들
 // - 네트워크 요청 없이 빠르게 로드
 IconRegistry.register("internal", (name: string) => {
-  return internalIconBundle.get(name);
+  return InternalIconBundle.get(name);
 });
 
 // Tabler 아이콘 등록 (CDN 사용) - https://tabler.io/icons

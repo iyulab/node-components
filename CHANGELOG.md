@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.5.0] - 2026-07-07
+
+### Added
+- `UCopyButton`(`u-copy-button`) 컴포넌트 추가. 클릭 시 클립보드에 텍스트를 복사하고 아이콘(`copy`/`check`)으로 복사 상태를 표시하며, 실제 쓰기 전에 취소 가능한 `copy` 커스텀 이벤트(`ClipboardEvent`)를 발행해 리스너가 복사를 취소하거나 `clipboardData.setData()`로 복사될 값을 바꿀 수 있음.
+
+### Changed
+- **Breaking:** 내부 아이콘 세트(`lib="internal"`)의 이름 규칙을 정리: `x-lg`→`x`, `check-lg`→`check`, `dash-lg`→`minus`, `eye-slash`→`eye-off`, `exclamation-circle-fill`→`alert-circle-fill`, `exclamation-triangle-fill`→`alert-triangle-fill`, `check-circle-fill`→`circle-check-fill`, `plus-lg`→`plus`. `lib="internal"`로 위 이름을 직접 참조하던 코드는 갱신 필요. 미사용 아이콘(`three-dots`, `three-dots-vertical`) 제거, 신규 아이콘(`copy`) 추가.
+- `IconRegistry.register()`가 이미 등록된 라이브러리 이름에 대해 경고를 출력하는 대신 조용히 무시하도록 변경.
+- `UIconButton`이 `inline-flex`로 레이아웃되도록 개선.
+
 ## [1.4.0] - 2026-07-06
 
 ### Changed

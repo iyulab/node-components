@@ -57,7 +57,7 @@ export class UDialog extends UOverlayElement {
               variant="ghost"
               ?hidden=${!this.closable}
               @click=${() => this.requestClose('button')}>
-              <u-icon lib="internal" name="x-lg"></u-icon>
+              <u-icon lib="internal" name="x"></u-icon>
             </u-button>
           </div>
           <div class="body" part="body">

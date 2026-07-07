@@ -93,7 +93,7 @@ export class UMenuItem extends UElement {
         <u-icon class="prefix-checker"
           ?hidden=${this.indicator !== 'check' || !this.selected}
           lib="internal"
-          name="check-lg"
+          name="check"
         ></u-icon>
 
         <slot name="prefix"></slot>

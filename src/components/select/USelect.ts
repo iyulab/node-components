@@ -113,7 +113,7 @@ export class USelect extends UFormControlElement<string | string[]> {
           <u-icon class="suffix-item"
             ?hidden=${!this.clearable || !this.hasValue || this.disabled || this.readonly}
             lib="internal"
-            name="x-lg"
+            name="x"
             @click=${this.handleClearClick}
           ></u-icon>
           <u-icon class="suffix-item"

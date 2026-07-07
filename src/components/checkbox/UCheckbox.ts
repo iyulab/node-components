@@ -60,7 +60,7 @@ export class UCheckbox extends UFormControlElement<string> {
         <span class="checkbox" part="checkbox">
           <u-icon
             lib="internal"
-            name=${this.indeterminate ? 'dash-lg' : 'check-lg'}
+            name=${this.indeterminate ? 'minus' : 'check'}
           ></u-icon>
         </span>
         <span class="label" part="label">

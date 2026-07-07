@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    display: inline-block;
+    display: inline-flex;
     color: var(--u-icon-color);
     font-size: 20px;
   }
@@ -15,8 +15,8 @@ export const styles = css`
   }
 
   u-button {
-    padding: 0.4em;
     color: inherit;
     font-size: inherit;
+    padding: 0.4em;
   }
 `;
