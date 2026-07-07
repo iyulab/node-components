@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.5.1] - 2026-07-07
+
+### Fixed
+- `UFormControlElement.updated()`가 `value`/`required` 변경 시마다 `setValidity()` 이후 `requestUpdate()`를 무조건 호출해 "scheduled an update after an update completed" 개발자 경고가 매 입력마다 발생하던 문제 수정(`USelect`/`UInput`/`UCheckbox`/`UTextarea` 등 폼 컨트롤 전반에 영향). `updated()`에서는 `internals.setValidity()` 갱신만 수행하고 화면 재렌더 강제는 제거했으며, `validationMessage` 재렌더는 기존처럼 `validate()`를 호출하는 blur/change 핸들러에서만 처리한다.
+
 ## [1.5.0] - 2026-07-07
 
 ### Added

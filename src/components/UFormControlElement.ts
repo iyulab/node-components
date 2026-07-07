@@ -97,9 +97,10 @@ export abstract class UFormControlElement<T> extends UElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
+    // internals.setValidity()는 갱신하되, 화면의 validationMessage 재렌더는 강제하지 않는다 —
+    // 재렌더가 필요하면 validate()를 호출하는 쪽(blur 등)에서 명시적으로 처리한다.
     if (this.shouldValidate(changedProperties)) {
       this.setValidity();
-      this.requestUpdate(); // validationMessage는 internals.validationMessage를 읽는 파생 getter라 리액티브하지 않다 — 강제로 재렌더해 최신 값을 반영한다.
     }
   }
 
