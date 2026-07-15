@@ -46,8 +46,8 @@
     "build": "eslint && vite build && npm run build:plugins"
   },
   "dependencies": {
-    "@floating-ui/dom": "^1.7.6",
-    "focus-trap": "^8.2.0",
+    "@floating-ui/dom": "^1.8.0",
+    "focus-trap": "^8.2.2",
     "lit": "^3.3.3"
   },
   "peerDependencies": {
@@ -64,18 +64,18 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
-    "@types/node": "^25.8.0",
-    "@vitest/browser-playwright": "^4.1.8",
+    "@types/node": "^26.1.1",
+    "@vitest/browser-playwright": "^4.1.10",
     "eslint": "^9.39.4",
     "eslint-plugin-lit": "^2.3.1",
     "glob": "^13.0.6",
-    "globals": "^17.6.0",
-    "react": "^19.2.6",
+    "globals": "^17.7.0",
+    "react": "^19.2.7",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.59.3",
-    "vite": "^8.0.13",
-    "vite-plugin-dts": "^5.0.0",
-    "vite-plugin-static-copy": "^4.1.0",
-    "vitest": "^4.1.8"
+    "typescript-eslint": "^8.64.0",
+    "vite": "^8.1.4",
+    "vite-plugin-dts": "^5.0.3",
+    "vite-plugin-static-copy": "^4.1.1",
+    "vitest": "^4.1.10"
   }
 }
