@@ -30,11 +30,16 @@ export const styles = css`
     }
   }
 
-  /* placement별 border */
-  :host([placement="left"]) .panel   { border-right: 1px solid var(--u-border-color); }
-  :host([placement="right"]) .panel  { border-left: 1px solid var(--u-border-color); }
-  :host([placement="top"]) .panel    { border-bottom: 1px solid var(--u-border-color); }
-  :host([placement="bottom"]) .panel { border-top: 1px solid var(--u-border-color); }
+  /*
+   * placement별 border. 토큰 폴백은 backdrop(--u-overlay-bg-color)과 동일 정책 —
+   * 테마 토큰 미정의 소비자도 패널이 보이도록 CSS 시스템 컬러로 폴백한다.
+   * Canvas/CanvasText는 OS/UA color-scheme 기준으로 라이트·다크를 자동 적응
+   * (라이브러리 주입 테마와는 별개). 테두리는 CanvasText 원색이 과해 옅게 혼합.
+   */
+  :host([placement="left"]) .panel   { border-right: 1px solid var(--u-border-color, color-mix(in srgb, CanvasText 20%, Canvas)); }
+  :host([placement="right"]) .panel  { border-left: 1px solid var(--u-border-color, color-mix(in srgb, CanvasText 20%, Canvas)); }
+  :host([placement="top"]) .panel    { border-bottom: 1px solid var(--u-border-color, color-mix(in srgb, CanvasText 20%, Canvas)); }
+  :host([placement="bottom"]) .panel { border-top: 1px solid var(--u-border-color, color-mix(in srgb, CanvasText 20%, Canvas)); }
 
   /* 닫힌 상태 */
   :host([placement="left"]) .panel   { transform: translateX(-100%); }
@@ -51,7 +56,7 @@ export const styles = css`
   .panel {
     display: flex;
     flex-direction: column;
-    background: var(--u-panel-bg-color);
+    background: var(--u-panel-bg-color, Canvas);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     pointer-events: auto;
     /*

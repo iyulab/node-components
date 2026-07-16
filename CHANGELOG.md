@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.0] - 2026-07-16
+
+### Added
+- `UCopyButton`(`u-copy-button`): **인라인 텍스트 라벨** 지원 — `label` prop을 지정하면 아이콘 옆에 보이는 텍스트 라벨을 렌더한다(예: `label="결과 복사"`). 지금까지 u-copy-button은 아이콘 전용(기본 슬롯은 툴팁으로 소비)이라 "📋 결과 복사"처럼 라벨이 붙은 복사 버튼을 표현할 수 없어, 소비자가 검증된 클립보드 로직(취소 가능 `copy` ClipboardEvent + copied 상태 + 아이콘 토글)을 재사용하지 못하고 자체 재구현하던 역량 갭을 해소(ISSUE-20260715-ucopybutton-no-inline-label). 비파괴 — `label` 미지정 시 기존 아이콘 전용 형태(및 기본 슬롯=툴팁 의미)를 그대로 유지한다. 라벨 지정 시 내부적으로 `u-button`(아이콘 prefix + 텍스트)으로 렌더하고, 클립보드 로직은 두 형태에서 동일하다. online-tools(NT-U4) dogfooding에서 발견.
+
+### Fixed
+- `u-drawer`/`u-dialog`: **테마 토큰 미정의 시 패널이 투명하게 렌더**되어 모달이 "안 뜬 것처럼" 보이던 결함 수정(ISSUE-20260715-uoverlay-panel-token-no-fallback). backdrop(`--u-overlay-bg-color`)에는 폴백이 있는데 패널 배경/테두리(`--u-panel-bg-color`/`--u-border-color`)에는 폴백이 없어, `Theme.init()`로 토큰을 주입하지 않은 소비자에게 backdrop만 흐려지고 패널은 투명하게 떠 슬롯 콘텐츠가 뒤 페이지와 겹쳐 읽히던 footgun. backdrop과 동일 정책으로 패널 배경에 `Canvas`, 테두리에 `color-mix(in srgb, CanvasText 20%, Canvas)` CSS 시스템 컬러 폴백을 부여 — 토큰 미정의 소비자도 라이트·다크 자동 적응되는 가시 패널을 얻고, 토큰 정의 소비자는 기존과 동일(폴백 미사용). 실 브라우저 렌더 회귀 가드 추가. online-tools(NT-U2) dogfooding에서 발견.
+
 ## [1.5.1] - 2026-07-07
 
 ### Fixed

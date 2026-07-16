@@ -60,7 +60,7 @@ npx skills add ./node_modules/@iyulab/components
 
 **Feedback** — `u-alert`, `u-badge`, `u-spinner`, `u-skeleton`, `u-progress-bar`, `u-progress-ring`
 
-**Buttons & Actions** — `u-button`, `u-button-group`, `u-icon-button`, `u-chip`
+**Buttons & Actions** — `u-button`, `u-button-group`, `u-icon-button`, `u-copy-button`, `u-chip`
 
 **Form Controls** — `u-input`, `u-textarea`, `u-select`, `u-checkbox`, `u-radio`, `u-switch`, `u-slider`, `u-rating`, `u-field`, `u-form`, `u-option`
 

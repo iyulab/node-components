@@ -61,9 +61,15 @@ export const styles = css`
     flex-direction: column;
     max-width: 90%;
     max-height: 90%;
-    border: 1px solid var(--u-border-color);
+    /*
+     * 토큰 폴백은 backdrop(--u-overlay-bg-color)과 동일 정책 — 테마 토큰 미정의
+     * 소비자도 패널이 보이도록 CSS 시스템 컬러로 폴백. Canvas/CanvasText는 OS/UA
+     * color-scheme 기준 라이트·다크 자동 적응(라이브러리 주입 테마와 별개).
+     * 테두리는 CanvasText 원색이 과해 옅게 혼합.
+     */
+    border: 1px solid var(--u-border-color, color-mix(in srgb, CanvasText 20%, Canvas));
     border-radius: 6px;
-    background: var(--u-panel-bg-color);
+    background: var(--u-panel-bg-color, Canvas);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     pointer-events: auto;
     opacity: 0;
