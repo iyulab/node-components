@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0] - 2026-07-17
+
+### Fixed
+- **폼 컨트롤 `change` 이벤트 의미론을 네이티브 규약으로 교정** — `USelect`/`URadio`/`URating`/`USlider`가 `updated()` 경로에서 무조건 `change`를 발화해, (1) 옵션 slot 등록 시 `value===undefined` 상태의 change가 발화되어 React 등 controlled 래퍼의 state를 오염시키고(옵션 등록 전 세팅한 초기값이 유실·서버 enum 기본값으로 저장되는 무증상 데이터 결함 — yesung 실측), (2) 프로그램적 `value` 세팅이 사용자 이벤트로 위장되어 에코 루프를 만들던 문제 수정. 이제 `change`는 **사용자 상호작용**(옵션 클릭·키보드·칩 제거·지우기·드래그 확정)에서만 발화한다(ISSUE-components-20260717-uselect-value-before-options). `UInput`(blur 발화)·`UMenu`/`UTree`(핸들러 발화)는 원래 규약대로였으며 변경 없음.
+- `USlider`: 문서("드래그 완료 후 발생")와 달리 **드래그 중 매 pointermove마다 change가 연사**되던 결함 수정 — 이제 `pointerup` 시 값이 실제로 바뀐 경우 1회 발화. 단일 select에서 동일 옵션 재선택, 선택된 라디오 재클릭도 네이티브와 동일하게 미발화.
+- `USelect`/`URadio`/`URating`의 `onChangeValue()`가 `updated()` 내부에서 `validate()`→`requestUpdate()`를 호출해 v1.5.1 검증 아키텍처를 위반하고 "scheduled an update after an update completed" Lit 경고를 재유발하던 잔재 제거 — 검증 UI 갱신(`validate()`)은 사용자 상호작용 경로에서만 수행하고, 프로그램적 세팅은 base의 silent `setValidity()`로 internals만 갱신한다.
+- **마크업 `value` attribute 선언이 일반 문자열에서 silently null이 되던 갭 수정** — base가 `type: Object`(JSON.parse)여서 `<u-input value="hello">`·`<u-select value="b">`가 null로 해석됐다. 기본 해석을 raw 문자열로 바꾸고, `u-rating`/`u-slider`는 숫자, `u-select`(multiple)/`u-slider`(range)는 JSON 배열(`value='["a","b"]'`)을 지원한다.
+- `USlider` range 표시 텍스트의 구분자 인코딩 오염(`5 ??10`) → `5 ~ 10`으로 교정. `URating` min/max 주석 모지바케 정리.
+
+### Changed
+- 프로그램적 `value` 세팅은 이제 `change` 발화·`invalid` 플래그 자동 갱신을 하지 않는다(`ElementInternals` validity는 계속 동기화됨). 프로그램적 변경 후 검증 UI 갱신이 필요하면 `validate()`를 명시 호출할 것. `value='"quoted"'` 형태(JSON 문자열)로 attribute를 우회 선언하던 경우 이제 따옴표 포함 raw 문자열로 해석된다.
+
 ## [1.6.0] - 2026-07-16
 
 ### Added

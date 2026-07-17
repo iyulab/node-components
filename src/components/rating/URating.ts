@@ -21,18 +21,22 @@ import { styles } from "./URating.styles.js";
  * @cssprop --rating-symbol-color - 활성화된 심볼 색상
  * @cssprop --rating-symbol-off-color - 비활성화된 심볼 색상
  *
- * @event change - 레이팅 값 변경 시 발생
+ * @event change - 사용자 상호작용(심볼 클릭·키보드)으로 레이팅 값이 변경될 때 발생.
+ *   프로그램적 value 세팅으로는 발화하지 않는다.
  */
 @customElement('u-rating')
 export class URating extends UFormControlElement<number> {
   static styles = [super.styles, styles];
 
-  /** 理쒖냼 媛?*/
+  /** 최소 값 */
   @property({ type: Number }) min = 0;
-  /** 理쒕? 媛?*/
+  /** 최대 값 */
   @property({ type: Number }) max = 5;
   /** 정밀도 (0.5 등) */
   @property({ type: Number }) precision = 1;
+
+  /** 레이팅 값. attribute 선언 시 숫자로 해석한다. */
+  @property({ type: Number }) value?: number;
 
   @state() private buffer = -1;
   @state() private symbol: Node | null = null;
@@ -140,7 +144,13 @@ export class URating extends UFormControlElement<number> {
   private onChangeValue() {
     this.buffer = -1;
     this.internals?.setFormValue(this.value?.toString() || '');
+  }
 
+  /** 사용자 상호작용으로 값이 바뀐 경로에서만 호출한다 — 프로그램적 value 세팅은
+   *  네이티브 폼 컨트롤과 동일하게 change를 발화하지 않는다.
+   *  UI 재렌더를 동반한 validate()도 이 경로에서만 수행한다(v1.5.1 검증 아키텍처 —
+   *  updated() 경로는 base의 silent setValidity()만 수행해 Lit 중복 업데이트를 피한다). */
+  private emitChange(): void {
     if (!this.novalidate) {
       this.validate();
     }
@@ -176,7 +186,10 @@ export class URating extends UFormControlElement<number> {
     if (this.disabled || this.readonly) return;
     const score = Number((e.currentTarget as HTMLElement).dataset.score);
     const val = this.precision < 1 ? this.calibrate(e, score) : score;
-    this.value = this.value === val ? 0 : val;
+    const next = this.value === val ? 0 : val;
+    if (next === this.value) return;
+    this.value = next;
+    this.emitChange();
   }
 
   private handleSymbolKeydown = (e: KeyboardEvent) => {
@@ -212,7 +225,11 @@ export class URating extends UFormControlElement<number> {
       case 'Enter': {
         e.preventDefault();
         const score = Number((e.currentTarget as HTMLElement).dataset.score);
-        this.value = this.value === score ? 0 : score;
+        const next = this.value === score ? 0 : score;
+        if (next !== this.value) {
+          this.value = next;
+          this.emitChange();
+        }
         return;
       }
       default:

@@ -28,8 +28,10 @@ export abstract class UFormControlElement<T> extends UElement {
   @property({ type: String }) description?: string;
   /** 폼 제출 시 사용되는 이름 */
   @property({ type: String }) name?: string;
-  /** 폼 제출 시 사용되는 값 */
-  @property({ type: Object }) value?: T;
+  /** 폼 제출 시 사용되는 값. attribute 선언 시 기본은 raw 문자열로 해석한다 —
+   *  (이전의 type: Object는 JSON.parse 실패로 일반 문자열 attribute가 silently null이 되는 갭이 있었다)
+   *  string이 아닌 값 타입을 갖는 컨트롤(URating/USlider/USelect multiple)은 자신의 converter로 override한다. */
+  @property() value?: T;
 
   /**
    * ElementInternals는 폼과의 연동, 유효성 검사 상태 관리 등을 지원하는 네이티브 API입니다.

@@ -57,6 +57,8 @@ private handleInput(e: Event) {
 | `shift-start` | `ShiftEventDetail` | ✗ | `u-split-panel` (drag start) |
 | `shift-end` | `ShiftEventDetail` | ✗ | `u-split-panel` (drag end) |
 
+> **`change` semantics** — `change` follows the native form-control convention: it fires only as a result of **user interaction** (option click, keyboard, drag commit, clear). Programmatic `value` assignment and option/slot registration never fire `change`, so controlled wrappers (React state binding etc.) can write values without echo loops or state pollution. `u-slider` fires on drag commit (`pointerup`), not on every move.
+
 ---
 
 ## Listening to events

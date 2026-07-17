@@ -19,7 +19,8 @@ export type RadioOrientation = "vertical" | "horizontal";
  * @csspart field - u-field 요소
  * @csspart container - 옵션들을 감싸는 컨테이너
  * 
- * @event change - 선택 값이 변경될 때 발생
+ * @event change - 사용자 상호작용(옵션 클릭·키보드)으로 선택 값이 변경될 때 발생.
+ *   네이티브 라디오와 동일하게 프로그램적 value 세팅·옵션 등록으로는 발화하지 않는다.
  */
 @customElement('u-radio')
 export class URadio extends UFormControlElement<string> {
@@ -109,13 +110,19 @@ export class URadio extends UFormControlElement<string> {
     });
 
     this.internals?.setFormValue(this.value || '');
+  }
 
+  /** 사용자 상호작용으로 값이 바뀐 경로에서만 호출한다 — 프로그램적 value 세팅은
+   *  네이티브 폼 컨트롤과 동일하게 change를 발화하지 않는다.
+   *  UI 재렌더를 동반한 validate()도 이 경로에서만 수행한다(v1.5.1 검증 아키텍처 —
+   *  updated() 경로는 base의 silent setValidity()만 수행해 Lit 중복 업데이트를 피한다). */
+  private emitChange(): void {
     if (!this.novalidate) {
       this.validate();
     }
-    this.dispatchEvent(new Event('change', { 
-      bubbles: true, 
-      composed: true 
+    this.dispatchEvent(new Event('change', {
+      bubbles: true,
+      composed: true
     }));
   }
 
@@ -134,7 +141,10 @@ export class URadio extends UFormControlElement<string> {
     const option = e.currentTarget as UOption;
     if (option.disabled) return;
 
+    // 이미 선택된 라디오 재클릭은 네이티브와 동일하게 change를 발화하지 않는다.
+    if (option.value === this.value) return;
     this.value = option.value;
+    this.emitChange();
   };
 
   private handleOptionKeyDown = (e: KeyboardEvent) => {

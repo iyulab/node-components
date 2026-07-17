@@ -43,7 +43,8 @@ type ThumbId = 'min' | 'max';
  * @cssprop --slider-mark-color - 마크 색상
  * @cssprop --slider-mark-border-color - 마크 테두리 색상
  *
- * @event change - 드래그 완료 후 값이 확정됐을 때 발생
+ * @event change - 사용자 상호작용으로 값이 확정됐을 때 발생 — 드래그는 완료(pointerup) 시,
+ *   키보드는 조작마다. 프로그램적 value 세팅으로는 발화하지 않는다.
  */
 @customElement('u-slider')
 export class USlider extends UFormControlElement<number | number[]> {
@@ -67,6 +68,20 @@ export class USlider extends UFormControlElement<number | number[]> {
   @property({ type: Number }) max: number = 100;
   /** 값 변경 단위 */
   @property({ type: Number }) step: number = 1;
+
+  /** 슬라이더 값. attribute로는 숫자 또는 range용 JSON 배열(`value='[10,20]'`)을 지원한다. */
+  @property({
+    converter: {
+      fromAttribute: (value: string | null): number | number[] | undefined => {
+        if (value == null) return undefined;
+        if (value.trim().startsWith('[')) {
+          try { return JSON.parse(value); } catch { return undefined; }
+        }
+        const n = Number(value);
+        return Number.isNaN(n) ? undefined : n;
+      },
+    },
+  }) value?: number | number[];
 
   @state() private dragging: ThumbId | null = null;
   @query('.track') private trackEl!: HTMLElement;
@@ -205,7 +220,11 @@ export class USlider extends UFormControlElement<number | number[]> {
     }
 
     this.internals?.setFormValue(this.valueAsNumber.toString());
+  }
 
+  /** 사용자 상호작용으로 값이 확정된 경로에서만 호출한다 — 프로그램적 value 세팅은
+   *  네이티브 폼 컨트롤과 동일하게 change를 발화하지 않는다. */
+  private emitChange(): void {
     this.dispatchEvent(new Event('change', {
       bubbles: true,
       composed: true
@@ -242,7 +261,7 @@ export class USlider extends UFormControlElement<number | number[]> {
 
   private formatDisplay(): string {
     if (this.range) {
-      return `${this.formatValue(this.minVal)} ??${this.formatValue(this.maxVal)}`;
+      return `${this.formatValue(this.minVal)} ~ ${this.formatValue(this.maxVal)}`;
     } else {
       return this.formatValue(this.valueAsNumber);
     }
@@ -281,6 +300,9 @@ export class USlider extends UFormControlElement<number | number[]> {
       return this.percentToVal(pct);
     }
 
+    // 드래그 시작 시점 값을 기억해 pointerup에서 실제로 바뀐 경우에만 change를 발화한다.
+    const before = JSON.stringify(this.value);
+
     const val = getPointerValue(e);
     if (this.range) {
       const closer = Math.abs(val - this.minVal) <= Math.abs(val - this.maxVal) ? 'min' : 'max';
@@ -307,6 +329,7 @@ export class USlider extends UFormControlElement<number | number[]> {
       document.removeEventListener('pointermove', handleDocumentMove);
       document.removeEventListener('pointerup', handleDocumentUp);
       this.dragging = null;
+      if (JSON.stringify(this.value) !== before) this.emitChange();
     };
 
     document.addEventListener('pointermove', handleDocumentMove);
@@ -346,6 +369,7 @@ export class USlider extends UFormControlElement<number | number[]> {
 
     e.preventDefault();
     const newVal = this.snap(currentVal + delta);
+    const before = JSON.stringify(this.value);
 
     if (thumb === 'min') {
       if (this.range) this.minVal = Math.min(newVal, this.maxVal);
@@ -353,6 +377,7 @@ export class USlider extends UFormControlElement<number | number[]> {
     } else {
       this.maxVal = Math.max(newVal, this.minVal);
     }
+    if (JSON.stringify(this.value) !== before) this.emitChange();
   };
 }
 

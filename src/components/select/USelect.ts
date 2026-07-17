@@ -33,7 +33,8 @@ export type SelectVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
  * @cssprop --select-popover-min-height - 팝오버의 최소 높이 (기본값: 0px)
  * @cssprop --select-popover-max-height - 팝오버의 최대 높이 (기본값: 50vh)
  * 
- * @event change - 선택 값이 변경될 때 발생
+ * @event change - 사용자 상호작용(옵션 클릭·칩 제거·지우기)으로 선택 값이 변경될 때 발생.
+ *   네이티브 select와 동일하게 프로그램적 value 세팅·옵션 등록으로는 발화하지 않는다.
  */
 @customElement('u-select')
 export class USelect extends UFormControlElement<string | string[]> {
@@ -55,6 +56,19 @@ export class USelect extends UFormControlElement<string | string[]> {
   @property({ type: Number, attribute: 'max-count' }) maxCount?: number;
   /** placeholder 텍스트 */
   @property({ type: String }) placeholder?: string;
+
+  /** 폼 제출 시 사용되는 값. attribute로는 단일 값 문자열 또는 JSON 배열(`value='["a","b"]'`)을 지원한다. */
+  @property({
+    converter: {
+      fromAttribute: (value: string | null): string | string[] | undefined => {
+        if (value == null) return undefined;
+        if (value.trim().startsWith('[')) {
+          try { return JSON.parse(value); } catch { return value; }
+        }
+        return value;
+      },
+    },
+  }) value?: string | string[];
 
   @query('.container', true) containerEl?: HTMLElement;
   @query('u-popover', true) popoverEl?: UPopover;
@@ -237,7 +251,13 @@ export class USelect extends UFormControlElement<string | string[]> {
       }
     }
     this.internals?.setFormValue(this.valueAsString);
+  }
 
+  /** 사용자 상호작용으로 값이 바뀐 경로에서만 호출한다 — 프로그램적 value 세팅은
+   *  네이티브 폼 컨트롤과 동일하게 change를 발화하지 않는다.
+   *  UI 재렌더를 동반한 validate()도 이 경로에서만 수행한다(v1.5.1 검증 아키텍처 —
+   *  updated() 경로는 base의 silent setValidity()만 수행해 Lit 중복 업데이트를 피한다). */
+  private emitChange(): void {
     if (!this.novalidate) {
       this.validate();
     }
@@ -268,8 +288,12 @@ export class USelect extends UFormControlElement<string | string[]> {
         if (this.maxCount != null && values.length >= this.maxCount) return;
         this.value = [...values, option.value];
       }
+      this.emitChange();
     } else {
+      // 동일 옵션 재선택은 네이티브 select와 동일하게 change를 발화하지 않는다.
+      const changed = option.value !== this.value;
       this.value = option.value;
+      if (changed) this.emitChange();
       this.popoverEl?.hide();
     }
   };
@@ -348,6 +372,7 @@ export class USelect extends UFormControlElement<string | string[]> {
     e.preventDefault();
     e.stopPropagation();
     this.reset();
+    this.emitChange();
     this.containerEl?.click();
   };
 
@@ -356,6 +381,7 @@ export class USelect extends UFormControlElement<string | string[]> {
     const value = chip.dataset.value;
     if (!value) return;
     this.value = this.valueAsArray.filter(v => v !== value);
+    this.emitChange();
   };
 }
 

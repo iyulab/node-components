@@ -104,7 +104,7 @@ Set `novalidate` to skip automatic validation on change:
 | Property | Type | Description |
 |----------|------|-------------|
 | `name` | `string` | Form field name for submission |
-| `value` | `T` | Current value |
+| `value` | `T` | Current value. Also declarable as a markup attribute — plain string by default; `u-rating`/`u-slider` parse numbers, and `u-select` (multiple) / `u-slider` (range) accept a JSON array (`value='["a","b"]'`, `value='[10,20]'`) |
 | `disabled` | `boolean` | Disables the control |
 | `readonly` | `boolean` | Prevents editing |
 | `required` | `boolean` | Marks as required |
