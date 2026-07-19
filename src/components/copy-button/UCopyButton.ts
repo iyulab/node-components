@@ -122,7 +122,7 @@ export class UCopyButton extends UElement {
         this.copied = false;
       }, this.delay);
     } catch (error) {
-      console.error('Failed to copy text to clipboard:', error); // eslint-disable-line no-console
+      console.error('Failed to copy text to clipboard:', error);
       this.copied = false;
     }
   }

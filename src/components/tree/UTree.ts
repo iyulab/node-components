@@ -325,11 +325,12 @@ export class UTree extends UElement {
         items[items.length - 1]?.focus();
         break;
       case 'Enter':
-      case ' ':
+      case ' ': {
         e.preventDefault();
         const header = focused.shadowRoot?.querySelector(".header");
         if (header) (header as HTMLElement).click();
         break;
+      }
     }
   };
 }

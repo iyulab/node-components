@@ -129,7 +129,7 @@ export class UInput extends UFormControlElement<string> {
             ?autofocus=${this.autofocus}
             ?autocorrect=${this.autocorrect}
             autocapitalize=${ifDefined(this.autocapitalize)}
-            autocomplete=${ifDefined(this.autocomplete as any)}
+            autocomplete=${ifDefined(this.autocomplete)}
             inputmode=${ifDefined(this.inputmode)}
             enterkeyhint=${ifDefined(this.enterkeyhint)}
             size=${ifDefined(this.size)}

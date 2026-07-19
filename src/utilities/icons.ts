@@ -232,7 +232,7 @@ IconRegistry.register("bootstrap", async (name: string) => {
     IconCache.set("bootstrap", name, svg);
     return svg;
   }
-  catch (error) {
+  catch {
     return undefined;
   }
 });

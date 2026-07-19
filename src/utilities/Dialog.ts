@@ -5,6 +5,8 @@ import '../components/input/UInput.js';
 import { UDialog } from '../components/dialog/UDialog.js';
 import type { DialogPlacement } from '../components/dialog/UDialog.js';
 import type { ButtonVariant } from '../components/button/UButton.js';
+import type { CloseOnPolicy } from '../components/UOverlayElement.js';
+import type { UInput, InputType } from '../components/input/UInput.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 /** 공통 Dialog 옵션 */
@@ -110,16 +112,16 @@ export class Dialog {
         <div style="display: flex; flex-direction: column; gap: 12px;">
           <div>${message}</div>
           <u-input
-            type=${(options?.type || 'text') as any}
+            type=${(options?.type || 'text') as InputType}
             placeholder=${options?.placeholder || ''}
-            .value=${inputValue as any}
+            .value=${inputValue}
             @input=${(e: InputEvent) => { 
-              const input = e.target as any;
+              const input = e.target as UInput;
               inputValue = input.value || '';
             }}
             @keydown=${(e: KeyboardEvent) => {
               if (e.key === 'Enter') {
-                const input = e.target as any;
+                const input = e.target as UInput;
                 inputValue = input.value || '';
                 const dialog = input.closest('u-dialog') as UDialog;
                 const buttons = dialog.querySelectorAll('u-button');
@@ -141,42 +143,56 @@ export class Dialog {
    * 커스텀 다이얼로그를 표시합니다.
    * @returns 클릭된 액션의 value 또는 닫힌 경우 null
    */
-  public static show(options: CustomDialogOptions): Promise<string | null> {
-    return new Promise<string | null>(async (resolve) => {
-      let closeValue: string | null = null;
+  public static async show(options: CustomDialogOptions): Promise<string | null> {
+    let closeValue: string | null = null;
 
-      const dialog = this.createDialog(options);
-      const content = typeof options.content === 'string' ? unsafeHTML(options.content) : options.content;
-      const actions = options.actions && options.actions.length > 0 ? options.actions : null;
+    const dialog = this.createDialog(options);
+    const content = typeof options.content === 'string' ? unsafeHTML(options.content) : options.content;
+    const actions = options.actions && options.actions.length > 0 ? options.actions : null;
 
-      render(html`
-        <div style="min-width: 320px; font-size: 14px; line-height: 1.6;">
-          ${content}
-          ${actions ? html`
-            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
-              ${actions.map(action => html`
-                <u-button
-                  variant=${action.variant || 'solid'}
-                  @click=${() => { closeValue = action.value; dialog.hide(); }}
-                >${action.label}</u-button>
-              `)}
-            </div>
-          ` : nothing}
-        </div>
-      `, dialog);
+    render(html`
+      <div style="min-width: 320px; font-size: 14px; line-height: 1.6;">
+        ${content}
+        ${actions ? html`
+          <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
+            ${actions.map(action => html`
+              <u-button
+                variant=${action.variant || 'solid'}
+                @click=${() => { closeValue = action.value; dialog.hide(); }}
+              >${action.label}</u-button>
+            `)}
+          </div>
+        ` : nothing}
+      </div>
+    `, dialog);
 
-      const target = options.target || document.body;
-      target.appendChild(dialog);
-      await dialog.updateComplete;
-      dialog.show();
+    const target = options.target || document.body;
+    target.appendChild(dialog);
 
-      // hide 이벤트로 resolve (자식 컴포넌트의 이벤트 무시)
+    // hide 리스너는 show() 이전에 등록한다. updateComplete 대기 중에 발생한
+    // hide(예: closeOn 정책이 즉시 닫는 경우)를 놓치지 않기 위함이다.
+    const closed = new Promise<string | null>((resolve) => {
+      // 자식 컴포넌트가 올린 hide 는 무시한다.
       dialog.addEventListener('hide', (e: Event) => {
         if (e.target !== dialog) return;
         setTimeout(() => dialog.remove(), 300);
         resolve(closeValue);
       });
     });
+
+    try {
+      await dialog.updateComplete;
+    } catch (error) {
+      // 업데이트가 실패하면 다이얼로그를 띄울 수 없다. 여기서 매달리지 않고
+      // "닫힘 = null" 규약대로 종료한다(과거에는 async executor 가 예외를
+      // 삼켜 호출자가 영원히 대기했다).
+      console.error('[Dialog] 다이얼로그를 표시하지 못했습니다.', error);
+      dialog.remove();
+      return null;
+    }
+
+    dialog.show();
+    return closed;
   }
 
   /** 다이얼로그 엘리먼트를 생성하고 옵션을 적용합니다. */
@@ -197,11 +213,11 @@ export class Dialog {
     }
 
     // closeOn 정책 설정
-    const closeOn: string[] = [];
+    const closeOn: CloseOnPolicy[] = [];
     if (dialog.closable) closeOn.push('button');
     if (options?.escapeClose !== false) closeOn.push('escape');
     if (options?.backdropClose !== false) closeOn.push('backdrop');
-    dialog.closeOn = closeOn as any;
+    dialog.closeOn = closeOn;
 
     // 헤더 타이틀 설정
     if (options?.title) {

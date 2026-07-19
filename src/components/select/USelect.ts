@@ -309,16 +309,18 @@ export class USelect extends UFormControlElement<string | string[]> {
       case ' ':
         currentOption.click();
         break;
-      case 'ArrowDown':
+      case 'ArrowDown': {
         e.preventDefault();
         const nextIndex = (currentIndex + 1) % options.length;
         options[nextIndex].focus();
         break;
-      case 'ArrowUp':
+      }
+      case 'ArrowUp': {
         e.preventDefault();
         const prevIndex = (currentIndex - 1 + options.length) % options.length;
         options[prevIndex].focus();
         break;
+      }
       case 'Home':
         e.preventDefault();
         options[0].focus();

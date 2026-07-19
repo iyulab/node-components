@@ -97,7 +97,7 @@ export class UTextarea extends UFormControlElement<string> {
             ?autofocus=${this.autofocus}
             ?autocorrect=${this.autocorrect}
             autocapitalize=${ifDefined(this.autocapitalize)}
-            autocomplete=${ifDefined(this.autocomplete as any)}
+            autocomplete=${ifDefined(this.autocomplete)}
             enterkeyhint=${ifDefined(this.enterkeyhint)}
             inputmode=${ifDefined(this.inputmode)}
             placeholder=${ifDefined(this.placeholder)}

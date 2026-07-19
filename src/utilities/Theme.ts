@@ -83,7 +83,7 @@ export class Theme {
     const useBuiltIn = options?.useBuiltIn ?? true;
     if (useBuiltIn) {
       this.log('Import enabled: loading styles via internal assets');
-      for (let [name, module] of internalStyleBundle) {
+      for (const [name, module] of internalStyleBundle) {
         // 스타일 시트를 생성합니다.
         const style = document.createElement('style');
         style.setAttribute('data-name', name);
@@ -179,7 +179,9 @@ export class Theme {
   };
 
   /** 디버그 모드시 로그 출력 함수 (인스턴스 스코프) */
-  private static log(...args: any[]) {
+  private static log(...args: unknown[]) {
+    // 디버그 모드 전용 로거 — 정보성 출력이 이 함수의 본래 목적이다.
+    // eslint-disable-next-line no-console
     if (this._isDebugMode) console.log('[theme]', ...args);
   }
 }

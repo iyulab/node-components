@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 
 import { UFloatingElement } from "../UFloatingElement.js";
 import { styles } from "./UTooltip.styles.js";
+import type { VirtualElement } from '@floating-ui/dom';
 
 /**
  * 특정 요소에 툴팁을 표시하는 컴포넌트입니다.
@@ -99,7 +100,7 @@ export class UTooltip extends UFloatingElement {
 
   private handleAnchorTrigger = (event: PointerEvent | FocusEvent) => {
     if (this.isEmpty) return;
-    let target = event.currentTarget as any;
+    let target: Element | VirtualElement | null = event.currentTarget as Element | null;
     if (!target) return;
 
     if (this.tracking && event instanceof PointerEvent) {

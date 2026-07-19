@@ -53,7 +53,7 @@ export class UIcon extends UElement {
           html = await response.text();
         }
       } catch (error) {
-        console.error(error); // eslint-disable-line no-console
+        console.error(error);
       }
     }
 

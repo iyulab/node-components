@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.7.2] - 2026-07-19
+
+### Fixed
+- **`Dialog.show()`가 영구 대기(hang)에 빠지던 결함 수정** — 프로미스 executor 가 `async` 였던 탓에 `await dialog.updateComplete` 가 reject 되면 예외가 삼켜지고 `hide` 리스너가 등록조차 되지 않아, `await Dialog.show(...)` 호출자가 **영원히 매달렸다**. 이제 리스너를 `await` **이전에** 등록하고(대기 중 발생한 `hide` 를 놓치던 경합도 함께 해소), 업데이트 실패 시 `console.error` 후 문서화된 "닫힘 = null" 규약대로 `null` 로 종료하며 고아 엘리먼트를 DOM 에서 제거한다. 회귀 테스트 3건 추가(정상 resolve / 닫힘 null / updateComplete reject).
+- `UOverlayElement`: 삼항 연산자를 문(statement)으로 사용하던 `open ? setup() : cleanup()` 을 `if/else` 로 교정.
+- `URating`/`USelect`/`UTree`: `switch` case 블록 안의 `const` 선언이 블록 스코프를 벗어나 다른 case 로 누출될 수 있던 형태를 중괄호 블록으로 격리(`no-case-declarations`).
+
+### Changed
+- **이 패키지의 eslint 가 실제로 동작하기 시작했다.** `eslint.config.js` 의 두 결함 — (1) `files: ["src/**/*"]` 가 ESLint 9 에서 universal 패턴으로 취급돼 `.ts` 를 린팅 대상으로 opt-in 하지 못함, (2) 배열 프리셋(`tseslint.configs.recommended`)을 객체 스프레드해 프리셋이 통째로 무력화됨 — 을 수정했다. `build` 스크립트에 `eslint &&` 게이트가 있었으나 매칭 파일이 0개라 **항상 통과**하고 있었다. 위 결함들은 모두 이 복구로 처음 드러난 것이다.
+- `npm run lint` / `npm run lint:fix` 스크립트 추가(flex-table·u-widgets 와 통일).
+- 내부 타입 정밀화: `Dialog`/`Theme`/`UTooltip`/`UInput`/`UTextarea` 의 `any` 캐스팅을 실제 타입(`CloseOnPolicy[]`, `UInput`, `InputType`, `VirtualElement`, `unknown[]`)으로 교체. 공개 API 시그니처 변경 없음.
+
+## [1.7.1] - 2026-07-19
+
+### Fixed
+- `UInput.type` 을 host 요소로 **reflect** 하도록 수정 — 미반영 시 `u-input[type="number"]::part(input)` 같은 속성 셀렉터가 HTML 속성으로 준 경우에만 매칭되고, React/Lit 의 property 바인딩(`.type=`, `el.type=`)에서는 host 에 속성이 나타나지 않아 무효였다. 형제 컴포넌트 `URadio.type` 은 이미 reflect 하고 있어 리포 내 비일관이기도 했다.
+
+### Documentation
+- `docs/theming.md` 에 `::part()` 커스터마이즈 섹션 신설 — 텍스트 정렬 레시피(`text-align` + `font-variant-numeric: tabular-nums`), 숫자 입력 우측정렬을 기본값으로 두지 않는 근거, 비반영 속성용 클래스 셀렉터 대안, 숫자 포맷팅 책임 범위.
+- `docs/architecture.md` CSS Parts 절에서 `theming.md` 로 상호 링크. `UInput` 의 `@csspart input` JSDoc 보강.
+
 ## [1.7.0] - 2026-07-17
 
 ### Fixed

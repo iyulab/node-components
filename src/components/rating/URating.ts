@@ -202,17 +202,19 @@ export class URating extends UFormControlElement<number> {
 
     switch (e.key) {
       case 'ArrowRight':
-      case 'ArrowUp':
+      case 'ArrowUp': {
         e.preventDefault();
         const nextIndex = Math.min(symbols.length - 1, currentIndex + 1);
         symbols[nextIndex].focus();
         break;
+      }
       case 'ArrowLeft':
-      case 'ArrowDown':
+      case 'ArrowDown': {
         e.preventDefault();
         const prevIndex = Math.max(0, currentIndex - 1);
         symbols[prevIndex].focus();
         break;
+      }
       case 'Home':
         e.preventDefault();
         symbols[0].focus();

@@ -82,7 +82,8 @@ export abstract class UOverlayElement extends UElement {
     super.updated(changedProperties);
 
     if (changedProperties.has('open')) {
-      this.open ? this.setup() : this.cleanup();
+      if (this.open) this.setup();
+      else this.cleanup();
     }
   }
 
