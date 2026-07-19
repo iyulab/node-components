@@ -64,6 +64,8 @@ Components expose internal elements via `part` attributes, which can be styled w
 u-input::part(input) { font-size: 1.125rem; }
 ```
 
+Parts are the intended escape hatch for presentation the library deliberately leaves undecided (text alignment, spacing, radius). See [theming.md](./theming.md#styling-internals-with-part) for recipes.
+
 ## Event System
 
 All custom events are declared in `src/events/` and registered on `GlobalEventHandlersEventMap` for TypeScript type safety.

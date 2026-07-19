@@ -29,7 +29,11 @@ export type InputVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
  *
  * @csspart field - u-field 요소
  * @csspart container - input과 prefix/suffix를 감싸는 컨테이너
- * @csspart input - 네이티브 input 요소
+ * @csspart input - 네이티브 input 요소.
+ *   text-align 등 표현 관련 속성을 지정하지 않으므로 소비앱이 ::part(input)으로 재정의한다.
+ *   예: `u-input[type="number"]::part(input) { text-align: right; font-variant-numeric: tabular-nums; }`
+ *   (숫자 우측정렬은 값이 열로 쌓여 자릿수를 비교할 때 유효하므로 라이브러리 기본값으로 두지 않는다.
+ *    docs/theming.md 참고)
  * @csspart popover - 드롭다운 팝오버 요소
  * 
  * @cssprop --input-popover-width - 드롭다운 팝오버의 너비 (기본값: 앵커(트리거) 너비)
@@ -47,8 +51,8 @@ export class UInput extends UFormControlElement<string> {
   @property({ type: String, reflect: true }) variant: InputVariant = 'outlined';
   /** 전체 지우기 버튼 표시 여부 */
   @property({ type: Boolean, reflect: true }) clearable: boolean = false;
-  /** input 요소의 type 속성 */
-  @property({ type: String }) type: InputType = 'text';
+  /** input 요소의 type 속성. 외부 `u-input[type="..."]` 스타일 훅을 위해 reflect 한다 (URadio.type 과 동일). */
+  @property({ type: String, reflect: true }) type: InputType = 'text';
   /** 최소 글자 수 */
   @property({ type: Number }) minlength?: number;
   /** 최대 글자 수 */

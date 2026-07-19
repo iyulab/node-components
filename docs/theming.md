@@ -101,3 +101,43 @@ await Theme.init({ useBuiltIn: false });
 ```
 
 Then provide all `--u-*` tokens yourself. Components will still read them from the document.
+
+---
+
+## Styling Internals with `::part()`
+
+Tokens cover color and typography globally. For per-component presentation that is **an application design decision rather than a library default**, style the exposed CSS parts directly.
+
+```css
+u-input::part(input) { font-size: 1.125rem; }
+u-input::part(container) { border-radius: 0.5rem; }
+```
+
+Each component's parts are listed in its `@csspart` JSDoc.
+
+### Text Alignment
+
+Components do not set `text-align` — they inherit the browser default. Alignment is a design decision, so apply it in your app:
+
+```css
+/* Right-align numeric inputs */
+u-input[type="number"]::part(input) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;  /* fixed-width digits */
+}
+```
+
+Attribute selectors like `[type="number"]` only work on properties the component **reflects** back to the host element. `u-input` reflects `type`, `variant`, and `clearable`, so the selector above matches whether you set it as an HTML attribute or as a JS/React property. For non-reflected properties, select by a class you control instead:
+
+```css
+u-input.amount::part(input) { text-align: right; }
+```
+
+`font-variant-numeric: tabular-nums` is what makes right alignment actually useful — it locks digit width so place values line up. Without it, proportional digits leave the columns ragged.
+
+> **Why isn't right alignment the default for numeric inputs?**
+> Right alignment pays off when values are **stacked vertically** and place values are compared down a column — which is why [`@iyulab/flex-table`](https://github.com/iyulab/flex-table) right-aligns its number columns and cell editors. A standalone form field has no column to align against, and forcing it would silently shift existing layouts and push the value away from a currency symbol placed in the `prefix` slot. Opt in where the comparison context actually exists.
+
+### Numeric Formatting
+
+`u-input` does not format values (thousands separators, currency, locale decimals). Its `value` is the raw string the control holds, so it stays a faithful form primitive. Format for display in your app layer, or use a grid component such as `flex-table` when you need formatted, column-aligned numbers.
