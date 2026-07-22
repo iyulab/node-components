@@ -48,8 +48,8 @@ setDefaultBaseUrl('https://cdn.example.com/icons/');
 | `internal` | bundled | — |
 | `tabler` | `name` / `name:filled` | 3.40.0 |
 | `heroicons` | `name` / `name:solid` | 2.2.0 |
-| `lucide` | `name` | 0.503.0 |
-| `bootstrap` | `name` / `name:filled` | 1.11.3 |
+| `lucide` | `name` | 0.577.0 |
+| `bootstrap` | `name` / `name:filled` | 1.13.1 |
 
 ```html
 <u-icon lib="tabler" name="home"></u-icon>
@@ -74,6 +74,30 @@ IconRegistry.register('my-icons', async (name: string) => {
 <u-icon lib="my-icons" name="logo"></u-icon>
 ```
 
+### Resolver contract
+
+The registry owns caching — a resolver is a **pure lookup** and is called at most once per icon name per session. Its return value declares the outcome:
+
+| Resolver outcome | Meaning | Caching |
+|------------------|---------|---------|
+| returns `string` | success | cached for the session |
+| returns `undefined` | **definitive not-found** (e.g. HTTP 404) | negative-cached — not retried (escape hatch: `IconCache.clear()`) |
+| throws | **transient error** (e.g. network failure) | not cached — retried on next lookup |
+
+Do **not** return `undefined` for transient failures — let the error propagate (`throw`) so the registry can retry later. Do not implement your own memoization inside a resolver; the registry already deduplicates concurrent lookups and caches results.
+
+### Overriding a pre-registered library
+
+`register()` ignores a `lib` name that is already registered. To replace a built-in CDN library (e.g. to serve icons from a local bundle in an air-gapped network), unregister first — this also evicts that library's cached entries:
+
+```ts
+IconRegistry.unregister('bootstrap');
+IconRegistry.register('bootstrap', async (name) => {
+  const res = await fetch(`/assets/bootstrap-icons/${name}.svg`);
+  return res.ok ? res.text() : undefined;
+});
+```
+
 Unregister when no longer needed:
 
 ```ts
@@ -90,12 +114,18 @@ http(s) url directly via `src`:
 <u-icon src="https://example.com/icon.svg"></u-icon>
 ```
 
+`src` URLs (and the no-`lib` base-URL path) are resolved through `IconRegistry.resolveUrl(url)` and cached under the reserved `url` namespace — the same URL is fetched once per session, even across unmount/remount.
+
 ---
 
 ## Caching
 
-`IconCache` stores resolved SVGs keyed by `lib:name`. Cache persists for the page lifetime.  
-The cache is shared across all `u-icon` instances — the same icon is only fetched once.
+`IconCache` stores resolved SVGs keyed by `lib:name`. Cache persists for the page lifetime. The cache is shared across all `u-icon` instances and owned by `IconRegistry.resolve()` — the same icon is fetched once per session, including under repeated re-renders/remounts (e.g. streaming UI):
+
+- **Success** is cached; **not-found** (`undefined`) is negative-cached so a missing icon does not re-fetch (no 404 storms).
+- **Concurrent lookups** of the same `(lib, name)` share one in-flight request.
+- **Transient errors** (resolver `throw`) are never cached — the next lookup retries.
+- `IconCache.clear()` empties the whole cache; `IconCache.clear(lib)` empties one library (also done automatically by `IconRegistry.unregister(lib)`).
 
 ---
 

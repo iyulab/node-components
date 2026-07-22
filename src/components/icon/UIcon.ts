@@ -28,8 +28,10 @@ export class UIcon extends UElement {
 
   render() {
     if (this.src) {
-      return until(fetch(this.src).then(r => r.text()).then(html => {
-        return html ? unsafeHTML(this.sanitize(html)) : nothing;
+      // IconRegistry.resolveUrl이 캐싱/dedupe를 담당 — 재렌더·재마운트 시 같은 URL을 다시 fetch하지 않는다.
+      return until(IconRegistry.resolveUrl(this.src).then(html => {
+        const sanitized = this.sanitize(html);
+        return sanitized ? unsafeHTML(sanitized) : nothing;
       }), nothing);
     }
     if (this.name) {
@@ -45,16 +47,9 @@ export class UIcon extends UElement {
     if (this.lib) {
       html = await IconRegistry.resolve(this.lib, name);
     } else {
-      try {
-        const baseUrl = getDefaultBaseUrl();
-        const url = `${baseUrl.replace(/\/$/, '')}/${name}.svg`;
-        const response = await fetch(url);
-        if (response.ok) {
-          html = await response.text();
-        }
-      } catch (error) {
-        console.error(error);
-      }
+      const baseUrl = getDefaultBaseUrl();
+      const url = `${baseUrl.replace(/\/$/, '')}/${name}.svg`;
+      html = await IconRegistry.resolveUrl(url);
     }
 
     return this.sanitize(html);

@@ -1,7 +1,7 @@
 {
   "name": "@iyulab/components",
   "description": "web-components library based on lit-element made by iyulab",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "keywords": [
     "iyulab",
     "components",

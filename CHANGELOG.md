@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.8.0] - 2026-07-22
+
+### Fixed
+- **`u-icon` 아이콘 리졸브가 재렌더·재마운트마다 다시 fetch되던 스톰 수정** — `IconRegistry.resolve()`가 리졸버 결과를 캐시하지 않아, SSE 스트리밍처럼 같은 아이콘이 반복 재마운트되는 UI에서 단일 아이콘에 수백 회 fetch가 발생했다(미존재 아이콘은 404 스톰으로 콘솔 오염 + dev 서버 부하 — SMI.AIMS 실측, ISSUE-components-20260722-iconregistry-resolver-no-cache). 이제 레지스트리가 (lib, name) 단위 캐싱과 동시 요청 in-flight dedupe를 소유해, 커스텀 리졸버를 포함한 모든 라이브러리에서 아이콘당 세션 1회만 리졸브된다. `u-icon`의 `src` 경로·무-lib 기본(baseUrl) 경로도 신설 `IconRegistry.resolveUrl(url)`을 경유해 동일하게 캐시된다.
+- 내장 CDN 리졸버(tabler/heroicons/lucide/bootstrap)가 네트워크 오류를 `undefined`로 삼키던 것을 throw 전파로 교정 — 일시 장애가 세션 내 not-found로 오인·고착되지 않고 다음 조회에서 재시도된다.
+
+### Changed
+- **`IconResolver` 계약 명확화 (동작 변경)** — 리졸버의 `undefined` 반환은 이제 **not-found 확정**을 뜻하며 네거티브 캐시되어 세션 내 재호출되지 않는다(탈출구: `IconCache.clear()`). **일시 오류(네트워크 장애 등)에는 `undefined` 대신 `throw`를 사용할 것** — throw는 캐시되지 않아 다음 조회 시 재시도된다. 일시 실패에 `undefined`를 반환하던 커스텀 리졸버는 throw로 전환해야 재시도 동작을 유지한다.
+- `IconRegistry.unregister(lib)`가 해당 라이브러리의 캐시 항목을 함께 비운다 — 내장 CDN 라이브러리를 로컬 리졸버로 교체(`unregister` → `register`, 폐쇄망 대응)할 때 이전 리졸버의 stale 결과가 남지 않는다.
+
+### Added
+- `IconRegistry.resolveUrl(url)` — URL 직접 리졸브(캐시 + dedupe). 예약 네임스페이스 `url`로 `IconCache`에 저장되며 소비앱의 prewarm 용도로도 사용 가능.
+- `IconCache.clear(lib)` — 특정 라이브러리 항목만 클리어(전체 클리어는 기존대로 인자 없이).
+- `IconCache.set()`이 `undefined`(네거티브 항목) 저장을 허용.
+
+### Documentation
+- `docs/icons.md`·skills 레퍼런스에 리졸버 계약(성공/not-found/일시 오류)·캐싱 동작·내장 라이브러리 오버라이드 절차(`unregister`→`register`) 문서화. CDN 버전 표기 드리프트 교정(lucide 0.577.0, bootstrap 1.13.1).
+
 ## [1.7.2] - 2026-07-19
 
 ### Fixed
