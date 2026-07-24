@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.1] - 2026-07-24
+
+### Fixed
+- **u-field 합성 폼 컨트롤이 접근성 트리에서 이름 없이 노출되던 문제 수정** (WCAG 1.3.1·4.1.2 — U-Platform T8-1 Playwright E2E 실측, ISSUE-20260723-uinput-label-a11y). 라벨은 `u-field` 의 별도 섀도 스코프에 렌더되어 `label[for]` 로 컨트롤과 연결될 수 없었고, 섀도 경계 탓에 cross-root `aria-labelledby` 도 현 브라우저에서 신뢰성 있게 배송되지 않는다. 이제 각 컴포넌트가 자신의 접근 이름 호스트에 라벨을 `aria-label`(설명은 `aria-description`)로 미러링한다 — `u-input`/`u-textarea`(네이티브 컨트롤), `u-rating`/`u-radio`(`role=radiogroup`), `u-select`(`role=combobox` + `aria-expanded`/`aria-haspopup`/`aria-controls`), `u-slider`(`role=slider` + `aria-valuenow`/`valuemin`/`valuemax`/`valuetext`). 아울러 `u-option` 이 사용 맥락에 맞는 자식 역할·상태를 노출한다 — radiogroup(`marker='radio'`) 안에서는 `role=radio` + `aria-checked`, listbox(`u-select`/`u-input` combobox) 에서는 `role=option` + `aria-selected`(+ `aria-disabled`) — 이름만 있고 비어 보이던 radiogroup/combobox 위젯이 자식까지 정합하게 읽힌다. `u-rating` 심볼(`role=radio`)도 커밋 값 기준 `aria-checked` 를 노출한다. `getByLabel`/`getByRole({name})` 로케이터와 스크린리더가 컨트롤을 이름으로 인식한다.
+- **React 래퍼 `.d.ts` 타이핑 2건 수정** (React 19 + TS strict 컴파일 차단 — U-CMMS 실측, ISSUE-20260722-react-wrapper-typing). (1) `React.HTMLAttributes` 의 이벤트 핸들러(`onChange` 등)와 래퍼의 CustomEvent 시그니처가 교집합되어 어떤 핸들러도 대입 불가였던 것을, HTMLAttributes 쪽 동명 이벤트 키를 `Omit` 해 CustomEvent 시그니처만 남기도록 교정. (2) `Partial<Element>` 의 DOM `children: HTMLCollection` 이 JSX children 을 가려 `<UButton>text</UButton>` 이 TS2747 로 실패하던 것을, `Omit<Partial<Element>, keyof HTMLAttributes>` 로 DOM 전용 키를 제거하고 React 친화 타입(`children: ReactNode`)이 HTMLAttributes 에서 공급되도록 교정. 소비자의 `as unknown as ComponentType` 우회 제거 가능.
+
 ## [1.8.0] - 2026-07-22
 
 ### Fixed

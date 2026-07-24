@@ -1,5 +1,6 @@
 import { html, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 import '../field/UField.js';
 import '../icon/UIcon.js';
 import '../spinner/USpinner.js';
@@ -74,6 +75,10 @@ export class USelect extends UFormControlElement<string | string[]> {
   @query('u-popover', true) popoverEl?: UPopover;
 
   @state() private options: UOption[] = [];
+  /** aria-expanded 배선용 팝오버 열림 상태 */
+  @state() private open: boolean = false;
+  /** combobox → listbox 연결용 고유 id (aria-controls) */
+  private readonly listboxId = `u-select-listbox-${Math.random().toString(36).slice(2, 8)}`;
 
   protected shouldValidate(changed: PropertyValues): boolean {
     return super.shouldValidate(changed)
@@ -119,7 +124,13 @@ export class USelect extends UFormControlElement<string | string[]> {
           ${this.valueAsArray.length} / ${this.maxCount}
         </span>
 
-        <div class="container" part="container" tabindex=${this.disabled ? "-1" : "0"}>
+        <div class="container" part="container" tabindex=${this.disabled ? "-1" : "0"}
+          role="combobox"
+          aria-label=${ifDefined(this.label)}
+          aria-description=${ifDefined(this.description)}
+          aria-haspopup="listbox"
+          aria-expanded=${this.open}
+          aria-controls=${this.listboxId}>
           <slot name="prefix"></slot>
           <slot name="display">${this.renderContent()}</slot>
           <slot name="suffix"></slot>
@@ -142,11 +153,14 @@ export class USelect extends UFormControlElement<string | string[]> {
       </u-field>
 
       <u-popover part="popover"
+        id=${this.listboxId}
         role="listbox"
         scrollable
         autofocus
         for=".container"
         trigger="click"
+        @show=${() => (this.open = true)}
+        @hide=${() => (this.open = false)}
         strategy="fixed"
         placement="bottom-start"
         offset="1"

@@ -1,5 +1,6 @@
 import { html, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 import '../field/UField.js';
 import '../icon/UIcon.js';
 
@@ -71,13 +72,17 @@ export class URating extends UFormControlElement<number> {
         .description=${this.description}
         .validationMessage=${this.validationMessage}
       >
-        <div class="symbols" part="container" role="radiogroup">
+        <div class="symbols" part="container" role="radiogroup"
+          aria-label=${ifDefined(this.label)}
+          aria-description=${ifDefined(this.description)}>
           ${Array.from({ length: this.max }, (_, i) => {
             const score = i + 1;
             const fill = Math.max(0, Math.min(1, value - score + 1));
             return html`
               <span class="symbol" part="symbol"
                 role="radio"
+                aria-checked=${score === Math.round(this.value || 0) ? 'true' : 'false'}
+                aria-disabled=${this.interactive ? 'false' : 'true'}
                 tabindex=${this.interactive ? '0' : '-1'}
                 data-score=${score}
                 @pointermove=${this.handleSymbolPointerMove}

@@ -247,10 +247,22 @@ export const ${className} = createComponent({
       }).join('\n') + '\n'
     : '';
 
+  // 래퍼 이벤트 prop(onChange 등)은 React.HTMLAttributes 의 동명 핸들러와 교집합되면
+  // 어떤 시그니처도 대입 불가가 된다. HTMLAttributes 쪽에서 해당 키를 제거해 CustomEvent
+  // 시그니처만 남긴다. 이벤트가 없으면 Omit<…, never> 로 HTMLAttributes 원형 유지.
+  const eventKeyUnion = events.length > 0
+    ? events.map(e => `'${e.reactName}'`).join(' | ')
+    : 'never';
+
+  // Partial<Element> 은 DOM 프로퍼티(children: HTMLCollection 등)를 포함해 React 의 JSX
+  // children/이벤트/className 등과 충돌한다. keyof React.HTMLAttributes 를 제거해 컴포넌트
+  // 고유 prop만 남기고, React 친화 타입(children: ReactNode 포함)은 HTMLAttributes 가 제공한다.
   const dts = `${dtsImports.join('\n')}
 
 export declare const ${className}: React.ForwardRefExoticComponent<
-  Partial<${className}Element> & React.HTMLAttributes<${className}Element> & {
+  Omit<Partial<${className}Element>, keyof React.HTMLAttributes<${className}Element>>
+    & Omit<React.HTMLAttributes<${className}Element>, ${eventKeyUnion}>
+    & {
 ${eventTypes}  }
 >;
 

@@ -86,6 +86,8 @@ export class UTextarea extends UFormControlElement<string> {
         <div class="container" part="container">
           <textarea part="textarea"
             scrollable
+            aria-label=${ifDefined(this.label)}
+            aria-description=${ifDefined(this.description)}
             ?required=${this.required}
             ?disabled=${this.disabled}
             ?readonly=${this.readonly}

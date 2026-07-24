@@ -1,5 +1,6 @@
 import { html, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 import '../field/UField.js';
 import '../tooltip/UTooltip.js';
 
@@ -239,6 +240,13 @@ export class USlider extends UFormControlElement<number | number[]> {
     return html`
       <div class="thumb" part=${isEnd ? 'thumb-end' : 'thumb'}
         role="slider"
+        aria-label=${ifDefined(this.label)}
+        aria-valuenow=${val}
+        aria-valuemin=${this.min}
+        aria-valuemax=${this.max}
+        aria-valuetext=${this.formatValue(val)}
+        aria-orientation="horizontal"
+        aria-disabled=${this.disabled ? 'true' : 'false'}
         ?hidden=${isEnd && !this.range}
         style="left: ${pct}%"
         tabindex=${this.disabled || (isEnd && !this.range) ? -1 : 0}

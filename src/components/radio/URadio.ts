@@ -1,5 +1,6 @@
 import { html, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 import '../field/UField.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
@@ -64,7 +65,10 @@ export class URadio extends UFormControlElement<string> {
         .description=${this.description}
         .validationMessage=${this.validationMessage}
       >
-        <div class="container" part="container">
+        <div class="container" part="container"
+          role="radiogroup"
+          aria-label=${ifDefined(this.label)}
+          aria-description=${ifDefined(this.description)}>
           <slot @slotchange=${this.handleSlotChange}></slot>
         </div>
       </u-field>

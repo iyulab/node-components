@@ -1,4 +1,4 @@
-import { html, nothing } from "lit";
+import { html, nothing, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import '../icon/UIcon.js';
 
@@ -43,6 +43,21 @@ export class UOption extends UElement {
   connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute('role', 'option');
+    this.setAttribute('tabindex', this.disabled ? '-1' : '0');
+  }
+
+  protected updated(changed: PropertyValues): void {
+    super.updated(changed);
+    // 사용 맥락(marker)에 따라 접근성 역할·상태 ARIA 를 맞춘다:
+    // radiogroup(marker='radio') 안에서는 role=radio + aria-checked,
+    // 그 외 listbox(u-select/u-input combobox) 에서는 role=option + aria-selected.
+    // (부모 컨테이너의 role=radiogroup/listbox 와 자식 role 이 짝을 이뤄야 스크린리더가
+    //  이름만 있고 비어 보이는 위젯으로 읽지 않는다.)
+    const isRadio = this.marker === 'radio';
+    this.setAttribute('role', isRadio ? 'radio' : 'option');
+    this.removeAttribute(isRadio ? 'aria-selected' : 'aria-checked');
+    this.setAttribute(isRadio ? 'aria-checked' : 'aria-selected', String(this.selected));
+    this.setAttribute('aria-disabled', String(this.disabled));
     this.setAttribute('tabindex', this.disabled ? '-1' : '0');
   }
 
