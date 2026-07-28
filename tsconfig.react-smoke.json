@@ -1,0 +1,16 @@
+{
+  // React strict 소비 타입 스모크 전용 프로젝트.
+  //
+  // 메인 tsconfig 와 분리한 이유: 검증 대상이 빌드 산출물(`dist/react/*.d.ts`)이라 dist 가
+  // 존재할 때만 의미가 있다. 메인 프로젝트에 넣으면 fresh clone 의 `tsc --noEmit` 이 거짓
+  // 실패하고 doctor 타입 스윕까지 오염된다. 그래서 `build` 파이프라인 끝에서만 돌린다.
+  //
+  // 메인과 다른 점은 둘뿐이다 — JSX 활성화, 그리고 dist 를 exclude 하지 않는 것.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "noEmit": true
+  },
+  "include": ["tests/types/**/*"],
+  "exclude": ["node_modules"]
+}

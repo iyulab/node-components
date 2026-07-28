@@ -257,11 +257,17 @@ export const ${className} = createComponent({
   // Partial<Element> 은 DOM 프로퍼티(children: HTMLCollection 등)를 포함해 React 의 JSX
   // children/이벤트/className 등과 충돌한다. keyof React.HTMLAttributes 를 제거해 컴포넌트
   // 고유 prop만 남기고, React 친화 타입(children: ReactNode 포함)은 HTMLAttributes 가 제공한다.
+  //
+  // `React.RefAttributes` 를 반드시 교집합에 넣는다 — `ForwardRefExoticComponent<P>` 는 P 에
+  // ref 를 자동으로 더해 주지 않는다. @lit/react 의 `ReactWebComponent` 자신이
+  // `PropsWithoutRef<…> & React.RefAttributes<I>` 로 선언돼 있으므로(런타임은 ref 를 전달한다),
+  // 이것을 빠뜨리면 **런타임은 되는데 타입만 거부하는** 괴리가 생긴다.
   const dts = `${dtsImports.join('\n')}
 
 export declare const ${className}: React.ForwardRefExoticComponent<
   Omit<Partial<${className}Element>, keyof React.HTMLAttributes<${className}Element>>
     & Omit<React.HTMLAttributes<${className}Element>, ${eventKeyUnion}>
+    & React.RefAttributes<${className}Element>
     & {
 ${eventTypes}  }
 >;

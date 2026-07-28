@@ -48,6 +48,10 @@
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    // React 타입 스모크는 빌드 산출물(dist/react)을 대상으로 하므로 여기서 제외한다.
+    // 빌드 전에는 dist 가 없어 거짓 실패가 나고 doctor 타입 스윕까지 오염된다.
+    // 전용 프로젝트: tsconfig.react-smoke.json (build 파이프라인 끝에서 실행)
+    "tests/types"
   ]
 }

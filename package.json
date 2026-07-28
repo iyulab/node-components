@@ -45,7 +45,8 @@
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "build:plugins": "tsc -p plugins/tsconfig.json",
-    "build": "eslint && vite build && npm run build:plugins"
+    "build": "eslint && vite build && npm run build:plugins && npm run test:react-types",
+    "test:react-types": "tsc -p tsconfig.react-smoke.json"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.8.0",
@@ -67,6 +68,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@types/node": "^26.1.1",
+    "@types/react": "^19.2.14",
     "@vitest/browser-playwright": "^4.1.10",
     "eslint": "^9.39.4",
     "eslint-plugin-lit": "^2.3.1",
