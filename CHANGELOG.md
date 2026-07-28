@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.8.2] - 2026-07-28
+## [1.9.0] - 2026-07-28
 
 ### Fixed
 - **열린 팝오버가 페이지 스크롤 한 번에 닫히던 결함 수정** (u-select listbox·u-input combobox 실사용 및 E2E 구동 불능 — U-Platform 실측, ISSUE-node-packages-20260724-uselect-playwright-driveability). `UPopover.dismiss` 기본값의 `scroll` 이 document 캡처 단계로 등록되는 한편 `UFloatingElement.show()` 는 **모든** 플로팅 엘리먼트에 floating-ui `autoUpdate`(스크롤 시 앵커 추종 재배치)를 설치한다 — 같은 스크롤 이벤트에 재배치와 닫기가 동시에 걸리고 닫기가 이기는 자기모순이었다. 이제 `scroll` 은 **앵커가 스크롤로 의미를 잃을 때만** 닫는다: 실제 엘리먼트에 앵커된 팝오버(드롭다운·제안 목록·서브메뉴·툴팁)는 재배치되어 열린 채 유지되고, `trigger="contextmenu"` 의 좌표 기반 가상 앵커는 종전대로 닫힌다. Playwright 의 "scroll into view" 가 목록을 닫아 `getByRole('option').click()` 이 완주하지 못하던 문제도 함께 해소된다. 회귀 테스트 3건 추가.
