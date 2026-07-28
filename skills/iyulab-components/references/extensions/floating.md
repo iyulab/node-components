@@ -45,6 +45,17 @@ export class MyDropdown extends UFloatingElement {
 | `showDelay` | `number` | `0` | — | Open delay (ms) |
 | `hideDelay` | `number` | `0` | — | Close delay (ms) |
 
+## Derived state
+
+| Attribute | Description |
+|-----------|-------------|
+| `anchor-hidden` | **Read-only — do not set.** Applied automatically while the anchor is fully outside its clipping area (scroll container or viewport). The element is hidden but **not closed** (`open` stays `true`) and returns as soon as the anchor is visible again. Available as a style hook: `my-dropdown[anchor-hidden] { … }` |
+
+This matters most with `strategy="fixed"`, which is used precisely so the floating element
+escapes `overflow` ancestor clipping — without `anchor-hidden` the panel would keep covering
+unrelated content after its anchor scrolled out of the panel. Backed by the `hide` middleware
+of `@floating-ui/dom`. Added in 1.8.2.
+
 ## Methods
 
 | Method | Returns | Description |

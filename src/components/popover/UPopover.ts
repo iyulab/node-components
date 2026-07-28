@@ -40,8 +40,10 @@ export class UPopover extends UFloatingElement {
    * 팝오버를 닫는 조건 (쉼표 구분하여 복수 지정 가능)
    * - `click`: 외부 클릭 시 닫기
    * - `escape`: Escape 키 시 닫기
-   * - `scroll`: 스크롤 시 닫기
-   * - `resize`: 윈도우 리사이즈 시 닫기
+   * - `scroll` / `resize`: 뷰포트 기하 변화로 **앵커가 의미를 잃을 때** 닫기 — 즉
+   *   `contextmenu` 처럼 좌표 기반 가상 앵커에 붙은 경우에만 닫는다. 실제 엘리먼트에 앵커된
+   *   팝오버는 `autoUpdate` 가 스크롤·리사이즈를 따라 재배치하므로 닫지 않는다
+   *   (`isCoordinateAnchored` 참조).
    */
   @property({
     type: Array,
@@ -289,11 +291,41 @@ export class UPopover extends UFloatingElement {
     this.hide();
   };
 
+  /**
+   * 현재 표시 중이며 앵커가 **좌표 기반 가상 엘리먼트**인지 여부.
+   *
+   * 뷰포트 기하 변화(스크롤·리사이즈)는 그 자체로 닫기 사유가 아니다. `UFloatingElement.show()`
+   * 가 모든 플로팅 엘리먼트에 `autoUpdate` 를 설치하고, `autoUpdate` 는 조상 스크롤과 리사이즈를
+   * 모두 구독해 재배치한다 — 여기서 hide 하면 재배치 로직과 정면으로 모순된다. 실제로 그 모순이
+   * 열린 listbox(u-select·u-input combobox)를 페이지 스크롤 한 번에 닫아버렸다.
+   * 앵커가 클리핑 영역 밖으로 나가는 경우는 `hide` middleware 가 별도로 처리한다(닫지 않고 숨김).
+   *
+   * 닫아야 하는 경우는 **앵커가 좌표라서 기하 변화에 의미를 잃는 경우**뿐이다 —
+   * `trigger="contextmenu"` 의 가상 앵커는 이벤트 발생 시점의 clientX/clientY 에 고정돼 있어
+   * 콘텐츠가 스크롤·리플로우되면 가리키던 대상과 어긋난다.
+   *
+   * `targetEl` 이 없으면 표시 중이 아니므로 닫을 것도 없다 — 이 가드가 없으면 닫힌 팝오버가
+   * 스크롤 이벤트마다 `hide()`(→ `await updateComplete`) 를 돌려 인스턴스 수만큼 churn 이 된다.
+   * 단 `show()` 는 showDelay 타이머보다 **먼저** `targetEl` 을 세우므로, 가상 앵커의 대기 중
+   * show 취소는 이 가드를 통과해 그대로 보존된다.
+   */
+  private get isCoordinateAnchored(): boolean {
+    return !!this.targetEl && !(this.targetEl instanceof Element);
+  }
+
   private handleDocumentScroll = () => {
+    if (!this.isCoordinateAnchored) return;
     this.hide();
   };
 
+  /**
+   * 리사이즈도 스크롤과 같은 뷰포트 기하 변화다 — `autoUpdate` 가 `ancestorResize` 로 window
+   * 리사이즈를 구독해 재배치하므로 실앵커 팝오버를 닫을 이유가 없다. 닫으면 모바일에서
+   * `u-select searchable` 의 검색 입력을 탭하는 순간 가상 키보드가 레이아웃 뷰포트를 줄이며
+   * 리사이즈를 발생시켜 드롭다운이 닫혀버린다.
+   */
   private handleWindowResize = () => {
+    if (!this.isCoordinateAnchored) return;
     this.hide();
   };
 

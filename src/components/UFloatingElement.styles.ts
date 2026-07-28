@@ -34,6 +34,16 @@ export const styles = css`
     position: fixed;
   }
 
+  /* 앵커가 클리핑 영역(스크롤 컨테이너·뷰포트) 밖으로 나가 참조를 잃은 동안은 숨긴다.
+     닫지는 않는다 — 앵커가 다시 보이면 열린 상태 그대로 복귀한다.
+     특히 strategy="fixed" 는 overflow 조상에 클립되지 않으므로(그것이 fixed 를 쓰는 이유),
+     이 규칙이 없으면 앵커가 스크롤 패널 밖으로 나간 뒤에도 팝오버만 화면에 남는다.
+     :host([open]) 과 명시도가 같으므로 반드시 그 뒤에 와야 이긴다. */
+  :host([anchor-hidden]) {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
   /* 화살표: clip-path로 삼각형 */
   #arrow {
     position: absolute;

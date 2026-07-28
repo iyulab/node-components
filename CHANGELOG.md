@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.8.2] - 2026-07-28
+
+### Fixed
+- **열린 팝오버가 페이지 스크롤 한 번에 닫히던 결함 수정** (u-select listbox·u-input combobox 실사용 및 E2E 구동 불능 — U-Platform 실측, ISSUE-node-packages-20260724-uselect-playwright-driveability). `UPopover.dismiss` 기본값의 `scroll` 이 document 캡처 단계로 등록되는 한편 `UFloatingElement.show()` 는 **모든** 플로팅 엘리먼트에 floating-ui `autoUpdate`(스크롤 시 앵커 추종 재배치)를 설치한다 — 같은 스크롤 이벤트에 재배치와 닫기가 동시에 걸리고 닫기가 이기는 자기모순이었다. 이제 `scroll` 은 **앵커가 스크롤로 의미를 잃을 때만** 닫는다: 실제 엘리먼트에 앵커된 팝오버(드롭다운·제안 목록·서브메뉴·툴팁)는 재배치되어 열린 채 유지되고, `trigger="contextmenu"` 의 좌표 기반 가상 앵커는 종전대로 닫힌다. Playwright 의 "scroll into view" 가 목록을 닫아 `getByRole('option').click()` 이 완주하지 못하던 문제도 함께 해소된다. 회귀 테스트 3건 추가.
+- **`dismiss: 'resize'` 도 같은 원칙으로 정합** — `autoUpdate` 는 `ancestorResize` 로 window 리사이즈도 구독해 재배치하므로 scroll 과 동일한 자기모순이었다. 이제 리사이즈도 좌표 기반 가상 앵커에서만 닫는다. 이로써 모바일에서 `u-select searchable` 의 검색 입력을 탭할 때 가상 키보드가 레이아웃 뷰포트를 줄이며 발생시키는 리사이즈로 드롭다운이 닫히던 문제가 해소된다. 회귀 테스트 2건 추가.
+
+### Added
+- **앵커 이탈 시 팝오버 자동 숨김** — 위 수정으로 실앵커 팝오버가 스크롤에 닫히지 않게 되면서 드러난 케이스 대응. `strategy="fixed"` 팝오버는 overflow 조상에 클립되지 않으므로(그것이 fixed 를 쓰는 이유), 앵커가 스크롤 패널 밖으로 나가면 팝오버만 화면에 남아 무관한 콘텐츠를 덮을 수 있었다. floating-ui `hide` middleware 를 `UFloatingElement.reposition()` 에 도입해, 앵커가 클리핑 영역(스크롤 컨테이너·뷰포트)을 완전히 벗어나면 `anchor-hidden` 속성이 붙고 엘리먼트가 숨겨진다. **닫히지는 않으므로**(`open` 유지) 되돌려 스크롤하면 열린 상태 그대로 복귀한다. `anchor-hidden` 은 읽기 전용 파생 상태이며 스타일 훅으로 사용할 수 있다. 회귀 테스트 2건 추가.
+
 ## [1.8.1] - 2026-07-24
 
 ### Fixed

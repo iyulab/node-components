@@ -45,8 +45,24 @@ Inherits all `UFloatingElement` properties (see [floating.md](../extensions/floa
 | `showDelay` | `number` | `0` | — | Open delay in ms |
 | `hideDelay` | `number` | `0` | — | Close delay in ms |
 | `trigger` | `'click'\|'contextmenu'\|'hover'\|'focus'\|'manual'` | `'click'` | ✓ | Open trigger |
-| `dismiss` | `string[]` | `['click','escape','scroll','resize']` | ✓ | Close triggers |
+| `dismiss` | `string[]` | `['click','escape','scroll','resize']` | ✓ | Close triggers — see note below |
 | `autofocus` | `boolean` | `false` | ✓ | Focus first focusable element on open |
+
+### `dismiss` semantics
+
+`click` and `escape` express user intent and always close the popover.
+
+`scroll` and `resize` are viewport-geometry changes and **only close the popover when it is
+anchored to a coordinate** — i.e. the virtual anchor created by `trigger="contextmenu"`, whose
+`clientX`/`clientY` stop matching whatever they pointed at once the page reflows.
+
+A popover anchored to a **real element** is not closed by scrolling or resizing: `autoUpdate`
+keeps it pinned to its anchor. If the anchor scrolls out of its clipping area entirely, the
+popover is *hidden* rather than closed (see `anchor-hidden` in
+[extensions/floating.md](../extensions/floating.md)) and returns when the anchor comes back.
+
+> Before 1.8.2 `scroll`/`resize` closed unconditionally, which contradicted `autoUpdate` and
+> collapsed open `u-select`/`u-input` listboxes on any page scroll.
 
 ## Events
 

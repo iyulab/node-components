@@ -1,7 +1,7 @@
 import { CSSResultGroup, PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
-import { computePosition, offset, shift, flip, autoPlacement, autoUpdate, arrow } from '@floating-ui/dom';
+import { computePosition, offset, shift, flip, autoPlacement, autoUpdate, arrow, hide } from '@floating-ui/dom';
 import type { OffsetOptions, Placement, VirtualElement } from '@floating-ui/dom';
 
 import { getParentElement, querySelectorAllWithin } from '../utilities/elements.js';
@@ -15,9 +15,14 @@ export type FloatingStrategy = 'absolute' | 'fixed';
 /**
  * UFloatingElement는 팝오버, 툴팁 등 화면에 떠 있는 엘리먼트를 구현하기 위한 기본 클래스입니다.
  * 이 클래스를 상속하여 커스텀 팝오버 컴포넌트를 만들 수 있습니다.
- * 
+ *
  * @event show - 엘리먼트가 표시되기 전에 발생합니다. 이벤트 핸들러에서 false를 반환하면 표시가 취소됩니다.
  * @event hide - 엘리먼트가 숨겨지기 전에 발생합니다. 이벤트 핸들러에서 false를 반환하면 숨김이 취소됩니다.
+ *
+ * @attr {boolean} anchor-hidden - **읽기 전용 파생 상태**(설정하지 마세요). 앵커가 클리핑
+ *   영역(스크롤 컨테이너·뷰포트) 밖으로 완전히 벗어난 동안 자동으로 붙습니다. 이때 엘리먼트는
+ *   숨겨지지만 **닫히지는 않으며**(`open` 유지), 앵커가 다시 보이면 그대로 복귀합니다.
+ *   스타일 훅으로 사용할 수 있습니다: `my-popover[anchor-hidden] { … }`
  */
 export class UFloatingElement extends UElement {
   static styles: CSSResultGroup = [ super.styles, styles ];
@@ -254,6 +259,8 @@ export class UFloatingElement extends UElement {
         shift({ mainAxis: this.shift }),
         this.placement ? flip() : autoPlacement(),
         ...(this.arrowEl ? [arrow({ element: this.arrowEl })] : []),
+        // hide 는 배치가 확정된 뒤 판정해야 하므로 반드시 마지막에 온다.
+        hide(),
       ],
     });
 
@@ -287,6 +294,12 @@ export class UFloatingElement extends UElement {
       top: `${position.y}px`,
       transformOrigin: config.transform,
     });
+
+    // 앵커가 클리핑 영역 밖으로 완전히 벗어나면 팝오버를 숨긴다(닫지는 않는다 — 앵커가
+    // 다시 보이면 autoUpdate 의 다음 재배치에서 속성이 해제되어 그대로 복귀한다).
+    // `scroll` dismiss 가 실앵커를 더 이상 닫지 않게 된 뒤 드러난 케이스로, 특히
+    // strategy="fixed" 는 overflow 조상에 클립되지 않아 팝오버만 남는다.
+    this.toggleAttribute('anchor-hidden', !!position.middlewareData.hide?.referenceHidden);
 
     const arrowData = position.middlewareData.arrow;
     if (!this.arrowEl || !arrowData) return;
