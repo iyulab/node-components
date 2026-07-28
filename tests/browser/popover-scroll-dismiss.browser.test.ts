@@ -19,11 +19,27 @@ import type { UPopover } from '../../src/components/popover/UPopover.js';
  * 되돌린 뒤 배출을 기다리지 않으면 직전 테스트의 잔여 스크롤이 다음 테스트의 팝오버를 닫는다.
  */
 
-/** 페이지에 스크롤 여지를 만든다 — window.scrollTo 가 실제 scroll 이벤트를 내려면 필요. */
-function addScrollRoom(): void {
+/** 페이지에 아래쪽 스크롤 여지를 만든다 — window.scrollTo 가 실제 scroll 이벤트를 내려면 필요. */
+function addScrollRoom(height = '3000px'): void {
   const spacer = document.createElement('div');
-  spacer.style.height = '3000px';
+  spacer.style.height = height;
   document.body.appendChild(spacer);
+}
+
+/**
+ * 대상 엘리먼트를 **뷰포트 안에 남는 위치**에 두고 위아래로 스크롤 여지를 만든다.
+ *
+ * 앞쪽 여백이 중요하다. 대상을 페이지 최상단에 두면 100px 만 스크롤해도 앵커가 뷰포트를
+ * 벗어나 `hide` middleware 가 팝오버를 `anchor-hidden` 으로 만든다 — 그러면 "스크롤해도
+ * 목록을 계속 조작할 수 있는가"를 검증할 수 없다(그건 별도 테스트 파일의 주제다).
+ * 반대로 뒤쪽 여백이 없으면 스크롤 자체가 일어나지 않는다.
+ */
+function mountWithScrollRoom(el: HTMLElement): void {
+  const lead = document.createElement('div');
+  lead.style.height = '300px';
+  document.body.appendChild(lead);
+  document.body.appendChild(el);
+  addScrollRoom();
 }
 
 async function settle(ms = 200): Promise<void> {
@@ -39,8 +55,6 @@ describe('팝오버 scroll-dismiss 정책', () => {
   });
 
   it('u-select: 열린 listbox 가 페이지 스크롤에 닫히지 않고 앵커를 따라 재배치된다', async () => {
-    addScrollRoom();
-
     const select = document.createElement('u-select') as USelect;
     for (let i = 0; i < 5; i++) {
       const option = document.createElement('u-option');
@@ -48,7 +62,7 @@ describe('팝오버 scroll-dismiss 정책', () => {
       option.textContent = `옵션 ${i}`;
       select.appendChild(option);
     }
-    document.body.appendChild(select);
+    mountWithScrollRoom(select);
     await select.updateComplete;
 
     const popover = select.shadowRoot!.querySelector('u-popover') as UPopover;
@@ -67,17 +81,38 @@ describe('팝오버 scroll-dismiss 정책', () => {
     // 닫히지 않을 뿐 아니라 autoUpdate 가 앵커를 따라 위로 재배치해야 한다
     const topAfter = popover.getBoundingClientRect().top;
     expect(topBefore - topAfter).toBeGreaterThan(50);
+
+    // 앵커는 여전히 뷰포트 안이므로 숨겨져 있으면 안 된다(가려진 앵커를 보고 있지 않다는 확인)
+    expect(popover.hasAttribute('anchor-hidden')).toBe(false);
+
+    // 그리고 **재배치된 좌표에서** 옵션이 실제로 클릭 가능해야 한다 — 원 보고의 두 실패 모드가
+    // 바로 여기서 났다. 팝오버가 열려 있는 것만으로는 부족하고, 옵션이 hit-test top target 이며
+    // 클릭이 selection 으로 이어져야 소비자가 표준 로케이터로 완주할 수 있다.
+    const option = select.querySelector('u-option[value="v0"]') as HTMLElement;
+    const rect = option.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    // Playwright 의 actionability 와 동일: hit 에서 위로 올라가 target 을 만나야 통과
+    let hit = document.elementFromPoint(cx, cy) as Element | null;
+    while (hit && hit !== option) {
+      hit = hit.parentElement ?? (hit.getRootNode() as ShadowRoot).host ?? null;
+    }
+    expect(hit).toBe(option);
+
+    // 실패 모드 2 — force 클릭은 됐으나 selection 이 등록되지 않던 경로
+    option.click();
+    await select.updateComplete;
+    expect(select.value).toBe('v0');
   });
 
   it('u-input: combobox 제안 목록도 페이지 스크롤에 닫히지 않는다', async () => {
-    addScrollRoom();
-
     const input = document.createElement('u-input') as UInput;
     const option = document.createElement('u-option');
     option.setAttribute('value', 'a');
     option.textContent = 'Option A';
     input.appendChild(option);
-    document.body.appendChild(input);
+    mountWithScrollRoom(input);
     await input.updateComplete;
 
     const popover = input.shadowRoot!.querySelector('u-popover') as UPopover;
@@ -139,11 +174,10 @@ describe('팝오버 scroll-dismiss 정책', () => {
   });
 
   it('가상 앵커(contextmenu 좌표)에 붙은 팝오버는 스크롤 시 닫힌다 — 의미 보존', async () => {
-    addScrollRoom();
-
     const popover = document.createElement('u-popover') as UPopover;
     popover.textContent = 'menu';
     document.body.appendChild(popover);
+    addScrollRoom();
     await popover.updateComplete;
 
     // contextmenu 경로와 동일한 좌표 기반 가상 앵커
