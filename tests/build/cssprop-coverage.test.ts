@@ -43,6 +43,7 @@ const INTERNAL: Record<string, string> = {
   '--tag-hue-surface': 'u-tag 장식 축 내부 슬롯 (color= 구현)',
   '--tag-hue-text': 'u-tag 장식 축 내부 슬롯 (color= 구현)',
   '--tag-hue-text-outlined': 'u-tag 장식 축 내부 슬롯 (color= 구현)',
+  '--checkbox-hue': 'u-checkbox 장식 축 내부 슬롯 (color= 구현)',
 };
 
 /** 컴포넌트 `.ts` 전체에서 선언된 @cssprop 이름 */

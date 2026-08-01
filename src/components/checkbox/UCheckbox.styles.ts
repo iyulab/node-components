@@ -44,46 +44,47 @@ export const styles = css`
   :host([variant="filled"][checked]),
   :host([variant="filled"][indeterminate]) {
     --checkbox-color: var(--u-neutral-100);
-    --checkbox-border-color: var(--checkbox-fill-color);
-    --checkbox-background-color: var(--checkbox-fill-color);
+    --checkbox-border-color: var(--checkbox-hue, var(--checkbox-fill-color));
+    --checkbox-background-color: var(--checkbox-hue, var(--checkbox-fill-color));
   }
 
   /* === Variant: outline - 테두리만 === */
   :host([variant="outline"][checked]),
   :host([variant="outline"][indeterminate]) {
-    --checkbox-color: var(--checkbox-fill-color);
-    --checkbox-border-color: var(--checkbox-fill-color);
+    --checkbox-color: var(--checkbox-hue, var(--checkbox-fill-color));
+    --checkbox-border-color: var(--checkbox-hue, var(--checkbox-fill-color));
     --checkbox-background-color: transparent;
   }
 
   /* ==========================================================================
-     장식 축 — color= 는 채움색 훅 하나만 바꾼다. variant 규칙이 그것을 소비한다.
-     기본값 blue 는 규칙이 없다 = 브랜드 훅(--u-primary-color)을 그대로 탄다.
+     장식 축 — color= 는 hue 슬롯만 채운다. variant 규칙이 폴백과 함께 읽는다.
+     기본값 blue 는 규칙이 없다 = 슬롯이 비어 브랜드 훅(--checkbox-fill-color)을 탄다.
+     u-tag 와 같은 방식이다 — 슬롯이 채워지면 color= 가 최종 권한을 갖는다.
      즉 blue 는 장식 축의 한 값이 아니라 "색을 지정하지 않음" 의 표기다.
      ========================================================================== */
   :host([color="green"]) {
-    --checkbox-fill-color: var(--u-green-600);
+    --checkbox-hue: var(--u-green-600);
   }
   :host([color="red"]) {
-    --checkbox-fill-color: var(--u-red-600);
+    --checkbox-hue: var(--u-red-600);
   }
   :host([color="orange"]) {
-    --checkbox-fill-color: var(--u-orange-600);
+    --checkbox-hue: var(--u-orange-600);
   }
   :host([color="teal"]) {
-    --checkbox-fill-color: var(--u-teal-600);
+    --checkbox-hue: var(--u-teal-600);
   }
   :host([color="cyan"]) {
-    --checkbox-fill-color: var(--u-cyan-600);
+    --checkbox-hue: var(--u-cyan-600);
   }
   :host([color="purple"]) {
-    --checkbox-fill-color: var(--u-purple-600);
+    --checkbox-hue: var(--u-purple-600);
   }
   :host([color="pink"]) {
-    --checkbox-fill-color: var(--u-pink-600);
+    --checkbox-hue: var(--u-pink-600);
   }
   :host([color="neutral"]) {
-    --checkbox-fill-color: var(--u-neutral-600);
+    --checkbox-hue: var(--u-neutral-600);
   }
 
 
