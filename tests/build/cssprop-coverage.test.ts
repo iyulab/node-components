@@ -33,6 +33,16 @@ const INTERNAL: Record<string, string> = {
 
   // 다른 선언 토큰들에서 계산되는 파생값 — 단독으로 덮으면 트랙 기하와 어긋난다.
   '--switch-move-width': '--switch-track-width/--switch-thumb-size/--switch-thumb-offset 에서 계산',
+
+  // 장식 축(`color=` 속성)의 내부 슬롯. `color` 속성이 공개 API 이고 이 슬롯들은 그
+  // 구현이다 — 공개하면 hue 스케일의 현재 형태(5슬롯)에 영구히 묶인다. 소비자가
+  // 색을 바꾸려면 `color` 를 쓰거나 `--tag-color`/`--tag-bg-color`/`--tag-border-color`
+  // 를 직접 덮으면 되고, 그 셋은 공개 선언돼 있다.
+  '--tag-hue-solid': 'u-tag 장식 축 내부 슬롯 (color= 구현)',
+  '--tag-hue-line': 'u-tag 장식 축 내부 슬롯 (color= 구현)',
+  '--tag-hue-surface': 'u-tag 장식 축 내부 슬롯 (color= 구현)',
+  '--tag-hue-text': 'u-tag 장식 축 내부 슬롯 (color= 구현)',
+  '--tag-hue-text-outlined': 'u-tag 장식 축 내부 슬롯 (color= 구현)',
 };
 
 /** 컴포넌트 `.ts` 전체에서 선언된 @cssprop 이름 */

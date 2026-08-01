@@ -76,15 +76,21 @@ describe('역할 토큰 층', () => {
 
   it('장식 축(`[color=X]`)의 팔레트 직참조는 보존된다', () => {
     // 네거티브 컨트롤 — 위 검사가 장식 축까지 삼키면 `color="purple"` API 가 깨진다.
-    // 이 건수가 0 이 되면 위 검사는 아무것도 지키지 않는 것이다.
-    let n = 0;
+    //
+    // 총 건수로 재지 않는다: 매트릭스를 접는 것은 **정당한 리팩터**라 건수가 줄어드는
+    // 것이 정상이고(u-tag 36규칙 → 9), 매직 넘버는 그때마다 거짓 실패를 낸다.
+    // 대신 **`color=` 를 쓰는 컴포넌트마다 팔레트 직참조가 남아 있는지**를 본다 —
+    // 어느 하나라도 0 이 되면 그 컴포넌트의 장식 축이 역할 층에 흡수된 것이다.
+    const empty: string[] = [];
     for (const f of styleFiles()) {
-      for (const { sel, body } of ruleBlocks(read(f))) {
-        if (!isDecorative(sel)) continue;
-        n += (body.match(new RegExp(`var\\(--u-(?:${HUES})-\\d+`, 'g')) || []).length;
-      }
+      const blocks = ruleBlocks(read(f));
+      if (!blocks.some(b => isDecorative(b.sel))) continue;
+      const n = blocks
+        .filter(b => isDecorative(b.sel))
+        .reduce((s, b) => s + (b.body.match(new RegExp(`var\\(--u-(?:${HUES})-\\d+`, 'g')) || []).length, 0);
+      if (n === 0) empty.push(basename(f));
     }
-    expect(n).toBeGreaterThan(100);
+    expect(empty, '장식 축이 팔레트를 직접 읽지 않는 컴포넌트').toEqual([]);
   });
 
   it('시맨틱 토큰이 역할 층을 경유한다', () => {
