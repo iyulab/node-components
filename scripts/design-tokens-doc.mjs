@@ -20,7 +20,10 @@ function declarations(css) {
 }
 
 const isPalette = name => /^--u-[a-z]+-\d+$/.test(name);
-const isScale = name => /^--u-radius-/.test(name);
+// 스케일 축은 늘어난다(반경 → 여백 → …). 접두사를 하나씩 하드코딩하면 새 축이 조용히
+// **시맨틱으로 오분류**되므로, 축 목록을 한곳에 둔다.
+const SCALE_AXES = ['radius', 'space'];
+const isScale = name => SCALE_AXES.some(a => name.startsWith(`--u-${a}-`));
 const roleOf = name => {
   const m = name.match(/^--u-([a-z]+)-color(-[a-z]+)?$/);
   return m && ROLES.includes(m[1]) ? m : null;
@@ -90,6 +93,12 @@ export function renderDesignTokensDoc(root) {
     '## 스케일 토큰',
     '',
     '색이 아닌 축입니다. 테마와 무관하므로 두 시트가 같은 값을 가집니다.',
+    '',
+    '⚠ `--u-space-*` 는 **컨테이너·오버레이의 레이아웃 여백**입니다(카드·대화상자·드로어·',
+    '알림·메뉴·툴팁). 폼·인라인 요소의 여백은 `em` 이라 **상속된 `font-size` 에 비례**합니다 —',
+    '`body { font-size: 18px }` 를 주면 버튼·입력의 여백도 따라 커집니다. 그 비례를 유지하려고',
+    '일부러 절대 스케일에 넣지 않았으니, 폼 여백을 조정할 때는 이 토큰이 아니라',
+    '해당 컴포넌트의 훅(`--btn-padding-*` 등) 또는 타이포를 쓰세요.',
     '',
     '| 토큰 | 값 |',
     '|---|---|',

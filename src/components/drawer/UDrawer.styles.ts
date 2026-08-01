@@ -75,8 +75,8 @@ export const styles = css`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    padding: 12px 16px;
+    gap: var(--u-space-sm, 8px);
+    padding: var(--u-space-md, 12px) var(--u-space-lg, 16px);
     font-size: 18px;
     font-weight: 600;
     line-height: 1.3;
@@ -84,7 +84,7 @@ export const styles = css`
   }
   .header .close-btn {
     flex-shrink: 0;
-    padding: 4px;
+    padding: var(--u-space-2xs, 4px);
     font-size: inherit;
     border-radius: var(--u-radius-md);
   }
@@ -93,7 +93,7 @@ export const styles = css`
     flex: 1 1 auto;
     min-height: 0;
     display: block;
-    padding: 16px;
+    padding: var(--u-space-lg, 16px);
     overflow: auto;
   }
 
@@ -102,8 +102,8 @@ export const styles = css`
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 8px;
-    padding: 12px 16px;
+    gap: var(--u-space-sm, 8px);
+    padding: var(--u-space-md, 12px) var(--u-space-lg, 16px);
     border-top: 1px solid var(--u-border-color);
   }
 `;

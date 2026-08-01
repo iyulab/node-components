@@ -12,7 +12,7 @@ export const styles = css`
     border-radius: var(--u-radius-lg);
     background-color: var(--u-panel-bg-color);
 
-    --menu-padding: 4px;
+    --menu-padding: var(--u-space-2xs, 4px);
     --menu-border-width: 1px;
     --menu-border-color: var(--u-border-color);
   }

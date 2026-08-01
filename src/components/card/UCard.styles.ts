@@ -62,7 +62,7 @@ export const styles = css`
 
   .header {
     display: none;
-    padding: 16px;
+    padding: var(--u-space-lg, 16px);
     border-bottom: 1px solid var(--u-border-color);
   }
   .header.has-content {
@@ -72,7 +72,7 @@ export const styles = css`
   .body {
     display: none;
     flex: 1;
-    padding: 16px;
+    padding: var(--u-space-lg, 16px);
   }
   .body.has-content {
     display: block;
@@ -80,7 +80,7 @@ export const styles = css`
 
   .footer {
     display: none;
-    padding: 16px;
+    padding: var(--u-space-lg, 16px);
     border-top: 1px solid var(--u-border-color);
   }
   .footer.has-content {

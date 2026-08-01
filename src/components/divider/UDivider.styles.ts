@@ -43,7 +43,7 @@ export const styles = css`
   /* 슬롯 콘텐츠 */
   .label {
     display: none;
-    padding: 0 12px;
+    padding: 0 var(--u-space-md, 12px);
     color: var(--u-txt-color-weak);
     font-size: 0.85em;
     white-space: nowrap;
@@ -86,6 +86,6 @@ export const styles = css`
   }
 
   :host([vertical]) .label {
-    padding: 12px 0;
+    padding: var(--u-space-md, 12px) 0;
   }
 `;

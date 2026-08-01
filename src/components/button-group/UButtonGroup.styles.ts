@@ -27,6 +27,6 @@ export const styles = css`
 
   :host([variant="ghost"]),
   :host([variant="link"]) {
-    gap: 2px;
+    gap: var(--u-space-3xs, 2px);
   }
 `;

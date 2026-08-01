@@ -94,7 +94,7 @@ export const styles = css`
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: var(--alert-padding-block, 12px) var(--alert-padding-inline, 16px);
+    padding: var(--alert-padding-block, var(--u-space-md, 12px)) var(--alert-padding-inline, var(--u-space-lg, 16px));
     border: var(--alert-border-width, 0) solid var(--alert-border-color);
     border-radius: inherit;
   }
@@ -104,8 +104,8 @@ export const styles = css`
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 4px;
+    gap: var(--u-space-md, 12px);
+    margin-bottom: var(--u-space-2xs, 4px);
     font-size: 16px;
     user-select: none;
   }
@@ -120,7 +120,7 @@ export const styles = css`
   }
   .header .close-btn {
     flex-shrink: 0;
-    padding: 4px;
+    padding: var(--u-space-2xs, 4px);
     font-size: inherit;
     border-radius: var(--u-radius-md);
   }

@@ -16,8 +16,8 @@ export const styles = css`
     transform: scale(0.9);
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s 0.2s;
 
-    --tooltip-padding-block: 6px;
-    --tooltip-padding-inline: 8px;
+    --tooltip-padding-block: var(--u-space-xs, 6px);
+    --tooltip-padding-inline: var(--u-space-sm, 8px);
   }
 
   /* 여백은 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */

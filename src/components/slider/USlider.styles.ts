@@ -110,7 +110,7 @@ export const styles = css`
 
   .mark-labels {
     position: relative;
-    margin-top: 12px;
+    margin-top: var(--u-space-md, 12px);
   }
 
   .mark-label {

@@ -56,7 +56,7 @@ export const styles = css`
     z-index: 10;
     top: 50%;
     transform: translateY(-50%);
-    padding: 8px;
+    padding: var(--u-space-sm, 8px);
     font-size: 20px;
     color: var(--u-neutral-900);
     background-color: var(--u-neutral-100);
@@ -85,7 +85,7 @@ export const styles = css`
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: var(--u-space-sm, 8px);
     transform: translateX(-50%);
   }
 
