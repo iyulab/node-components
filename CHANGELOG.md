@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.10.0] - 2026-08-01
+
+### Added
+- **디자인 토큰의 정적 CSS 진입점** — `import '@iyulab/components/styles/tokens.css'` 한 줄로 런타임 호출 없이 토큰을 보장한다(light + dark 한 장, 다크는 `:root[theme="dark"]` 스코프라 안전하게 공존한다). 개별 시트(`styles/light.css`·`styles/dark.css`)도 그대로 쓸 수 있다.
+  ★**이것이 중요한 이유**: 토큰이 없으면 컴포넌트 시트의 `var(--u-…)` 가 전부 무효가 되어 **테두리·배경이 에러 없이 사라진다**. 종전에는 토큰 주입 경로가 `Theme.init()` 런타임 호출 하나뿐이었고, `@iyulab/modern-app` 셸이 그것을 대신 호출하는 구조였다 — 그래서 셸 **밖**에서 렌더되는 화면(로그인·온보딩·오류 페이지·임베드 위젯)은 같은 컴포넌트를 쓰면서도 조용히 무스타일로 렌더됐다.
+- **토큰 부재 진단 경고** — 개발 빌드에서 토큰 시트가 없으면 첫 컴포넌트 연결 시 1회 콘솔 경고. 종전에는 CSS 가 아무 신호도 내지 않아 소비자가 자기 CSS 를 며칠 의심했다.
+- **CSS 커스텀 프로퍼티 레퍼런스** — `docs/css-custom-properties.md`(23컴포넌트·98프로퍼티). 컴포넌트 JSDoc 에서 생성(`npm run docs:cssprops`)하며 테스트가 drift 를 막는다.
+- **React 이벤트 레퍼런스** — `docs/react-events.md`(24컴포넌트·37이벤트). 종전에는 소비자가 `dist/react/*.js` 를 열어봐야 알 수 있었다. ★`onClick` 같은 **네이티브 이벤트는 매핑 없이도 동작한다**는 점을 문서 상단에 명시(수동 `addEventListener` 배선이 불필요하다).
+- `--u-input-display` / `--u-input-width` 정식 선언 — 폼/그리드 셀에서 입력이 컨테이너 폭을 채우게 하려면 `--u-input-display: block`. 종전에도 전자는 동작했으나 문서화되지 않아 소비자가 `u-input { display:block; width:100% }` 를 각자 작성했다.
+- `--u-border-color-hover` 토큰 신설 — `--u-bg-color-hover`·`--u-input-border-color-hover` 는 있는데 일반 border 계열에만 hover 가 없던 결손을 채운다.
+- `@cssprop` 선언 25건 추가(`u-button` 파생 색 11 · `u-tree` 들여쓰기 5 · 그 외).
+
+### Fixed
+- **React 래퍼가 상속받은 이벤트를 노출하지 않던 결함** — 래퍼 생성기가 leaf 파일만 파싱해, `show`/`hide` 를 베이스(`UOverlayElement`)가 발화하는 `u-dialog`·`u-drawer` 가 `events: {}` 로 생성됐다. React 소비자가 `onShow`/`onHide` 를 붙여도 **에러도 경고도 없이 아무 일이 일어나지 않았다**. 이제 상속 체인을 따라 수집하며, `u-popover`·`u-tooltip` 의 이벤트 detail 타입도 함께 정밀해진다. 누락 시 **빌드가 실패**한다.
+- **`u-menu-item` 하위 메뉴 팝오버가 오버플로 조상에 클리핑되던 문제** — `u-select`·`u-input` 과 달리 `strategy="fixed"` 가 지정돼 있지 않았다.
+- **`u-option` 의 hover 테두리가 무효였던 문제** — 정의된 적 없는 `--u-border-color-hover` 를 폴백 없이 참조해 선언 전체가 무효였다.
+
+### Changed
+- ⚠**`u-button` 의 여백·테두리를 내부 요소(`::part(button)`/`::part(link)`)로 옮겼다.** 기본 렌더는 동일하다.
+  ★**이유**: `:host` 에 둔 여백·테두리는 소비 앱의 CSS 리셋(`* { padding:0; border:0 }` — Tailwind preflight 등 사실상 표준 관행)에 **지워진다**. 호스트 요소에 대해서는 문서 작성자 스타일이 섀도의 `:host` 규칙을 이기기 때문이며, 그 결과 버튼이 글자 높이만 남았다(에러 없음).
+  ⚠**호환성**: `u-button { padding: … }` 처럼 **호스트에 직접** 여백을 주던 소비자는 이제 효과가 없다. `--btn-padding-block`/`--btn-padding-inline` 토큰이나 `::part(button)` 을 쓴다. `::part(button)` 오버라이드는 종전대로 동작한다.
+- 빌드 스크립트 정리 — 플러그인은 이제 타입 검사만 하고 산출물을 내보내지 않는다(`typecheck:plugins`). 종전에는 컴파일된 `plugins/*.js` 가 `.ts` 소스를 가려 **플러그인 수정이 한 빌드 늦게 반영**되고, 산출물이 없는 신규 클론/CI 와 로컬의 동작이 달랐다.
+
 ## [1.9.0] - 2026-07-28
 
 ### Fixed

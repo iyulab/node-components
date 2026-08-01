@@ -1,6 +1,41 @@
 # Theming
 
-`@iyulab/components` uses CSS custom properties for theming. All design tokens are defined in `src/assets/styles/light.css` and `dark.css`, which are injected by `Theme.init()`.
+`@iyulab/components` uses CSS custom properties for theming. **Components cannot render correctly
+without them** — every border, background, and color in the shadow styles resolves through
+`var(--u-…)`, and an undefined custom property makes the whole declaration invalid. CSS emits no
+error when this happens: controls simply lose their borders and backgrounds, silently.
+
+So the first question for any app is **how the tokens get into the document.** There are two ways,
+and you need exactly one of them.
+
+---
+
+## Getting the tokens in (required)
+
+### Option A — static CSS import (no runtime call)
+
+```ts
+import '@iyulab/components/styles/tokens.css';   // light + dark in one file
+```
+
+Dark mode activates when the document has `theme="dark"`; `tokens.css` scopes it as
+`:root[theme="dark"]`, so both sheets coexist safely. Import the individual sheets
+(`styles/light.css`, `styles/dark.css`) instead if you want only one.
+
+Use this when you are **not** calling `Theme.init()` — static pages, SSR, or any screen that
+renders outside an app shell.
+
+### Option B — `Theme.init()` (runtime)
+
+`Theme.init()` injects the same sheets **and** adds theme switching, persistence, and system-theme
+detection. See [Initialization](#initialization).
+
+> ⚠ **`Theme.init()` is not just a theme-switching utility — it is the style bootstrap.**
+> If you use `@iyulab/modern-app`, its shell calls `Theme.init()` for you during boot. That means
+> screens rendered **outside** the shell — login, onboarding, error pages, embedded widgets — do
+> **not** get tokens from it. Use Option A there, or call `Theme.init()` yourself.
+
+In development builds, components log a one-time console warning when no token sheet is found.
 
 ---
 
@@ -82,13 +117,16 @@ Interactive components now derive their accent states from `--u-primary-color`.
 
 Typical affected components include `u-button`, `u-checkbox`, `u-radio`, `u-switch`, `u-tab-panel`, `u-badge`, and `u-tag`.
 
-Or override per-component via CSS custom properties (see individual component docs):
+Or override per-component via CSS custom properties:
 
 ```css
 u-button {
   --btn-radius: 999px; /* pill buttons everywhere */
 }
 ```
+
+Every component hook is listed in **[css-custom-properties.md](css-custom-properties.md)** — generated
+from each component's `@cssprop` JSDoc, so it never drifts from the source.
 
 ---
 

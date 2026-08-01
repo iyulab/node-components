@@ -13,6 +13,9 @@ npm install @iyulab/components
 ## Usage
 
 ```ts
+// 디자인 토큰 (필수 — 없으면 테두리·배경이 조용히 사라진다)
+import '@iyulab/components/styles/tokens.css';
+
 // 전체 import
 import '@iyulab/components';
 
@@ -20,6 +23,11 @@ import '@iyulab/components';
 import '@iyulab/components/u-button';
 import '@iyulab/components/u-input';
 ```
+
+> **토큰 시트는 선택이 아니다.** 컴포넌트의 모든 색·테두리·배경은 `var(--u-…)` 로 해석되며,
+> 미정의 커스텀 프로퍼티는 선언 전체를 무효로 만든다 — 에러도 경고도 없이 컨트롤이
+> 무스타일로 렌더된다. 정적 CSS 대신 런타임 `Theme.init()` 을 써도 되지만, **둘 중 하나는
+> 반드시 필요하다.** 자세한 내용은 [docs/theming.md](docs/theming.md) 참조.
 
 ## React
 

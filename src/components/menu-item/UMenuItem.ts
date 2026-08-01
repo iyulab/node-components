@@ -26,6 +26,8 @@ export type MenuItemAlign = 'left' | 'center' | 'right';
  * @csspart popover - 팝오버 모드에서 하위 메뉴 컨테이너
  * 
  * @event pick - 아이템 선택 시 발생 (하위 메뉴가 없는 경우)
+ *
+ * @cssprop --menu-item-color - 선택/활성 상태의 기준색 (기본: --u-primary-color, 미지정 시 blue-600)
  */
 @customElement('u-menu-item')
 export class UMenuItem extends UElement {
@@ -133,6 +135,7 @@ export class UMenuItem extends UElement {
             trigger="hover"
             placement="right-start"
             offset="4"
+            strategy="fixed"
           >
             <slot name="children" @slotchange=${this.handleChildrenSlotChange}></slot>
           </u-popover>`

@@ -26,6 +26,8 @@ export type OptionMarker = 'radio' | 'check';
  * @cssprop --option-color-active-interactive - 선택된 상태에서 호버/포커스 시 텍스트 색상
  * @cssprop --option-border-color-active-interactive - 선택된 상태에서 호버/포커스 시 테두리 색상
  * @cssprop --option-background-color-active-interactive - 선택된 상태에서 호버/포커스 시 배경 색상
+ * @cssprop --option-color - 선택 상태의 기준색. 위 active 계열이 이 값에서 파생된다
+ *   (기본: --u-primary-color, 미지정 시 blue-600)
  */
 @customElement('u-option')
 export class UOption extends UElement {

@@ -3,8 +3,12 @@ import { BrowserStorage, BrowserStorageOptions } from './BrowserStorage.js';
 /**
  * 스타일 시트 번들 로드, 내부 자산에서 CSS를 인라인으로 가져옵니다.
  * 빌드 시점에 정적 파일을 포함시키기 위해 vite의 `import.meta.glob`을 사용합니다.
+ *
+ * ⚠ 대상을 `{light,dark}` 로 **명시**한다. `*.css` 로 두면 정적 진입점용 `tokens.css`
+ * (light/dark 를 `@import` 하는 한 장)까지 인라인돼, `<style>` 안의 상대 `@import` 가
+ * 문서 기준으로 해석되면서 깨진다.
  */
-const internalStyleBundle = Object.entries(import.meta.glob('../assets/styles/*.css', {
+const internalStyleBundle = Object.entries(import.meta.glob('../assets/styles/{light,dark}.css', {
   eager: true,
   query: '?raw',
   import: 'default',

@@ -27,6 +27,8 @@ export type TreeItemTrigger = 'item' | 'icon';
  * @event collapse - 노드 접힐 시 발생
  * @event pick - 선택 시 발생
  * @event check - 체크 시 발생
+ *
+ * @cssprop --tree-item-color - 선택/활성 상태의 기준색 (기본: --u-primary-color, 미지정 시 blue-600)
  */
 @customElement('u-tree-item')
 export class UTreeItem extends UElement {

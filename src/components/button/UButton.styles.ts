@@ -23,8 +23,6 @@ export const styles = css`
     font-size: 14px;
     font-weight: 500;
     line-height: 1.5;
-    padding: 0.5em;
-    border: 1px solid transparent;
     border-radius: 6px;
     background-color: transparent;
 
@@ -83,37 +81,37 @@ export const styles = css`
   :host([variant="solid"]) {
     color: #fff;
     background-color: var(--btn-color);
-    border-color: var(--btn-color);
+    --btn-border-color: var(--btn-color);
   }
   :host([variant="solid"]:hover) {
     background-color: var(--btn-color-hover);
-    border-color: var(--btn-color-hover);
+    --btn-border-color: var(--btn-color-hover);
   }
   :host([variant="solid"]:active) {
     background-color: var(--btn-color-active);
-    border-color: var(--btn-color-active);
+    --btn-border-color: var(--btn-color-active);
   }
 
   /* surface: 채우기 + 경계 */
   :host([variant="surface"]) {
     color: var(--u-txt-color);
     background-color: var(--btn-color-surface);
-    border-color: var(--btn-color-border);
+    --btn-border-color: var(--btn-color-border);
   }
   :host([variant="surface"]:hover) {
     background-color: var(--btn-color-surface-hover);
-    border-color: var(--btn-color-border-hover);
+    --btn-border-color: var(--btn-color-border-hover);
   }
   :host([variant="surface"]:active) {
     background-color: var(--btn-color-surface-active);
-    border-color: var(--btn-color-border-active);
+    --btn-border-color: var(--btn-color-border-active);
   }
 
   /* filled: 채우기만 */
   :host([variant="filled"]) {
     color: var(--u-txt-color);
     background-color: var(--btn-color-surface);
-    border-color: transparent;
+    --btn-border-color: transparent;
   }
   :host([variant="filled"]:hover) {
     background-color: var(--btn-color-surface-hover);
@@ -125,22 +123,22 @@ export const styles = css`
   /* outlined: 경계만 */
   :host([variant="outlined"]) {
     color: var(--u-txt-color);
-    border-color: var(--btn-color-border);
+    --btn-border-color: var(--btn-color-border);
     background-color: transparent;
   }
   :host([variant="outlined"]:hover) {
-    border-color: var(--btn-color-border-hover);
+    --btn-border-color: var(--btn-color-border-hover);
     background-color: var(--btn-color-outline-hover);
   }
   :host([variant="outlined"]:active) {
-    border-color: var(--btn-color-border-active);
+    --btn-border-color: var(--btn-color-border-active);
     background-color: var(--btn-color-outline-active);
   }
 
   /* ghost: transparent */
   :host([variant="ghost"]) {
     color: var(--u-txt-color);
-    border-color: transparent;
+    --btn-border-color: transparent;
     background-color: transparent;
   }
   :host([variant="ghost"]:hover) {
@@ -153,10 +151,9 @@ export const styles = css`
   /* link: blue 링크 스타일 (기본값, color="neutral"일 때도 유지 — 기존 동작 보존) */
   :host([variant="link"]) {
     color: var(--u-blue-500, #3b82f6);
-    border-color: transparent;
+    --btn-border-color: transparent;
     background-color: transparent;
-    padding-left: 0;
-    padding-right: 0;
+    --btn-padding-inline: 0;
   }
   :host([variant="link"]:hover) {
     color: var(--u-blue-600, #2563eb);
@@ -176,14 +173,28 @@ export const styles = css`
     color: var(--btn-color-active);
   }
 
-  /* === Inner === */
+  /* === Inner ===
+   *
+   * 여백·테두리는 내부 요소가 그린다. :host 에 두면 소비 앱의 CSS 리셋
+   * (* { padding:0; border:0 } — Tailwind preflight 등 사실상 표준 관행)에 지워진다.
+   * 호스트 요소에 대해서는 문서 작성자 스타일이 섀도의 :host 규칙을 이기기 때문이며,
+   * 그 결과 버튼이 글자 높이만 남는다(에러는 없다). 내부 요소는 문서 리셋의 사정권 밖이다.
+   *
+   * 테두리 색은 여전히 :host([variant=...]) 가 정한다 — --btn-border-color 로 내려보내므로
+   * variant/hover/active 규칙은 호스트에 그대로 남는다.
+   */
   button, a {
     all: unset;
+    box-sizing: border-box;   /* all:unset 이 content-box 로 되돌리므로 다시 지정 */
     width: 100%;
     display: inline-flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+
+    padding: var(--btn-padding-block, 0.5em) var(--btn-padding-inline, 0.5em);
+    border: 1px solid var(--btn-border-color, transparent);
+    border-radius: inherit;
   }
   a {
     text-decoration: none;

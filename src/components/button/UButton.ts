@@ -27,6 +27,22 @@ export type ButtonSize = "sm" | "md" | "lg";
  * @csspart mask - 로딩 마스크 영역
  *
  * @cssprop --u-primary-color - color="neutral"일 때 버튼 기준색. 지정 시 hover/active/surface 톤이 color-mix()로 자동 파생.
+ * @cssprop --btn-padding-block - 내부 버튼의 상하 여백 (기본: 0.5em)
+ * @cssprop --btn-padding-inline - 내부 버튼의 좌우 여백 (기본: 0.5em, variant="link"는 0)
+ * @cssprop --btn-border-color - 내부 버튼의 테두리 색. variant/hover/active 규칙이 이 값을 정한다
+ *   (기본: transparent)
+ * @cssprop --btn-color - 버튼의 기준색. 아래 파생 토큰이 전부 이 값에서 color-mix()로 계산된다 —
+ *   보통 이것 하나만 덮으면 된다.
+ * @cssprop --btn-color-hover - solid 배경 hover (기본: --btn-color 85% + black)
+ * @cssprop --btn-color-active - solid 배경 active (기본: --btn-color 70% + black)
+ * @cssprop --btn-color-surface - surface 배경 (기본: --btn-color 12% + 배경색)
+ * @cssprop --btn-color-surface-hover - surface 배경 hover (기본: 22%)
+ * @cssprop --btn-color-surface-active - surface 배경 active (기본: 32%)
+ * @cssprop --btn-color-border - 테두리 (기본: --btn-color 45% + 배경색)
+ * @cssprop --btn-color-border-hover - 테두리 hover (기본: 60%)
+ * @cssprop --btn-color-border-active - 테두리 active (기본: 75%)
+ * @cssprop --btn-color-outline-hover - outline 배경 hover (기본: 6%)
+ * @cssprop --btn-color-outline-active - outline 배경 active (기본: 12%)
  */
 @customElement('u-button')
 export class UButton extends UElement {

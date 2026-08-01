@@ -21,6 +21,7 @@ export type TagColor =
  * @cssprop --tag-color - 텍스트 색상
  * @cssprop --tag-bg-color - 배경 색상
  * @cssprop --tag-border-color - 테두리 색상
+ * @cssprop --tag-fill-color - variant 별 채움 기준색 (기본: --u-primary-color, 미지정 시 blue-600)
  */
 @customElement('u-tag')
 export class UTag extends UElement {

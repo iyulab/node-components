@@ -36,6 +36,10 @@ export type InputVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
  *    docs/theming.md 참고)
  * @csspart popover - 드롭다운 팝오버 요소
  * 
+ * @cssprop --u-input-display - 호스트의 display (기본값: inline-block). 폼/그리드 셀에서
+ *   컨테이너 폭을 채우려면 `block`으로 지정한다.
+ * @cssprop --u-input-width - 호스트의 width (기본값: auto). flex 컨테이너처럼 block만으로는
+ *   늘어나지 않는 맥락에서 `100%`로 지정한다.
  * @cssprop --input-popover-width - 드롭다운 팝오버의 너비 (기본값: 앵커(트리거) 너비)
  * @cssprop --input-popover-min-height - 드롭다운 팝오버의 최소 높이 (기본값: 0px)
  * @cssprop --input-popover-max-height - 드롭다운 팝오버의 최대 높이 (기본값: 50vh)

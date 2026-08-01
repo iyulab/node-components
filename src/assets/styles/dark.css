@@ -155,6 +155,7 @@
   --u-border-color:          var(--u-neutral-400);
   --u-border-color-weak:     var(--u-neutral-300);
   --u-border-color-strong:   var(--u-neutral-500);
+  --u-border-color-hover:    var(--u-neutral-500);
 
   --u-input-border-color:         var(--u-neutral-400);
   --u-input-border-color-hover:   var(--u-neutral-500);

@@ -17,6 +17,9 @@ export type OverlayMode = 'modal' | 'non-modal';
 
 /**
  * UOverlayElement는 다이얼로그, 드로어 등 화면에 오버레이로 표시되는 엘리먼트의 기본 클래스입니다.
+ *
+ * @event show - 오버레이가 표시되기 직전 발생합니다. 핸들러에서 취소하면 표시되지 않습니다.
+ * @event hide - 오버레이가 숨겨지기 직전 발생합니다. 핸들러에서 취소하면 닫히지 않습니다.
  */
 export abstract class UOverlayElement extends UElement {
   static styles: CSSResultGroup = [super.styles, styles];

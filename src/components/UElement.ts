@@ -5,8 +5,38 @@ import { styles } from './UElement.styles.js';
  * 모든 UI 컴포넌트의 기반 클래스.
  * LitElement를 확장하여 이벤트 발행 및 렌더 교체 헬퍼를 제공합니다.
  */
+/**
+ * 디자인 토큰 시트 부재를 개발 빌드에서 1회 경고한다.
+ *
+ * 토큰이 없으면 컴포넌트 시트의 `var(--u-…)` 가 전부 무효가 되어 테두리·배경이 **에러 없이**
+ * 사라진다. CSS 는 이때 아무 신호도 내지 않으므로, 소비자는 자기 CSS 를 의심하며 며칠을 쓴다.
+ * 실제로 운영 화면이 무스타일로 렌더된 사례가 있었다 — 토큰 주입이 `Theme.init()` 호출
+ * (셸이 대신 부른다)에만 딸려 있어서, 셸 밖에서 렌더되는 로그인 화면만 조용히 깨졌다.
+ */
+let tokenCheckDone = false;
+function warnIfTokensMissing(): void {
+  if (tokenCheckDone || typeof document === 'undefined') return;
+  tokenCheckDone = true;
+  const probe = getComputedStyle(document.documentElement)
+    .getPropertyValue('--u-blue-600').trim();
+  if (probe) return;
+  console.warn(
+    '[@iyulab/components] 디자인 토큰 시트가 문서에 없습니다 — 컴포넌트의 테두리·배경·색이 ' +
+    '무효가 됩니다.\n' +
+    "  정적 CSS:  import '@iyulab/components/styles/tokens.css'\n" +
+    '  또는 런타임: Theme.init()\n' +
+    '  (@iyulab/modern-app 셸은 Theme.init() 을 대신 호출합니다. 셸 밖에서 렌더되는 화면' +
+    '(로그인·온보딩·임베드)에서는 위 둘 중 하나가 필요합니다.)',
+  );
+}
+
 export class UElement extends LitElement {
   static styles: CSSResultGroup = styles;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    if (import.meta.env?.DEV) warnIfTokensMissing();
+  }
 
   /**
    * 커스텀 이벤트를 생성하여 발행합니다.
