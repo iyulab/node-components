@@ -114,7 +114,7 @@ u-tag { --tag-padding-block: 4px; --tag-padding-inline: 10px; }
 
 ### Fixed
 - **u-field 합성 폼 컨트롤이 접근성 트리에서 이름 없이 노출되던 문제 수정** (WCAG 1.3.1·4.1.2 — Playwright E2E 실측). 라벨은 `u-field` 의 별도 섀도 스코프에 렌더되어 `label[for]` 로 컨트롤과 연결될 수 없었고, 섀도 경계 탓에 cross-root `aria-labelledby` 도 현 브라우저에서 신뢰성 있게 배송되지 않는다. 이제 각 컴포넌트가 자신의 접근 이름 호스트에 라벨을 `aria-label`(설명은 `aria-description`)로 미러링한다 — `u-input`/`u-textarea`(네이티브 컨트롤), `u-rating`/`u-radio`(`role=radiogroup`), `u-select`(`role=combobox` + `aria-expanded`/`aria-haspopup`/`aria-controls`), `u-slider`(`role=slider` + `aria-valuenow`/`valuemin`/`valuemax`/`valuetext`). 아울러 `u-option` 이 사용 맥락에 맞는 자식 역할·상태를 노출한다 — radiogroup(`marker='radio'`) 안에서는 `role=radio` + `aria-checked`, listbox(`u-select`/`u-input` combobox) 에서는 `role=option` + `aria-selected`(+ `aria-disabled`) — 이름만 있고 비어 보이던 radiogroup/combobox 위젯이 자식까지 정합하게 읽힌다. `u-rating` 심볼(`role=radio`)도 커밋 값 기준 `aria-checked` 를 노출한다. `getByLabel`/`getByRole({name})` 로케이터와 스크린리더가 컨트롤을 이름으로 인식한다.
-- **React 래퍼 `.d.ts` 타이핑 2건 수정** (React 19 + TS strict 컴파일 차단 — U-CMMS 실측). (1) `React.HTMLAttributes` 의 이벤트 핸들러(`onChange` 등)와 래퍼의 CustomEvent 시그니처가 교집합되어 어떤 핸들러도 대입 불가였던 것을, HTMLAttributes 쪽 동명 이벤트 키를 `Omit` 해 CustomEvent 시그니처만 남기도록 교정. (2) `Partial<Element>` 의 DOM `children: HTMLCollection` 이 JSX children 을 가려 `<UButton>text</UButton>` 이 TS2747 로 실패하던 것을, `Omit<Partial<Element>, keyof HTMLAttributes>` 로 DOM 전용 키를 제거하고 React 친화 타입(`children: ReactNode`)이 HTMLAttributes 에서 공급되도록 교정. 소비자의 `as unknown as ComponentType` 우회 제거 가능.
+- **React 래퍼 `.d.ts` 타이핑 2건 수정** (React 19 + TS strict 컴파일 차단 — 실사용에서 관측). (1) `React.HTMLAttributes` 의 이벤트 핸들러(`onChange` 등)와 래퍼의 CustomEvent 시그니처가 교집합되어 어떤 핸들러도 대입 불가였던 것을, HTMLAttributes 쪽 동명 이벤트 키를 `Omit` 해 CustomEvent 시그니처만 남기도록 교정. (2) `Partial<Element>` 의 DOM `children: HTMLCollection` 이 JSX children 을 가려 `<UButton>text</UButton>` 이 TS2747 로 실패하던 것을, `Omit<Partial<Element>, keyof HTMLAttributes>` 로 DOM 전용 키를 제거하고 React 친화 타입(`children: ReactNode`)이 HTMLAttributes 에서 공급되도록 교정. 소비자의 `as unknown as ComponentType` 우회 제거 가능.
 
 ## [1.8.0] - 2026-07-22
 
@@ -170,10 +170,10 @@ u-tag { --tag-padding-block: 4px; --tag-padding-inline: 10px; }
 ## [1.6.0] - 2026-07-16
 
 ### Added
-- `UCopyButton`(`u-copy-button`): **인라인 텍스트 라벨** 지원 — `label` prop을 지정하면 아이콘 옆에 보이는 텍스트 라벨을 렌더한다(예: `label="결과 복사"`). 지금까지 u-copy-button은 아이콘 전용(기본 슬롯은 툴팁으로 소비)이라 "📋 결과 복사"처럼 라벨이 붙은 복사 버튼을 표현할 수 없어, 소비자가 검증된 클립보드 로직(취소 가능 `copy` ClipboardEvent + copied 상태 + 아이콘 토글)을 재사용하지 못하고 자체 재구현하던 역량 갭을 해소. 비파괴 — `label` 미지정 시 기존 아이콘 전용 형태(및 기본 슬롯=툴팁 의미)를 그대로 유지한다. 라벨 지정 시 내부적으로 `u-button`(아이콘 prefix + 텍스트)으로 렌더하고, 클립보드 로직은 두 형태에서 동일하다. online-tools(NT-U4)
+- `UCopyButton`(`u-copy-button`): **인라인 텍스트 라벨** 지원 — `label` prop을 지정하면 아이콘 옆에 보이는 텍스트 라벨을 렌더한다(예: `label="결과 복사"`). 지금까지 u-copy-button은 아이콘 전용(기본 슬롯은 툴팁으로 소비)이라 "📋 결과 복사"처럼 라벨이 붙은 복사 버튼을 표현할 수 없어, 소비자가 검증된 클립보드 로직(취소 가능 `copy` ClipboardEvent + copied 상태 + 아이콘 토글)을 재사용하지 못하고 자체 재구현하던 역량 갭을 해소. 비파괴 — `label` 미지정 시 기존 아이콘 전용 형태(및 기본 슬롯=툴팁 의미)를 그대로 유지한다. 라벨 지정 시 내부적으로 `u-button`(아이콘 prefix + 텍스트)으로 렌더하고, 클립보드 로직은 두 형태에서 동일하다.
 
 ### Fixed
-- `u-drawer`/`u-dialog`: **테마 토큰 미정의 시 패널이 투명하게 렌더**되어 모달이 "안 뜬 것처럼" 보이던 결함 수정. backdrop(`--u-overlay-bg-color`)에는 폴백이 있는데 패널 배경/테두리(`--u-panel-bg-color`/`--u-border-color`)에는 폴백이 없어, `Theme.init()`로 토큰을 주입하지 않은 소비자에게 backdrop만 흐려지고 패널은 투명하게 떠 슬롯 콘텐츠가 뒤 페이지와 겹쳐 읽히던 footgun. backdrop과 동일 정책으로 패널 배경에 `Canvas`, 테두리에 `color-mix(in srgb, CanvasText 20%, Canvas)` CSS 시스템 컬러 폴백을 부여 — 토큰 미정의 소비자도 라이트·다크 자동 적응되는 가시 패널을 얻고, 토큰 정의 소비자는 기존과 동일(폴백 미사용). 실 브라우저 렌더 회귀 가드 추가. online-tools(NT-U2)
+- `u-drawer`/`u-dialog`: **테마 토큰 미정의 시 패널이 투명하게 렌더**되어 모달이 "안 뜬 것처럼" 보이던 결함 수정. backdrop(`--u-overlay-bg-color`)에는 폴백이 있는데 패널 배경/테두리(`--u-panel-bg-color`/`--u-border-color`)에는 폴백이 없어, `Theme.init()`로 토큰을 주입하지 않은 소비자에게 backdrop만 흐려지고 패널은 투명하게 떠 슬롯 콘텐츠가 뒤 페이지와 겹쳐 읽히던 footgun. backdrop과 동일 정책으로 패널 배경에 `Canvas`, 테두리에 `color-mix(in srgb, CanvasText 20%, Canvas)` CSS 시스템 컬러 폴백을 부여 — 토큰 미정의 소비자도 라이트·다크 자동 적응되는 가시 패널을 얻고, 토큰 정의 소비자는 기존과 동일(폴백 미사용). 실 브라우저 렌더 회귀 가드 추가.
 
 ## [1.5.1] - 2026-07-07
 
