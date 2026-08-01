@@ -51,103 +51,42 @@ export const styles = css`
   /* === Variant: outline - 테두리만 === */
   :host([variant="outline"][checked]),
   :host([variant="outline"][indeterminate]) {
+    --checkbox-color: var(--checkbox-fill-color);
     --checkbox-border-color: var(--checkbox-fill-color);
     --checkbox-background-color: transparent;
   }
 
-  /* === Color variants (filled) === */
-  :host([variant="filled"][color="blue"][checked]),
-  :host([variant="filled"][color="blue"][indeterminate]) {
-    --checkbox-border-color: var(--checkbox-fill-color);
-    --checkbox-background-color: var(--checkbox-fill-color);
+  /* ==========================================================================
+     장식 축 — color= 는 채움색 훅 하나만 바꾼다. variant 규칙이 그것을 소비한다.
+     기본값 blue 는 규칙이 없다 = 브랜드 훅(--u-primary-color)을 그대로 탄다.
+     즉 blue 는 장식 축의 한 값이 아니라 "색을 지정하지 않음" 의 표기다.
+     ========================================================================== */
+  :host([color="green"]) {
+    --checkbox-fill-color: var(--u-green-600);
   }
-  :host([variant="filled"][color="green"][checked]),
-  :host([variant="filled"][color="green"][indeterminate]) {
-    --checkbox-border-color: var(--u-green-600);
-    --checkbox-background-color: var(--u-green-600);
+  :host([color="red"]) {
+    --checkbox-fill-color: var(--u-red-600);
   }
-  :host([variant="filled"][color="red"][checked]),
-  :host([variant="filled"][color="red"][indeterminate]) {
-    --checkbox-border-color: var(--u-red-600);
-    --checkbox-background-color: var(--u-red-600);
+  :host([color="orange"]) {
+    --checkbox-fill-color: var(--u-orange-600);
   }
-  :host([variant="filled"][color="orange"][checked]),
-  :host([variant="filled"][color="orange"][indeterminate]) {
-    --checkbox-border-color: var(--u-orange-600);
-    --checkbox-background-color: var(--u-orange-600);
+  :host([color="teal"]) {
+    --checkbox-fill-color: var(--u-teal-600);
   }
-  :host([variant="filled"][color="teal"][checked]),
-  :host([variant="filled"][color="teal"][indeterminate]) {
-    --checkbox-border-color: var(--u-teal-600);
-    --checkbox-background-color: var(--u-teal-600);
+  :host([color="cyan"]) {
+    --checkbox-fill-color: var(--u-cyan-600);
   }
-  :host([variant="filled"][color="cyan"][checked]),
-  :host([variant="filled"][color="cyan"][indeterminate]) {
-    --checkbox-border-color: var(--u-cyan-600);
-    --checkbox-background-color: var(--u-cyan-600);
+  :host([color="purple"]) {
+    --checkbox-fill-color: var(--u-purple-600);
   }
-  :host([variant="filled"][color="purple"][checked]),
-  :host([variant="filled"][color="purple"][indeterminate]) {
-    --checkbox-border-color: var(--u-purple-600);
-    --checkbox-background-color: var(--u-purple-600);
+  :host([color="pink"]) {
+    --checkbox-fill-color: var(--u-pink-600);
   }
-  :host([variant="filled"][color="pink"][checked]),
-  :host([variant="filled"][color="pink"][indeterminate]) {
-    --checkbox-border-color: var(--u-pink-600);
-    --checkbox-background-color: var(--u-pink-600);
-  }
-  :host([variant="filled"][color="neutral"][checked]),
-  :host([variant="filled"][color="neutral"][indeterminate]) {
-    --checkbox-border-color: var(--u-neutral-600);
-    --checkbox-background-color: var(--u-neutral-600);
+  :host([color="neutral"]) {
+    --checkbox-fill-color: var(--u-neutral-600);
   }
 
-  /* === Color variants (outline) === */
-  :host([variant="outline"][color="blue"][checked]),
-  :host([variant="outline"][color="blue"][indeterminate]) {
-    --checkbox-color: var(--checkbox-fill-color);
-    --checkbox-border-color: var(--checkbox-fill-color);
-  }
-  :host([variant="outline"][color="green"][checked]),
-  :host([variant="outline"][color="green"][indeterminate]) {
-    --checkbox-color: var(--u-green-600);
-    --checkbox-border-color: var(--u-green-600);
-  }
-  :host([variant="outline"][color="red"][checked]),
-  :host([variant="outline"][color="red"][indeterminate]) {
-    --checkbox-color: var(--u-red-600);
-    --checkbox-border-color: var(--u-red-600);
-  }
-  :host([variant="outline"][color="orange"][checked]),
-  :host([variant="outline"][color="orange"][indeterminate]) {
-    --checkbox-color: var(--u-orange-600);
-    --checkbox-border-color: var(--u-orange-600);
-  }
-  :host([variant="outline"][color="teal"][checked]),
-  :host([variant="outline"][color="teal"][indeterminate]) {
-    --checkbox-color: var(--u-teal-600);
-    --checkbox-border-color: var(--u-teal-600);
-  }
-  :host([variant="outline"][color="cyan"][checked]),
-  :host([variant="outline"][color="cyan"][indeterminate]) {
-    --checkbox-color: var(--u-cyan-600);
-    --checkbox-border-color: var(--u-cyan-600);
-  }
-  :host([variant="outline"][color="purple"][checked]),
-  :host([variant="outline"][color="purple"][indeterminate]) {
-    --checkbox-color: var(--u-purple-600);
-    --checkbox-border-color: var(--u-purple-600);
-  }
-  :host([variant="outline"][color="pink"][checked]),
-  :host([variant="outline"][color="pink"][indeterminate]) {
-    --checkbox-color: var(--u-pink-600);
-    --checkbox-border-color: var(--u-pink-600);
-  }
-  :host([variant="outline"][color="neutral"][checked]),
-  :host([variant="outline"][color="neutral"][indeterminate]) {
-    --checkbox-color: var(--u-neutral-600);
-    --checkbox-border-color: var(--u-neutral-600);
-  }
+
 
   .wrapper {
     display: inline-flex;
