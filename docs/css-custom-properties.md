@@ -31,8 +31,8 @@ u-button.cta { --btn-color: #0f9d58; }
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--badge-padding-block` | 세로 여백 (`variant="dot"` 은 0) |
-| `--badge-padding-inline` | 가로 여백 (`variant="dot"` 은 0) |
+| `--badge-padding-block` | 세로 여백 (`variant="dot"` 은 콘텐츠를 렌더하지 않아 적용되지 않는다) |
+| `--badge-padding-inline` | 가로 여백 (`variant="dot"` 은 콘텐츠를 렌더하지 않아 적용되지 않는다) |
 
 ## `<u-button>`
 

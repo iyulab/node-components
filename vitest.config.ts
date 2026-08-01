@@ -28,6 +28,11 @@ export default defineConfig({
             enabled: true,
             provider: playwright(),
             instances: [{ browser: 'chromium' }],
+            // 파일마다 새 컨텍스트를 강제한다(기본값이지만 명시한다).
+            // 두 종류의 파일 간 오염이 실재한다:
+            //  - `light.css` 를 임포트하는 파일이 토큰 부재를 전제하는 파일과 섞이면 안 된다
+            //  - `UElement` 의 토큰 경고는 모듈 수준 1회 플래그라, 앞선 파일이 소비하면 사라진다
+            isolate: true,
           },
         },
       },

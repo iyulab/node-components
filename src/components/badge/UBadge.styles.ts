@@ -41,8 +41,6 @@ export const styles = css`
     height: 0.6em;
     min-width: 0.6em;
     min-height: 0.6em;
-    --badge-padding-block: 0;
-    --badge-padding-inline: 0;
     border-radius: 50%;
   }
 
