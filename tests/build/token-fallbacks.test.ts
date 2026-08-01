@@ -55,6 +55,18 @@ describe('토큰 폴백 — 시트 부재 내성', () => {
       expect(CANONICAL_SHEET).toBe('light');
     });
 
+    it('두 시트가 같은 토큰 집합을 정의한다 (키 패리티)', () => {
+      // ★*"light 를 정본으로 삼아도 안전하다"* 를 떠받치는 불변식이다.
+      // 두 시트는 **각각 완결적**이다(override 층이 아니라 교체 대상). dark 에만 없는
+      // 키가 생기면 그 토큰은 **다크에서 폴백이 발동**한다 — 종전에는 선언이 버려졌는데
+      // 이제는 **라이트 색이 칠해진다.** 즉 *"시트를 쓰면 시각 변화 없음"* 이 깨지고,
+      // 깨지는 자리는 다크 모드뿐이라 라이트로 개발하면 보이지 않는다.
+      const keys = (name: string) => new Set(resolveTokens(sheet(name)).keys());
+      const light = [...keys('light')].sort();
+      const dark = [...keys('dark')].sort();
+      expect(dark).toEqual(light);
+    });
+
     it('배선된 폴백은 light 값이지 dark 값이 아니다', () => {
       const light = resolveTokens(sheet('light'));
       const dark = resolveTokens(sheet('dark'));
