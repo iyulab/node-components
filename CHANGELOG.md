@@ -16,7 +16,7 @@ u-tag { padding: 4px 10px; }
 u-tag { --tag-padding-block: 4px; --tag-padding-inline: 10px; }
 ```
 
-`::part()` 오버라이드는 **종전대로 동작한다.** 각 컴포넌트에 `part="base"` 래퍼가 추가됐다(기존 part 는 변경 없음).
+`::part()` 오버라이드는 **종전대로 동작한다.** 기존 part 는 변경되지 않았고, 레이아웃 래퍼가 필요한 컴포넌트에는 `part="base"` 가 추가됐다(`u-alert` 는 기존 `::part(container)` 가 그 역할을 맡는다).
 
 ### Added
 - 여백/테두리 훅 19개 — `--tag-padding-block`·`-inline`·`--tag-gap` · `--badge-padding-block`·`-inline` · `--tab-padding-block`·`-inline` · `--option-padding-block`·`-inline` · `--menu-padding`·`--menu-border-width`·`--menu-border-color` · `--tooltip-padding-block`·`-inline` · `--alert-padding-block`·`-inline`·`--alert-border-width` · `--card-border-width`·`--card-border-color`
