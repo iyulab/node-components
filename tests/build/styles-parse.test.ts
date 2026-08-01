@@ -17,18 +17,21 @@ const styleFiles = () => globSync('src/components/**/*.styles.ts', { cwd: root }
  * 브라우저 없이도 즉시 잡힌다.
  */
 describe('스타일 시트 파스 무결성', () => {
+  // 40여 개 파일을 vite 변환을 거쳐 임포트하므로 기본 5초를 넘길 수 있다.
+  // (단독 실행에서는 통과하고 전체 실행에서만 드러나는 부류라 명시적으로 넉넉히 준다.)
   it('모든 *.styles.ts 가 임포트된다', async () => {
-    const broken: string[] = [];
-    for (const rel of styleFiles()) {
-      try {
-        const mod = await import(/* @vite-ignore */ join(root, rel));
-        if (!mod.styles) broken.push(`${basename(rel)}: styles 를 내보내지 않는다`);
-      } catch (e) {
-        broken.push(`${basename(rel)}: ${(e as Error).message.split('\n')[0]}`);
-      }
-    }
-    expect(broken).toEqual([]);
-  });
+    const results = await Promise.all(
+      styleFiles().map(async rel => {
+        try {
+          const mod = await import(/* @vite-ignore */ join(root, rel));
+          return mod.styles ? null : `${basename(rel)}: styles 를 내보내지 않는다`;
+        } catch (e) {
+          return `${basename(rel)}: ${(e as Error).message.split('\n')[0]}`;
+        }
+      }),
+    );
+    expect(results.filter(Boolean)).toEqual([]);
+  }, 30_000);
 
   it('css 템플릿 안에 백틱이 없다 (주석 포함)', async () => {
     // 위 임포트 검사가 결과를 잡는다면, 이 검사는 **원인**을 이름으로 잡는다.
