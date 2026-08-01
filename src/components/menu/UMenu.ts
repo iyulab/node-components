@@ -13,6 +13,9 @@ export type MenuSelection = 'none' | 'single' | 'multiple';
  * @slot - 메뉴 아이템 (u-menu-item, u-divider)
  *
  * @cssprop --menu-indent-size - 하위 메뉴 아이템의 들여쓰기 크기 (기본값: 20px)
+ * @cssprop --menu-padding - 내부 여백 (`borderless` 는 0)
+ * @cssprop --menu-border-width - 테두리 두께 (`borderless` 는 0)
+ * @cssprop --menu-border-color - 테두리 색
  * 
  * @event change - 선택된 아이템이 변경될 때 발생
  */
@@ -64,7 +67,9 @@ export class UMenu extends UElement {
   }
 
   render() {
-    return html`<slot @slotchange=${this.handleSlotChange}></slot>`;
+    return html`<div class="base" part="base">
+      <slot @slotchange=${this.handleSlotChange}></slot>
+    </div>`;
   }
 
   public getItems(fn: (item: UMenuItem) => boolean): UMenuItem[] {

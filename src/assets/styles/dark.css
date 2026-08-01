@@ -132,23 +132,67 @@
   --u-pink-900:      #E095C7;
   --u-pink-1000:     #EBB5D9;
 
+  /* ==========================================================================
+     Role Colors — 의미 역할 층
+     컴포넌트는 팔레트 프리미티브가 아니라 이 층을 참조한다.
+     브랜드 색 교체는 아래 25개만 재정의하면 시맨틱 층까지 따라온다.
+
+     단은 '강도' 축이다 (weakest -> strong). 용도(배경/테두리/텍스트)는
+     소비처가 정한다 -- 단을 속성에 묶으면 primary 버튼의 배경이 어느
+     단인지 같은 모순이 생긴다.
+     ========================================================================== */
+
+  /* primary — 브랜드 · 강조 · 포커스 · 링크 */
+  --u-primary-color-weakest:     var(--u-blue-200);
+  --u-primary-color-weaker:      var(--u-blue-300);
+  --u-primary-color-weak:        var(--u-blue-500);
+  --u-primary-color:             var(--u-blue-600);
+  --u-primary-color-strong:      var(--u-blue-700);
+
+  /* info — 정보 안내 (primary 와 기본값은 같으나 역할이 다르다 — 브랜딩은 primary 만 바꾼다) */
+  --u-info-color-weakest:        var(--u-blue-200);
+  --u-info-color-weaker:         var(--u-blue-300);
+  --u-info-color-weak:           var(--u-blue-500);
+  --u-info-color:                var(--u-blue-600);
+  --u-info-color-strong:         var(--u-blue-700);
+
+  /* success — 성공 · 완료 */
+  --u-success-color-weakest:     var(--u-green-200);
+  --u-success-color-weaker:      var(--u-green-300);
+  --u-success-color-weak:        var(--u-green-500);
+  --u-success-color:             var(--u-green-600);
+  --u-success-color-strong:      var(--u-green-700);
+
+  /* warning — 주의 */
+  --u-warning-color-weakest:     var(--u-yellow-200);
+  --u-warning-color-weaker:      var(--u-yellow-300);
+  --u-warning-color-weak:        var(--u-yellow-500);
+  --u-warning-color:             var(--u-yellow-600);
+  --u-warning-color-strong:      var(--u-yellow-700);
+
+  /* danger — 오류 · 위험 · 유효성 실패 */
+  --u-danger-color-weakest:      var(--u-red-200);
+  --u-danger-color-weaker:       var(--u-red-300);
+  --u-danger-color-weak:         var(--u-red-500);
+  --u-danger-color:              var(--u-red-600);
+  --u-danger-color-strong:       var(--u-red-700);
   /* Text Colors */
   --u-txt-color:             var(--u-neutral-900);
   --u-txt-color-inverse:     var(--u-neutral-100);
-  --u-txt-color-hover:       var(--u-blue-600);
-  --u-txt-color-active:      var(--u-blue-600);
+  --u-txt-color-hover:       var(--u-primary-color);
+  --u-txt-color-active:      var(--u-primary-color);
   --u-txt-color-disabled:    var(--u-neutral-500);
   --u-txt-color-weak:        var(--u-neutral-700);
   --u-txt-color-strong:      var(--u-neutral-1000);
 
-  --u-link-txt-color:        var(--u-blue-700);
+  --u-link-txt-color:        var(--u-primary-color-strong);
   --u-tooltip-txt-color:     var(--u-neutral-100);
 
   /* Icon Colors */
   --u-icon-color:            var(--u-neutral-800);
   --u-icon-color-inverse:    var(--u-neutral-100);
-  --u-icon-color-hover:      var(--u-blue-600);
-  --u-icon-color-active:     var(--u-blue-600);
+  --u-icon-color-hover:      var(--u-primary-color);
+  --u-icon-color-active:     var(--u-primary-color);
   --u-icon-color-disabled:   var(--u-neutral-500);
 
   /* Border Colors */
@@ -159,8 +203,8 @@
 
   --u-input-border-color:         var(--u-neutral-400);
   --u-input-border-color-hover:   var(--u-neutral-500);
-  --u-input-border-color-focus:   var(--u-blue-600);
-  --u-input-border-color-invalid: var(--u-red-600);
+  --u-input-border-color-focus:   var(--u-primary-color);
+  --u-input-border-color-invalid: var(--u-danger-color);
 
   /* Background Colors */
   --u-bg-color:              var(--u-neutral-100);

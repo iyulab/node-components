@@ -12,7 +12,7 @@ export const styles = css`
     cursor: pointer;
   }
   :host:hover {
-    color: var(--u-blue-700);
+    color: var(--u-primary-color-strong);
   }
   :host([disabled]) {
     opacity: 0.5;

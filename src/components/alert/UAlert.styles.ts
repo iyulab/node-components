@@ -8,24 +8,24 @@ export const styles = css`
     --alert-background-color: var(--u-neutral-200);
   }
   :host([status="error"]) {
-    --alert-icon-color: var(--u-red-700);
-    --alert-border-color: var(--u-red-300);
-    --alert-background-color: var(--u-red-200);
+    --alert-icon-color: var(--u-danger-color-strong);
+    --alert-border-color: var(--u-danger-color-weaker);
+    --alert-background-color: var(--u-danger-color-weakest);
   }
   :host([status="warning"]) {
-    --alert-icon-color: var(--u-yellow-700);
-    --alert-border-color: var(--u-yellow-300);
-    --alert-background-color: var(--u-yellow-200);
+    --alert-icon-color: var(--u-warning-color-strong);
+    --alert-border-color: var(--u-warning-color-weaker);
+    --alert-background-color: var(--u-warning-color-weakest);
   }
   :host([status="info"]) {
-    --alert-icon-color: var(--u-blue-700);
-    --alert-border-color: var(--u-blue-300);
-    --alert-background-color: var(--u-blue-200);
+    --alert-icon-color: var(--u-info-color-strong);
+    --alert-border-color: var(--u-info-color-weaker);
+    --alert-background-color: var(--u-info-color-weakest);
   }
   :host([status="success"]) {
-    --alert-icon-color: var(--u-green-700);
-    --alert-border-color: var(--u-green-300);
-    --alert-background-color: var(--u-green-200);
+    --alert-icon-color: var(--u-success-color-strong);
+    --alert-border-color: var(--u-success-color-weaker);
+    --alert-background-color: var(--u-success-color-weakest);
   }
   :host([status="notice"]) {
     --alert-icon-color: var(--u-neutral-700);

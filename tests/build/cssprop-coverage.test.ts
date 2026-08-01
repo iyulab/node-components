@@ -112,8 +112,6 @@ describe('CSS 커스텀 프로퍼티 선언 규약', () => {
         ghosts.add(prop);
       }
     }
-    // --u-primary-color 는 역할 토큰 층(Phase 33)에서 정의된다. 그때까지 알려진 예외.
-    ghosts.delete('--u-primary-color');
     expect([...ghosts].sort()).toEqual([]);
   });
 });

@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --checkbox-fill-color: var(--u-primary-color, var(--u-blue-600));
+    --checkbox-fill-color: var(--u-primary-color);
     --checkbox-color: inherit;
     --checkbox-border-color: var(--u-input-border-color);
     --checkbox-background-color: var(--u-input-bg-color);
@@ -27,10 +27,10 @@ export const styles = css`
     cursor: default;
   }
   :host([invalid]) {
-    --checkbox-border-color: var(--u-red-600);
+    --checkbox-border-color: var(--u-danger-color);
   }
   :host([invalid]) .footer {
-    color: var(--u-red-600);
+    color: var(--u-danger-color);
   }
   :host([checked]) .checkbox u-icon,
   :host([indeterminate]) .checkbox u-icon {
@@ -197,7 +197,7 @@ export const styles = css`
   }
 
   .required {
-    color: var(--u-red-600);
+    color: var(--u-danger-color);
     font-weight: 500;
   }
 
@@ -209,6 +209,6 @@ export const styles = css`
   }
 
   :host([invalid]) .description {
-    color: var(--u-red-600);
+    color: var(--u-danger-color);
   }
 `;

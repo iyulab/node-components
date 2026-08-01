@@ -20,7 +20,7 @@ export type TabPanelPlacement = 'top' | 'bottom' | 'left' | 'right';
  * @csspart toolbar - 탭 헤더 내 툴바 영역
  * @csspart content - 탭 패널이 있는 콘텐츠 영역
  *
- * @cssprop --tab-panel-color - 활성 탭의 기준색 (기본: --u-primary-color, 미지정 시 blue-600)
+ * @cssprop --tab-panel-color - 활성 탭의 기준색 (기본: --u-primary-color)
  *
  * @event change - 탭을 클릭하거나 키보드로 선택했을 때만 발생한다. 최초 마운트 시 첫 탭이
  *   자동 선택되는 경우나 `value` 프로퍼티를 직접 대입하는 경우는 사용자 조작이 아니므로

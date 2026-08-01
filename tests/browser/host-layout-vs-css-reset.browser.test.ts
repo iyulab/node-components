@@ -5,6 +5,11 @@ import '../../src/assets/styles/light.css';
 import '../../src/components/button/UButton.js';
 import '../../src/components/tag/UTag.js';
 import '../../src/components/card/UCard.js';
+import '../../src/components/badge/UBadge.js';
+import '../../src/components/tab/UTab.js';
+import '../../src/components/option/UOption.js';
+import '../../src/components/menu/UMenu.js';
+import '../../src/components/tooltip/UTooltip.js';
 
 /**
  * 컴포넌트 기본 레이아웃이 소비 앱의 CSS 리셋에 지워지면 안 된다.
@@ -78,9 +83,64 @@ describe(':host 레이아웃 vs 문서 CSS 리셋', () => {
     expect(cs.borderTopColor, 'variant 색이 전달돼야 한다').not.toBe('rgba(0, 0, 0, 0)');
   });
 
-  // ⚠ 알려진 미해소: 아래 컴포넌트들은 아직 :host 에 여백/테두리를 둔다.
-  // 고치려면 섀도 DOM 에 래퍼 엘리먼트를 추가해야 하고(prefix/suffix 가 호스트 flex 에
-  // 직접 슬롯된다), 그것은 ::part 소비자에게 영향을 주는 구조 변경이라 사람 판단 대상이다.
-  // 여기서는 **목록이 늘어나지 않는 것**만 지킨다 — tests/build/host-layout-reset.test.ts
-  it.skip('u-tag · u-card 등 나머지 — 래퍼 도입 결정 대기', () => {});
+  // 래퍼(`part="base"`)를 도입한 컴포넌트들. 리셋 아래에서 여백이 살아 있어야 한다.
+  const WRAPPED: Array<[string, string]> = [
+    ['u-tag', 'Tag'],
+    ['u-badge', '9'],
+    ['u-tab', 'Tab'],
+    ['u-option', 'Option'],
+    ['u-menu', ''],
+    ['u-tooltip', 'Tip'],
+  ];
+
+  for (const [tag, text] of WRAPPED) {
+    it(`${tag} 의 여백이 리셋 아래에서도 내부 래퍼에 살아 있다`, async () => {
+      const el = document.createElement(tag) as HTMLElement & { updateComplete: Promise<unknown> };
+      if (text) el.textContent = text;
+      document.body.appendChild(el);
+      await el.updateComplete;
+
+      const host = getComputedStyle(el);
+      expect(host.paddingTop, `${tag}: 호스트 여백은 리셋에 지워지는 게 정상이다`).toBe('0px');
+
+      const base = el.shadowRoot!.querySelector<HTMLElement>('[part="base"]');
+      expect(base, `${tag}: part="base" 래퍼가 없다`).not.toBeNull();
+
+      const cs = getComputedStyle(base!);
+      const pad = parseFloat(cs.paddingTop) + parseFloat(cs.paddingLeft);
+      expect(pad, `${tag}: 래퍼 여백이 0 이다 — 리셋이 내부까지 도달했거나 배선이 끊겼다`)
+        .toBeGreaterThan(0);
+    });
+  }
+
+  it('u-menu 의 테두리가 내부 래퍼로 이전된 뒤에도 유지되고, borderless 는 제거된다', async () => {
+    const make = async (borderless: boolean) => {
+      const el = document.createElement('u-menu') as HTMLElement & {
+        updateComplete: Promise<unknown>;
+      };
+      if (borderless) el.setAttribute('borderless', '');
+      document.body.appendChild(el);
+      await el.updateComplete;
+      return getComputedStyle(el.shadowRoot!.querySelector<HTMLElement>('[part="base"]')!);
+    };
+    expect((await make(false)).borderTopWidth, '기본 메뉴는 테두리를 그려야 한다').toBe('1px');
+    expect((await make(true)).borderTopWidth, 'borderless 는 테두리가 없어야 한다').toBe('0px');
+  });
+
+  it('u-badge variant="dot" 은 여백이 0 이다 (래퍼 도입 후에도)', async () => {
+    // 네거티브 컨트롤 — 위 루프가 "여백 > 0" 만 보므로, 의도적으로 0인 케이스가
+    // 함께 살아 있는지 확인해야 배선이 뭉개지지 않았음을 안다.
+    const el = document.createElement('u-badge') as HTMLElement & {
+      updateComplete: Promise<unknown>;
+    };
+    el.setAttribute('variant', 'dot');
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const base = el.shadowRoot!.querySelector<HTMLElement>('[part="base"]');
+    // dot 은 render() 가 nothing 을 반환하므로 래퍼 자체가 없다.
+    expect(base, 'dot variant 는 콘텐츠를 렌더하지 않는다').toBeNull();
+    expect(Math.round(el.getBoundingClientRect().width), 'dot 크기가 유지돼야 한다')
+      .toBeGreaterThan(0);
+  });
 });

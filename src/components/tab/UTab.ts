@@ -17,6 +17,8 @@ import { type RemoveEventDetail } from "../../events/RemoveEvent.js";
  * @csspart remove-btn - 탭 닫기 버튼
  * 
  * @event remove - 탭이 닫힐 때 발생. 이벤트 리스너에서 preventDefault()를 호출하면 탭이 닫히지 않습니다.
+ * @cssprop --tab-padding-block - 세로 여백
+ * @cssprop --tab-padding-inline - 가로 여백
  */
 @customElement('u-tab')
 export class UTab extends UElement {
@@ -42,11 +44,12 @@ export class UTab extends UElement {
 
   render() {
     return html`
-      <slot name="prefix"></slot>
-      <slot></slot>
-      <slot name="suffix"></slot>
-      
-      <u-button class="remove-btn" part="remove-btn"
+      <div class="base" part="base">
+        <slot name="prefix"></slot>
+        <slot></slot>
+        <slot name="suffix"></slot>
+
+        <u-button class="remove-btn" part="remove-btn"
         ?hidden=${!this.removable}
         variant="ghost"
         tabindex="-1"
@@ -55,6 +58,7 @@ export class UTab extends UElement {
       >
         <u-icon lib="internal" name="x"></u-icon>
       </u-button>
+      </div>
     `;
   }
 

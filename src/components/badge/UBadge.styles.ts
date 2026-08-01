@@ -16,12 +16,24 @@ export const styles = css`
   }
 
   /* === Variant (형태) === */
+  /* 여백은 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */
+  .base {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: inherit;
+    padding: var(--badge-padding-block, 0.2em) var(--badge-padding-inline, 0.5em);
+    border-radius: inherit;
+  }
+
   :host([variant="square"]) {
-    padding: 0.2em 0.5em;
     border-radius: 0.2em;
   }
   :host([variant="pill"]) {
-    padding: 0.2em 0.5em;
     border-radius: 999px;
   }
   :host([variant="dot"]) {
@@ -29,7 +41,8 @@ export const styles = css`
     height: 0.6em;
     min-width: 0.6em;
     min-height: 0.6em;
-    padding: 0;
+    --badge-padding-block: 0;
+    --badge-padding-inline: 0;
     border-radius: 50%;
   }
 

@@ -3,7 +3,7 @@ import { css } from 'lit';
 export const styles = css`
   :host {
     --progress-ring-size: 6em;
-    --progress-ring-color: var(--u-primary-color, var(--u-blue-600));
+    --progress-ring-color: var(--u-primary-color);
     --progress-ring-track-width: 6;
     --progress-ring-track-color: var(--u-neutral-200);
     --progress-ring-buffer-color: color-mix(in srgb, var(--progress-ring-color) 35%, var(--u-bg-color));
@@ -11,20 +11,20 @@ export const styles = css`
 
   /* === Status Colors === */
   :host([status="success"]) { 
-    --progress-ring-color: var(--u-green-600);
-    --progress-ring-buffer-color: var(--u-green-200);
+    --progress-ring-color: var(--u-success-color);
+    --progress-ring-buffer-color: var(--u-success-color-weakest);
   }
   :host([status="warning"]) { 
-    --progress-ring-color: var(--u-yellow-500);
-    --progress-ring-buffer-color: var(--u-yellow-200);
+    --progress-ring-color: var(--u-warning-color-weak);
+    --progress-ring-buffer-color: var(--u-warning-color-weakest);
   }
   :host([status="error"]) { 
-    --progress-ring-color: var(--u-red-600);
-    --progress-ring-buffer-color: var(--u-red-200);
+    --progress-ring-color: var(--u-danger-color);
+    --progress-ring-buffer-color: var(--u-danger-color-weakest);
   }
   :host([status="info"]) { 
-    --progress-ring-color: var(--u-blue-500);
-    --progress-ring-buffer-color: var(--u-blue-200);
+    --progress-ring-color: var(--u-info-color-weak);
+    --progress-ring-buffer-color: var(--u-info-color-weakest);
   }
 
   /* === Host === */

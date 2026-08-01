@@ -4,8 +4,8 @@ export const styles = css`
   :host {
     --splitter-size: 4px;
     --splitter-color: var(--u-neutral-200);
-    --splitter-color-hover: var(--u-blue-300);
-    --splitter-color-active: var(--u-blue-500);
+    --splitter-color-hover: var(--u-primary-color-weaker);
+    --splitter-color-active: var(--u-primary-color-weak);
   }
 
   :host {

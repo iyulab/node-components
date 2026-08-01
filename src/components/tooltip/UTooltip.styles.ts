@@ -6,17 +6,26 @@ export const styles = css`
   }
 
   :host {
-    padding: 6px 8px;
     color: var(--u-tooltip-txt-color);
     font-family: var(--u-font-display, inherit);
     font-size: 12px;
     line-height: 1.25;
-    border: none;
     border-radius: 4px;
     background-color: var(--u-tooltip-bg-color);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
     transform: scale(0.9);
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s 0.2s;
+
+    --tooltip-padding-block: 6px;
+    --tooltip-padding-inline: 8px;
+  }
+
+  /* 여백은 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */
+  .base {
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--tooltip-padding-block) var(--tooltip-padding-inline);
+    border-radius: inherit;
   }
   :host([open]) {
     transform: scale(1);

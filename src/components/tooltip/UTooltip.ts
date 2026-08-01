@@ -13,6 +13,8 @@ import type { VirtualElement } from '@floating-ui/dom';
  *
  * @event show - 툴팁을 표시하기 직전 발생 (취소 가능)
  * @event hide - 툴팁을 숨기기 직전 발생 (취소 가능)
+ * @cssprop --tooltip-padding-block - 세로 여백
+ * @cssprop --tooltip-padding-inline - 가로 여백
  */
 @customElement('u-tooltip')
 export class UTooltip extends UFloatingElement {
@@ -60,7 +62,9 @@ export class UTooltip extends UFloatingElement {
 
   render() {
     return html`
-      <slot @slotchange=${this.handleSlotChange}></slot>
+      <div class="base" part="base">
+        <slot @slotchange=${this.handleSlotChange}></slot>
+      </div>
     `;
   }
 

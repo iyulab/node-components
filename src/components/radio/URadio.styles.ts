@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --radio-color: var(--u-primary-color, var(--u-blue-600));
+    --radio-color: var(--u-primary-color);
     --radio-color-active: color-mix(in srgb, var(--radio-color) 85%, black);
   }
 
@@ -38,7 +38,7 @@ export const styles = css`
     border-radius: 0.35em;
   }
   :host([invalid]) .container {
-    border-color: var(--u-red-600);
+    border-color: var(--u-danger-color);
   }
 
   /* Type: default */

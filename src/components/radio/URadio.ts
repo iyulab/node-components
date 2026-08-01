@@ -20,7 +20,7 @@ export type RadioOrientation = "vertical" | "horizontal";
  * @csspart field - u-field 요소
  * @csspart container - 옵션들을 감싸는 컨테이너
  * 
- * @cssprop --radio-color - 선택 상태의 기준색 (기본: --u-primary-color, 미지정 시 blue-600)
+ * @cssprop --radio-color - 선택 상태의 기준색 (기본: --u-primary-color)
  * @cssprop --radio-color-active - 선택 상태 active 톤 (기본: --radio-color 85% + black)
  *
  * @event change - 사용자 상호작용(옵션 클릭·키보드)으로 선택 값이 변경될 때 발생.

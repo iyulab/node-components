@@ -28,7 +28,7 @@ export type CheckboxColor = "blue" | "green" | "red" | "orange" | "teal" | "cyan
  *
  * @event change - 체크 상태 변경 시 발생
  *
- * @cssprop --checkbox-fill-color - 체크된 상태의 채움색 (기본: --u-primary-color, 미지정 시 blue-600)
+ * @cssprop --checkbox-fill-color - 체크된 상태의 채움색 (기본: --u-primary-color)
  */
 @customElement('u-checkbox')
 export class UCheckbox extends UFormControlElement<string> {

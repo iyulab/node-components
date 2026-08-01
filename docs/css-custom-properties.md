@@ -14,9 +14,10 @@ u-button { --btn-color: #c42839; }
 u-button.cta { --btn-color: #0f9d58; }
 ```
 
-전역 테마 토큰(`--u-*`)은 [theming.md](theming.md) 를 보세요.
+전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
+넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 23개 · 프로퍼티 101개**
+**컴포넌트 26개 · 프로퍼티 115개**
 
 ## `<u-alert>`
 
@@ -25,6 +26,13 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--alert-background-color` | 배경색 (status에 따라 자동 설정, variant="outlined"는 transparent) |
 | `--alert-border-color` | 테두리 색상 (status에 따라 자동 설정, variant="filled"는 transparent) |
 | `--alert-icon-color` | 아이콘 색상 (status에 따라 자동 설정) |
+
+## `<u-badge>`
+
+| 프로퍼티 | 설명 |
+|---|---|
+| `--badge-padding-block` | 세로 여백 (`variant="dot"` 은 0) |
+| `--badge-padding-inline` | 가로 여백 (`variant="dot"` 은 0) |
 
 ## `<u-button>`
 
@@ -53,7 +61,7 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--checkbox-color` | 체크 표시 색상 (outline variant) |
 | `--checkbox-border-color` | 체크박스 테두리 색상 |
 | `--checkbox-background-color` | 체크박스 배경색 (filled variant) |
-| `--checkbox-fill-color` | 체크된 상태의 채움색 (기본: --u-primary-color, 미지정 시 blue-600) |
+| `--checkbox-fill-color` | 체크된 상태의 채움색 (기본: --u-primary-color) |
 
 ## `<u-divider>`
 
@@ -84,12 +92,15 @@ u-button.cta { --btn-color: #0f9d58; }
 | 프로퍼티 | 설명 |
 |---|---|
 | `--menu-indent-size` | 하위 메뉴 아이템의 들여쓰기 크기 (기본값: 20px) |
+| `--menu-padding` | 내부 여백 (`borderless` 는 0) |
+| `--menu-border-width` | 테두리 두께 (`borderless` 는 0) |
+| `--menu-border-color` | 테두리 색 |
 
 ## `<u-menu-item>`
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--menu-item-color` | 선택/활성 상태의 기준색 (기본: --u-primary-color, 미지정 시 blue-600) |
+| `--menu-item-color` | 선택/활성 상태의 기준색 (기본: --u-primary-color) |
 
 ## `<u-option>`
 
@@ -104,7 +115,9 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--option-color-active-interactive` | 선택된 상태에서 호버/포커스 시 텍스트 색상 |
 | `--option-border-color-active-interactive` | 선택된 상태에서 호버/포커스 시 테두리 색상 |
 | `--option-background-color-active-interactive` | 선택된 상태에서 호버/포커스 시 배경 색상 |
-| `--option-color` | 선택 상태의 기준색. 위 active 계열이 이 값에서 파생된다 (기본: --u-primary-color, 미지정 시 blue-600) |
+| `--option-color` | 선택 상태의 기준색. 위 active 계열이 이 값에서 파생된다 (기본: --u-primary-color) |
+| `--option-padding-block` | 세로 여백 |
+| `--option-padding-inline` | 가로 여백 |
 
 ## `<u-progress-bar>`
 
@@ -129,7 +142,7 @@ u-button.cta { --btn-color: #0f9d58; }
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--radio-color` | 선택 상태의 기준색 (기본: --u-primary-color, 미지정 시 blue-600) |
+| `--radio-color` | 선택 상태의 기준색 (기본: --u-primary-color) |
 | `--radio-color-active` | 선택 상태 active 톤 (기본: --radio-color 85% + black) |
 
 ## `<u-rating>`
@@ -203,11 +216,18 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--switch-radius` | border-radius (9999px, pill 형태) |
 | `--switch-duration` | 전환 애니메이션 시간 (0.25s) |
 
+## `<u-tab>`
+
+| 프로퍼티 | 설명 |
+|---|---|
+| `--tab-padding-block` | 세로 여백 |
+| `--tab-padding-inline` | 가로 여백 |
+
 ## `<u-tab-panel>`
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--tab-panel-color` | 활성 탭의 기준색 (기본: --u-primary-color, 미지정 시 blue-600) |
+| `--tab-panel-color` | 활성 탭의 기준색 (기본: --u-primary-color) |
 
 ## `<u-tag>`
 
@@ -216,7 +236,17 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--tag-color` | 텍스트 색상 |
 | `--tag-bg-color` | 배경 색상 |
 | `--tag-border-color` | 테두리 색상 |
-| `--tag-fill-color` | variant 별 채움 기준색 (기본: --u-primary-color, 미지정 시 blue-600) |
+| `--tag-fill-color` | variant 별 채움 기준색 (기본: --u-primary-color) |
+| `--tag-padding-block` | 세로 여백 |
+| `--tag-padding-inline` | 가로 여백 |
+| `--tag-gap` | prefix/본문/suffix 사이 간격 |
+
+## `<u-tooltip>`
+
+| 프로퍼티 | 설명 |
+|---|---|
+| `--tooltip-padding-block` | 세로 여백 |
+| `--tooltip-padding-inline` | 가로 여백 |
 
 ## `<u-tree>`
 
@@ -232,4 +262,4 @@ u-button.cta { --btn-color: #0f9d58; }
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--tree-item-color` | 선택/활성 상태의 기준색 (기본: --u-primary-color, 미지정 시 blue-600) |
+| `--tree-item-color` | 선택/활성 상태의 기준색 (기본: --u-primary-color) |

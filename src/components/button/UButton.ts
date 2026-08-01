@@ -52,8 +52,9 @@ export class UButton extends UElement {
   /** 버튼 스타일 변형 */
   @property({ type: String, reflect: true }) variant: ButtonVariant = "solid";
   /**
-   * Semantic 색상. 기본값 `neutral`은 --u-primary-color 미지정 시 blue로 렌더링(회색에서 변경됨).
-   * `link`는 neutral일 때 기존 파랑 유지, 다른 색 지정 시 재정의. `ghost`는 영향받지 않음.
+   * Semantic 색상. 기본값 `neutral`은 `--u-primary-color`(역할 토큰)로 렌더링된다 —
+   * 즉 브랜드 색을 덮으면 기본 버튼이 함께 따라온다.
+   * `link`는 neutral일 때 primary 계열 유지, 다른 색 지정 시 재정의. `ghost`는 영향받지 않음.
    */
   @property({ type: String, reflect: true }) color: ButtonColor = "neutral";
   /** 버튼 크기. `font-size`만 변경하며 나머지는 `em` 단위라 비례 조정됨. */

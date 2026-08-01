@@ -21,7 +21,10 @@ export type TagColor =
  * @cssprop --tag-color - 텍스트 색상
  * @cssprop --tag-bg-color - 배경 색상
  * @cssprop --tag-border-color - 테두리 색상
- * @cssprop --tag-fill-color - variant 별 채움 기준색 (기본: --u-primary-color, 미지정 시 blue-600)
+ * @cssprop --tag-fill-color - variant 별 채움 기준색 (기본: --u-primary-color)
+ * @cssprop --tag-padding-block - 세로 여백
+ * @cssprop --tag-padding-inline - 가로 여백
+ * @cssprop --tag-gap - prefix/본문/suffix 사이 간격
  */
 @customElement('u-tag')
 export class UTag extends UElement {
@@ -36,11 +39,13 @@ export class UTag extends UElement {
 
   render() {
     return html`
-      <slot name="prefix"></slot>
-      <span class="content" part="content">
-        <slot></slot>
-      </span>
-      <slot name="suffix"></slot>
+      <div class="base" part="base">
+        <slot name="prefix"></slot>
+        <span class="content" part="content">
+          <slot></slot>
+        </span>
+        <slot name="suffix"></slot>
+      </div>
     `;
   }
 }

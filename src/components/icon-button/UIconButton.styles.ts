@@ -11,7 +11,7 @@ export const styles = css`
     color: #fff;
   }
   :host([variant="link"]) {
-    color: var(--u-blue-500);
+    color: var(--u-primary-color-weak);
   }
 
   u-button {

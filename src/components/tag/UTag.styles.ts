@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --tag-fill-color: var(--u-primary-color, var(--u-blue-600));
+    --tag-fill-color: var(--u-primary-color);
     --tag-color: var(--u-neutral-800);
     --tag-bg-color: var(--u-neutral-100);
     --tag-border-color: transparent;
@@ -191,19 +191,31 @@ export const styles = css`
 
   :host {
     display: inline-flex;
-    align-items: center;
-    gap: 4px;
     font-size: 12px;
     font-weight: 500;
-    padding: 0.25em 0.5em;
-    border: 1px solid var(--tag-border-color);
     border-radius: 4px;
+
+    --tag-padding-block: 0.25em;
+    --tag-padding-inline: 0.5em;
+    --tag-gap: 4px;
     color: var(--tag-color);
     background-color: var(--tag-bg-color);
     line-height: 1.5em;
     white-space: nowrap;
     user-select: none;
     box-sizing: border-box;
+  }
+
+  /* 여백/테두리는 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */
+  .base {
+    box-sizing: border-box;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--tag-gap);
+    padding: var(--tag-padding-block) var(--tag-padding-inline);
+    border: 1px solid var(--tag-border-color);
+    border-radius: inherit;
   }
   :host([rounded]) {
     border-radius: 999px;

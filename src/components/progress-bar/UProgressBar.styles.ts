@@ -3,27 +3,27 @@ import { css } from 'lit';
 export const styles = css`
   :host {
     --progress-bar-height: 0.5em;
-    --progress-bar-color: var(--u-primary-color, var(--u-blue-600));
+    --progress-bar-color: var(--u-primary-color);
     --progress-bar-buffer-color: color-mix(in srgb, var(--progress-bar-color) 35%, var(--u-bg-color));
     --progress-bar-track-color: var(--u-neutral-200);
   }
 
   /* === Status Colors === */
   :host([status="success"]) { 
-    --progress-bar-color: var(--u-green-600); 
-    --progress-bar-buffer-color: var(--u-green-200); 
+    --progress-bar-color: var(--u-success-color); 
+    --progress-bar-buffer-color: var(--u-success-color-weakest); 
   }
   :host([status="warning"]) { 
-    --progress-bar-color: var(--u-yellow-500); 
-    --progress-bar-buffer-color: var(--u-yellow-200); 
+    --progress-bar-color: var(--u-warning-color-weak); 
+    --progress-bar-buffer-color: var(--u-warning-color-weakest); 
   }
   :host([status="error"]) { 
-    --progress-bar-color: var(--u-red-600); 
-    --progress-bar-buffer-color: var(--u-red-200); 
+    --progress-bar-color: var(--u-danger-color); 
+    --progress-bar-buffer-color: var(--u-danger-color-weakest); 
   }
   :host([status="info"]) { 
-    --progress-bar-color: var(--u-blue-500); 
-    --progress-bar-buffer-color: var(--u-blue-200); 
+    --progress-bar-color: var(--u-info-color-weak); 
+    --progress-bar-buffer-color: var(--u-info-color-weakest); 
   }
 
   :host {

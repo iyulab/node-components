@@ -3,7 +3,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     /* --btn-color 하나만 정해지면 hover/active/surface/outline 톤이 전부 자동 파생 */
-    --btn-color: var(--u-primary-color, var(--u-blue-600));
+    --btn-color: var(--u-primary-color);
     --btn-color-hover: color-mix(in srgb, var(--btn-color) 85%, black);
     --btn-color-active: color-mix(in srgb, var(--btn-color) 70%, black);
     --btn-color-surface: color-mix(in srgb, var(--btn-color) 12%, var(--u-bg-color));
@@ -150,17 +150,17 @@ export const styles = css`
 
   /* link: blue 링크 스타일 (기본값, color="neutral"일 때도 유지 — 기존 동작 보존) */
   :host([variant="link"]) {
-    color: var(--u-blue-500, #3b82f6);
+    color: var(--u-primary-color-weak, #3b82f6);
     --btn-border-color: transparent;
     background-color: transparent;
     --btn-padding-inline: 0;
   }
   :host([variant="link"]:hover) {
-    color: var(--u-blue-600, #2563eb);
+    color: var(--u-primary-color, #2563eb);
     text-decoration: underline;
   }
   :host([variant="link"]:active) {
-    color: var(--u-blue-700, #1d4ed8);
+    color: var(--u-primary-color-strong, #1d4ed8);
   }
   /* link + 명시적 non-neutral color: 링크 자체 색상을 재정의 (예: 파괴적 액션 링크) */
   :host([variant="link"][color]:not([color="neutral"])) {

@@ -5,7 +5,7 @@ export const styles = css`
     --switch-track-width: 2.4em;
     --switch-track-height: 1.4em;
     --switch-track-color: var(--u-neutral-300);
-    --switch-track-color-checked: var(--u-primary-color, var(--u-blue-600));
+    --switch-track-color-checked: var(--u-primary-color);
     --switch-thumb-size: 1.1em;
     --switch-thumb-offset: 0.15em;
     --switch-thumb-color: #fff;
@@ -34,7 +34,7 @@ export const styles = css`
     cursor: default;
   }
   :host([invalid]) .track {
-    outline: 2px solid var(--u-red-600);
+    outline: 2px solid var(--u-danger-color);
     outline-offset: 1px;
   }
   :host(:not([disabled]):not([readonly]):hover) .track {
@@ -176,7 +176,7 @@ export const styles = css`
   }
 
   .required {
-    color: var(--u-red-600);
+    color: var(--u-danger-color);
     font-weight: 500;
   }
 
@@ -188,6 +188,6 @@ export const styles = css`
   }
 
   :host([invalid]) .description {
-    color: var(--u-red-600);
+    color: var(--u-danger-color);
   }
 `;

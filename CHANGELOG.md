@@ -1,5 +1,58 @@
 # Changelog
 
+## [1.12.0] - 2026-08-01
+
+### ⚠ 업그레이드 전 확인 (호스트 직접 오버라이드)
+
+`u-tag` · `u-badge` · `u-tab` · `u-option` · `u-menu` · `u-tooltip` 의 **여백·테두리가 섀도 내부 요소로 이전**됐다. 1.10.0 의 `u-button` 과 같은 변경이며 이유도 같다 — `:host` 에 둔 여백은 소비 앱의 CSS 리셋(`* { padding:0; border:0 }`, Tailwind preflight 포함)에 **에러 없이 지워진다**.
+
+호스트에 **직접** 여백/테두리를 주고 있었다면 조용히 무효가 된다:
+
+```css
+/* 이전 — 더 이상 적용되지 않는다 */
+u-tag { padding: 4px 10px; }
+
+/* 이후 — 전용 훅을 쓴다 */
+u-tag { --tag-padding-block: 4px; --tag-padding-inline: 10px; }
+```
+
+`::part()` 오버라이드는 **종전대로 동작한다.** 각 컴포넌트에 `part="base"` 래퍼가 추가됐다(기존 part 는 변경 없음).
+
+### Added
+- 여백/테두리 훅 14개 — `--tag-padding-block`·`-inline`·`--tag-gap` · `--badge-padding-block`·`-inline` · `--tab-padding-block`·`-inline` · `--option-padding-block`·`-inline` · `--menu-padding`·`--menu-border-width`·`--menu-border-color` · `--tooltip-padding-block`·`-inline`
+- `part="base"` — 6개 컴포넌트의 레이아웃 래퍼
+
+### Fixed
+- **소비 앱 CSS 리셋에 컴포넌트 여백이 지워지던 문제** (6개 컴포넌트) — 호스트 요소에 대해서는 문서 작성자 스타일이 섀도의 `:host` 규칙을 이긴다. 컴포넌트는 정상 동작하고 작아지기만 하므로 소비자는 *"업스트림이 못생겼다"* 로 읽고 각자 다시 칠했다.
+
+### 미해소 (남은 3개)
+- `u-alert`·`u-card` — 테두리형. 배경/반경과의 상호작용을 별도 확인해야 한다.
+- `u-divider` — `:host` 의 `margin` 은 **형제 간 간격**이라 내부 요소로 옮기면 의미가 달라진다(내부 margin 은 호스트 박스 안에서 상쇄되어 형제를 밀어내지 못한다). 별도 설계가 필요하다.
+
+## [1.11.0] - 2026-08-01
+
+### Added
+- **역할 토큰 층 (5역할 × 5단 = 25개)** — `--u-{primary,info,success,warning,danger}-color{-weakest,-weaker,-weak,,-strong}`.
+  ★**이것이 중요한 이유**: 종전에는 컴포넌트가 팔레트 프리미티브(`--u-blue-600`, `--u-red-700` …)를 **직접** 참조했다. 그래서 브랜드 색을 바꾸려면 소비자가 팔레트 자체를 하이잭하거나(모든 파랑이 함께 바뀐다) 컴포넌트마다 CSS 를 덮어써야 했다. 이제 **`--u-primary-color` 한 줄**이면 버튼·체크박스·라디오·스위치·슬라이더·트리·메뉴·탭·진행바 등이 함께 따라온다.
+  - 단은 **강도 축**이다(weakest → strong). 용도(배경/테두리/텍스트)는 소비처가 정한다 — 단을 속성에 묶으면 *"primary 버튼의 배경은 어느 단인가"* 같은 모순이 생긴다.
+  - `primary` 와 `info` 는 기본 색상이 같지만 **다른 역할**이다. 리브랜딩은 `primary` 만 바꾸고 정보성 파랑은 그대로 둔다.
+  - 실사용이 없는 조합도 **전 그리드를 정의**한다 — 브랜딩 도중 특정 단만 없는 것을 발견하는 비용이 더 크다.
+- **시맨틱 토큰이 역할 층을 경유** — `--u-txt-color-hover`·`-active`, `--u-icon-color-hover`·`-active`, `--u-link-txt-color`, `--u-input-border-color-focus` → `--u-primary-color` 계열. `--u-input-border-color-invalid` → `--u-danger-color`. 값은 동일하며 참조 경로만 바뀌었다 — 역할 하나를 덮으면 시맨틱 층까지 따라온다.
+- **`docs/theming.md` 역할 토큰 절** — 그리드·파급 범위·파생 예제. 어느 시트를 넣을지에 대한 선택 기준도 추가했다(아래 Fixed 참조).
+- **전역 토큰 레퍼런스 `docs/design-tokens.md`** — 역할 25 · 시맨틱 45 · 팔레트 111. `light.css` 에서 생성(`npm run docs:tokens`)하며 테스트가 drift 를 막는다.
+  ★기존 `css-custom-properties.md` 는 **컴포넌트 JSDoc 만** 훑으므로 시트 레벨 토큰이 한 건도 실리지 않았다 — `--u-primary-color` 같은 브랜드 훅이 생성 레퍼런스에서 통째로 빠져 있었고, 소비자는 생성 문서를 먼저 연다. 세 문서가 서로를 가리키는지도 테스트로 확인한다.
+
+### Fixed
+- **문서가 브랜드 오버라이드의 파급 범위를 잘못 적고 있던 문제** — `u-badge`·`u-tag` 가 `--u-primary-color` 를 따른다고 안내했으나, `u-badge` 는 실제로 `color` 속성(장식 축)만 사용해 브랜드 색에 반응하지 않는다. 목록을 나열하는 대신 **규칙**(역할 축은 팔레트를 직접 참조하지 않는다)으로 서술하고 테스트로 강제한다.
+- **낡은 폴백 안내 7건** — `@cssprop` 설명의 *"미지정 시 blue-600"* 은 `--u-primary-color` 가 정의되지 않던 시절의 서술이다.
+
+### Changed
+- 컴포넌트 스타일의 역할 축 팔레트 직참조 **64건 → 0건**. 시각 결과는 **라이트·다크 모두 변경 없다** — 역할 토큰이 종전과 동일한 팔레트 단을 가리키고, 팔레트 값 자체가 이미 시트별로 다르기 때문이다.
+- `var(--u-primary-color, var(--u-blue-600))` 형태의 폴백 체인 **13건 정리** — `--u-primary-color` 가 실제로 정의되면서 폴백 arm 이 죽은 코드가 됐다(두 토큰 모두 같은 시트에서만 정의되므로 손실 없음).
+
+### Unchanged (의도적)
+- **`color` 속성(장식 축)은 그대로다** — `u-tag`·`u-badge`·`u-button`·`u-checkbox`·`u-spinner` 의 `color="purple"` 류는 역할 의미가 없는 **소비자의 색 선택**이므로 팔레트를 직접 읽으며, 브랜드 오버라이드에 **의도적으로 면역**이다. `<u-tag color="green">` 은 리브랜딩 후에도 녹색이다.
+
 ## [1.10.0] - 2026-08-01
 
 ### Added

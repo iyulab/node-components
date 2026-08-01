@@ -19,11 +19,22 @@ import '@iyulab/components/styles/tokens.css';   // light + dark in one file
 ```
 
 Dark mode activates when the document has `theme="dark"`; `tokens.css` scopes it as
-`:root[theme="dark"]`, so both sheets coexist safely. Import the individual sheets
-(`styles/light.css`, `styles/dark.css`) instead if you want only one.
+`:root[theme="dark"]`, so both sheets coexist safely.
 
 Use this when you are **not** calling `Theme.init()` — static pages, SSR, or any screen that
 renders outside an app shell.
+
+#### Which sheet: `tokens.css` or a single sheet?
+
+| Your screen | Import | Why |
+|---|---|---|
+| Follows the user's theme preference | `styles/tokens.css` | Both sheets; `theme="dark"` switches them |
+| **Fixed light design** — the layout hardcodes light panels (a login card on a dark photo, a print view, an embedded widget on a known background) | `styles/light.css` **only** | |
+| Fixed dark design | `styles/dark.css` **only** | |
+
+> ⚠ **A fixed-light screen must not import `tokens.css`.** If the user's OS is dark, the dark
+> sheet wins and you get **dark input fields on a white card** — the layout was never going to
+> follow the theme, but the tokens will. Ship only the sheet your design actually commits to.
 
 ### Option B — `Theme.init()` (runtime)
 
@@ -96,26 +107,100 @@ Components use the tokens internally, so all components automatically respond to
 
 ---
 
-## Custom Themes
+## Role tokens — the branding layer
 
-You can override any token after `Theme.init()`:
+Between the raw palette and the components sits a **role layer**. Components never reference
+`--u-blue-600` for anything that carries meaning; they reference a role. That is what makes a
+one-line brand override reach every control instead of half of them.
 
 ```css
 /* my-theme.css */
 :root {
-  --u-primary-color: #6200EA; /* global brand/accent color */
-  --u-neutral-50: #1A1A2E; /* dark surface */
+  --u-primary-color: #6200EA;          /* brand accent — the usual one-liner */
+  --u-primary-color-weak: #7C3AED;     /* optional: tune the other steps */
+  --u-primary-color-strong: #4C1D95;
 }
 ```
 
-### Primary Color Token (`--u-primary-color`)
+### The grid — 5 roles × 5 steps
 
-Interactive components now derive their accent states from `--u-primary-color`.
+| Role | Meaning | Default hue |
+|---|---|---|
+| `primary` | brand, emphasis, focus, links, checked states | blue |
+| `info` | informational status | blue |
+| `success` | success, completion | green |
+| `warning` | caution | yellow |
+| `danger` | error, risk, validation failure | red |
 
-- A single override updates hover/active/surface/outline accents across major controls.
-- Internally, components compute state colors with `color-mix()` from `--u-primary-color` instead of relying on a fixed palette token.
+Each role has five steps on a single **intensity** axis:
 
-Typical affected components include `u-button`, `u-checkbox`, `u-radio`, `u-switch`, `u-tab-panel`, `u-badge`, and `u-tag`.
+```
+--u-{role}-color-weakest   /* tinted backgrounds, progress tracks */
+--u-{role}-color-weaker    /* borders */
+--u-{role}-color-weak      /* focus rings, links */
+--u-{role}-color           /* solid fills, icons, checked */
+--u-{role}-color-strong    /* text on a tinted background, active */
+```
+
+Steps describe **intensity, not usage** — `--u-primary-color-weakest` is not "the background
+step". A primary button's background is `--u-primary-color`, while an alert's background is the
+weakest step. Binding a step to a property would make that contradiction unrepresentable.
+
+`primary` and `info` share a default hue on purpose: they are different *roles*. Rebranding
+changes `primary` and leaves informational blue where it is.
+
+### What follows a role override
+
+Overriding a role reaches **everything with that semantic**, including the semantic tokens
+layered on top of it:
+
+```
+--u-primary-color  →  --u-txt-color-hover / -active
+                      --u-icon-color-hover / -active
+                      --u-link-txt-color
+                      --u-input-border-color-focus
+--u-danger-color   →  --u-input-border-color-invalid
+```
+
+Rather than listing components here (a list drifts — it was wrong before), the rule is enforced
+in `tests/build/role-token-layer.test.ts`: **no rule outside a `[color=…]` selector may reference
+a palette primitive directly.**
+
+### What does *not* follow — the decorative axis
+
+`u-tag`, `u-badge`, `u-button`, `u-checkbox` and `u-spinner` take a `color` attribute
+(`color="purple"`). Those are **decorative** choices with no role meaning, so they read the
+palette directly and are deliberately **immune** to role overrides. `<u-tag color="green">` stays
+green after you rebrand.
+
+### Deriving your own steps
+
+Role tokens are palette aliases, not computed values — components may use `color-mix()` locally,
+but the sheet does not. If you brand with a single color and want the other steps derived:
+
+```css
+:root {
+  --u-primary-color: #6200EA;
+  --u-primary-color-weak:    color-mix(in srgb, var(--u-primary-color) 80%, white);
+  --u-primary-color-weakest: color-mix(in srgb, var(--u-primary-color) 15%, white);
+  --u-primary-color-strong:  color-mix(in srgb, var(--u-primary-color) 80%, black);
+}
+```
+
+Mechanical mixing loses the hand-tuned lightness curve of the built-in palette, which is why the
+defaults are aliases. For a brand color it is usually the right trade.
+
+---
+
+## Custom Themes
+
+You can override any token after `Theme.init()` — palette primitives included:
+
+```css
+:root {
+  --u-neutral-50: #1A1A2E; /* dark surface */
+}
+```
 
 Or override per-component via CSS custom properties:
 
@@ -125,8 +210,12 @@ u-button {
 }
 ```
 
-Every component hook is listed in **[css-custom-properties.md](css-custom-properties.md)** — generated
-from each component's `@cssprop` JSDoc, so it never drifts from the source.
+Two generated references, both checked against their source by tests:
+
+- **[design-tokens.md](design-tokens.md)** — every global token (role, semantic, palette), generated
+  from `light.css`.
+- **[css-custom-properties.md](css-custom-properties.md)** — every per-component hook, generated from
+  each component's `@cssprop` JSDoc.
 
 ---
 

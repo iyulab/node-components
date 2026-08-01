@@ -27,7 +27,7 @@ export type MenuItemAlign = 'left' | 'center' | 'right';
  * 
  * @event pick - 아이템 선택 시 발생 (하위 메뉴가 없는 경우)
  *
- * @cssprop --menu-item-color - 선택/활성 상태의 기준색 (기본: --u-primary-color, 미지정 시 blue-600)
+ * @cssprop --menu-item-color - 선택/활성 상태의 기준색 (기본: --u-primary-color)
  */
 @customElement('u-menu-item')
 export class UMenuItem extends UElement {

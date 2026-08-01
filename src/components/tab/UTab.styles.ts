@@ -5,16 +5,28 @@ export const styles = css`
     flex-shrink: 0;
     position: relative;
     display: inline-flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 0.5em 0.75em;
     font-size: 0.9em;
     font-weight: 500;
     color: var(--u-txt-color-weak);
     white-space: nowrap;
     user-select: none;
     cursor: pointer;
+
+    --tab-padding-block: 0.5em;
+    --tab-padding-inline: 0.75em;
   }
+
+  /* 여백은 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */
+  .base {
+    box-sizing: border-box;
+    width: 100%;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    padding: var(--tab-padding-block) var(--tab-padding-inline);
+    border-radius: inherit;
+  }
+
   :host(:hover:not([disabled])) {
     color: var(--u-txt-color);
   }

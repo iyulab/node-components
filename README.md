@@ -111,7 +111,9 @@ Theme.set('system');
 | [docs/architecture.md](./docs/architecture.md) | 패키지 구조 및 클래스 계층 |
 | [docs/guidelines.md](./docs/guidelines.md) | 컴포넌트 개발 가이드라인 |
 | [docs/events.md](./docs/events.md) | 이벤트 시스템 카탈로그 |
-| [docs/theming.md](./docs/theming.md) | 테마 및 CSS 변수 |
+| [docs/theming.md](./docs/theming.md) | 테마 · 역할 토큰 · 브랜딩 |
+| [docs/design-tokens.md](./docs/design-tokens.md) | 전역 토큰 전체 목록 (생성) |
+| [docs/css-custom-properties.md](./docs/css-custom-properties.md) | 컴포넌트별 CSS 훅 (생성) |
 | [docs/form-controls.md](./docs/form-controls.md) | 폼 연동 및 검증 API |
 | [docs/icons.md](./docs/icons.md) | 아이콘 등록 및 사용 |
 | [docs/native-event.md](./docs/native-event.md) | 컴포넌트가 다루는 네이티브 DOM 이벤트 목록 |

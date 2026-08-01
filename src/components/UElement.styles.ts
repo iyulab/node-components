@@ -17,11 +17,11 @@ export const styles = css`
 
   /* Focus Styles */
   :host(:focus-visible) {
-    outline: 2px solid var(--u-blue-500);
+    outline: 2px solid var(--u-primary-color-weak);
     outline-offset: 2px;
   }
   :focus-visible {
-    outline: 2px solid var(--u-blue-500);
+    outline: 2px solid var(--u-primary-color-weak);
     outline-offset: 2px;
   }
 

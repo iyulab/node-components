@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --option-color: var(--u-primary-color, var(--u-blue-600));
+    --option-color: var(--u-primary-color);
     --option-color-interactive: inherit;
     --option-border-color-interactive: var(--u-border-color-hover);
     --option-background-color-interactive: var(--u-bg-color-hover);
@@ -18,12 +18,23 @@ export const styles = css`
 
   :host {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 0.25em 0.5em;
     transition: background-color 0.15s ease, color 0.15s ease;
     user-select: none;
     cursor: pointer;
+
+    --option-padding-block: 0.25em;
+    --option-padding-inline: 0.5em;
+  }
+
+  /* 여백은 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */
+  .base {
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: var(--option-padding-block) var(--option-padding-inline);
+    border-radius: inherit;
   }
   :host(:focus-visible) {
     outline: none;

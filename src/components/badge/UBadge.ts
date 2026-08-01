@@ -18,6 +18,8 @@ export type BadgeAnchor =
  * @slot prefix - 배지 앞에 배치할 컨텐츠
  * @slot - 배지의 주요 컨텐츠 (텍스트, 아이콘)
  * @slot suffix - 배지 뒤에 배치할 컨텐츠
+ * @cssprop --badge-padding-block - 세로 여백 (`variant="dot"` 은 0)
+ * @cssprop --badge-padding-inline - 가로 여백 (`variant="dot"` 은 0)
  */
 @customElement('u-badge')
 export class UBadge extends UElement {
@@ -35,9 +37,11 @@ export class UBadge extends UElement {
       return nothing;
 
     return html`
-      <slot name="prefix"></slot>
-      <slot></slot>
-      <slot name="suffix"></slot>
+      <div class="base" part="base">
+        <slot name="prefix"></slot>
+        <slot></slot>
+        <slot name="suffix"></slot>
+      </div>
     `;
   }
 }
