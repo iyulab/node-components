@@ -12,6 +12,11 @@ import { styles } from './UElement.styles.js';
  * 사라진다. CSS 는 이때 아무 신호도 내지 않으므로, 소비자는 자기 CSS 를 의심하며 며칠을 쓴다.
  * 실제로 운영 화면이 무스타일로 렌더된 사례가 있었다 — 토큰 주입이 `Theme.init()` 호출
  * (셸이 대신 부른다)에만 딸려 있어서, 셸 밖에서 렌더되는 로그인 화면만 조용히 깨졌다.
+ *
+ * ★리터럴 폴백(1.14.0)이 그 **소멸**은 막는다. 그래도 경고는 유지한다 — 폴백은 라이트
+ * 시트 값을 구워 넣은 것이라 **다크 테마가 라이트 색으로 렌더되고**, 테마 변수 오버라이드도
+ * 먹지 않는다. 폴백은 *"조용히 사라지지 않게"* 하는 안전망이지 *"시트 없이 써도 된다"* 가
+ * 아니다. 둘을 섞으면 이 경고가 고발하는 무증상 열화가 형태만 바꿔 돌아온다.
  */
 let tokenCheckDone = false;
 function warnIfTokensMissing(): void {
@@ -21,8 +26,8 @@ function warnIfTokensMissing(): void {
     .getPropertyValue('--u-blue-600').trim();
   if (probe) return;
   console.warn(
-    '[@iyulab/components] 디자인 토큰 시트가 문서에 없습니다 — 컴포넌트의 테두리·배경·색이 ' +
-    '무효가 됩니다.\n' +
+    '[@iyulab/components] 디자인 토큰 시트가 문서에 없습니다 — 컴포넌트가 내장 폴백(라이트 ' +
+    '기준 고정값)으로 렌더됩니다. 다크 테마와 테마 변수 오버라이드가 적용되지 않습니다.\n' +
     "  정적 CSS:  import '@iyulab/components/styles/tokens.css'\n" +
     '  또는 런타임: Theme.init()\n' +
     '  (@iyulab/modern-app 셸은 Theme.init() 을 대신 호출합니다. 셸 밖에서 렌더되는 화면' +
