@@ -30,6 +30,9 @@ export type AlertVariant = "solid" | "filled" | "outlined" | "glass";
  * @cssprop --alert-background-color - 배경색 (status에 따라 자동 설정, variant="outlined"는 transparent)
  * @cssprop --alert-border-color - 테두리 색상 (status에 따라 자동 설정, variant="filled"는 transparent)
  * @cssprop --alert-icon-color - 아이콘 색상 (status에 따라 자동 설정)
+ * @cssprop --alert-padding-block - 세로 여백
+ * @cssprop --alert-padding-inline - 가로 여백
+ * @cssprop --alert-border-width - 테두리 두께 (variant 이 정한다)
  *
  * @event show - Alert가 표시되기 직전 발생 (취소 가능)
  * @event hide - Alert가 닫히기 직전 발생 (취소 가능)

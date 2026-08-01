@@ -10,6 +10,7 @@ import '../../src/components/tab/UTab.js';
 import '../../src/components/option/UOption.js';
 import '../../src/components/menu/UMenu.js';
 import '../../src/components/tooltip/UTooltip.js';
+import '../../src/components/alert/UAlert.js';
 
 /**
  * 컴포넌트 기본 레이아웃이 소비 앱의 CSS 리셋에 지워지면 안 된다.
@@ -112,6 +113,50 @@ describe(':host 레이아웃 vs 문서 CSS 리셋', () => {
         .toBeGreaterThan(0);
     });
   }
+
+  it('u-alert · u-card 의 테두리가 내부 요소로 이전된 뒤에도 유지된다', async () => {
+    // 테두리형은 `part="base"` 가 아니라 각자의 최외곽 요소가 진다
+    // (u-alert 는 기존 .container 를 재사용 — 새 part 를 만들 이유가 없다).
+    for (const [tag, part, variant] of [
+      ['u-alert', 'container', 'outlined'],
+      ['u-card', 'base', null],
+    ] as const) {
+      const el = document.createElement(tag) as HTMLElement & { updateComplete: Promise<unknown> };
+      if (variant) el.setAttribute('variant', variant);
+      document.body.appendChild(el);
+      await el.updateComplete;
+
+      expect(getComputedStyle(el).borderTopWidth, `${tag}: 호스트 테두리는 리셋에 지워지는 게 정상`)
+        .toBe('0px');
+      const inner = el.shadowRoot!.querySelector<HTMLElement>(`[part="${part}"]`)!;
+      expect(inner, `${tag}: part="${part}" 가 없다`).not.toBeNull();
+      const cs = getComputedStyle(inner);
+      expect(cs.borderTopWidth, `${tag}: 내부 요소가 테두리를 그려야 한다`).toBe('1px');
+      expect(cs.borderTopColor, `${tag}: 테두리 색이 전달돼야 한다`).not.toBe('rgba(0, 0, 0, 0)');
+      el.remove();
+    }
+  });
+
+  it('u-card[borderless] 는 테두리가 제거된다', async () => {
+    const el = document.createElement('u-card') as HTMLElement & { updateComplete: Promise<unknown> };
+    el.setAttribute('borderless', '');
+    document.body.appendChild(el);
+    await el.updateComplete;
+    const inner = el.shadowRoot!.querySelector<HTMLElement>('[part="base"]')!;
+    expect(getComputedStyle(inner).borderTopWidth).toBe('0px');
+  });
+
+  it('u-alert[variant="filled"] 의 테두리는 투명하게 유지된다', async () => {
+    // 네거티브 컨트롤 — filled 의 1px 테두리는 레이아웃 정합용이라 색이 도달하면 안 된다.
+    const el = document.createElement('u-alert') as HTMLElement & { updateComplete: Promise<unknown> };
+    el.setAttribute('variant', 'filled');
+    el.setAttribute('status', 'error');
+    document.body.appendChild(el);
+    await el.updateComplete;
+    const cs = getComputedStyle(el.shadowRoot!.querySelector<HTMLElement>('[part="container"]')!);
+    expect(cs.borderTopWidth, 'filled 도 1px 을 차지해야 한다(레이아웃 정합)').toBe('1px');
+    expect(cs.borderTopColor, 'filled 의 테두리는 투명해야 한다').toBe('rgba(0, 0, 0, 0)');
+  });
 
   it('u-menu 의 테두리가 내부 래퍼로 이전된 뒤에도 유지되고, borderless 는 제거된다', async () => {
     const make = async (borderless: boolean) => {

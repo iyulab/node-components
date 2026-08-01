@@ -3,12 +3,26 @@ import { css } from "lit";
 export const styles = css`
   :host {
     display: flex;
-    border: 1px solid var(--u-border-color);
     border-radius: 8px;
     background-color: var(--u-panel-bg-color);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+
+    --card-border-width: 1px;
+    --card-border-color: var(--u-border-color);
   }
+
+  /* 테두리는 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */
+  .base {
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    flex-direction: inherit;
+    border: var(--card-border-width) solid var(--card-border-color);
+    border-radius: inherit;
+    overflow: hidden;
+  }
+
   :host([orientation="vertical"]) {
     flex-direction: column;
   }
@@ -16,7 +30,7 @@ export const styles = css`
     flex-direction: row;
   }
   :host([borderless]) {
-    border: none;
+    --card-border-width: 0;
   }
   :host([shadowless]) {
     box-shadow: none;

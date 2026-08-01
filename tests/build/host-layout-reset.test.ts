@@ -28,10 +28,10 @@ const RESET_VULNERABLE = /^\s*(padding|margin|border)(-(top|right|bottom|left|in
  * 영향을 주는 구조 변경이라 사람 판단 대상이며, Pending Human Decisions 에 있다.
  */
 const KNOWN_GAPS = new Set([
-  // 테두리형 — 내부 요소 이전은 padding 형과 같으나, 배경/반경과의 상호작용을 별도 확인해야 한다.
-  'UAlert', 'UCard',
   // 여백형 — `:host` 의 margin 은 **형제 간 간격**이라 내부 요소로 옮기면 의미가 달라진다.
-  // (내부 margin 은 호스트 박스 안에서 상쇄되어 형제를 밀어내지 못한다.) 별도 설계 필요.
+  // (내부 margin 은 호스트 박스 안에서 상쇄되어 형제를 밀어내지 못한다.)
+  // 정석은 간격을 부모 컨테이너의 `gap` 으로 이관하는 것이나, `u-divider` 의 독립 사용을
+  // 깨뜨리므로 사람 판단 대상이다 — ROADMAP §C.
   'UDivider',
 ]);
 

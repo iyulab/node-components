@@ -61,32 +61,42 @@ export const styles = css`
 
   /* === Variant Styles === */
   :host([variant="solid"]) {
-    border: 1px solid var(--alert-border-color);
+    --alert-border-width: 1px;
     background-color: var(--alert-background-color);
   }
   :host([variant="filled"]) {
-    border: 1px solid transparent;
+    --alert-border-width: 1px;
     background-color: var(--alert-background-color);
   }
+  /* filled 의 테두리는 레이아웃 정합용이라 항상 투명하다 — 색 훅이 도달하면 안 된다. */
+  :host([variant="filled"]) .container {
+    border-color: transparent;
+  }
   :host([variant="outlined"]) {
-    border: 1px solid var(--alert-border-color);
+    --alert-border-width: 1px;
     background-color: transparent;
   }
   /* From https://css.glass */
   :host([variant="glass"]) {
+    --alert-border-width: 1px;
+    --alert-border-color: rgba(255, 255, 255, 0.3);
     background: rgba(255, 255, 255, 0.2);
     border-radius: 16px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
+  /* 여백/테두리는 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */
   .container {
+    box-sizing: border-box;
+    width: 100%;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: 12px 16px;
+    padding: var(--alert-padding-block, 12px) var(--alert-padding-inline, 16px);
+    border: var(--alert-border-width, 0) solid var(--alert-border-color);
+    border-radius: inherit;
   }
 
   .header {

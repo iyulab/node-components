@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 26개 · 프로퍼티 115개**
+**컴포넌트 27개 · 프로퍼티 120개**
 
 ## `<u-alert>`
 
@@ -26,6 +26,9 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--alert-background-color` | 배경색 (status에 따라 자동 설정, variant="outlined"는 transparent) |
 | `--alert-border-color` | 테두리 색상 (status에 따라 자동 설정, variant="filled"는 transparent) |
 | `--alert-icon-color` | 아이콘 색상 (status에 따라 자동 설정) |
+| `--alert-padding-block` | 세로 여백 |
+| `--alert-padding-inline` | 가로 여백 |
+| `--alert-border-width` | 테두리 두께 (variant 이 정한다) |
 
 ## `<u-badge>`
 
@@ -53,6 +56,13 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--btn-color-border-active` | 테두리 active (기본: 75%) |
 | `--btn-color-outline-hover` | outline 배경 hover (기본: 6%) |
 | `--btn-color-outline-active` | outline 배경 active (기본: 12%) |
+
+## `<u-card>`
+
+| 프로퍼티 | 설명 |
+|---|---|
+| `--card-border-width` | 테두리 두께 (`borderless` 는 0) |
+| `--card-border-color` | 테두리 색 |
 
 ## `<u-checkbox>`
 

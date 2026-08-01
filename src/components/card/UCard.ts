@@ -19,6 +19,8 @@ export type CardOrientation = 'vertical' | 'horizontal';
  * @csspart header - 헤더 영역 컨테이너
  * @csspart body - 본문 영역 컨테이너
  * @csspart footer - 푸터 영역 컨테이너
+ * @cssprop --card-border-width - 테두리 두께 (`borderless` 는 0)
+ * @cssprop --card-border-color - 테두리 색
  */
 @customElement('u-card')
 export class UCard extends UElement {
@@ -35,6 +37,7 @@ export class UCard extends UElement {
 
   render() {
     return html`
+      <div class="base" part="base">
       <div class="media" part="media">
         <slot name="media" @slotchange=${this.handleSlotChange}></slot>
       </div>
@@ -48,6 +51,7 @@ export class UCard extends UElement {
         <footer class="footer" part="footer">
           <slot name="footer" @slotchange=${this.handleSlotChange}></slot>
         </footer>
+      </div>
       </div>
     `;
   }

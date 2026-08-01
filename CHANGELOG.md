@@ -4,7 +4,7 @@
 
 ### ⚠ 업그레이드 전 확인 (호스트 직접 오버라이드)
 
-`u-tag` · `u-badge` · `u-tab` · `u-option` · `u-menu` · `u-tooltip` 의 **여백·테두리가 섀도 내부 요소로 이전**됐다. 1.10.0 의 `u-button` 과 같은 변경이며 이유도 같다 — `:host` 에 둔 여백은 소비 앱의 CSS 리셋(`* { padding:0; border:0 }`, Tailwind preflight 포함)에 **에러 없이 지워진다**.
+`u-tag` · `u-badge` · `u-tab` · `u-option` · `u-menu` · `u-tooltip` · `u-alert` · `u-card` 의 **여백·테두리가 섀도 내부 요소로 이전**됐다. 1.10.0 의 `u-button` 과 같은 변경이며 이유도 같다 — `:host` 에 둔 여백은 소비 앱의 CSS 리셋(`* { padding:0; border:0 }`, Tailwind preflight 포함)에 **에러 없이 지워진다**.
 
 호스트에 **직접** 여백/테두리를 주고 있었다면 조용히 무효가 된다:
 
@@ -19,14 +19,13 @@ u-tag { --tag-padding-block: 4px; --tag-padding-inline: 10px; }
 `::part()` 오버라이드는 **종전대로 동작한다.** 각 컴포넌트에 `part="base"` 래퍼가 추가됐다(기존 part 는 변경 없음).
 
 ### Added
-- 여백/테두리 훅 14개 — `--tag-padding-block`·`-inline`·`--tag-gap` · `--badge-padding-block`·`-inline` · `--tab-padding-block`·`-inline` · `--option-padding-block`·`-inline` · `--menu-padding`·`--menu-border-width`·`--menu-border-color` · `--tooltip-padding-block`·`-inline`
-- `part="base"` — 6개 컴포넌트의 레이아웃 래퍼
+- 여백/테두리 훅 19개 — `--tag-padding-block`·`-inline`·`--tag-gap` · `--badge-padding-block`·`-inline` · `--tab-padding-block`·`-inline` · `--option-padding-block`·`-inline` · `--menu-padding`·`--menu-border-width`·`--menu-border-color` · `--tooltip-padding-block`·`-inline` · `--alert-padding-block`·`-inline`·`--alert-border-width` · `--card-border-width`·`--card-border-color`
+- `part="base"` — 레이아웃 래퍼 (`u-tag`·`u-badge`·`u-tab`·`u-option`·`u-menu`·`u-tooltip`·`u-card`). `u-alert` 는 기존 `::part(container)` 가 그 역할을 맡으므로 새 part 를 만들지 않았다.
 
 ### Fixed
-- **소비 앱 CSS 리셋에 컴포넌트 여백이 지워지던 문제** (6개 컴포넌트) — 호스트 요소에 대해서는 문서 작성자 스타일이 섀도의 `:host` 규칙을 이긴다. 컴포넌트는 정상 동작하고 작아지기만 하므로 소비자는 *"업스트림이 못생겼다"* 로 읽고 각자 다시 칠했다.
+- **소비 앱 CSS 리셋에 컴포넌트 여백·테두리가 지워지던 문제** (8개 컴포넌트) — 호스트 요소에 대해서는 문서 작성자 스타일이 섀도의 `:host` 규칙을 이긴다. 컴포넌트는 정상 동작하고 작아지기만 하므로 소비자는 *"업스트림이 못생겼다"* 로 읽고 각자 다시 칠했다.
 
-### 미해소 (남은 3개)
-- `u-alert`·`u-card` — 테두리형. 배경/반경과의 상호작용을 별도 확인해야 한다.
+### 미해소 (1개)
 - `u-divider` — `:host` 의 `margin` 은 **형제 간 간격**이라 내부 요소로 옮기면 의미가 달라진다(내부 margin 은 호스트 박스 안에서 상쇄되어 형제를 밀어내지 못한다). 별도 설계가 필요하다.
 
 ## [1.11.0] - 2026-08-01
