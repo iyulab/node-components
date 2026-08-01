@@ -126,7 +126,11 @@ export class Theme {
   }
 
   /**
-   * 현재 문서에 적용된 테마를 가져옵니다.
+   * 사용자가 **선택한** 테마를 가져옵니다 — `'system'` 을 포함합니다.
+   *
+   * ⚠**이 값을 밝기 판단에 그대로 쓰지 마십시오.** `'system'` 은 실제로 적용된 색이
+   * 아니라 *"OS 를 따른다"* 는 선호이며, 기본값이기도 합니다. 스타일이나 서드파티
+   * 에디터 테마를 고를 때는 {@link resolved} 를 쓰십시오.
    */
   public static get(): ThemeType | undefined {
     const attr = document.documentElement.getAttribute('data-theme');
@@ -136,6 +140,30 @@ export class Theme {
       case 'dark': return 'dark';
       default: return undefined;
     }
+  }
+
+  /**
+   * 문서에 **실제로 적용된** 테마를 가져옵니다 — 항상 `'light'` 또는 `'dark'` 입니다.
+   *
+   * `get()` 과 갈리는 지점은 `'system'` 일 때입니다. 선호가 system 이면 실효 테마는
+   * OS 설정에 따라 갈리는데, `get()` 은 그것을 알려주지 못합니다. 그래서 소비자가
+   * `get() === 'dark'` 로 분기하면 **system + OS 다크에서 밝은 화면을 그리게 됩니다**
+   * — 기본 설정이 system 이라 이 경로가 가장 흔합니다.
+   *
+   * 판정 순서: `<html theme>`(항상 실효값이 적힘) → 명시 선호 → `prefers-color-scheme`.
+   */
+  public static resolved(): 'light' | 'dark' {
+    const applied = document.documentElement.getAttribute('theme');
+    if (applied === 'dark' || applied === 'light') return applied;
+
+    const preference = this.get();
+    if (preference === 'dark' || preference === 'light') return preference;
+
+    // Theme.init() 이 아직 돌지 않았거나 SSR 후 하이드레이션 전인 경우.
+    return typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
   }
 
   /**
