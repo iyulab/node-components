@@ -27,13 +27,15 @@ const RESET_VULNERABLE = /^\s*(padding|margin|border)(-(top|right|bottom|left|in
  * 슬롯되므로 기존 내부 요소만으로는 전체를 감쌀 수 없다. 래퍼 도입은 `::part` 소비자에게
  * 영향을 주는 구조 변경이라 사람 판단 대상이며, Pending Human Decisions 에 있다.
  */
-const KNOWN_GAPS = new Set([
-  // 여백형 — `:host` 의 margin 은 **형제 간 간격**이라 내부 요소로 옮기면 의미가 달라진다.
-  // (내부 margin 은 호스트 박스 안에서 상쇄되어 형제를 밀어내지 못한다.)
-  // 정석은 간격을 부모 컨테이너의 `gap` 으로 이관하는 것이나, `u-divider` 의 독립 사용을
-  // 깨뜨리므로 사람 판단 대상이다 — ROADMAP §C.
-  'UDivider',
-]);
+// ✅ 비어 있다 — 9개 컴포넌트 전부 리셋 내성을 갖췄다.
+//
+// ★ `UDivider` 가 마지막까지 남았던 이유와, 그 근거가 왜 절반만 맞았는지는 기록해 둔다.
+//   *"`:host` 의 margin 은 형제 간 간격이라 내부로 옮기면 상쇄된다"* 는 **margin 을 옮길
+//   때만** 참이다. 내부 요소의 **padding** 으로 옮기면 호스트 박스 자체가 커지므로 형제는
+//   종전대로 밀려나고, padding 은 섀도 내부라 문서 리셋이 닿지 못한다.
+//   실제 렌더 측정으로 증명했다 — `tests/browser/divider-spacing-reset.browser.test.ts`.
+//   ⇒ 해법이 없다고 적힌 항목을 다시 열어 볼 값어치가 있었다.
+const KNOWN_GAPS = new Set<string>([]);
 
 function hostLayoutDeclarations(css: string): string[] {
   const found: string[] = [];

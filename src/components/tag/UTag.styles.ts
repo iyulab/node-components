@@ -116,7 +116,7 @@ export const styles = css`
 
     --tag-padding-block: 0.25em;
     --tag-padding-inline: 0.5em;
-    --tag-gap: 4px;
+    --tag-gap: var(--u-space-xs, 6px);
     color: var(--tag-color);
     background-color: var(--tag-bg-color);
     line-height: 1.5em;
@@ -140,13 +140,13 @@ export const styles = css`
     border-radius: var(--u-radius-pill);
   }
 
-  /* === Slots === */
-  ::slotted([slot="prefix"]) {
-    margin-right: 0.15em;
-  }
-  ::slotted([slot="suffix"]) {
-    margin-left: 0.15em;
-  }
+  /*
+   * === Slots ===
+   * 간격은 .base 의 gap 하나가 진다.
+   * 종전에는 gap 과 슬롯 margin(0.15em, 약 1.8px)이 **같은 자리에 겹쳐** 있어,
+   * 소비자가 --tag-gap 을 0 으로 줘도 1.8px 이 남았고 그 값에는 훅이 없었다.
+   * --tag-gap 기본값을 합계(4 + 1.8 = 약 6px)로 올려 흡수했다 — 렌더 간격은 사실상 그대로다.
+   */
 
   /* === Content === */
   .content {

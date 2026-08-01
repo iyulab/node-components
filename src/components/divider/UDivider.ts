@@ -33,11 +33,13 @@ export class UDivider extends UElement {
 
   protected render() {
     return html`
-      <span class="line" part="line-start"></span>
-      <span class="label" part="label">
-        <slot @slotchange=${this.handleSlotChange}></slot>
-      </span>
-      <span class="line" part="line-end"></span>
+      <div class="base" part="base">
+        <span class="line" part="line-start"></span>
+        <span class="label" part="label">
+          <slot @slotchange=${this.handleSlotChange}></slot>
+        </span>
+        <span class="line" part="line-end"></span>
+      </div>
     `;
   }
 
