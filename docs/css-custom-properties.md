@@ -176,8 +176,8 @@ u-button.cta { --btn-color: #0f9d58; }
 |---|---|
 | `--skeleton-width` | 스켈레톤의 너비 (기본값: 100%) |
 | `--skeleton-height` | 스켈레톤의 높이 (기본값: 1em) |
-| `--skeleton-color` | 스켈레톤의 기본 색상 (기본값: var(--u-neutral-200)) |
-| `--skeleton-shimmer-color` | shimmer 효과의 색상 (기본값: var(--u-neutral-100)) |
+| `--skeleton-color` | 스켈레톤의 기본 색상 (기본값: var(--u-neutral-200, #EEEEEE)) |
+| `--skeleton-shimmer-color` | shimmer 효과의 색상 (기본값: var(--u-neutral-100, #F5F5F5)) |
 
 ## `<u-slider>`
 

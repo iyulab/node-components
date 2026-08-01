@@ -14,8 +14,8 @@ export type SkeletonEffect = 'none' | 'pulse' | 'shimmer';
  * 
  * @cssprop --skeleton-width - 스켈레톤의 너비 (기본값: 100%)
  * @cssprop --skeleton-height - 스켈레톤의 높이 (기본값: 1em)
- * @cssprop --skeleton-color - 스켈레톤의 기본 색상 (기본값: var(--u-neutral-200))
- * @cssprop --skeleton-shimmer-color - shimmer 효과의 색상 (기본값: var(--u-neutral-100))
+ * @cssprop --skeleton-color - 스켈레톤의 기본 색상 (기본값: var(--u-neutral-200, #EEEEEE))
+ * @cssprop --skeleton-shimmer-color - shimmer 효과의 색상 (기본값: var(--u-neutral-100, #F5F5F5))
  */
 @customElement('u-skeleton')
 export class USkeleton extends UElement {

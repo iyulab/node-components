@@ -3,13 +3,13 @@ import { css } from "lit";
 export const styles = css`
   :host {
     display: flex;
-    border-radius: var(--u-radius-xl);
-    background-color: var(--u-panel-bg-color);
+    border-radius: var(--u-radius-xl, 8px);
+    background-color: var(--u-panel-bg-color, #FFFFFF);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 
     --card-border-width: 1px;
-    --card-border-color: var(--u-border-color);
+    --card-border-color: var(--u-border-color, #E0E0E0);
   }
 
   /* 테두리는 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */
@@ -63,7 +63,7 @@ export const styles = css`
   .header {
     display: none;
     padding: var(--u-space-lg, 16px);
-    border-bottom: 1px solid var(--u-border-color);
+    border-bottom: 1px solid var(--u-border-color, #E0E0E0);
   }
   .header.has-content {
     display: block;
@@ -81,7 +81,7 @@ export const styles = css`
   .footer {
     display: none;
     padding: var(--u-space-lg, 16px);
-    border-top: 1px solid var(--u-border-color);
+    border-top: 1px solid var(--u-border-color, #E0E0E0);
   }
   .footer.has-content {
     display: block;

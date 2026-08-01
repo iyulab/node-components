@@ -3,7 +3,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     display: inline-flex;
-    color: var(--u-icon-color);
+    color: var(--u-icon-color, #616161);
     font-size: 20px;
   }
 
@@ -11,7 +11,7 @@ export const styles = css`
     color: #fff;
   }
   :host([variant="link"]) {
-    color: var(--u-primary-color-weak);
+    color: var(--u-primary-color-weak, #2196F3);
   }
 
   u-button {

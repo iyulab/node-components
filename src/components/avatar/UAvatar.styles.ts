@@ -9,24 +9,24 @@ export const styles = css`
     height: 2.5em;
     font-family: var(--u-font-base);
     font-weight: 600;
-    color: var(--u-neutral-0);
-    background-color: var(--u-neutral-500);
+    color: var(--u-neutral-0, #FFFFFF);
+    background-color: var(--u-neutral-500, #9E9E9E);
     vertical-align: middle;
     overflow: hidden;
     user-select: none;
   }
 
   :host([shape="circle"]) {
-    border-radius: var(--u-radius-circle);
+    border-radius: var(--u-radius-circle, 50%);
   }
   :host([shape="square"]) {
-    border-radius: var(--u-radius-none);
+    border-radius: var(--u-radius-none, 0);
   }
   :host([shape="rounded"]) {
     border-radius: 0.375em;
   }
   :host([outline]) {
-    box-shadow: 0 0 0 0.125em var(--u-border-color);
+    box-shadow: 0 0 0 0.125em var(--u-border-color, #E0E0E0);
   }
 
   img {

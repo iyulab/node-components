@@ -3,9 +3,9 @@ import { css } from "lit";
 export const styles = css`
   :host {
     --splitter-size: 4px;
-    --splitter-color: var(--u-neutral-200);
-    --splitter-color-hover: var(--u-primary-color-weaker);
-    --splitter-color-active: var(--u-primary-color-weak);
+    --splitter-color: var(--u-neutral-200, #EEEEEE);
+    --splitter-color-hover: var(--u-primary-color-weaker, #64B5F6);
+    --splitter-color-active: var(--u-primary-color-weak, #2196F3);
   }
 
   :host {

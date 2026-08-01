@@ -3,7 +3,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     --tree-item-depth: 0;
-    --tree-item-color: var(--u-primary-color);
+    --tree-item-color: var(--u-primary-color, #1E88E5);
   }
 
   :host {
@@ -33,12 +33,12 @@ export const styles = css`
   }
   :host(:not([disabled])[trigger="item"]) .header:hover,
   :host(:not([disabled])[trigger="item"]:focus-visible) .header {
-    background-color: var(--u-bg-color-hover);
+    background-color: var(--u-bg-color-hover, #F5F5F5);
   }
   .header[selected] {
     color: color-mix(in srgb, var(--tree-item-color) 85%, black);
     font-weight: 600;
-    background-color: color-mix(in srgb, var(--tree-item-color) 15%, var(--u-bg-color));
+    background-color: color-mix(in srgb, var(--tree-item-color) 15%, var(--u-bg-color, #FFFFFF));
   }
 
   ::slotted([slot="prefix"]) {
@@ -67,14 +67,14 @@ export const styles = css`
     justify-content: center;
     width: 18px;
     height: 18px;
-    border-radius: var(--u-radius-sm);
+    border-radius: var(--u-radius-sm, 3px);
   }
   .prefix-toggler u-icon {
     font-size: 12px;
   }
   :host(:not([disabled])[trigger="icon"]) .prefix-toggler:hover,
   :host(:not([disabled])[trigger="icon"]:focus-visible) .prefix-toggler {
-    background-color: var(--u-bg-color-hover);
+    background-color: var(--u-bg-color-hover, #F5F5F5);
   }
 
   /* ── checkbox ── */
@@ -86,8 +86,8 @@ export const styles = css`
     justify-content: center;
     width: 16px;
     height: 16px;
-    border-radius: var(--u-radius-sm);
-    border: 1.5px solid var(--u-input-border-color);
+    border-radius: var(--u-radius-sm, 3px);
+    border: 1.5px solid var(--u-input-border-color, #E0E0E0);
     background-color: transparent;
     transition: background-color 0.15s ease, border-color 0.15s ease;
     cursor: pointer;

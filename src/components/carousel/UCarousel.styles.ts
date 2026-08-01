@@ -58,17 +58,17 @@ export const styles = css`
     transform: translateY(-50%);
     padding: var(--u-space-sm, 8px);
     font-size: 20px;
-    color: var(--u-neutral-900);
-    background-color: var(--u-neutral-100);
+    color: var(--u-neutral-900, #212121);
+    background-color: var(--u-neutral-100, #F5F5F5);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
   .nav-button:hover {
-    background-color: var(--u-neutral-200);
+    background-color: var(--u-neutral-200, #EEEEEE);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     transform: translateY(-50%) scale(1.1);
   }
   .nav-button:active {
-    background-color: var(--u-neutral-300);
+    background-color: var(--u-neutral-300, #E0E0E0);
     transform: translateY(-50%) scale(0.95);
   }
 
@@ -94,17 +94,17 @@ export const styles = css`
     height: 10px;
     padding: 0;
     border: none;
-    border-radius: var(--u-radius-circle);
-    background-color: var(--u-neutral-400);
+    border-radius: var(--u-radius-circle, 50%);
+    background-color: var(--u-neutral-400, #BDBDBD);
     cursor: pointer;
     transition: all 0.2s ease;
   }
   .dot:hover {
-    background-color: var(--u-neutral-200);
+    background-color: var(--u-neutral-200, #EEEEEE);
   }
   .dot[active] {
     width: 24px;
     border-radius: 5px;
-    background-color: var(--u-neutral-100);
+    background-color: var(--u-neutral-100, #F5F5F5);
   }
 `;

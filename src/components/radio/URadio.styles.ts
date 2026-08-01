@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --radio-color: var(--u-primary-color);
+    --radio-color: var(--u-primary-color, #1E88E5);
     --radio-color-active: color-mix(in srgb, var(--radio-color) 85%, black);
   }
 
@@ -12,7 +12,7 @@ export const styles = css`
     gap: 0.5em;
     font-size: inherit;
     font-family: var(--u-font-base);
-    color: var(--u-txt-color);
+    color: var(--u-txt-color, #212121);
   }
   :host([disabled]) {
     opacity: 0.6;
@@ -34,11 +34,11 @@ export const styles = css`
   }
   :host([type="button"]) .container {
     gap: 0;
-    border: 1px solid var(--u-neutral-300);
+    border: 1px solid var(--u-neutral-300, #E0E0E0);
     border-radius: 0.35em;
   }
   :host([invalid]) .container {
-    border-color: var(--u-danger-color);
+    border-color: var(--u-danger-color, #E53935);
   }
 
   /* Type: default */
@@ -94,7 +94,7 @@ export const styles = css`
     border-radius: 0 0.35em 0.35em 0;
   }
   :host([type="button"][orientation="horizontal"]) ::slotted(u-option:not(:last-child)) {
-    border-right: 1px solid var(--u-neutral-300);
+    border-right: 1px solid var(--u-neutral-300, #E0E0E0);
   }
 
   /* === Button - Vertical 배치 === */
@@ -109,6 +109,6 @@ export const styles = css`
     border-radius: 0 0 0.35em 0.35em;
   }
   :host([type="button"][orientation="vertical"]) ::slotted(u-option:not(:last-child)) {
-    border-bottom: 1px solid var(--u-neutral-300);
+    border-bottom: 1px solid var(--u-neutral-300, #E0E0E0);
   }
 `;

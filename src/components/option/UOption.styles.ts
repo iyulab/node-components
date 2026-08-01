@@ -2,18 +2,18 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --option-color: var(--u-primary-color);
+    --option-color: var(--u-primary-color, #1E88E5);
     --option-color-interactive: inherit;
-    --option-border-color-interactive: var(--u-border-color-hover);
-    --option-background-color-interactive: var(--u-bg-color-hover);
+    --option-border-color-interactive: var(--u-border-color-hover, #BDBDBD);
+    --option-background-color-interactive: var(--u-bg-color-hover, #F5F5F5);
 
     --option-color-active: inherit;
     --option-border-color-active: var(--option-color);
-    --option-background-color-active: color-mix(in srgb, var(--option-color) 15%, var(--u-bg-color));
+    --option-background-color-active: color-mix(in srgb, var(--option-color) 15%, var(--u-bg-color, #FFFFFF));
 
     --option-color-active-interactive: inherit;
     --option-border-color-active-interactive: var(--option-color);
-    --option-background-color-active-interactive: color-mix(in srgb, var(--option-color) 25%, var(--u-bg-color));
+    --option-background-color-active-interactive: color-mix(in srgb, var(--option-color) 25%, var(--u-bg-color, #FFFFFF));
   }
 
   :host {
@@ -99,9 +99,9 @@ export const styles = css`
     justify-content: center;
     width: 1.25em;
     height: 1.25em;
-    border: 2px solid var(--u-neutral-400);
-    border-radius: var(--u-radius-circle);
-    background-color: var(--u-bg-color);
+    border: 2px solid var(--u-neutral-400, #BDBDBD);
+    border-radius: var(--u-radius-circle, 50%);
+    background-color: var(--u-bg-color, #FFFFFF);
     transition: border-color 0.2s ease, background-color 0.2s ease;
   }
   :host([marker="radio"]:not([disabled]):hover) .radio-marker,
@@ -124,7 +124,7 @@ export const styles = css`
     display: block;
     width: 0.45em;
     height: 0.45em;
-    border-radius: var(--u-radius-circle);
+    border-radius: var(--u-radius-circle, 50%);
     background-color: var(--option-color-active);
     transform: scale(0);
     transition: transform 0.15s ease;

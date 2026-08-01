@@ -14,7 +14,7 @@ import { styles } from "./UTree.styles.js";
  * @cssprop tree-indent-guide-offset - 들여쓰기 가이드 선의 좌측 간격 (기본값: 8px)
  * @cssprop tree-indent-guide-width - 들여쓰기 가이드 선의 두께 (기본값: 1px)
  * @cssprop tree-indent-guide-style - 들여쓰기 가이드 선의 스타일 (기본값: solid)
- * @cssprop tree-indent-guide-color - 들여쓰기 가이드 선의 색상 (기본값: var(--u-border-color-weak))
+ * @cssprop tree-indent-guide-color - 들여쓰기 가이드 선의 색상 (기본값: var(--u-border-color-weak, #EEEEEE))
  * 
  * @event change - 선택된 아이템이 변경될 때 발생
  *

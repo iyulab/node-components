@@ -3,34 +3,34 @@ import { css } from "lit";
 export const styles = css`
   /* === Status Colors === */
   :host {
-    --alert-icon-color: var(--u-neutral-700);
-    --alert-border-color: var(--u-neutral-300);
-    --alert-background-color: var(--u-neutral-200);
+    --alert-icon-color: var(--u-neutral-700, #616161);
+    --alert-border-color: var(--u-neutral-300, #E0E0E0);
+    --alert-background-color: var(--u-neutral-200, #EEEEEE);
   }
   :host([status="error"]) {
-    --alert-icon-color: var(--u-danger-color-strong);
-    --alert-border-color: var(--u-danger-color-weaker);
-    --alert-background-color: var(--u-danger-color-weakest);
+    --alert-icon-color: var(--u-danger-color-strong, #D32F2F);
+    --alert-border-color: var(--u-danger-color-weaker, #E57373);
+    --alert-background-color: var(--u-danger-color-weakest, #EF9A9A);
   }
   :host([status="warning"]) {
-    --alert-icon-color: var(--u-warning-color-strong);
-    --alert-border-color: var(--u-warning-color-weaker);
-    --alert-background-color: var(--u-warning-color-weakest);
+    --alert-icon-color: var(--u-warning-color-strong, #FBC02D);
+    --alert-border-color: var(--u-warning-color-weaker, #FFF176);
+    --alert-background-color: var(--u-warning-color-weakest, #FFF59D);
   }
   :host([status="info"]) {
-    --alert-icon-color: var(--u-info-color-strong);
-    --alert-border-color: var(--u-info-color-weaker);
-    --alert-background-color: var(--u-info-color-weakest);
+    --alert-icon-color: var(--u-info-color-strong, #1976D2);
+    --alert-border-color: var(--u-info-color-weaker, #64B5F6);
+    --alert-background-color: var(--u-info-color-weakest, #90CAF9);
   }
   :host([status="success"]) {
-    --alert-icon-color: var(--u-success-color-strong);
-    --alert-border-color: var(--u-success-color-weaker);
-    --alert-background-color: var(--u-success-color-weakest);
+    --alert-icon-color: var(--u-success-color-strong, #388E3C);
+    --alert-border-color: var(--u-success-color-weaker, #81C784);
+    --alert-background-color: var(--u-success-color-weakest, #A5D6A7);
   }
   :host([status="notice"]) {
-    --alert-icon-color: var(--u-neutral-700);
-    --alert-border-color: var(--u-neutral-300);
-    --alert-background-color: var(--u-neutral-200);
+    --alert-icon-color: var(--u-neutral-700, #616161);
+    --alert-border-color: var(--u-neutral-300, #E0E0E0);
+    --alert-background-color: var(--u-neutral-200, #EEEEEE);
   }
 
   :host {
@@ -39,8 +39,8 @@ export const styles = css`
     min-width: 200px;
     max-width: 100%;
     max-height: 50vh;
-    border-radius: var(--u-radius-xl);
-    box-shadow: 0 4px 12px var(--u-shadow-color-normal);
+    border-radius: var(--u-radius-xl, 8px);
+    box-shadow: 0 4px 12px var(--u-shadow-color-normal, rgba(0, 0, 0, 0.12));
     
     opacity: 0;
     transform: scale(0.8);
@@ -122,7 +122,7 @@ export const styles = css`
     flex-shrink: 0;
     padding: var(--u-space-2xs, 4px);
     font-size: inherit;
-    border-radius: var(--u-radius-md);
+    border-radius: var(--u-radius-md, 4px);
   }
 
   .content {

@@ -12,7 +12,7 @@ export const styles = css`
        flex 컨테이너처럼 block 만으로 늘어나지 않는 맥락을 위해 width 경로도 함께 연다. */
     display: var(--u-input-display, inline-block);
     width: var(--u-input-width, auto);
-    color: var(--u-txt-color);
+    color: var(--u-txt-color, #212121);
     font-size: inherit;
     font-family: var(--u-font-base);
   }
@@ -23,51 +23,51 @@ export const styles = css`
     flex-direction: row;
     align-items: center;
     padding: 0.3em 0.6em;
-    border: 1px solid var(--u-input-border-color);
+    border: 1px solid var(--u-input-border-color, #E0E0E0);
     border-radius: 0.25em;
-    background-color: var(--u-input-bg-color);
+    background-color: var(--u-input-bg-color, #FFFFFF);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
   }
   :host([readonly]) .container,
   :host([disabled]) .container {
-    border-color: var(--u-border-color-weak);
-    background-color: var(--u-bg-color-disabled);
+    border-color: var(--u-border-color-weak, #EEEEEE);
+    background-color: var(--u-bg-color-disabled, #FAFAFA);
   }
   :host(:not([readonly]):not([disabled])) .container:hover {
-    box-shadow: 0 0 0 1px var(--u-input-border-color-hover);
+    box-shadow: 0 0 0 1px var(--u-input-border-color-hover, #BDBDBD);
   }
   :host(:not([readonly]):not([disabled])) .container:focus-within {
-    box-shadow: 0 0 0 1px var(--u-input-border-color-focus);
+    box-shadow: 0 0 0 1px var(--u-input-border-color-focus, #1E88E5);
   }
   :host([invalid]:not([readonly]):not([disabled])) .container {
-    box-shadow: 0 0 0 1px var(--u-input-border-color-invalid);
+    box-shadow: 0 0 0 1px var(--u-input-border-color-invalid, #E53935);
   }
 
   /* ===== Variant: filled ===== */
   :host([variant="filled"]) .container {
     border: none;
     border-radius: 0.25em 0.25em 0 0;
-    border-bottom: 2px solid var(--u-input-border-color);
-    background-color: var(--u-neutral-200);
+    border-bottom: 2px solid var(--u-input-border-color, #E0E0E0);
+    background-color: var(--u-neutral-200, #EEEEEE);
   }
   :host([variant="filled"][readonly]) .container,
   :host([variant="filled"][disabled]) .container {
-    background-color: var(--u-bg-color-disabled);
-    border-bottom-color: var(--u-border-color-weak);
+    background-color: var(--u-bg-color-disabled, #FAFAFA);
+    border-bottom-color: var(--u-border-color-weak, #EEEEEE);
   }
   :host([variant="filled"]:not([readonly]):not([disabled])) .container:hover {
     box-shadow: none;
-    background-color: var(--u-neutral-300);
-    border-bottom-color: var(--u-input-border-color-hover);
+    background-color: var(--u-neutral-300, #E0E0E0);
+    border-bottom-color: var(--u-input-border-color-hover, #BDBDBD);
   }
   :host([variant="filled"]:not([readonly]):not([disabled])) .container:focus-within {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-focus);
+    border-bottom-color: var(--u-input-border-color-focus, #1E88E5);
   }
   :host([variant="filled"][invalid]:not([readonly]):not([disabled])) .container {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-invalid);
+    border-bottom-color: var(--u-input-border-color-invalid, #E53935);
   }
 
   /* ===== Variant: underlined ===== */
@@ -75,33 +75,33 @@ export const styles = css`
     padding-left: 0;
     padding-right: 0;
     border: none;
-    border-radius: var(--u-radius-none);
-    border-bottom: 1px solid var(--u-input-border-color);
+    border-radius: var(--u-radius-none, 0);
+    border-bottom: 1px solid var(--u-input-border-color, #E0E0E0);
     background-color: transparent;
   }
   :host([variant="underlined"][readonly]) .container,
   :host([variant="underlined"][disabled]) .container {
     background-color: transparent;
-    border-bottom-color: var(--u-border-color-weak);
+    border-bottom-color: var(--u-border-color-weak, #EEEEEE);
   }
   :host([variant="underlined"]:not([readonly]):not([disabled])) .container:hover {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-hover);
+    border-bottom-color: var(--u-input-border-color-hover, #BDBDBD);
   }
   :host([variant="underlined"]:not([readonly]):not([disabled])) .container:focus-within {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-focus);
+    border-bottom-color: var(--u-input-border-color-focus, #1E88E5);
     border-bottom-width: 2px;
   }
   :host([variant="underlined"][invalid]:not([readonly]):not([disabled])) .container {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-invalid);
+    border-bottom-color: var(--u-input-border-color-invalid, #E53935);
   }
 
   /* ===== Variant: borderless ===== */
   :host([variant="borderless"]) .container {
     border: none;
-    border-radius: var(--u-radius-none);
+    border-radius: var(--u-radius-none, 0);
     background-color: transparent;
     padding: 0;
     box-shadow: none;
@@ -120,7 +120,7 @@ export const styles = css`
     line-height: 1.5;
   }
   input::placeholder {
-    color: var(--u-txt-color-weak);
+    color: var(--u-txt-color-weak, #9E9E9E);
   }
   input:disabled {
     cursor: not-allowed;
@@ -155,16 +155,16 @@ export const styles = css`
   /* 아이콘 영역 (clear, password toggle 등) */
   .suffix-item {
     margin-left: 0.25em;
-    color: var(--u-icon-color);
+    color: var(--u-icon-color, #616161);
     font-size: 1em;
     transition: color 0.2s ease;
     cursor: pointer;
   }
   .suffix-item:hover {
-    color: var(--u-icon-color-hover);
+    color: var(--u-icon-color-hover, #1E88E5);
   }
   .suffix-item:active {
-    color: var(--u-icon-color-active);
+    color: var(--u-icon-color-active, #1E88E5);
   }
 
   u-popover {
@@ -172,9 +172,9 @@ export const styles = css`
     min-height: var(--input-popover-min-height);
     max-height: var(--input-popover-max-height);
     padding: 4px;
-    border: 1px solid var(--u-border-color);
-    border-radius: var(--u-radius-lg);
-    background-color: var(--u-panel-bg-color);
+    border: 1px solid var(--u-border-color, #E0E0E0);
+    border-radius: var(--u-radius-lg, 6px);
+    background-color: var(--u-panel-bg-color, #FFFFFF);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     overflow-x: auto;
     overflow-y: auto;

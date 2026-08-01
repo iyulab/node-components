@@ -2,21 +2,21 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --slider-fill-color: var(--u-primary-color);
-    --slider-track-color: var(--u-neutral-300);
+    --slider-fill-color: var(--u-primary-color, #1E88E5);
+    --slider-track-color: var(--u-neutral-300, #E0E0E0);
     --slider-track-height: 6px;
     --slider-thumb-size: 18px;
     --slider-thumb-color: var(--slider-fill-color);
-    --slider-thumb-border-color: var(--u-neutral-0);
+    --slider-thumb-border-color: var(--u-neutral-0, #FFFFFF);
     --slider-mark-size: 12px;
-    --slider-mark-color: var(--u-neutral-0);
-    --slider-mark-border-color: var(--u-neutral-400);
+    --slider-mark-color: var(--u-neutral-0, #FFFFFF);
+    --slider-mark-border-color: var(--u-neutral-400, #BDBDBD);
   }
 
   :host {
     display: block;
     width: 100%;
-    color: var(--u-txt-color);
+    color: var(--u-txt-color, #212121);
     font-size: inherit;
     font-family: var(--u-font-base);
   }
@@ -65,7 +65,7 @@ export const styles = css`
     align-items: center;
     justify-content: center;
     border: 2px solid var(--slider-thumb-border-color);
-    border-radius: var(--u-radius-circle);
+    border-radius: var(--u-radius-circle, 50%);
     background: var(--slider-thumb-color);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -85,7 +85,7 @@ export const styles = css`
     width: auto;
     height: auto;
     border: none;
-    border-radius: var(--u-radius-none);
+    border-radius: var(--u-radius-none, 0);
     background: transparent;
     box-shadow: none;
   }
@@ -104,7 +104,7 @@ export const styles = css`
     width: var(--slider-mark-size);
     height: var(--slider-mark-size);
     border: 2px solid var(--slider-mark-border-color);
-    border-radius: var(--u-radius-circle);
+    border-radius: var(--u-radius-circle, 50%);
     background: var(--slider-mark-color);
   }
 
@@ -117,7 +117,7 @@ export const styles = css`
     position: absolute;
     transform: translateX(-50%);
     font-size: 0.75em;
-    color: var(--u-txt-color-weak);
+    color: var(--u-txt-color-weak, #9E9E9E);
     white-space: nowrap;
   }
 `;

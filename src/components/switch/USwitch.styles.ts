@@ -4,8 +4,8 @@ export const styles = css`
   :host {
     --switch-track-width: 2.4em;
     --switch-track-height: 1.4em;
-    --switch-track-color: var(--u-neutral-300);
-    --switch-track-color-checked: var(--u-primary-color);
+    --switch-track-color: var(--u-neutral-300, #E0E0E0);
+    --switch-track-color-checked: var(--u-primary-color, #1E88E5);
     --switch-thumb-size: 1.1em;
     --switch-thumb-offset: 0.15em;
     --switch-thumb-color: #fff;
@@ -18,7 +18,7 @@ export const styles = css`
   :host {
     display: inline-flex;
     flex-direction: column;
-    color: var(--u-txt-color);
+    color: var(--u-txt-color, #212121);
     font-size: inherit;
     font-family: var(--u-font-base);
     user-select: none;
@@ -34,7 +34,7 @@ export const styles = css`
     cursor: default;
   }
   :host([invalid]) .track {
-    outline: 2px solid var(--u-danger-color);
+    outline: 2px solid var(--u-danger-color, #E53935);
     outline-offset: 1px;
   }
   :host(:not([disabled]):not([readonly]):hover) .track {
@@ -56,7 +56,7 @@ export const styles = css`
   }
   input:focus-visible ~ .track {
     box-shadow:
-      0 0 0 1px var(--u-input-border-color-focus),
+      0 0 0 1px var(--u-input-border-color-focus, #1E88E5),
       0 0 0 3px rgba(59, 130, 246, 0.22);
   }
 
@@ -105,7 +105,7 @@ export const styles = css`
   .track-unchecked {
     opacity: 1;
     right: var(--switch-thumb-offset);
-    color: var(--u-txt-color-weak);
+    color: var(--u-txt-color-weak, #9E9E9E);
   }
   :host([checked]) .track-unchecked {
     opacity: 0;
@@ -163,7 +163,7 @@ export const styles = css`
   .thumb-unchecked {
     opacity: 1;
     transform: scale(1) rotate(0deg);
-    color: var(--u-txt-color-weak);
+    color: var(--u-txt-color-weak, #9E9E9E);
   }
   :host([checked]) .thumb-unchecked {
     opacity: 0;
@@ -176,18 +176,18 @@ export const styles = css`
   }
 
   .required {
-    color: var(--u-danger-color);
+    color: var(--u-danger-color, #E53935);
     font-weight: 500;
   }
 
   .description {
     margin-top: 0.5em;
-    color: var(--u-txt-color-weak);
+    color: var(--u-txt-color-weak, #9E9E9E);
     font-size: 0.75em;
     line-height: 1.3;
   }
 
   :host([invalid]) .description {
-    color: var(--u-danger-color);
+    color: var(--u-danger-color, #E53935);
   }
 `;

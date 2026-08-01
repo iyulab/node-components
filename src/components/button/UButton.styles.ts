@@ -3,17 +3,17 @@ import { css } from "lit";
 export const styles = css`
   :host {
     /* --btn-color 하나만 정해지면 hover/active/surface/outline 톤이 전부 자동 파생 */
-    --btn-color: var(--u-primary-color);
+    --btn-color: var(--u-primary-color, #1E88E5);
     --btn-color-hover: color-mix(in srgb, var(--btn-color) 85%, black);
     --btn-color-active: color-mix(in srgb, var(--btn-color) 70%, black);
-    --btn-color-surface: color-mix(in srgb, var(--btn-color) 12%, var(--u-bg-color));
-    --btn-color-surface-hover: color-mix(in srgb, var(--btn-color) 22%, var(--u-bg-color));
-    --btn-color-surface-active: color-mix(in srgb, var(--btn-color) 32%, var(--u-bg-color));
-    --btn-color-border: color-mix(in srgb, var(--btn-color) 45%, var(--u-bg-color));
-    --btn-color-border-hover: color-mix(in srgb, var(--btn-color) 60%, var(--u-bg-color));
-    --btn-color-border-active: color-mix(in srgb, var(--btn-color) 75%, var(--u-bg-color));
-    --btn-color-outline-hover: color-mix(in srgb, var(--btn-color) 6%, var(--u-bg-color));
-    --btn-color-outline-active: color-mix(in srgb, var(--btn-color) 12%, var(--u-bg-color));
+    --btn-color-surface: color-mix(in srgb, var(--btn-color) 12%, var(--u-bg-color, #FFFFFF));
+    --btn-color-surface-hover: color-mix(in srgb, var(--btn-color) 22%, var(--u-bg-color, #FFFFFF));
+    --btn-color-surface-active: color-mix(in srgb, var(--btn-color) 32%, var(--u-bg-color, #FFFFFF));
+    --btn-color-border: color-mix(in srgb, var(--btn-color) 45%, var(--u-bg-color, #FFFFFF));
+    --btn-color-border-hover: color-mix(in srgb, var(--btn-color) 60%, var(--u-bg-color, #FFFFFF));
+    --btn-color-border-active: color-mix(in srgb, var(--btn-color) 75%, var(--u-bg-color, #FFFFFF));
+    --btn-color-outline-hover: color-mix(in srgb, var(--btn-color) 6%, var(--u-bg-color, #FFFFFF));
+    --btn-color-outline-active: color-mix(in srgb, var(--btn-color) 12%, var(--u-bg-color, #FFFFFF));
   }
 
   :host {
@@ -23,7 +23,7 @@ export const styles = css`
     font-size: 14px;
     font-weight: 500;
     line-height: 1.5;
-    border-radius: var(--u-radius-lg);
+    border-radius: var(--u-radius-lg, 6px);
     background-color: transparent;
 
     transition: all 0.2s ease;
@@ -33,14 +33,14 @@ export const styles = css`
   }
 
   /* === Color tokens === */
-  :host([color="blue"])   { --btn-color: var(--u-blue-600); }
-  :host([color="green"])  { --btn-color: var(--u-green-600); }
-  :host([color="red"])    { --btn-color: var(--u-red-600); }
-  :host([color="orange"]) { --btn-color: var(--u-orange-600); }
-  :host([color="teal"])   { --btn-color: var(--u-teal-600); }
-  :host([color="cyan"])   { --btn-color: var(--u-cyan-600); }
-  :host([color="purple"]) { --btn-color: var(--u-purple-600); }
-  :host([color="pink"])   { --btn-color: var(--u-pink-600); }
+  :host([color="blue"])   { --btn-color: var(--u-blue-600, #1E88E5); }
+  :host([color="green"])  { --btn-color: var(--u-green-600, #43A047); }
+  :host([color="red"])    { --btn-color: var(--u-red-600, #E53935); }
+  :host([color="orange"]) { --btn-color: var(--u-orange-600, #FB8C00); }
+  :host([color="teal"])   { --btn-color: var(--u-teal-600, #00897B); }
+  :host([color="cyan"])   { --btn-color: var(--u-cyan-600, #00ACC1); }
+  :host([color="purple"]) { --btn-color: var(--u-purple-600, #8E24AA); }
+  :host([color="pink"])   { --btn-color: var(--u-pink-600, #D81B60); }
 
   /* === Size === */
   :host([size="sm"]) {
@@ -69,7 +69,7 @@ export const styles = css`
     visibility: hidden;
   }
   :host([rounded]) {
-    border-radius: var(--u-radius-pill);
+    border-radius: var(--u-radius-pill, 9999px);
   }
   :host([has-spinner]) u-spinner {
     display: none;
@@ -94,7 +94,7 @@ export const styles = css`
 
   /* surface: 채우기 + 경계 */
   :host([variant="surface"]) {
-    color: var(--u-txt-color);
+    color: var(--u-txt-color, #212121);
     background-color: var(--btn-color-surface);
     --btn-border-color: var(--btn-color-border);
   }
@@ -109,7 +109,7 @@ export const styles = css`
 
   /* filled: 채우기만 */
   :host([variant="filled"]) {
-    color: var(--u-txt-color);
+    color: var(--u-txt-color, #212121);
     background-color: var(--btn-color-surface);
     --btn-border-color: transparent;
   }
@@ -122,7 +122,7 @@ export const styles = css`
 
   /* outlined: 경계만 */
   :host([variant="outlined"]) {
-    color: var(--u-txt-color);
+    color: var(--u-txt-color, #212121);
     --btn-border-color: var(--btn-color-border);
     background-color: transparent;
   }
@@ -137,30 +137,30 @@ export const styles = css`
 
   /* ghost: transparent */
   :host([variant="ghost"]) {
-    color: var(--u-txt-color);
+    color: var(--u-txt-color, #212121);
     --btn-border-color: transparent;
     background-color: transparent;
   }
   :host([variant="ghost"]:hover) {
-    background-color: var(--u-bg-color-hover);
+    background-color: var(--u-bg-color-hover, #F5F5F5);
   }
   :host([variant="ghost"]:active) {
-    background-color: var(--u-bg-color-active);
+    background-color: var(--u-bg-color-active, #EEEEEE);
   }
 
   /* link: blue 링크 스타일 (기본값, color="neutral"일 때도 유지 — 기존 동작 보존) */
   :host([variant="link"]) {
-    color: var(--u-primary-color-weak, #3b82f6);
+    color: var(--u-primary-color-weak, #2196F3);
     --btn-border-color: transparent;
     background-color: transparent;
     --btn-padding-inline: 0;
   }
   :host([variant="link"]:hover) {
-    color: var(--u-primary-color, #2563eb);
+    color: var(--u-primary-color, #1E88E5);
     text-decoration: underline;
   }
   :host([variant="link"]:active) {
-    color: var(--u-primary-color-strong, #1d4ed8);
+    color: var(--u-primary-color-strong, #1976D2);
   }
   /* link + 명시적 non-neutral color: 링크 자체 색상을 재정의 (예: 파괴적 액션 링크) */
   :host([variant="link"][color]:not([color="neutral"])) {

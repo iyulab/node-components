@@ -3,7 +3,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     --menu-item-depth: 0;
-    --menu-item-color: var(--u-primary-color);
+    --menu-item-color: var(--u-primary-color, #1E88E5);
   }
 
   :host {
@@ -44,18 +44,18 @@ export const styles = css`
   /* hover & focus */
   :host(:not([disabled])) .header:hover,
   :host(:not([disabled]):focus-visible) .header {
-    background-color: var(--u-bg-color-hover);
+    background-color: var(--u-bg-color-hover, #F5F5F5);
   }
 
   /* indicator: highlight */
   :host([selected][indicator="highlight"]) .header {
     font-weight: 600;
     color: color-mix(in srgb, var(--menu-item-color) 85%, black);
-    background-color: color-mix(in srgb, var(--menu-item-color) 15%, var(--u-bg-color));
+    background-color: color-mix(in srgb, var(--menu-item-color) 15%, var(--u-bg-color, #FFFFFF));
   }
   :host([selected][indicator="highlight"]) .header:hover,
   :host([selected][indicator="highlight"]:focus-visible) .header {
-    background-color: color-mix(in srgb, var(--menu-item-color) 25%, var(--u-bg-color));
+    background-color: color-mix(in srgb, var(--menu-item-color) 25%, var(--u-bg-color, #FFFFFF));
   }
 
   .prefix-checker {
@@ -136,9 +136,9 @@ export const styles = css`
     display: flex;
     flex-direction: column;
     padding: 4px;
-    border: 1px solid var(--u-border-color);
-    border-radius: var(--u-radius-md);
-    background-color: var(--u-panel-bg-color);
+    border: 1px solid var(--u-border-color, #E0E0E0);
+    border-radius: var(--u-radius-md, 4px);
+    background-color: var(--u-panel-bg-color, #FFFFFF);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     transform: scale(0.8);
     transition: opacity 0.2s ease, visibility 0s 0.2s, transform 0.2s ease;

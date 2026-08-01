@@ -68,7 +68,7 @@ export const styles = css`
      * 테두리는 CanvasText 원색이 과해 옅게 혼합.
      */
     border: 1px solid var(--u-border-color, color-mix(in srgb, CanvasText 20%, Canvas));
-    border-radius: var(--u-radius-lg);
+    border-radius: var(--u-radius-lg, 6px);
     background: var(--u-panel-bg-color, Canvas);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     pointer-events: auto;
@@ -92,13 +92,13 @@ export const styles = css`
     font-size: 18px;
     font-weight: 600;
     line-height: 1.3;
-    border-bottom: 1px solid var(--u-border-color);
+    border-bottom: 1px solid var(--u-border-color, #E0E0E0);
   }
   .header .close-btn {
     flex-shrink: 0;
     padding: var(--u-space-2xs, 4px);
     font-size: inherit;
-    border-radius: var(--u-radius-md);
+    border-radius: var(--u-radius-md, 4px);
   }
 
   .body {
@@ -116,6 +116,6 @@ export const styles = css`
     justify-content: flex-end;
     gap: var(--u-space-sm, 8px);
     padding: var(--u-space-md, 12px) var(--u-space-lg, 16px);
-    border-top: 1px solid var(--u-border-color);
+    border-top: 1px solid var(--u-border-color, #E0E0E0);
   }
 `;

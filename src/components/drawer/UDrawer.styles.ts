@@ -80,13 +80,13 @@ export const styles = css`
     font-size: 18px;
     font-weight: 600;
     line-height: 1.3;
-    border-bottom: 1px solid var(--u-border-color);
+    border-bottom: 1px solid var(--u-border-color, #E0E0E0);
   }
   .header .close-btn {
     flex-shrink: 0;
     padding: var(--u-space-2xs, 4px);
     font-size: inherit;
-    border-radius: var(--u-radius-md);
+    border-radius: var(--u-radius-md, 4px);
   }
 
   .body {
@@ -104,6 +104,6 @@ export const styles = css`
     justify-content: flex-end;
     gap: var(--u-space-sm, 8px);
     padding: var(--u-space-md, 12px) var(--u-space-lg, 16px);
-    border-top: 1px solid var(--u-border-color);
+    border-top: 1px solid var(--u-border-color, #E0E0E0);
   }
 `;

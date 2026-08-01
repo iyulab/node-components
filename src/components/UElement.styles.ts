@@ -17,11 +17,11 @@ export const styles = css`
 
   /* Focus Styles */
   :host(:focus-visible) {
-    outline: 2px solid var(--u-primary-color-weak);
+    outline: 2px solid var(--u-primary-color-weak, #2196F3);
     outline-offset: 2px;
   }
   :focus-visible {
-    outline: 2px solid var(--u-primary-color-weak);
+    outline: 2px solid var(--u-primary-color-weak, #2196F3);
     outline-offset: 2px;
   }
 
@@ -36,30 +36,30 @@ export const styles = css`
   /* Scrollbar Styles */
   :host([scrollable]) {
     scrollbar-width: thin;
-    scrollbar-color: var(--u-scrollbar-color) var(--u-scrollbar-track-color);
+    scrollbar-color: var(--u-scrollbar-color, #BDBDBD) var(--u-scrollbar-track-color, transparent);
   }
   :host([scrollable])::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
   :host([scrollable])::-webkit-scrollbar-thumb {
-    background: var(--u-scrollbar-color);
+    background: var(--u-scrollbar-color, #BDBDBD);
   }
   :host([scrollable])::-webkit-scrollbar-track {
-    background: var(--u-scrollbar-track-color);
+    background: var(--u-scrollbar-track-color, transparent);
   }
   [scrollable] {
     scrollbar-width: thin;
-    scrollbar-color: var(--u-scrollbar-color) var(--u-scrollbar-track-color);
+    scrollbar-color: var(--u-scrollbar-color, #BDBDBD) var(--u-scrollbar-track-color, transparent);
   }
   [scrollable]::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
   [scrollable]::-webkit-scrollbar-thumb {
-    background: var(--u-scrollbar-color);
+    background: var(--u-scrollbar-color, #BDBDBD);
   }
   [scrollable]::-webkit-scrollbar-track {
-    background: var(--u-scrollbar-track-color);
+    background: var(--u-scrollbar-track-color, transparent);
   }
 `;

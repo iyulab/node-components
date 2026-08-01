@@ -6,7 +6,7 @@ export const styles = css`
     z-index: 9999;
     inset: 0;
     display: flex;
-    background: var(--u-overlay-bg-color, rgba(0, 0, 0, 0.4));
+    background: var(--u-overlay-bg-color, rgba(0, 0, 0, 0.5));
 
     opacity: 0;
     visibility: hidden;

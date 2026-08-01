@@ -34,56 +34,56 @@ export const styles = css`
     border-radius: 0.2em;
   }
   :host([variant="pill"]) {
-    border-radius: var(--u-radius-pill);
+    border-radius: var(--u-radius-pill, 9999px);
   }
   :host([variant="dot"]) {
     width: 0.6em;
     height: 0.6em;
     min-width: 0.6em;
     min-height: 0.6em;
-    border-radius: var(--u-radius-circle);
+    border-radius: var(--u-radius-circle, 50%);
   }
 
   /* === Color (색상) === */
   :host([color="neutral"]) {
-    color: var(--u-neutral-800);
-    background-color: var(--u-neutral-200);
+    color: var(--u-neutral-800, #424242);
+    background-color: var(--u-neutral-200, #EEEEEE);
   }
   :host([color="blue"]) {
-    color: var(--u-neutral-0);
-    background-color: var(--u-primary-color, var(--u-blue-500));
+    color: var(--u-neutral-0, #FFFFFF);
+    background-color: var(--u-primary-color, #1E88E5);
   }
   :host([color="green"]) {
-    color: var(--u-neutral-0);
-    background-color: var(--u-green-500);
+    color: var(--u-neutral-0, #FFFFFF);
+    background-color: var(--u-green-500, #4CAF50);
   }
   :host([color="yellow"]) {
-    color: var(--u-neutral-0);
-    background-color: var(--u-yellow-600);
+    color: var(--u-neutral-0, #FFFFFF);
+    background-color: var(--u-yellow-600, #FDD835);
   }
   :host([color="red"]) {
-    color: var(--u-neutral-0);
-    background-color: var(--u-red-500);
+    color: var(--u-neutral-0, #FFFFFF);
+    background-color: var(--u-red-500, #F44336);
   }
   :host([color="orange"]) {
-    color: var(--u-neutral-0);
-    background-color: var(--u-orange-500);
+    color: var(--u-neutral-0, #FFFFFF);
+    background-color: var(--u-orange-500, #FF9800);
   }
   :host([color="teal"]) {
-    color: var(--u-neutral-0);
-    background-color: var(--u-teal-500);
+    color: var(--u-neutral-0, #FFFFFF);
+    background-color: var(--u-teal-500, #009688);
   }
   :host([color="cyan"]) {
-    color: var(--u-neutral-0);
-    background-color: var(--u-cyan-500);
+    color: var(--u-neutral-0, #FFFFFF);
+    background-color: var(--u-cyan-500, #00BCD4);
   }
   :host([color="purple"]) {
-    color: var(--u-neutral-0);
-    background-color: var(--u-purple-500);
+    color: var(--u-neutral-0, #FFFFFF);
+    background-color: var(--u-purple-500, #9C27B0);
   }
   :host([color="pink"]) {
-    color: var(--u-neutral-0);
-    background-color: var(--u-pink-500);
+    color: var(--u-neutral-0, #FFFFFF);
+    background-color: var(--u-pink-500, #E91E63);
   }
 
   /* === Anchor (위치 고정) === */

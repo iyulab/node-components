@@ -6,13 +6,13 @@ export const styles = css`
     align-items: center;
     gap: 0.2em;
     flex-shrink: 0;
-    color: var(--u-txt-color-weak);
+    color: var(--u-txt-color-weak, #9E9E9E);
     font-size: inherit;
     line-height: 1.5em;
     cursor: pointer;
   }
   :host:hover {
-    color: var(--u-primary-color-strong);
+    color: var(--u-primary-color-strong, #1976D2);
   }
   :host([disabled]) {
     opacity: 0.5;

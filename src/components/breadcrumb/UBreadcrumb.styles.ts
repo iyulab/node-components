@@ -5,7 +5,7 @@ export const styles = css`
     display: block;
     font-size: inherit;
     font-family: var(--u-font-base);
-    color: var(--u-txt-color);
+    color: var(--u-txt-color, #212121);
     user-select: none;
   }
 
@@ -28,7 +28,7 @@ export const styles = css`
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
-    color: var(--u-txt-color-weak);
+    color: var(--u-txt-color-weak, #9E9E9E);
     font-size: 0.75em;
     user-select: none;
   }

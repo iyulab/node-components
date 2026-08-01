@@ -4,8 +4,8 @@ export const styles = css`
   :host {
     --skeleton-width: 100%;
     --skeleton-height: 1em;
-    --skeleton-color: var(--u-neutral-200);
-    --skeleton-shimmer-color: var(--u-neutral-100);
+    --skeleton-color: var(--u-neutral-200, #EEEEEE);
+    --skeleton-shimmer-color: var(--u-neutral-100, #F5F5F5);
   }
 
   :host {
@@ -18,13 +18,13 @@ export const styles = css`
 
   /* 모양 설정 */
   :host([shape="rectangle"]) {
-    border-radius: var(--u-radius-md);
+    border-radius: var(--u-radius-md, 4px);
   }
   :host([shape="circle"]) {
-    border-radius: var(--u-radius-circle);
+    border-radius: var(--u-radius-circle, 50%);
   }
   :host([shape="rounded"]) {
-    border-radius: var(--u-radius-pill);
+    border-radius: var(--u-radius-pill, 9999px);
   }
 
   /* 애니메이션 효과 설정 */

@@ -3,21 +3,21 @@ import { css } from 'lit';
 export const styles = css`
   :host {
     --spinner-track-width: 0.125em;
-    --spinner-track-color: var(--u-neutral-200);
-    --spinner-indicator-color: var(--u-primary-color);
+    --spinner-track-color: var(--u-neutral-200, #EEEEEE);
+    --spinner-indicator-color: var(--u-primary-color, #1E88E5);
     --spinner-indicator-speed: 2s;
   }
 
   /* Color variants */
-  :host([color="blue"]) { --spinner-indicator-color: var(--u-blue-600); }
-  :host([color="green"]) { --spinner-indicator-color: var(--u-green-600); }
-  :host([color="yellow"]) { --spinner-indicator-color: var(--u-yellow-600); }
-  :host([color="red"]) { --spinner-indicator-color: var(--u-red-600); }
-  :host([color="orange"]) { --spinner-indicator-color: var(--u-orange-600); }
-  :host([color="teal"]) { --spinner-indicator-color: var(--u-teal-600); }
-  :host([color="cyan"]) { --spinner-indicator-color: var(--u-cyan-600); }
-  :host([color="purple"]) { --spinner-indicator-color: var(--u-purple-600); }
-  :host([color="pink"]) { --spinner-indicator-color: var(--u-pink-600); }
+  :host([color="blue"]) { --spinner-indicator-color: var(--u-blue-600, #1E88E5); }
+  :host([color="green"]) { --spinner-indicator-color: var(--u-green-600, #43A047); }
+  :host([color="yellow"]) { --spinner-indicator-color: var(--u-yellow-600, #FDD835); }
+  :host([color="red"]) { --spinner-indicator-color: var(--u-red-600, #E53935); }
+  :host([color="orange"]) { --spinner-indicator-color: var(--u-orange-600, #FB8C00); }
+  :host([color="teal"]) { --spinner-indicator-color: var(--u-teal-600, #00897B); }
+  :host([color="cyan"]) { --spinner-indicator-color: var(--u-cyan-600, #00ACC1); }
+  :host([color="purple"]) { --spinner-indicator-color: var(--u-purple-600, #8E24AA); }
+  :host([color="pink"]) { --spinner-indicator-color: var(--u-pink-600, #D81B60); }
 
   :host {
     display: inline-flex;

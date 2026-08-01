@@ -2,8 +2,8 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --rating-symbol-color: var(--u-warning-color-weak);
-    --rating-symbol-off-color: var(--u-neutral-300);
+    --rating-symbol-color: var(--u-warning-color-weak, #FFEB3B);
+    --rating-symbol-off-color: var(--u-neutral-300, #E0E0E0);
   }
 
   :host {
@@ -32,7 +32,7 @@ export const styles = css`
     transition: color 0.15s ease, transform 0.15s ease;
   }
   .symbol:focus-visible {
-    outline: 2px solid var(--u-primary-color-weak);
+    outline: 2px solid var(--u-primary-color-weak, #2196F3);
     outline-offset: 2px;
   }
   :host(:not([disabled]):not([readonly])) .symbol:hover {

@@ -3,7 +3,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     display: block;
-    color: var(--u-txt-color);
+    color: var(--u-txt-color, #212121);
     font-size: inherit;
     font-family: var(--u-font-base);
   }
@@ -12,7 +12,7 @@ export const styles = css`
     cursor: not-allowed;
   }
   :host([invalid]) .footer {
-    color: var(--u-danger-color);
+    color: var(--u-danger-color, #E53935);
   }
 
   .header {
@@ -32,12 +32,12 @@ export const styles = css`
   }
 
   .required {
-    color: var(--u-danger-color);
+    color: var(--u-danger-color, #E53935);
     margin-right: 0.2em;
   }
   
   .footer {
-    color: var(--u-txt-color-weak);
+    color: var(--u-txt-color-weak, #9E9E9E);
     font-size: 0.75em;
     line-height: 1.2;
     margin-top: 0.5em;

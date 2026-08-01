@@ -7,7 +7,7 @@ export const styles = css`
     display: inline-flex;
     font-size: 0.9em;
     font-weight: 500;
-    color: var(--u-txt-color-weak);
+    color: var(--u-txt-color-weak, #9E9E9E);
     white-space: nowrap;
     user-select: none;
     cursor: pointer;
@@ -28,10 +28,10 @@ export const styles = css`
   }
 
   :host(:hover:not([disabled])) {
-    color: var(--u-txt-color);
+    color: var(--u-txt-color, #212121);
   }
   :host([disabled]) {
-    color: var(--u-txt-color-disabled);
+    color: var(--u-txt-color-disabled, #BDBDBD);
     cursor: not-allowed;
   }
 

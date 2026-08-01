@@ -6,12 +6,12 @@ export const styles = css`
   }
 
   :host {
-    color: var(--u-tooltip-txt-color);
+    color: var(--u-tooltip-txt-color, #FFFFFF);
     font-family: var(--u-font-display, inherit);
     font-size: 12px;
     line-height: 1.25;
-    border-radius: var(--u-radius-md);
-    background-color: var(--u-tooltip-bg-color);
+    border-radius: var(--u-radius-md, 4px);
+    background-color: var(--u-tooltip-bg-color, rgba(0, 0, 0, 0.75));
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
     transform: scale(0.9);
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s 0.2s;
