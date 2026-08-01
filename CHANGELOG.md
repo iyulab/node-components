@@ -79,7 +79,7 @@ u-tag { --tag-padding-block: 4px; --tag-padding-inline: 10px; }
 ## [1.9.0] - 2026-07-28
 
 ### Fixed
-- **열린 팝오버가 페이지 스크롤 한 번에 닫히던 결함 수정** (u-select listbox·u-input combobox 실사용 및 E2E 구동 불능 — U-Platform 실측, ISSUE-node-packages-20260724-uselect-playwright-driveability). `UPopover.dismiss` 기본값의 `scroll` 이 document 캡처 단계로 등록되는 한편 `UFloatingElement.show()` 는 **모든** 플로팅 엘리먼트에 floating-ui `autoUpdate`(스크롤 시 앵커 추종 재배치)를 설치한다 — 같은 스크롤 이벤트에 재배치와 닫기가 동시에 걸리고 닫기가 이기는 자기모순이었다. 이제 `scroll` 은 **앵커가 스크롤로 의미를 잃을 때만** 닫는다: 실제 엘리먼트에 앵커된 팝오버(드롭다운·제안 목록·서브메뉴·툴팁)는 재배치되어 열린 채 유지되고, `trigger="contextmenu"` 의 좌표 기반 가상 앵커는 종전대로 닫힌다. Playwright 의 "scroll into view" 가 목록을 닫아 `getByRole('option').click()` 이 완주하지 못하던 문제도 함께 해소된다. 회귀 테스트 3건 추가.
+- **열린 팝오버가 페이지 스크롤 한 번에 닫히던 결함 수정** (u-select listbox·u-input combobox 실사용 및 E2E 구동 불능). `UPopover.dismiss` 기본값의 `scroll` 이 document 캡처 단계로 등록되는 한편 `UFloatingElement.show()` 는 **모든** 플로팅 엘리먼트에 floating-ui `autoUpdate`(스크롤 시 앵커 추종 재배치)를 설치한다 — 같은 스크롤 이벤트에 재배치와 닫기가 동시에 걸리고 닫기가 이기는 자기모순이었다. 이제 `scroll` 은 **앵커가 스크롤로 의미를 잃을 때만** 닫는다: 실제 엘리먼트에 앵커된 팝오버(드롭다운·제안 목록·서브메뉴·툴팁)는 재배치되어 열린 채 유지되고, `trigger="contextmenu"` 의 좌표 기반 가상 앵커는 종전대로 닫힌다. Playwright 의 "scroll into view" 가 목록을 닫아 `getByRole('option').click()` 이 완주하지 못하던 문제도 함께 해소된다. 회귀 테스트 3건 추가.
 - **`dismiss: 'resize'` 도 같은 원칙으로 정합** — `autoUpdate` 는 `ancestorResize` 로 window 리사이즈도 구독해 재배치하므로 scroll 과 동일한 자기모순이었다. 이제 리사이즈도 좌표 기반 가상 앵커에서만 닫는다. 이로써 모바일에서 `u-select searchable` 의 검색 입력을 탭할 때 가상 키보드가 레이아웃 뷰포트를 줄이며 발생시키는 리사이즈로 드롭다운이 닫히던 문제가 해소된다. 회귀 테스트 2건 추가.
 
 - **React 래퍼가 `ref` 를 타입 수준에서 거부하던 문제 수정** — 생성된 `.d.ts` 가 `React.ForwardRefExoticComponent<P>` 를 쓰면서 P 에 `React.RefAttributes` 를 넣지 않았다. `ForwardRefExoticComponent<P>` 는 ref 를 자동으로 더해 주지 않으므로, `@lit/react` 가 런타임에 ref 를 정상 전달하는데도(`ReactWebComponent` 자신은 `PropsWithoutRef<…> & React.RefAttributes<I>` 로 선언돼 있다) `<UButton ref={…} />` 가 TS2322 로 거부됐다. 이제 42개 래퍼 전부가 ref 를 받으며, ref 타입은 `HTMLElement` 가 아니라 **해당 엘리먼트 클래스**로 좁혀진다. 신설 React 타입 스모크가 첫 실행에서 잡아낸 결함이다.
@@ -91,13 +91,13 @@ u-tag { --tag-padding-block: 4px; --tag-padding-inline: 10px; }
 ## [1.8.1] - 2026-07-24
 
 ### Fixed
-- **u-field 합성 폼 컨트롤이 접근성 트리에서 이름 없이 노출되던 문제 수정** (WCAG 1.3.1·4.1.2 — U-Platform T8-1 Playwright E2E 실측, ISSUE-20260723-uinput-label-a11y). 라벨은 `u-field` 의 별도 섀도 스코프에 렌더되어 `label[for]` 로 컨트롤과 연결될 수 없었고, 섀도 경계 탓에 cross-root `aria-labelledby` 도 현 브라우저에서 신뢰성 있게 배송되지 않는다. 이제 각 컴포넌트가 자신의 접근 이름 호스트에 라벨을 `aria-label`(설명은 `aria-description`)로 미러링한다 — `u-input`/`u-textarea`(네이티브 컨트롤), `u-rating`/`u-radio`(`role=radiogroup`), `u-select`(`role=combobox` + `aria-expanded`/`aria-haspopup`/`aria-controls`), `u-slider`(`role=slider` + `aria-valuenow`/`valuemin`/`valuemax`/`valuetext`). 아울러 `u-option` 이 사용 맥락에 맞는 자식 역할·상태를 노출한다 — radiogroup(`marker='radio'`) 안에서는 `role=radio` + `aria-checked`, listbox(`u-select`/`u-input` combobox) 에서는 `role=option` + `aria-selected`(+ `aria-disabled`) — 이름만 있고 비어 보이던 radiogroup/combobox 위젯이 자식까지 정합하게 읽힌다. `u-rating` 심볼(`role=radio`)도 커밋 값 기준 `aria-checked` 를 노출한다. `getByLabel`/`getByRole({name})` 로케이터와 스크린리더가 컨트롤을 이름으로 인식한다.
-- **React 래퍼 `.d.ts` 타이핑 2건 수정** (React 19 + TS strict 컴파일 차단 — U-CMMS 실측, ISSUE-20260722-react-wrapper-typing). (1) `React.HTMLAttributes` 의 이벤트 핸들러(`onChange` 등)와 래퍼의 CustomEvent 시그니처가 교집합되어 어떤 핸들러도 대입 불가였던 것을, HTMLAttributes 쪽 동명 이벤트 키를 `Omit` 해 CustomEvent 시그니처만 남기도록 교정. (2) `Partial<Element>` 의 DOM `children: HTMLCollection` 이 JSX children 을 가려 `<UButton>text</UButton>` 이 TS2747 로 실패하던 것을, `Omit<Partial<Element>, keyof HTMLAttributes>` 로 DOM 전용 키를 제거하고 React 친화 타입(`children: ReactNode`)이 HTMLAttributes 에서 공급되도록 교정. 소비자의 `as unknown as ComponentType` 우회 제거 가능.
+- **u-field 합성 폼 컨트롤이 접근성 트리에서 이름 없이 노출되던 문제 수정** (WCAG 1.3.1·4.1.2 — Playwright E2E 실측). 라벨은 `u-field` 의 별도 섀도 스코프에 렌더되어 `label[for]` 로 컨트롤과 연결될 수 없었고, 섀도 경계 탓에 cross-root `aria-labelledby` 도 현 브라우저에서 신뢰성 있게 배송되지 않는다. 이제 각 컴포넌트가 자신의 접근 이름 호스트에 라벨을 `aria-label`(설명은 `aria-description`)로 미러링한다 — `u-input`/`u-textarea`(네이티브 컨트롤), `u-rating`/`u-radio`(`role=radiogroup`), `u-select`(`role=combobox` + `aria-expanded`/`aria-haspopup`/`aria-controls`), `u-slider`(`role=slider` + `aria-valuenow`/`valuemin`/`valuemax`/`valuetext`). 아울러 `u-option` 이 사용 맥락에 맞는 자식 역할·상태를 노출한다 — radiogroup(`marker='radio'`) 안에서는 `role=radio` + `aria-checked`, listbox(`u-select`/`u-input` combobox) 에서는 `role=option` + `aria-selected`(+ `aria-disabled`) — 이름만 있고 비어 보이던 radiogroup/combobox 위젯이 자식까지 정합하게 읽힌다. `u-rating` 심볼(`role=radio`)도 커밋 값 기준 `aria-checked` 를 노출한다. `getByLabel`/`getByRole({name})` 로케이터와 스크린리더가 컨트롤을 이름으로 인식한다.
+- **React 래퍼 `.d.ts` 타이핑 2건 수정** (React 19 + TS strict 컴파일 차단 — U-CMMS 실측). (1) `React.HTMLAttributes` 의 이벤트 핸들러(`onChange` 등)와 래퍼의 CustomEvent 시그니처가 교집합되어 어떤 핸들러도 대입 불가였던 것을, HTMLAttributes 쪽 동명 이벤트 키를 `Omit` 해 CustomEvent 시그니처만 남기도록 교정. (2) `Partial<Element>` 의 DOM `children: HTMLCollection` 이 JSX children 을 가려 `<UButton>text</UButton>` 이 TS2747 로 실패하던 것을, `Omit<Partial<Element>, keyof HTMLAttributes>` 로 DOM 전용 키를 제거하고 React 친화 타입(`children: ReactNode`)이 HTMLAttributes 에서 공급되도록 교정. 소비자의 `as unknown as ComponentType` 우회 제거 가능.
 
 ## [1.8.0] - 2026-07-22
 
 ### Fixed
-- **`u-icon` 아이콘 리졸브가 재렌더·재마운트마다 다시 fetch되던 스톰 수정** — `IconRegistry.resolve()`가 리졸버 결과를 캐시하지 않아, SSE 스트리밍처럼 같은 아이콘이 반복 재마운트되는 UI에서 단일 아이콘에 수백 회 fetch가 발생했다(미존재 아이콘은 404 스톰으로 콘솔 오염 + dev 서버 부하 — SMI.AIMS 실측, ISSUE-components-20260722-iconregistry-resolver-no-cache). 이제 레지스트리가 (lib, name) 단위 캐싱과 동시 요청 in-flight dedupe를 소유해, 커스텀 리졸버를 포함한 모든 라이브러리에서 아이콘당 세션 1회만 리졸브된다. `u-icon`의 `src` 경로·무-lib 기본(baseUrl) 경로도 신설 `IconRegistry.resolveUrl(url)`을 경유해 동일하게 캐시된다.
+- **`u-icon` 아이콘 리졸브가 재렌더·재마운트마다 다시 fetch되던 스톰 수정** — `IconRegistry.resolve()`가 리졸버 결과를 캐시하지 않아, SSE 스트리밍처럼 같은 아이콘이 반복 재마운트되는 UI에서 단일 아이콘에 수백 회 fetch가 발생했다(미존재 아이콘은 404 스톰으로 콘솔 오염 + dev 서버 부하 — 실사용에서 관측). 이제 레지스트리가 (lib, name) 단위 캐싱과 동시 요청 in-flight dedupe를 소유해, 커스텀 리졸버를 포함한 모든 라이브러리에서 아이콘당 세션 1회만 리졸브된다. `u-icon`의 `src` 경로·무-lib 기본(baseUrl) 경로도 신설 `IconRegistry.resolveUrl(url)`을 경유해 동일하게 캐시된다.
 - 내장 CDN 리졸버(tabler/heroicons/lucide/bootstrap)가 네트워크 오류를 `undefined`로 삼키던 것을 throw 전파로 교정 — 일시 장애가 세션 내 not-found로 오인·고착되지 않고 다음 조회에서 재시도된다.
 
 ### Changed
@@ -136,7 +136,7 @@ u-tag { --tag-padding-block: 4px; --tag-padding-inline: 10px; }
 ## [1.7.0] - 2026-07-17
 
 ### Fixed
-- **폼 컨트롤 `change` 이벤트 의미론을 네이티브 규약으로 교정** — `USelect`/`URadio`/`URating`/`USlider`가 `updated()` 경로에서 무조건 `change`를 발화해, (1) 옵션 slot 등록 시 `value===undefined` 상태의 change가 발화되어 React 등 controlled 래퍼의 state를 오염시키고(옵션 등록 전 세팅한 초기값이 유실·서버 enum 기본값으로 저장되는 무증상 데이터 결함 — yesung 실측), (2) 프로그램적 `value` 세팅이 사용자 이벤트로 위장되어 에코 루프를 만들던 문제 수정. 이제 `change`는 **사용자 상호작용**(옵션 클릭·키보드·칩 제거·지우기·드래그 확정)에서만 발화한다(ISSUE-components-20260717-uselect-value-before-options). `UInput`(blur 발화)·`UMenu`/`UTree`(핸들러 발화)는 원래 규약대로였으며 변경 없음.
+- **폼 컨트롤 `change` 이벤트 의미론을 네이티브 규약으로 교정** — `USelect`/`URadio`/`URating`/`USlider`가 `updated()` 경로에서 무조건 `change`를 발화해, (1) 옵션 slot 등록 시 `value===undefined` 상태의 change가 발화되어 React 등 controlled 래퍼의 state를 오염시키고(옵션 등록 전 세팅한 초기값이 유실·서버 enum 기본값으로 저장되는 무증상 데이터 결함 — 실사용에서 관측), (2) 프로그램적 `value` 세팅이 사용자 이벤트로 위장되어 에코 루프를 만들던 문제 수정. 이제 `change`는 **사용자 상호작용**(옵션 클릭·키보드·칩 제거·지우기·드래그 확정)에서만 발화한다. `UInput`(blur 발화)·`UMenu`/`UTree`(핸들러 발화)는 원래 규약대로였으며 변경 없음.
 - `USlider`: 문서("드래그 완료 후 발생")와 달리 **드래그 중 매 pointermove마다 change가 연사**되던 결함 수정 — 이제 `pointerup` 시 값이 실제로 바뀐 경우 1회 발화. 단일 select에서 동일 옵션 재선택, 선택된 라디오 재클릭도 네이티브와 동일하게 미발화.
 - `USelect`/`URadio`/`URating`의 `onChangeValue()`가 `updated()` 내부에서 `validate()`→`requestUpdate()`를 호출해 v1.5.1 검증 아키텍처를 위반하고 "scheduled an update after an update completed" Lit 경고를 재유발하던 잔재 제거 — 검증 UI 갱신(`validate()`)은 사용자 상호작용 경로에서만 수행하고, 프로그램적 세팅은 base의 silent `setValidity()`로 internals만 갱신한다.
 - **마크업 `value` attribute 선언이 일반 문자열에서 silently null이 되던 갭 수정** — base가 `type: Object`(JSON.parse)여서 `<u-input value="hello">`·`<u-select value="b">`가 null로 해석됐다. 기본 해석을 raw 문자열로 바꾸고, `u-rating`/`u-slider`는 숫자, `u-select`(multiple)/`u-slider`(range)는 JSON 배열(`value='["a","b"]'`)을 지원한다.
@@ -148,10 +148,10 @@ u-tag { --tag-padding-block: 4px; --tag-padding-inline: 10px; }
 ## [1.6.0] - 2026-07-16
 
 ### Added
-- `UCopyButton`(`u-copy-button`): **인라인 텍스트 라벨** 지원 — `label` prop을 지정하면 아이콘 옆에 보이는 텍스트 라벨을 렌더한다(예: `label="결과 복사"`). 지금까지 u-copy-button은 아이콘 전용(기본 슬롯은 툴팁으로 소비)이라 "📋 결과 복사"처럼 라벨이 붙은 복사 버튼을 표현할 수 없어, 소비자가 검증된 클립보드 로직(취소 가능 `copy` ClipboardEvent + copied 상태 + 아이콘 토글)을 재사용하지 못하고 자체 재구현하던 역량 갭을 해소(ISSUE-20260715-ucopybutton-no-inline-label). 비파괴 — `label` 미지정 시 기존 아이콘 전용 형태(및 기본 슬롯=툴팁 의미)를 그대로 유지한다. 라벨 지정 시 내부적으로 `u-button`(아이콘 prefix + 텍스트)으로 렌더하고, 클립보드 로직은 두 형태에서 동일하다. online-tools(NT-U4) dogfooding에서 발견.
+- `UCopyButton`(`u-copy-button`): **인라인 텍스트 라벨** 지원 — `label` prop을 지정하면 아이콘 옆에 보이는 텍스트 라벨을 렌더한다(예: `label="결과 복사"`). 지금까지 u-copy-button은 아이콘 전용(기본 슬롯은 툴팁으로 소비)이라 "📋 결과 복사"처럼 라벨이 붙은 복사 버튼을 표현할 수 없어, 소비자가 검증된 클립보드 로직(취소 가능 `copy` ClipboardEvent + copied 상태 + 아이콘 토글)을 재사용하지 못하고 자체 재구현하던 역량 갭을 해소. 비파괴 — `label` 미지정 시 기존 아이콘 전용 형태(및 기본 슬롯=툴팁 의미)를 그대로 유지한다. 라벨 지정 시 내부적으로 `u-button`(아이콘 prefix + 텍스트)으로 렌더하고, 클립보드 로직은 두 형태에서 동일하다. online-tools(NT-U4)
 
 ### Fixed
-- `u-drawer`/`u-dialog`: **테마 토큰 미정의 시 패널이 투명하게 렌더**되어 모달이 "안 뜬 것처럼" 보이던 결함 수정(ISSUE-20260715-uoverlay-panel-token-no-fallback). backdrop(`--u-overlay-bg-color`)에는 폴백이 있는데 패널 배경/테두리(`--u-panel-bg-color`/`--u-border-color`)에는 폴백이 없어, `Theme.init()`로 토큰을 주입하지 않은 소비자에게 backdrop만 흐려지고 패널은 투명하게 떠 슬롯 콘텐츠가 뒤 페이지와 겹쳐 읽히던 footgun. backdrop과 동일 정책으로 패널 배경에 `Canvas`, 테두리에 `color-mix(in srgb, CanvasText 20%, Canvas)` CSS 시스템 컬러 폴백을 부여 — 토큰 미정의 소비자도 라이트·다크 자동 적응되는 가시 패널을 얻고, 토큰 정의 소비자는 기존과 동일(폴백 미사용). 실 브라우저 렌더 회귀 가드 추가. online-tools(NT-U2) dogfooding에서 발견.
+- `u-drawer`/`u-dialog`: **테마 토큰 미정의 시 패널이 투명하게 렌더**되어 모달이 "안 뜬 것처럼" 보이던 결함 수정. backdrop(`--u-overlay-bg-color`)에는 폴백이 있는데 패널 배경/테두리(`--u-panel-bg-color`/`--u-border-color`)에는 폴백이 없어, `Theme.init()`로 토큰을 주입하지 않은 소비자에게 backdrop만 흐려지고 패널은 투명하게 떠 슬롯 콘텐츠가 뒤 페이지와 겹쳐 읽히던 footgun. backdrop과 동일 정책으로 패널 배경에 `Canvas`, 테두리에 `color-mix(in srgb, CanvasText 20%, Canvas)` CSS 시스템 컬러 폴백을 부여 — 토큰 미정의 소비자도 라이트·다크 자동 적응되는 가시 패널을 얻고, 토큰 정의 소비자는 기존과 동일(폴백 미사용). 실 브라우저 렌더 회귀 가드 추가. online-tools(NT-U2)
 
 ## [1.5.1] - 2026-07-07
 
@@ -196,7 +196,7 @@ u-tag { --tag-padding-block: 4px; --tag-padding-inline: 10px; }
 ## [1.3.3] - 2026-07-03
 
 ### Fixed
-- `UCheckbox`: 클래스 JSDoc에 `@event change` 태그 누락으로 공식 React 래퍼(`@iyulab/components/react`)의 `UCheckbox` props가 빈 `{}`로 생성되어 `onChange`가 노출되지 않던 결함 수정. 런타임은 `this.relay(e)`로 `change`를 정상 발생시키지만, 래퍼 생성기가 `@event` 태그(또는 `this.fire<T>('name')` 리터럴)로만 이벤트 맵을 도출하므로 태그가 없으면 이벤트가 누락된다. (`USwitch`/`UInput`/`UTextarea`는 태그 보유 — `relay()`를 쓰는 폼 컨트롤 중 `UCheckbox`만 누락되어 있었음.) yesung-oms dogfooding에서 발견.
+- `UCheckbox`: 클래스 JSDoc에 `@event change` 태그 누락으로 공식 React 래퍼(`@iyulab/components/react`)의 `UCheckbox` props가 빈 `{}`로 생성되어 `onChange`가 노출되지 않던 결함 수정. 런타임은 `this.relay(e)`로 `change`를 정상 발생시키지만, 래퍼 생성기가 `@event` 태그(또는 `this.fire<T>('name')` 리터럴)로만 이벤트 맵을 도출하므로 태그가 없으면 이벤트가 누락된다. (`USwitch`/`UInput`/`UTextarea`는 태그 보유 — `relay()`를 쓰는 폼 컨트롤 중 `UCheckbox`만 누락되어 있었음.)
 
 ### Changed
 - `plugins/vite-plugin-react-wrapper.ts`: `@customElement` 컴포넌트가 `this.relay(...)`/`this.dispatchEvent(...)`로 이벤트를 발생시키지만 수집된 이벤트가 0건이면 빌드 시 경고를 출력하도록 개선 — 위 `UCheckbox`류의 "태그 누락으로 이벤트가 조용히 사라지는" 결함 재발 방지. (`this.fire<T>('name')`은 이름이 정적으로 잡히므로 경고 대상이 아님.)
@@ -222,7 +222,7 @@ u-tag { --tag-padding-block: 4px; --tag-padding-inline: 10px; }
 ## [1.2.1] - 2026-07-02
 
 ### Fixed
-- `plugins/vite-plugin-react-wrapper.ts`: 생성된 `dist/react/*.js` 래퍼가 `import { X } from '...'`와 `export const X = ...`를 동일 스코프에 선언해 **모든** React 래퍼(및 barrel `@iyulab/components/react`)가 `SyntaxError: Identifier 'X' has already been declared`로 로드 자체가 실패하던 결함 수정. `.d.ts` 템플릿은 이미 `as ${className}Element` 별칭을 썼으나 `.js` 템플릿만 누락되어 있었음 — `.js` 생성기에 동일한 별칭을 적용해 근본 수정. 이 서브패스를 문서화·검증하는 과정에서 발견(README 예시를 실제로 import해보다가 SyntaxError 재현).
+- `plugins/vite-plugin-react-wrapper.ts`: 생성된 `dist/react/*.js` 래퍼가 `import { X } from '...'`와 `export const X =...`를 동일 스코프에 선언해 **모든** React 래퍼(및 barrel `@iyulab/components/react`)가 `SyntaxError: Identifier 'X' has already been declared`로 로드 자체가 실패하던 결함 수정. `.d.ts` 템플릿은 이미 `as ${className}Element` 별칭을 썼으나 `.js` 템플릿만 누락되어 있었음 — `.js` 생성기에 동일한 별칭을 적용해 근본 수정. 이 서브패스를 문서화·검증하는 과정에서 발견(README 예시를 실제로 import해보다가 SyntaxError 재현).
 
 ## [1.2.0] - 2026-07-02
 
