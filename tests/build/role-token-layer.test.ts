@@ -170,3 +170,34 @@ describe('역할 토큰 층', () => {
     }
   });
 });
+
+describe('스케일 토큰 — 반경', () => {
+  const STEPS = ['none', 'sm', 'md', 'lg', 'xl', 'pill', 'circle'];
+
+  it('두 시트가 반경 스케일을 같은 값으로 정의한다', () => {
+    const map = (sheet: string) => {
+      const css = read(join(root, 'src/assets/styles', sheet));
+      return Object.fromEntries(
+        [...css.matchAll(/^\s*(--u-radius-[\w-]+)\s*:\s*([^;]+);/gm)].map(m => [m[1], m[2].trim()]),
+      );
+    };
+    const light = map('light.css');
+    expect(Object.keys(light).sort()).toEqual(STEPS.map(s => `--u-radius-${s}`).sort());
+    // 반경은 테마와 무관하다 — 색과 달리 시트별로 달라질 이유가 없다.
+    expect(map('dark.css')).toEqual(light);
+  });
+
+  it('컴포넌트가 스케일에 있는 반경을 리터럴로 쓰지 않는다', () => {
+    // em 기반·다중값·calc 반경은 스케일 밖이다(폰트 크기를 따라야 하거나 기하 계산이다).
+    // 여기서 막는 것은 **스케일에 이미 있는 값**을 리터럴로 다시 쓰는 것이다.
+    const SCALE = new Set(['0', '3px', '4px', '6px', '8px', '999px', '9999px', '50%']);
+    const offenders: string[] = [];
+    for (const f of styleFiles()) {
+      for (const m of read(f).matchAll(/border-radius:\s*([^;]+);/g)) {
+        const v = m[1].trim();
+        if (SCALE.has(v)) offenders.push(`${basename(f)}: ${v}`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+});

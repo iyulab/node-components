@@ -68,7 +68,7 @@ export const styles = css`
      * 테두리는 CanvasText 원색이 과해 옅게 혼합.
      */
     border: 1px solid var(--u-border-color, color-mix(in srgb, CanvasText 20%, Canvas));
-    border-radius: 6px;
+    border-radius: var(--u-radius-lg);
     background: var(--u-panel-bg-color, Canvas);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     pointer-events: auto;
@@ -98,7 +98,7 @@ export const styles = css`
     flex-shrink: 0;
     padding: 4px;
     font-size: inherit;
-    border-radius: 4px;
+    border-radius: var(--u-radius-md);
   }
 
   .body {

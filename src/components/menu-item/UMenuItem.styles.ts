@@ -137,7 +137,7 @@ export const styles = css`
     flex-direction: column;
     padding: 4px;
     border: 1px solid var(--u-border-color);
-    border-radius: 4px;
+    border-radius: var(--u-radius-md);
     background-color: var(--u-panel-bg-color);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     transform: scale(0.8);

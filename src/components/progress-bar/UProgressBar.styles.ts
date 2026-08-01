@@ -37,7 +37,7 @@ export const styles = css`
 
   /* === Rounded === */
   :host([rounded]) {
-    border-radius: 9999px;
+    border-radius: var(--u-radius-pill);
   }
 
   /* === Indeterminate === */

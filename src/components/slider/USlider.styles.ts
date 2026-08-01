@@ -65,7 +65,7 @@ export const styles = css`
     align-items: center;
     justify-content: center;
     border: 2px solid var(--slider-thumb-border-color);
-    border-radius: 50%;
+    border-radius: var(--u-radius-circle);
     background: var(--slider-thumb-color);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -85,7 +85,7 @@ export const styles = css`
     width: auto;
     height: auto;
     border: none;
-    border-radius: 0;
+    border-radius: var(--u-radius-none);
     background: transparent;
     box-shadow: none;
   }
@@ -104,7 +104,7 @@ export const styles = css`
     width: var(--slider-mark-size);
     height: var(--slider-mark-size);
     border: 2px solid var(--slider-mark-border-color);
-    border-radius: 50%;
+    border-radius: var(--u-radius-circle);
     background: var(--slider-mark-color);
   }
 

@@ -23,7 +23,7 @@ export const styles = css`
     font-size: 14px;
     font-weight: 500;
     line-height: 1.5;
-    border-radius: 6px;
+    border-radius: var(--u-radius-lg);
     background-color: transparent;
 
     transition: all 0.2s ease;
@@ -69,7 +69,7 @@ export const styles = css`
     visibility: hidden;
   }
   :host([rounded]) {
-    border-radius: 9999px;
+    border-radius: var(--u-radius-pill);
   }
   :host([has-spinner]) u-spinner {
     display: none;

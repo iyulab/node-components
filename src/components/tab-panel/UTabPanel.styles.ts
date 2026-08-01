@@ -179,11 +179,11 @@ export const styles = css`
     gap: 0.25em;
     padding: 0.25em;
     background-color: var(--u-neutral-100);
-    border-radius: 8px;
+    border-radius: var(--u-radius-xl);
   }
   :host([variant="pill"]) ::slotted(u-tab) {
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: var(--u-radius-lg);
   }
   :host([variant="pill"]) ::slotted(u-tab[active]) {
     border-color: var(--u-border-color);

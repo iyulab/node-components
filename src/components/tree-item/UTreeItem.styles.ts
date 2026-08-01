@@ -67,7 +67,7 @@ export const styles = css`
     justify-content: center;
     width: 18px;
     height: 18px;
-    border-radius: 3px;
+    border-radius: var(--u-radius-sm);
   }
   .prefix-toggler u-icon {
     font-size: 12px;
@@ -86,7 +86,7 @@ export const styles = css`
     justify-content: center;
     width: 16px;
     height: 16px;
-    border-radius: 3px;
+    border-radius: var(--u-radius-sm);
     border: 1.5px solid var(--u-input-border-color);
     background-color: transparent;
     transition: background-color 0.15s ease, border-color 0.15s ease;

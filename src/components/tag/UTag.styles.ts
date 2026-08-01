@@ -112,7 +112,7 @@ export const styles = css`
     display: inline-flex;
     font-size: 12px;
     font-weight: 500;
-    border-radius: 4px;
+    border-radius: var(--u-radius-md);
 
     --tag-padding-block: 0.25em;
     --tag-padding-inline: 0.5em;
@@ -137,7 +137,7 @@ export const styles = css`
     border-radius: inherit;
   }
   :host([rounded]) {
-    border-radius: 999px;
+    border-radius: var(--u-radius-pill);
   }
 
   /* === Slots === */

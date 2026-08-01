@@ -86,7 +86,7 @@ export const styles = css`
     flex-shrink: 0;
     padding: 4px;
     font-size: inherit;
-    border-radius: 4px;
+    border-radius: var(--u-radius-md);
   }
 
   .body {

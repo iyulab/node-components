@@ -10,7 +10,7 @@ export const styles = css`
     font-family: var(--u-font-display, inherit);
     font-size: 12px;
     line-height: 1.25;
-    border-radius: 4px;
+    border-radius: var(--u-radius-md);
     background-color: var(--u-tooltip-bg-color);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
     transform: scale(0.9);

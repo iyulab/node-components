@@ -20,6 +20,7 @@ function declarations(css) {
 }
 
 const isPalette = name => /^--u-[a-z]+-\d+$/.test(name);
+const isScale = name => /^--u-radius-/.test(name);
 const roleOf = name => {
   const m = name.match(/^--u-([a-z]+)-color(-[a-z]+)?$/);
   return m && ROLES.includes(m[1]) ? m : null;
@@ -32,7 +33,8 @@ export function renderDesignTokensDoc(root) {
   const palette = decls.filter(([n]) => isPalette(n));
   const roles = decls.filter(([n]) => roleOf(n));
   const roleNames = new Set(roles.map(([n]) => n));
-  const semantic = decls.filter(([n]) => !isPalette(n) && !roleNames.has(n));
+  const scale = decls.filter(([n]) => isScale(n));
+  const semantic = decls.filter(([n]) => !isPalette(n) && !isScale(n) && !roleNames.has(n));
 
   // 팔레트를 hue 별로 묶어 shade 수만 보고한다 (11단 × 10 hue 를 전부 나열하면 문서가 죽는다)
   const hues = new Map();
@@ -54,7 +56,7 @@ export function renderDesignTokensDoc(root) {
     '`dark.css` 는 같은 이름을 같은 구조로 정의하며 **값만** 다릅니다 — 다크 대응을 위해',
     '컴포넌트나 소비자가 할 일은 없습니다.',
     '',
-    `**역할 ${roles.length} · 시맨틱 ${semantic.length} · 팔레트 ${palette.length}**`,
+    `**역할 ${roles.length} · 스케일 ${scale.length} · 시맨틱 ${semantic.length} · 팔레트 ${palette.length}**`,
     '',
     '---',
     '',
@@ -82,6 +84,16 @@ export function renderDesignTokensDoc(root) {
     '> `primary` 와 `info` 는 기본 색상이 같지만 **다른 역할**입니다 — 리브랜딩은 `primary` 만 바꿉니다.',
     '',
     '⚠ `color` 속성(`<u-tag color="purple">`)은 **장식 축**이라 역할 오버라이드에 반응하지 않습니다.',
+    '',
+    '---',
+    '',
+    '## 스케일 토큰',
+    '',
+    '색이 아닌 축입니다. 테마와 무관하므로 두 시트가 같은 값을 가집니다.',
+    '',
+    '| 토큰 | 값 |',
+    '|---|---|',
+    ...scale.map(([n, v]) => `| \`${n}\` | \`${v}\` |`),
     '',
     '---',
     '',

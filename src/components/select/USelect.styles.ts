@@ -79,7 +79,7 @@ export const styles = css`
   /* ===== Variant: underlined ===== */
   :host([variant="underlined"]) .container {
     border: none;
-    border-radius: 0;
+    border-radius: var(--u-radius-none);
     background-color: transparent;
     padding-left: 0;
     padding-right: 0;
@@ -107,7 +107,7 @@ export const styles = css`
   /* ===== Variant: borderless ===== */
   :host([variant="borderless"]) .container {
     border: none;
-    border-radius: 0;
+    border-radius: var(--u-radius-none);
     background-color: transparent;
     padding: 0;
     box-shadow: none;
@@ -171,7 +171,7 @@ export const styles = css`
     max-height: var(--select-popover-max-height);
     padding: 4px;
     border: 1px solid var(--u-border-color);
-    border-radius: 6px;
+    border-radius: var(--u-radius-lg);
     background-color: var(--u-panel-bg-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     overflow-x: hidden;

@@ -9,7 +9,7 @@ export const styles = css`
     display: flex;
     flex-direction: column;
     min-width: 160px;
-    border-radius: 6px;
+    border-radius: var(--u-radius-lg);
     background-color: var(--u-panel-bg-color);
 
     --menu-padding: 4px;
@@ -30,7 +30,7 @@ export const styles = css`
   :host([borderless]) {
     --menu-padding: 0;
     --menu-border-width: 0;
-    border-radius: 0;
+    border-radius: var(--u-radius-none);
     background-color: transparent;
   }
 `;

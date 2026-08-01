@@ -100,7 +100,7 @@ export const styles = css`
     width: 1.25em;
     height: 1.25em;
     border: 2px solid var(--u-neutral-400);
-    border-radius: 50%;
+    border-radius: var(--u-radius-circle);
     background-color: var(--u-bg-color);
     transition: border-color 0.2s ease, background-color 0.2s ease;
   }
@@ -124,7 +124,7 @@ export const styles = css`
     display: block;
     width: 0.45em;
     height: 0.45em;
-    border-radius: 50%;
+    border-radius: var(--u-radius-circle);
     background-color: var(--option-color-active);
     transform: scale(0);
     transition: transform 0.15s ease;

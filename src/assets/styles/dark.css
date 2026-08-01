@@ -176,6 +176,18 @@
   --u-danger-color-weak:         var(--u-red-500);
   --u-danger-color:              var(--u-red-600);
   --u-danger-color-strong:       var(--u-red-700);
+  /* ==========================================================================
+     Radius Scale — 모서리 반경
+     리터럴을 흩뿌리면 값이 갈린다(실제로 pill 이 999px/9999px 두 표기로 나뉘어 있었다).
+     ========================================================================== */
+  --u-radius-none:   0;
+  --u-radius-sm:     3px;
+  --u-radius-md:     4px;
+  --u-radius-lg:     6px;
+  --u-radius-xl:     8px;
+  --u-radius-pill:   9999px;
+  --u-radius-circle: 50%;
+
   /* Text Colors */
   --u-txt-color:             var(--u-neutral-900);
   --u-txt-color-inverse:     var(--u-neutral-100);

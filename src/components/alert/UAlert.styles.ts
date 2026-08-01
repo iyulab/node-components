@@ -39,7 +39,7 @@ export const styles = css`
     min-width: 200px;
     max-width: 100%;
     max-height: 50vh;
-    border-radius: 8px;
+    border-radius: var(--u-radius-xl);
     box-shadow: 0 4px 12px var(--u-shadow-color-normal);
     
     opacity: 0;
@@ -122,7 +122,7 @@ export const styles = css`
     flex-shrink: 0;
     padding: 4px;
     font-size: inherit;
-    border-radius: 4px;
+    border-radius: var(--u-radius-md);
   }
 
   .content {

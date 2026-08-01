@@ -18,13 +18,13 @@ export const styles = css`
 
   /* 모양 설정 */
   :host([shape="rectangle"]) {
-    border-radius: 4px;
+    border-radius: var(--u-radius-md);
   }
   :host([shape="circle"]) {
-    border-radius: 50%;
+    border-radius: var(--u-radius-circle);
   }
   :host([shape="rounded"]) {
-    border-radius: 9999px;
+    border-radius: var(--u-radius-pill);
   }
 
   /* 애니메이션 효과 설정 */

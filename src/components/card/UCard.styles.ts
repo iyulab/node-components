@@ -3,7 +3,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     display: flex;
-    border-radius: 8px;
+    border-radius: var(--u-radius-xl);
     background-color: var(--u-panel-bg-color);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;

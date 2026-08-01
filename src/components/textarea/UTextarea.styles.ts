@@ -61,7 +61,7 @@ export const styles = css`
   /* ===== Variant: underlined ===== */
   :host([variant="underlined"]) .container {
     border: none;
-    border-radius: 0;
+    border-radius: var(--u-radius-none);
     background-color: transparent;
     padding-left: 0;
     padding-right: 0;
@@ -89,7 +89,7 @@ export const styles = css`
   /* ===== Variant: borderless ===== */
   :host([variant="borderless"]) .container {
     border: none;
-    border-radius: 0;
+    border-radius: var(--u-radius-none);
     background-color: transparent;
     padding: 0;
     box-shadow: none;

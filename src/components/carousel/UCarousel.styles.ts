@@ -94,7 +94,7 @@ export const styles = css`
     height: 10px;
     padding: 0;
     border: none;
-    border-radius: 50%;
+    border-radius: var(--u-radius-circle);
     background-color: var(--u-neutral-400);
     cursor: pointer;
     transition: all 0.2s ease;

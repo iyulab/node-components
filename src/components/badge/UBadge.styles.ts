@@ -34,14 +34,14 @@ export const styles = css`
     border-radius: 0.2em;
   }
   :host([variant="pill"]) {
-    border-radius: 999px;
+    border-radius: var(--u-radius-pill);
   }
   :host([variant="dot"]) {
     width: 0.6em;
     height: 0.6em;
     min-width: 0.6em;
     min-height: 0.6em;
-    border-radius: 50%;
+    border-radius: var(--u-radius-circle);
   }
 
   /* === Color (색상) === */

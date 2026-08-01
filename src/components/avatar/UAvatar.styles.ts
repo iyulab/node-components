@@ -17,10 +17,10 @@ export const styles = css`
   }
 
   :host([shape="circle"]) {
-    border-radius: 50%;
+    border-radius: var(--u-radius-circle);
   }
   :host([shape="square"]) {
-    border-radius: 0;
+    border-radius: var(--u-radius-none);
   }
   :host([shape="rounded"]) {
     border-radius: 0.375em;
