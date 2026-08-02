@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --tab-panel-color: var(--u-primary-color, #1E88E5);
+    --tab-panel-color: var(--u-primary-color, #1976D2);
   }
 
   :host {

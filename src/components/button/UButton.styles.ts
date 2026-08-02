@@ -3,7 +3,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     /* --btn-color 하나만 정해지면 hover/active/surface/outline 톤이 전부 자동 파생 */
-    --btn-color: var(--u-primary-color, #1E88E5);
+    --btn-color: var(--u-primary-color, #1976D2);
     --btn-color-hover: color-mix(in srgb, var(--btn-color) 85%, black);
     --btn-color-active: color-mix(in srgb, var(--btn-color) 70%, black);
     --btn-color-surface: color-mix(in srgb, var(--btn-color) 12%, var(--u-bg-color, #FFFFFF));
@@ -148,19 +148,21 @@ export const styles = css`
     background-color: var(--u-bg-color-active, #EEEEEE);
   }
 
-  /* link: blue 링크 스타일 (기본값, color="neutral"일 때도 유지 — 기존 동작 보존) */
+  /* link: blue 링크 스타일 (기본값, color="neutral"일 때도 유지 — 기존 동작 보존)
+     ★종전 3단(weak → color → strong)은 쉬는 상태가 --u-primary-color-weak (흰 바탕 3.12)라
+     링크 글자가 AA 미달이었고, 그 사이 토큰 층의 --u-link-txt-color 는 어디에서도 쓰이지
+     않았다. 링크 색을 정의해 둔 토큰을 링크가 무시하고 있었던 셈이다.
+     쉬는 상태를 그 토큰으로 되돌리고, 강조는 밑줄과 -strong 한 단으로 표현한다. */
   :host([variant="link"]) {
-    color: var(--u-primary-color-weak, #2196F3);
+    color: var(--u-link-txt-color, #1565C0);
     --btn-border-color: transparent;
     background-color: transparent;
     --btn-padding-inline: 0;
   }
-  :host([variant="link"]:hover) {
-    color: var(--u-primary-color, #1E88E5);
-    text-decoration: underline;
-  }
+  :host([variant="link"]:hover),
   :host([variant="link"]:active) {
-    color: var(--u-primary-color-strong, #1976D2);
+    color: var(--u-primary-color-strong, #1565C0);
+    text-decoration: underline;
   }
   /* link + 명시적 non-neutral color: 링크 자체 색상을 재정의 (예: 파괴적 액션 링크) */
   :host([variant="link"][color]:not([color="neutral"])) {

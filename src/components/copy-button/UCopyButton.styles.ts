@@ -14,11 +14,11 @@ export const styles = css`
   }
 
   :host([copied]) u-icon-button {
-    color: var(--u-success-color-weak, #4CAF50);
+    color: var(--u-success-color-strong, #1B5E20);
   }
 
   /* 라벨 형태(아이콘+텍스트): 복사 완료 시 아이콘/텍스트를 성공색으로 강조 */
   :host([copied]) u-button {
-    color: var(--u-success-color-weak, #4CAF50);
+    color: var(--u-success-color-strong, #1B5E20);
   }
 `;

@@ -89,7 +89,10 @@ export function* parseFallbacks(src) {
       if (src[i] === '(') depth++;
       else if (src[i] === ')' && --depth === 0) break;
     }
-    yield { name: m[1], literal: src.slice(start, i).trim() };
+    // start/end 는 --refresh 가 리터럴만 정확히 갈아끼우기 위해 필요하다.
+    // 문자열 치환으로는 안 된다 — 같은 `var(--u-x, #ABC)` 가 파일 안에 여러 번 나오고,
+    // 그중 일부만 갱신 대상인 경우를 구별할 수 없다.
+    yield { name: m[1], literal: src.slice(start, i).trim(), start, end: i };
   }
 }
 
@@ -171,6 +174,52 @@ export function planFallbacks(root, { tokens } = {}) {
   return { literals, edits, skipped };
 }
 
+/**
+ * **스테일 폴백 갱신** — 시트 값이 바뀌었을 때 이미 배선된 리터럴을 다시 굽는다.
+ *
+ * ★왜 별도 함수인가: `planFallbacks` 는 **폴백이 없는** 참조만 본다(그것이 옳다 —
+ * 이미 배선된 자리를 다시 쓰면 Cycle 118 의 여백 결정을 조용히 덮어쓴다). 그 결과
+ * *"폴백은 손으로 쓰지 말고 생성한다"* 는 원칙에 **갱신 경로가 없었다** — 역할 토큰
+ * 매핑을 한 번 바꿀 때마다 수십 곳을 손으로 고쳐야 했고, 실제로 직전 릴리스에서
+ * 19곳을 그렇게 고쳤다. 원칙의 절반만 구현돼 있었던 셈이다.
+ *
+ * 판정은 `tests/build/token-fallbacks.test.ts` 의 스테일 검사와 **같은 규칙**이다:
+ * 시스템 색 폴백은 다른 전략이므로 건드리지 않고, 제외 토큰도 건드리지 않는다.
+ */
+export function refreshFallbacks(root, { tokens, write = false, sheet, sourceGlob } = {}) {
+  // sheet 를 밖에서 줄 수 있는 이유: **소비 패키지도 같은 토큰의 폴백을 배선한다.**
+  // 그쪽 리포에는 시트가 없으므로(이 패키지가 정본) 경로를 주입받아야 한다.
+  // 생성기를 패키지마다 복사하면 `DL-125-1` 이 기록한 드리프트 면이 그만큼 늘어난다.
+  const literals = resolveTokens(readFileSync(sheet ?? join(root, SHEET), 'utf-8'));
+  const only = tokens && tokens.length ? new Set(tokens) : null;
+  const stale = [];
+
+  for (const rel of globSync(sourceGlob ?? SOURCE_GLOB, { cwd: root })) {
+    const path = join(root, rel);
+    const src = readFileSync(path, 'utf-8');
+    const hits = [...parseFallbacks(src)].filter(({ name, literal }) => {
+      if (only && !only.has(name)) return false;
+      if (isExcluded(name)) return false;
+      if (SYSTEM_FALLBACK.pattern.test(literal)) return false;
+      const expected = literals.get(name);
+      return expected !== undefined && expected !== literal;
+    });
+    if (!hits.length) continue;
+
+    for (const h of hits) stale.push({ rel, name: h.name, from: h.literal, to: literals.get(h.name) });
+
+    if (write) {
+      // 뒤에서부터 잘라 붙인다 — 앞에서 하면 뒤 항목의 인덱스가 밀린다.
+      let out = src;
+      for (const h of [...hits].reverse()) {
+        out = out.slice(0, h.start) + literals.get(h.name) + out.slice(h.end);
+      }
+      writeFileSync(path, out, 'utf-8');
+    }
+  }
+  return stale;
+}
+
 export function applyFallbacks(root, options = {}) {
   const plan = planFallbacks(root, options);
   for (const { path, hits } of plan.edits) {
@@ -190,6 +239,22 @@ if (invokedDirectly) {
   const write = process.argv.includes('--write');
   const tokenArg = process.argv.find(a => a.startsWith('--token='));
   const tokens = tokenArg ? tokenArg.slice('--token='.length).split(',').filter(Boolean) : null;
+
+  // --refresh: 배선이 아니라 **갱신**. 시트 값이 바뀐 뒤 스테일 리터럴을 다시 굽는다.
+  if (process.argv.includes('--refresh')) {
+    const stale = refreshFallbacks(root, { tokens, write });
+    console.log(`${write ? '갱신' : '갱신 계획'}: ${stale.length}곳`);
+    const byToken = new Map();
+    for (const s of stale) {
+      const e = byToken.get(s.name) || { count: 0, from: s.from, to: s.to };
+      e.count++;
+      byToken.set(s.name, e);
+    }
+    for (const [name, e] of [...byToken].sort((a, b) => b[1].count - a[1].count))
+      console.log(`  ${String(e.count).padStart(3)}  ${name.padEnd(32)} ${e.from} → ${e.to}`);
+    if (!write && stale.length) console.log('\n--write 를 붙이면 적용된다.');
+    process.exit(0);
+  }
 
   const plan = write
     ? applyFallbacks(root, { tokens })

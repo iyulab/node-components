@@ -23,12 +23,13 @@ describe('토큰 폴백 — 시트 부재 내성', () => {
   describe('체인 해석', () => {
     it('모든 토큰이 리터럴까지 풀린다 (순환·미정의 0)', () => {
       // 역할 토큰 층(Cycle 108)이 체인을 한 단 깊게 만들었다:
-      //   --u-txt-color-hover → var(--u-primary-color) → var(--u-blue-600) → #1E88E5
+      //   --u-txt-color-hover → var(--u-primary-color-strong) → var(--u-blue-800) → #1565C0
       // 한 단만 풀면 폴백 자리에 또 var() 가 들어가 아무것도 해결되지 않는다.
+      // (경유 대상이 -color 에서 -strong 으로 바뀐 이유는 role-token-layer.test.ts 참조)
       const literals = resolveTokens(sheet('light'));
       const unresolved = [...literals].filter(([, v]) => /var\(/.test(v as string));
       expect(unresolved).toEqual([]);
-      expect(literals.get('--u-txt-color-hover')).toBe('#1E88E5');
+      expect(literals.get('--u-txt-color-hover')).toBe('#1565C0');
       expect(literals.get('--u-txt-color')).toBe('#212121');
     });
 

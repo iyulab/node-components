@@ -51,7 +51,11 @@ export const styles = css`
   }
   :host([color="blue"]) {
     color: var(--u-neutral-0, #FFFFFF);
-    background-color: var(--u-primary-color, #1E88E5);
+    /* ★장식 축이므로 팔레트를 직접 읽는다 — 여기만 역할 토큰(--u-primary-color)이었다.
+       그 탓에 브랜드를 바꾸면 color="blue" 배지만 함께 움직였다(color="green" 등 8색은
+       안 움직인다). u-tag 에는 이 오염을 막는 네거티브 컨트롤이 있는데 u-badge 에는
+       없어서 드러나지 않았다. 단은 이 컴포넌트의 다른 장식 색과 같은 500 으로 맞춘다. */
+    background-color: var(--u-blue-500, #2196F3);
   }
   :host([color="green"]) {
     color: var(--u-neutral-0, #FFFFFF);

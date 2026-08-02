@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --checkbox-fill-color: var(--u-primary-color, #1E88E5);
+    --checkbox-fill-color: var(--u-primary-color, #1976D2);
     --checkbox-color: inherit;
     --checkbox-border-color: var(--u-input-border-color, #E0E0E0);
     --checkbox-background-color: var(--u-input-bg-color, #FFFFFF);
@@ -27,10 +27,10 @@ export const styles = css`
     cursor: default;
   }
   :host([invalid]) {
-    --checkbox-border-color: var(--u-danger-color, #E53935);
+    --checkbox-border-color: var(--u-danger-color, #D32F2F);
   }
   :host([invalid]) .footer {
-    color: var(--u-danger-color, #E53935);
+    color: var(--u-danger-color-strong, #C62828);
   }
   :host([checked]) .checkbox u-icon,
   :host([indeterminate]) .checkbox u-icon {
@@ -104,7 +104,7 @@ export const styles = css`
   }
   input:focus-visible ~ .checkbox {
     box-shadow:
-      0 0 0 1px var(--u-input-border-color-focus, #1E88E5),
+      0 0 0 1px var(--u-input-border-color-focus, #1976D2),
       0 0 0 3px rgba(59, 130, 246, 0.22);
   }
 
@@ -137,7 +137,7 @@ export const styles = css`
   }
 
   .required {
-    color: var(--u-danger-color, #E53935);
+    color: var(--u-danger-color-strong, #C62828);
     font-weight: 500;
   }
 
@@ -149,6 +149,6 @@ export const styles = css`
   }
 
   :host([invalid]) .description {
-    color: var(--u-danger-color, #E53935);
+    color: var(--u-danger-color-strong, #C62828);
   }
 `;

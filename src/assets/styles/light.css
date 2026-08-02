@@ -142,40 +142,53 @@
      단인지 같은 모순이 생긴다.
      ========================================================================== */
 
+  /* ★단이 팔레트 shade 와 1:1 이 아니다 — **대비로 고른다.**
+     `-color` 는 `--u-*-txt-color` 를 받는 면이고 `-strong` 은 바탕 위의 글자다.
+     라이트에서는 바탕도 on-color 도 흰색이라 두 요구가 `contrast(shade, #FFF) ≥ 4.5`
+     하나로 합쳐지고, 그 단이 계열마다 다르다(blue 700 · red 700 · green 800).
+     Material 램프는 휘도가 아니라 색상 기준으로 만들어져 있어서 단 번호가 세기를
+     보장하지 않는다 — 값은 `tests/build/token-contrast.test.ts` 가 지킨다. */
+
   /* primary — 브랜드 · 강조 · 포커스 · 링크 */
   --u-primary-color-weakest:     var(--u-blue-200);
   --u-primary-color-weaker:      var(--u-blue-300);
   --u-primary-color-weak:        var(--u-blue-500);
-  --u-primary-color:             var(--u-blue-600);
-  --u-primary-color-strong:      var(--u-blue-700);
+  --u-primary-color:             var(--u-blue-700);  /* 4.60 ✓ (600 은 3.68 ✗) */
+  --u-primary-color-strong:      var(--u-blue-800);  /* 5.75 ✓ */
 
   /* info — 정보 안내 (primary 와 기본값은 같으나 역할이 다르다 — 브랜딩은 primary 만 바꾼다) */
   --u-info-color-weakest:        var(--u-blue-200);
   --u-info-color-weaker:         var(--u-blue-300);
   --u-info-color-weak:           var(--u-blue-500);
-  --u-info-color:                var(--u-blue-600);
-  --u-info-color-strong:         var(--u-blue-700);
+  --u-info-color:                var(--u-blue-700);
+  --u-info-color-strong:         var(--u-blue-800);
 
-  /* success — 성공 · 완료 */
+  /* success — 성공 · 완료
+     ⚠green 은 700 도 4.12 로 미달이라 두 단을 건너뛴다. 계열마다 통과 단이 다른 것이
+     이 층의 정상 상태다(단 번호를 맞추면 대비가 어긋난다). */
   --u-success-color-weakest:     var(--u-green-200);
   --u-success-color-weaker:      var(--u-green-300);
   --u-success-color-weak:        var(--u-green-500);
-  --u-success-color:             var(--u-green-600);
-  --u-success-color-strong:      var(--u-green-700);
+  --u-success-color:             var(--u-green-800);  /* 5.13 ✓ (600=3.30 · 700=4.12 ✗) */
+  --u-success-color-strong:      var(--u-green-900);  /* 7.87 ✓ */
 
   /* warning — 주의 */
   --u-warning-color-weakest:     var(--u-yellow-200);
   --u-warning-color-weaker:      var(--u-yellow-300);
   --u-warning-color-weak:        var(--u-yellow-500);
   --u-warning-color:             var(--u-yellow-600);
-  --u-warning-color-strong:      var(--u-yellow-700);
+  /* ★다른 계열은 -strong 이 shade-800~900 인데 warning 만 1000 이다 — 노랑 램프는
+     900 까지도 흰 바탕 2.65 로 미달이고, 1000(#8A4A00)에서 처음 6.86 이 된다.
+     그 값은 갈색에 가깝지만, 이 단의 용도는 **면이 아니라 글자·아이콘**이므로 색상보다
+     가독성이 먼저다(경고 문구를 어두운 호박색으로 쓰는 것은 보편 관행이다). */
+  --u-warning-color-strong:      var(--u-yellow-1000);
 
   /* danger — 오류 · 위험 · 유효성 실패 */
   --u-danger-color-weakest:      var(--u-red-200);
   --u-danger-color-weaker:       var(--u-red-300);
   --u-danger-color-weak:         var(--u-red-500);
-  --u-danger-color:              var(--u-red-600);
-  --u-danger-color-strong:       var(--u-red-700);
+  --u-danger-color:              var(--u-red-700);  /* 4.98 ✓ (600 은 4.23 ✗ — 오류 문구가 이 단이었다) */
+  --u-danger-color-strong:       var(--u-red-800);  /* 5.62 ✓ */
   /* ==========================================================================
      Radius Scale — 모서리 반경
      리터럴을 흩뿌리면 값이 갈린다(실제로 pill 이 999px/9999px 두 표기로 나뉘어 있었다).
@@ -215,10 +228,14 @@
   --u-info-txt-color:        #FFFFFF;
   --u-success-txt-color:     #FFFFFF;
   --u-danger-txt-color:      #FFFFFF;
-  --u-warning-txt-color:     #FFFFFF;
+  /* ★warning 만 어둡다 — 취향이 아니라 측정이다. 노랑은 **어떤 단도** 흰 글자로 AA 를
+     받치지 못한다(라이트 최대 2.65 @900, 그마저 갈색). 다른 넷처럼 단을 옮기는 수단이
+     없으므로 전경을 뒤집는다. `--u-neutral-1000` 은 라이트 #000000 / 다크 #FFFFFF 이라
+     한 줄로 양 테마를 만족한다(라이트 15.05 · 다크 4.65). */
+  --u-warning-txt-color:     var(--u-neutral-1000);
 
-  --u-txt-color-hover:       var(--u-primary-color);
-  --u-txt-color-active:      var(--u-primary-color);
+  --u-txt-color-hover:       var(--u-primary-color-strong);
+  --u-txt-color-active:      var(--u-primary-color-strong);
   --u-txt-color-disabled:    var(--u-neutral-400);
   /* neutral-500(#9E9E9E)은 흰 배경 대비 2.68 로 WCAG AA(4.5) 미달이었다.
      neutral-600(#757575) = 4.61 로 통과한다. 다크 매핑(neutral-700 = 5.43)은
@@ -232,8 +249,8 @@
   /* Icon Colors */
   --u-icon-color:            var(--u-neutral-700);
   --u-icon-color-inverse:    var(--u-neutral-0);
-  --u-icon-color-hover:      var(--u-primary-color);
-  --u-icon-color-active:     var(--u-primary-color);
+  --u-icon-color-hover:      var(--u-primary-color-strong);
+  --u-icon-color-active:     var(--u-primary-color-strong);
   --u-icon-color-disabled:   var(--u-neutral-400);
 
   /* Border Colors */
@@ -253,18 +270,34 @@
   --u-bg-color-hover:        var(--u-neutral-100);
   --u-bg-color-active:       var(--u-neutral-200);
   --u-bg-color-disabled:     var(--u-neutral-50);
+
+  /* ★면 높이 — 바탕에 인접해 있으면서 한 단 구분되는 크롬 면(툴바·표 헤더·푸터).
+     상호작용 상태(-hover/-active/-disabled)와 **다른 축**이다. 상태 이름에 높이를
+     얹으면 의미가 어긋난다(`DL-131-1`).
+     `--u-panel-bg-color` 와도 다르다 — 그쪽은 **떠 있는 패널**(카드·대화상자·메뉴)이라
+     라이트에서 페이지와 같은 흰색이고 그림자가 높이를 나른다. 크롬 면은 그림자가 없어
+     라이트에서도 틴트가 필요하다.
+     ⚠한 단만 정의한다. 두 단째의 실측 수요는 라이트 한쪽뿐이었다(다크에서는 소비 측
+     오버라이드가 두 값을 같은 단으로 합치고 있었다). */
+  --u-bg-color-raised:       var(--u-neutral-50);
  
   /* 유채색 표면 — 정보/성공/위험 상태의 '면'.
      역할 층의 유채색은 전경 5단뿐이라, 상태 배경이 필요한 컴포넌트는 팔레트를 직접
      읽고 다크를 손으로 보정해야 했다. 팔레트의 유채색 틴트는 다크에서 짓눌리므로
      (바탕 대비 델타의 다크/라이트 비 — 청색 0.38~0.54) 두 테마가 **같은 단이 아니라
      같은 세기**가 되도록 짝지었다. 실측 비: blue 1.09 · red 1.12 · green 0.91.
-     ⚠yellow(경고)는 빠져 있다 — 라이트 황색 틴트가 Δ0.071 로 거의 보이지 않아
-     어떤 짝을 골라도 비가 2배 밑으로 내려가지 않는다. 리터럴 재설계가 선행돼야 한다. */
+
+     ★**warning 이 합류했다(1.16.0 → 1.17.0).** 종전에는 *"세기를 맞출 단 짝이 없다"* 며
+     빠져 있었는데, 그 판정은 **shade-0 짝만** 재고 있었다. 노랑만 한 단 내려 잡으면
+     라이트 쪽 세기가 맞는다 — 바탕 대비 휘도 델타 실측:
+       blue-0 0.131 · red-0 0.132 · green-0 0.117 · **yellow-200 0.110**  (yellow-0 은 0.027)
+     ⚠단 이름이 계열마다 다른 것(yellow 만 200)은 이 층의 정상 상태다. 라이트 팔레트는
+     휘도 순이 아니므로 같은 단 번호가 같은 세기를 뜻하지 않는다. */
   --u-primary-bg-color:      var(--u-blue-0);
   --u-info-bg-color:         var(--u-blue-0);
   --u-success-bg-color:      var(--u-green-0);
   --u-danger-bg-color:       var(--u-red-0);
+  --u-warning-bg-color:      var(--u-yellow-200);
 
   --u-input-bg-color:        var(--u-neutral-0);
   --u-panel-bg-color:        var(--u-neutral-0);

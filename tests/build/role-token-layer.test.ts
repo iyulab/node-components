@@ -47,9 +47,21 @@ describe('역할 토큰 층', () => {
     }
   });
 
-  it('두 시트의 역할 토큰이 같은 팔레트 단으로 매핑된다 (다크 모드 정합)', () => {
-    // 팔레트 *값* 자체가 시트별로 다르므로(--u-blue-600 = #1E88E5 / #2A659D)
-    // 같은 shade 이름으로 매핑해야 양 테마가 동시에 성립한다.
+  it('두 시트가 같은 역할 토큰 집합을 정의한다 (키 집합만 — 단은 테마별로 다르다)', () => {
+    // ★이 검사는 원래 **값(팔레트 단)까지 같기를** 요구했다. 근거는
+    //   *"팔레트 값 자체가 시트별로 다르므로 같은 shade 이름으로 매핑해야 양 테마가
+    //     동시에 성립한다"*
+    // 였고, 그 전제가 **실측으로 반증됐다**(Cycle 141):
+    //
+    //   다크 팔레트는 휘도 순으로 설계됐지만 라이트(Material 2)는 색상 기준이다.
+    //   같은 shade 이름이 두 테마에서 같은 세기를 뜻하지 않는다 —
+    //     라이트 blue-600 #1E88E5 : 흰 글자 3.68 ✗
+    //     다크   blue-600 #2A659D : 흰 글자 6.09 ✓
+    //   같은 단으로 묶어 둔 탓에 **라이트만 미달인 결함**이 세 번 반복해서 나왔다.
+    //
+    // ⇒ 정합의 단위는 **단이 아니라 대비**다. 값은 token-contrast.test.ts 가 지키고,
+    //   여기서는 **키 집합**만 본다 — 한쪽 시트에만 있는 토큰은 여전히 결함이다
+    //   (그 토큰은 다른 테마에서 폴백이 발동해 반대 테마 색이 칠해진다).
     const map = (sheet: string) => {
       const css = read(join(root, 'src/assets/styles', sheet));
       const out: Record<string, string> = {};
@@ -58,7 +70,7 @@ describe('역할 토큰 층', () => {
       }
       return out;
     };
-    expect(map('dark.css')).toEqual(map('light.css'));
+    expect(Object.keys(map('dark.css')).sort()).toEqual(Object.keys(map('light.css')).sort());
   });
 
   it('역할 축에 팔레트 프리미티브 직참조가 없다', () => {
@@ -94,11 +106,15 @@ describe('역할 토큰 층', () => {
   });
 
   it('시맨틱 토큰이 역할 층을 경유한다', () => {
+    // ★hover/active 텍스트·아이콘은 `-strong` 을 경유한다(Cycle 141). `-color` 는 **면**의
+    // 단이라 다크에서 바탕 위 글자로 쓰면 3.07 로 미달한다 — 두 용도의 대비 요구가
+    // 다크에서 정반대 방향이기 때문이다(token-contrast.test.ts 참조).
+    // 테두리(`-focus`·`-invalid`)는 글자가 아니라 비텍스트(3.0)라 `-color` 로 충분하다.
     const routed = {
-      '--u-txt-color-hover': '--u-primary-color',
-      '--u-txt-color-active': '--u-primary-color',
-      '--u-icon-color-hover': '--u-primary-color',
-      '--u-icon-color-active': '--u-primary-color',
+      '--u-txt-color-hover': '--u-primary-color-strong',
+      '--u-txt-color-active': '--u-primary-color-strong',
+      '--u-icon-color-hover': '--u-primary-color-strong',
+      '--u-icon-color-active': '--u-primary-color-strong',
       '--u-link-txt-color': '--u-primary-color-strong',
       '--u-input-border-color-focus': '--u-primary-color',
       '--u-input-border-color-invalid': '--u-danger-color',

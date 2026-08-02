@@ -12,7 +12,7 @@ export const styles = css`
     cursor: not-allowed;
   }
   :host([invalid]) .footer {
-    color: var(--u-danger-color, #E53935);
+    color: var(--u-danger-color-strong, #C62828);
   }
 
   .header {
@@ -32,7 +32,7 @@ export const styles = css`
   }
 
   .required {
-    color: var(--u-danger-color, #E53935);
+    color: var(--u-danger-color-strong, #C62828);
     margin-right: 0.2em;
   }
   

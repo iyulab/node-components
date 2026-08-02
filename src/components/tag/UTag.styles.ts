@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --tag-fill-color: var(--u-primary-color, #1E88E5);
+    --tag-fill-color: var(--u-primary-color, #1976D2);
     --tag-color: var(--u-neutral-800, #424242);
     --tag-bg-color: var(--u-neutral-100, #F5F5F5);
     --tag-border-color: transparent;

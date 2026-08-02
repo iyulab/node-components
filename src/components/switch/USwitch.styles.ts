@@ -5,7 +5,7 @@ export const styles = css`
     --switch-track-width: 2.4em;
     --switch-track-height: 1.4em;
     --switch-track-color: var(--u-neutral-300, #E0E0E0);
-    --switch-track-color-checked: var(--u-primary-color, #1E88E5);
+    --switch-track-color-checked: var(--u-primary-color, #1976D2);
     --switch-thumb-size: 1.1em;
     --switch-thumb-offset: 0.15em;
     --switch-thumb-color: #fff;
@@ -34,7 +34,7 @@ export const styles = css`
     cursor: default;
   }
   :host([invalid]) .track {
-    outline: 2px solid var(--u-danger-color, #E53935);
+    outline: 2px solid var(--u-danger-color, #D32F2F);
     outline-offset: 1px;
   }
   :host(:not([disabled]):not([readonly]):hover) .track {
@@ -56,7 +56,7 @@ export const styles = css`
   }
   input:focus-visible ~ .track {
     box-shadow:
-      0 0 0 1px var(--u-input-border-color-focus, #1E88E5),
+      0 0 0 1px var(--u-input-border-color-focus, #1976D2),
       0 0 0 3px rgba(59, 130, 246, 0.22);
   }
 
@@ -176,7 +176,7 @@ export const styles = css`
   }
 
   .required {
-    color: var(--u-danger-color, #E53935);
+    color: var(--u-danger-color-strong, #C62828);
     font-weight: 500;
   }
 
@@ -188,6 +188,6 @@ export const styles = css`
   }
 
   :host([invalid]) .description {
-    color: var(--u-danger-color, #E53935);
+    color: var(--u-danger-color-strong, #C62828);
   }
 `;

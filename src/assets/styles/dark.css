@@ -140,21 +140,30 @@
      단은 '강도' 축이다 (weakest -> strong). 용도(배경/테두리/텍스트)는
      소비처가 정한다 -- 단을 속성에 묶으면 primary 버튼의 배경이 어느
      단인지 같은 모순이 생긴다.
+
+     ★**다만 두 단은 용도가 확정돼 있다** — 대비 요구가 서로 다르기 때문이다.
+        `-color`  = **면**. `--u-*-txt-color` 가 그 위에 얹히므로 on-color 기준 4.5.
+        `-strong` = **글자·아이콘**. `--u-bg-color` 위에 놓이므로 바탕 기준 4.5.
+     라이트에서는 바탕도 on-color 도 흰색이라 두 요구가 한 조건으로 합쳐지지만,
+     **다크에서는 정반대 방향**이다(바탕 #121212 · on-color #FFFFFF). 바탕에서 읽히는
+     밝은 단은 흰 글자를 못 받고, 흰 글자를 받는 어두운 단은 바탕에서 안 읽힌다.
+     ⇒ 다크에서 `-color` 와 `-strong` 이 두 단 벌어지는 것이 그 결과다.
+     `tests/build/token-contrast.test.ts` 가 값을 지킨다.
      ========================================================================== */
 
   /* primary — 브랜드 · 강조 · 포커스 · 링크 */
   --u-primary-color-weakest:     var(--u-blue-200);
   --u-primary-color-weaker:      var(--u-blue-300);
   --u-primary-color-weak:        var(--u-blue-500);
-  --u-primary-color:             var(--u-blue-600);
-  --u-primary-color-strong:      var(--u-blue-700);
+  --u-primary-color:             var(--u-blue-600);  /* 면: 흰 글자 6.09 ✓ */
+  --u-primary-color-strong:      var(--u-blue-800);  /* 글자: 바탕 5.32 ✓ (700 은 4.05 ✗) */
 
   /* info — 정보 안내 (primary 와 기본값은 같으나 역할이 다르다 — 브랜딩은 primary 만 바꾼다) */
   --u-info-color-weakest:        var(--u-blue-200);
   --u-info-color-weaker:         var(--u-blue-300);
   --u-info-color-weak:           var(--u-blue-500);
   --u-info-color:                var(--u-blue-600);
-  --u-info-color-strong:         var(--u-blue-700);
+  --u-info-color-strong:         var(--u-blue-800);
 
   /* success — 성공 · 완료 */
   --u-success-color-weakest:     var(--u-green-200);
@@ -174,8 +183,8 @@
   --u-danger-color-weakest:      var(--u-red-200);
   --u-danger-color-weaker:       var(--u-red-300);
   --u-danger-color-weak:         var(--u-red-500);
-  --u-danger-color:              var(--u-red-600);
-  --u-danger-color-strong:       var(--u-red-700);
+  --u-danger-color:              var(--u-red-600);  /* 면: 흰 글자 6.83 ✓ */
+  --u-danger-color-strong:       var(--u-red-800);  /* 글자: 바탕 4.87 ✓ (700 은 3.67 ✗) */
   /* ==========================================================================
      Radius Scale — 모서리 반경
      리터럴을 흩뿌리면 값이 갈린다(실제로 pill 이 999px/9999px 두 표기로 나뉘어 있었다).
@@ -206,14 +215,17 @@
   --u-txt-color:             var(--u-neutral-900);
   --u-txt-color-inverse:     var(--u-neutral-100);
 
-  /* 유채색 배경 위의 글자 — 두 테마 모두 흰색이다(light.css 참조). */
+  /* 유채색 배경 위의 글자 — warning 만 다르다(light.css 참조). */
   --u-primary-txt-color:     #FFFFFF;
   --u-info-txt-color:        #FFFFFF;
   --u-success-txt-color:     #FFFFFF;
   --u-danger-txt-color:      #FFFFFF;
-  --u-warning-txt-color:     #FFFFFF;
-  --u-txt-color-hover:       var(--u-primary-color);
-  --u-txt-color-active:      var(--u-primary-color);
+  /* ★라이트 시트와 같은 이유로 중립 최상단을 쓴다 — 다크에서는 그 값이 #FFFFFF 라
+     결과가 종전과 같다(4.65 ✓). 리터럴 대신 토큰을 쓰는 이유는 라이트에서 뒤집히기
+     때문이다(#000000). 두 시트가 같은 선언이 되어 어긋날 자리가 없어진다. */
+  --u-warning-txt-color:     var(--u-neutral-1000);
+  --u-txt-color-hover:       var(--u-primary-color-strong);
+  --u-txt-color-active:      var(--u-primary-color-strong);
   --u-txt-color-disabled:    var(--u-neutral-500);
   --u-txt-color-weak:        var(--u-neutral-700);
   --u-txt-color-strong:      var(--u-neutral-1000);
@@ -224,8 +236,8 @@
   /* Icon Colors */
   --u-icon-color:            var(--u-neutral-800);
   --u-icon-color-inverse:    var(--u-neutral-100);
-  --u-icon-color-hover:      var(--u-primary-color);
-  --u-icon-color-active:     var(--u-primary-color);
+  --u-icon-color-hover:      var(--u-primary-color-strong);
+  --u-icon-color-active:     var(--u-primary-color-strong);
   --u-icon-color-disabled:   var(--u-neutral-500);
 
   /* Border Colors */
@@ -245,6 +257,12 @@
   --u-bg-color-hover:        var(--u-neutral-300);
   --u-bg-color-active:       var(--u-neutral-400);
   --u-bg-color-disabled:     var(--u-neutral-100);
+
+  /* 면 높이 — 상세는 light.css 참조. 다크는 **바탕보다 밝은 쪽**이 위다.
+     neutral-300(#2A2A2A)은 바탕(#121212) 대비 1.42 로, 소비 측이 오버라이드로 쓰던
+     neutral-200(1.15)보다 실제로 더 잘 구분된다 — 그 오버라이드가 해결하려던 증상이
+     *"툴바·헤더가 배경에 묻힌다"* 였다. */
+  --u-bg-color-raised:       var(--u-neutral-300);
   
   /* 유채색 표면 — 라이트와 **같은 단이 아니라 같은 세기**로 짝지었다(light.css 참조).
      팔레트 유채색 틴트가 다크에서 짓눌리므로 한 단 위를 쓴다. green 은 대칭이라 그대로. */
@@ -252,6 +270,8 @@
   --u-info-bg-color:         var(--u-blue-100);
   --u-success-bg-color:      var(--u-green-0);
   --u-danger-bg-color:       var(--u-red-100);
+  /* warning 합류 — 라이트는 yellow-200 이다(단 이름이 다른 이유는 light.css 참조). */
+  --u-warning-bg-color:      var(--u-yellow-100);
 
   --u-input-bg-color:        var(--u-neutral-200);
   --u-panel-bg-color:        var(--u-neutral-200);

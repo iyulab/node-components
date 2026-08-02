@@ -44,10 +44,10 @@ export const styles = css`
     box-shadow: 0 0 0 1px var(--u-input-border-color-hover, #BDBDBD);
   }
   :host(:not([readonly]):not([disabled])) .container:focus-within {
-    box-shadow: 0 0 0 1px var(--u-input-border-color-focus, #1E88E5);
+    box-shadow: 0 0 0 1px var(--u-input-border-color-focus, #1976D2);
   }
   :host([invalid]:not([readonly]):not([disabled])) .container {
-    box-shadow: 0 0 0 1px var(--u-input-border-color-invalid, #E53935);
+    box-shadow: 0 0 0 1px var(--u-input-border-color-invalid, #D32F2F);
   }
 
   /* ===== Variant: filled ===== */
@@ -69,11 +69,11 @@ export const styles = css`
   }
   :host([variant="filled"]:not([readonly]):not([disabled])) .container:focus-within {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-focus, #1E88E5);
+    border-bottom-color: var(--u-input-border-color-focus, #1976D2);
   }
   :host([variant="filled"][invalid]:not([readonly]):not([disabled])) .container {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-invalid, #E53935);
+    border-bottom-color: var(--u-input-border-color-invalid, #D32F2F);
   }
 
   /* ===== Variant: underlined ===== */
@@ -96,12 +96,12 @@ export const styles = css`
   }
   :host([variant="underlined"]:not([readonly]):not([disabled])) .container:focus-within {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-focus, #1E88E5);
+    border-bottom-color: var(--u-input-border-color-focus, #1976D2);
     border-bottom-width: 2px;
   }
   :host([variant="underlined"][invalid]:not([readonly]):not([disabled])) .container {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-invalid, #E53935);
+    border-bottom-color: var(--u-input-border-color-invalid, #D32F2F);
   }
 
   /* ===== Variant: borderless ===== */
@@ -157,10 +157,10 @@ export const styles = css`
     cursor: pointer;
   }
   .suffix-item:hover {
-    color: var(--u-icon-color-hover, #1E88E5);
+    color: var(--u-icon-color-hover, #1565C0);
   }
   .suffix-item:active {
-    color: var(--u-icon-color-active, #1E88E5);
+    color: var(--u-icon-color-active, #1565C0);
   }
 
   /* 드롭다운 패널 — 옵션 텍스트가 길어도 팝오버가 앵커보다 넓어지지 않도록 고정 너비로

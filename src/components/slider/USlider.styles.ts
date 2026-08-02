@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --slider-fill-color: var(--u-primary-color, #1E88E5);
+    --slider-fill-color: var(--u-primary-color, #1976D2);
     --slider-track-color: var(--u-neutral-300, #E0E0E0);
     --slider-track-height: 6px;
     --slider-thumb-size: 18px;

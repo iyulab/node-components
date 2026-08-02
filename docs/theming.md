@@ -135,16 +135,32 @@ one-line brand override reach every control instead of half of them.
 Each role has five steps on a single **intensity** axis:
 
 ```
---u-{role}-color-weakest   /* tinted backgrounds, progress tracks */
+--u-{role}-color-weakest   /* faint graphics — progress-bar buffers */
 --u-{role}-color-weaker    /* borders */
---u-{role}-color-weak      /* focus rings, links */
---u-{role}-color           /* solid fills, icons, checked */
---u-{role}-color-strong    /* text on a tinted background, active */
+--u-{role}-color-weak      /* graphics on the page background — fills, focus rings */
+--u-{role}-color           /* solid surfaces — carries --u-{role}-txt-color on top */
+--u-{role}-color-strong    /* text and icons on the page background */
 ```
 
-Steps describe **intensity, not usage** — `--u-primary-color-weakest` is not "the background
-step". A primary button's background is `--u-primary-color`, while an alert's background is the
-weakest step. Binding a step to a property would make that contradiction unrepresentable.
+The axis is intensity, but **the two darkest steps carry a contrast guarantee** and are therefore
+bound to a usage:
+
+| Step | Guarantee (WCAG 2.1) |
+|---|---|
+| `--u-{role}-color` | `--u-{role}-txt-color` on it ≥ 4.5 |
+| `--u-{role}-color-strong` | ≥ 4.5 against `--u-bg-color` |
+| `--u-{role}-bg-color` | body text ≥ 4.5 · `-strong` icon on it ≥ 3.0 |
+
+Those two cannot be one step, because in dark the requirements point in **opposite directions**:
+the page background is `#121212` and the on-color is `#FFFFFF`, so a shade readable on the page
+cannot carry white text and vice versa. In light both requirements collapse into one condition
+(`contrast(shade, #FFF) ≥ 4.5`), which is why the two steps sit closer together there.
+
+A consequence worth knowing: **the palette shade behind a step differs per family and per theme.**
+`--u-primary-color` is `blue-700` in light and `blue-600` in dark; `--u-success-color` is
+`green-800`. Material-style ramps are ordered by hue, not luminance, so equal shade numbers do not
+mean equal strength. The values are enforced by `tests/build/token-contrast.test.ts` — if you
+remap a step, that test tells you whether the result is still readable.
 
 `primary` and `info` share a default hue on purpose: they are different *roles*. Rebranding
 changes `primary` and leaves informational blue where it is.
@@ -155,12 +171,16 @@ Overriding a role reaches **everything with that semantic**, including the seman
 layered on top of it:
 
 ```
---u-primary-color  →  --u-txt-color-hover / -active
-                      --u-icon-color-hover / -active
-                      --u-link-txt-color
-                      --u-input-border-color-focus
---u-danger-color   →  --u-input-border-color-invalid
+--u-primary-color         →  --u-input-border-color-focus       (border — non-text, 3.0)
+--u-primary-color-strong  →  --u-txt-color-hover / -active      (text — 4.5)
+                             --u-icon-color-hover / -active
+                             --u-link-txt-color
+--u-danger-color          →  --u-input-border-color-invalid
 ```
+
+Note which side of the split each one lands on: **text routes through `-strong`, borders through
+`-color`.** Before 1.16.0 the text tokens read `--u-primary-color`, which is a *surface* shade —
+in dark that put 3.07:1 text on the page background.
 
 Rather than listing components here (a list drifts — it was wrong before), the rule is enforced
 in `tests/build/role-token-layer.test.ts`: **no rule outside a `[color=…]` selector may reference
@@ -172,6 +192,37 @@ a palette primitive directly.**
 (`color="purple"`). Those are **decorative** choices with no role meaning, so they read the
 palette directly and are deliberately **immune** to role overrides. `<u-tag color="green">` stays
 green after you rebrand.
+
+`u-badge[color="blue"]` was the one exception until 1.16.0 — it read `--u-primary-color`, so a
+rebrand moved the blue badge and left the other eight where they were. It now reads the palette
+like its siblings.
+
+### Surfaces — three different jobs
+
+Backgrounds are not one axis. Three families exist because they answer different questions:
+
+```
+--u-bg-color[-hover|-active|-disabled]   interaction state of a surface
+--u-bg-color-raised                      chrome adjacent to the page — toolbars, table
+                                         headers, footers, pagination
+--u-panel-bg-color                       a container floating above the page — cards,
+                                         dialogs, drawers, menus
+--u-{role}-bg-color                      a status surface — alert backgrounds, selected rows
+```
+
+The last three look similar in light and diverge in dark, which is where mixing them shows:
+
+- `--u-panel-bg-color` is **white in light** — a floating panel is lifted by its shadow, not by a
+  tint. In dark it lightens, because shadows do not read there.
+- `--u-bg-color-raised` is **tinted in both** — chrome has no shadow, so it needs a tint even in
+  light (`neutral-50` light / `neutral-300` dark).
+- `--u-{role}-bg-color` is a pale status tint that keeps body text at 4.5 and its own
+  `-strong` icon at 3.0. `--u-warning-bg-color` sits one palette step differently from the other
+  four; yellow's tint strength is asymmetric between themes and matching the *number* would have
+  made the light surface nearly invisible.
+
+Do not express elevation with `--u-bg-color-hover` — it is an interaction state, and a raised
+surface that is also hoverable would have nothing left to say.
 
 ### Deriving your own steps
 
@@ -189,6 +240,20 @@ but the sheet does not. If you brand with a single color and want the other step
 
 Mechanical mixing loses the hand-tuned lightness curve of the built-in palette, which is why the
 defaults are aliases. For a brand color it is usually the right trade.
+
+⚠**Derived steps do not inherit the contrast guarantee.** The defaults were picked by measurement
+(see the table above); `color-mix()` has no idea what `--u-{role}-txt-color` is or what the page
+background is. If you derive, check the two that carry guarantees:
+
+```
+contrast(--u-{role}-color,        --u-{role}-txt-color)  ≥ 4.5
+contrast(--u-{role}-color-strong, --u-bg-color)          ≥ 4.5
+```
+
+The same applies when you override `--u-primary-color` outright — the built-in default is AA
+against white, your brand color may not be. `--u-{role}-txt-color` exists so you can adjust the
+foreground rather than being stuck with white (`--u-warning-txt-color` ships dark for exactly this
+reason: no yellow shade carries white text at 4.5).
 
 ---
 

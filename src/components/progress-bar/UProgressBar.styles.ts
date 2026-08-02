@@ -3,14 +3,14 @@ import { css } from 'lit';
 export const styles = css`
   :host {
     --progress-bar-height: 0.5em;
-    --progress-bar-color: var(--u-primary-color, #1E88E5);
+    --progress-bar-color: var(--u-primary-color, #1976D2);
     --progress-bar-buffer-color: color-mix(in srgb, var(--progress-bar-color) 35%, var(--u-bg-color, #FFFFFF));
     --progress-bar-track-color: var(--u-neutral-200, #EEEEEE);
   }
 
   /* === Status Colors === */
   :host([status="success"]) { 
-    --progress-bar-color: var(--u-success-color, #43A047); 
+    --progress-bar-color: var(--u-success-color, #2E7D32); 
     --progress-bar-buffer-color: var(--u-success-color-weakest, #A5D6A7); 
   }
   :host([status="warning"]) { 
@@ -18,7 +18,7 @@ export const styles = css`
     --progress-bar-buffer-color: var(--u-warning-color-weakest, #FFF59D); 
   }
   :host([status="error"]) { 
-    --progress-bar-color: var(--u-danger-color, #E53935); 
+    --progress-bar-color: var(--u-danger-color, #D32F2F); 
     --progress-bar-buffer-color: var(--u-danger-color-weakest, #EF9A9A); 
   }
   :host([status="info"]) { 

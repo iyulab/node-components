@@ -3,7 +3,7 @@ import { css } from 'lit';
 export const styles = css`
   :host {
     --progress-ring-size: 6em;
-    --progress-ring-color: var(--u-primary-color, #1E88E5);
+    --progress-ring-color: var(--u-primary-color, #1976D2);
     --progress-ring-track-width: 6;
     --progress-ring-track-color: var(--u-neutral-200, #EEEEEE);
     --progress-ring-buffer-color: color-mix(in srgb, var(--progress-ring-color) 35%, var(--u-bg-color, #FFFFFF));
@@ -11,7 +11,7 @@ export const styles = css`
 
   /* === Status Colors === */
   :host([status="success"]) { 
-    --progress-ring-color: var(--u-success-color, #43A047);
+    --progress-ring-color: var(--u-success-color, #2E7D32);
     --progress-ring-buffer-color: var(--u-success-color-weakest, #A5D6A7);
   }
   :host([status="warning"]) { 
@@ -19,7 +19,7 @@ export const styles = css`
     --progress-ring-buffer-color: var(--u-warning-color-weakest, #FFF59D);
   }
   :host([status="error"]) { 
-    --progress-ring-color: var(--u-danger-color, #E53935);
+    --progress-ring-color: var(--u-danger-color, #D32F2F);
     --progress-ring-buffer-color: var(--u-danger-color-weakest, #EF9A9A);
   }
   :host([status="info"]) { 

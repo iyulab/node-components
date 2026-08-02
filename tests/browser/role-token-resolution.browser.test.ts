@@ -49,13 +49,19 @@ describe('역할 토큰 브라우저 해석', () => {
     expect(empty).toEqual([]);
   });
 
-  it('역할 토큰이 대응 팔레트 단과 같은 값으로 해석된다 (배선 전 시각 보존)', () => {
+  it('역할 토큰이 시트가 선언한 팔레트 단으로 브라우저에서 해석된다', () => {
+    // ★제목이 원래 *"(배선 전 시각 보존)"* 이었고 값도 그때의 단이었다. Cycle 141 이
+    //   `-color`/`-strong` 을 **대비로 다시 골랐기 때문에** 그 전제는 더 이상 성립하지
+    //   않는다 — 라이트 blue-600 위의 흰 글자는 3.68 로 AA 미달이었다.
+    //   이 검사가 지키는 것은 이제 *"값이 옛날과 같다"* 가 아니라 **체인이 브라우저에서
+    //   실제로 풀린다**는 것이다(시트의 var() 체인은 정적 파싱으로는 검증되지 않는다).
+    //   값 자체의 정당성은 tests/build/token-contrast.test.ts 가 대비로 판정한다.
     const expected: Array<[string, string]> = [
       ['--u-primary-color-weak', '--u-blue-500'],
-      ['--u-primary-color', '--u-blue-600'],
-      ['--u-primary-color-strong', '--u-blue-700'],
-      ['--u-danger-color', '--u-red-600'],
-      ['--u-danger-color-strong', '--u-red-700'],
+      ['--u-primary-color', '--u-blue-700'],
+      ['--u-primary-color-strong', '--u-blue-800'],
+      ['--u-danger-color', '--u-red-700'],
+      ['--u-danger-color-strong', '--u-red-800'],
       ['--u-warning-color-weak', '--u-yellow-500'],
       ['--u-success-color-weakest', '--u-green-200'],
       ['--u-info-color-weaker', '--u-blue-300'],
@@ -65,17 +71,21 @@ describe('역할 토큰 브라우저 해석', () => {
     }
   });
 
-  it('u-alert 의 status 색이 실제로 칠해진다 (체인이 끊기면 빈 값)', async () => {
+  it('u-alert 의 status 배경이 면 토큰으로 실제로 칠해진다 (체인이 끊기면 빈 값)', async () => {
+    // ★1.17.0 에서 배경이 `-weakest`(shade-200) → 면 토큰(--u-*-bg-color)으로 바뀌었다.
+    //   shade-200 은 라이트에서 면으로 쓰기엔 진해 그 위의 아이콘이 4/4 미달이었다.
+    //   warning 만 단이 200 인 것은 노랑 램프의 세기가 다른 계열과 어긋나기 때문이다
+    //   (light.css 의 면 토큰 주석 참조).
     for (const [status, palette] of [
-      ['error', '--u-red-200'],
+      ['error', '--u-red-0'],
       ['warning', '--u-yellow-200'],
-      ['info', '--u-blue-200'],
-      ['success', '--u-green-200'],
+      ['info', '--u-blue-0'],
+      ['success', '--u-green-0'],
     ] as const) {
       const el = await mount('u-alert', { status });
       const bg = px(el, '--alert-background-color');
       expect(bg, `status=${status} 의 배경이 해석되지 않았다`).not.toBe('');
-      expect(bg, `status=${status} 의 배경이 이전 팔레트 값과 달라졌다`).toBe(tokenOf(palette));
+      expect(bg, `status=${status} 의 배경이 시트가 선언한 면 토큰과 다르다`).toBe(tokenOf(palette));
       el.remove();
     }
   });
@@ -85,7 +95,7 @@ describe('역할 토큰 브라우저 해석', () => {
     const btn = await mount('u-button');
     const bar = await mount('u-progress-bar');
 
-    expect(px(btn, '--btn-color')).toBe(tokenOf('--u-blue-600'));
+    expect(px(btn, '--btn-color')).toBe(tokenOf('--u-blue-700'));
 
     document.documentElement.style.setProperty('--u-primary-color', BRAND);
 

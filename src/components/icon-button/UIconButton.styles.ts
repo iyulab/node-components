@@ -11,7 +11,7 @@ export const styles = css`
     color: #fff;
   }
   :host([variant="link"]) {
-    color: var(--u-primary-color-weak, #2196F3);
+    color: var(--u-link-txt-color, #1565C0);
   }
 
   u-button {

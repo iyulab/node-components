@@ -4,7 +4,7 @@ export const styles = css`
   :host {
     --spinner-track-width: 0.125em;
     --spinner-track-color: var(--u-neutral-200, #EEEEEE);
-    --spinner-indicator-color: var(--u-primary-color, #1E88E5);
+    --spinner-indicator-color: var(--u-primary-color, #1976D2);
     --spinner-indicator-speed: 2s;
   }
 

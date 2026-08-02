@@ -46,10 +46,10 @@ describe('토큰 시트 없이 렌더', () => {
 
   it('버튼의 브랜드 훅이 시트 값으로 폴백된다', async () => {
     const el = await mount('u-button', {}, 'OK');
-    // `--btn-color: var(--u-primary-color, #1E88E5)` — 시트가 없으므로 폴백이 발동한다.
+    // `--btn-color: var(--u-primary-color, #1565C0)` — 시트가 없으므로 폴백이 발동한다.
     // ⚠과거 이 자리에는 **Tailwind 계열 `#2563eb`** 가 박혀 있었다. 시트를 안 쓴 소비자만
     // 버튼이 다른 파랑으로 보였고, 시트를 쓰는 개발 환경에서는 절대 드러나지 않았다.
-    expect(getComputedStyle(el).getPropertyValue('--btn-color').trim()).toBe('#1E88E5');
+    expect(getComputedStyle(el).getPropertyValue('--btn-color').trim()).toBe('#1976D2');
   });
 
   it('버튼의 파생 톤(color-mix)이 무효로 무너지지 않는다', async () => {
@@ -64,8 +64,12 @@ describe('토큰 시트 없이 렌더', () => {
 
   it('배지 배경이 투명으로 무너지지 않는다', async () => {
     // 배경은 `:host([color=…])` 에 있다 — color 를 주지 않으면 규칙 자체가 없다.
+    // ★이 단언은 Cycle 141 까지 **무엇을 재는지 모호했다**: 당시 `--u-blue-600` 과
+    // `--u-primary-color` 가 같은 값이라 어느 쪽을 통과시키는지 구별되지 않았다.
+    // 역할 단이 갈라지자 배지의 `color="blue"` 가 **역할 토큰**을 읽고 있었음이 드러났고
+    // (다른 8색은 팔레트 직참조), 그것을 장식 축으로 되돌린 뒤의 값이다.
     const el = await mount('u-badge', { color: 'blue' }, '3');
-    expect(getComputedStyle(el).backgroundColor).toBe('rgb(30, 136, 229)'); // #1E88E5
+    expect(getComputedStyle(el).backgroundColor).toBe('rgb(33, 150, 243)'); // --u-blue-500
   });
 
   it('카드의 배경(:host)과 테두리(part=base)가 남는다', async () => {

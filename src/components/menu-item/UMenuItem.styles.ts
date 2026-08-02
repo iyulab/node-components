@@ -3,7 +3,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     --menu-item-depth: 0;
-    --menu-item-color: var(--u-primary-color, #1E88E5);
+    --menu-item-color: var(--u-primary-color, #1976D2);
   }
 
   :host {

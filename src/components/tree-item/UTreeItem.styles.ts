@@ -3,7 +3,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     --tree-item-depth: 0;
-    --tree-item-color: var(--u-primary-color, #1E88E5);
+    --tree-item-color: var(--u-primary-color, #1976D2);
   }
 
   :host {

@@ -10,7 +10,7 @@
 `dark.css` 는 같은 이름을 같은 구조로 정의하며 **값만** 다릅니다 — 다크 대응을 위해
 컴포넌트나 소비자가 할 일은 없습니다.
 
-**역할 25 · 스케일 13 · 시맨틱 54 · 팔레트 111**
+**역할 25 · 스케일 13 · 시맨틱 56 · 팔레트 111**
 
 ---
 
@@ -23,11 +23,11 @@
 
 | 역할 | `-weakest` | `-weaker` | `-weak` | `(기본)` | `-strong` |
 |---|---|---|---|---|---|
-| **primary** | `--u-blue-200` | `--u-blue-300` | `--u-blue-500` | `--u-blue-600` | `--u-blue-700` |
-| **info** | `--u-blue-200` | `--u-blue-300` | `--u-blue-500` | `--u-blue-600` | `--u-blue-700` |
-| **success** | `--u-green-200` | `--u-green-300` | `--u-green-500` | `--u-green-600` | `--u-green-700` |
-| **warning** | `--u-yellow-200` | `--u-yellow-300` | `--u-yellow-500` | `--u-yellow-600` | `--u-yellow-700` |
-| **danger** | `--u-red-200` | `--u-red-300` | `--u-red-500` | `--u-red-600` | `--u-red-700` |
+| **primary** | `--u-blue-200` | `--u-blue-300` | `--u-blue-500` | `--u-blue-700` | `--u-blue-800` |
+| **info** | `--u-blue-200` | `--u-blue-300` | `--u-blue-500` | `--u-blue-700` | `--u-blue-800` |
+| **success** | `--u-green-200` | `--u-green-300` | `--u-green-500` | `--u-green-800` | `--u-green-900` |
+| **warning** | `--u-yellow-200` | `--u-yellow-300` | `--u-yellow-500` | `--u-yellow-600` | `--u-yellow-1000` |
+| **danger** | `--u-red-200` | `--u-red-300` | `--u-red-500` | `--u-red-700` | `--u-red-800` |
 
 > `primary` 와 `info` 는 기본 색상이 같지만 **다른 역할**입니다 — 리브랜딩은 `primary` 만 바꿉니다.
 
@@ -104,9 +104,9 @@
 | `--u-info-txt-color` | `#FFFFFF` |
 | `--u-success-txt-color` | `#FFFFFF` |
 | `--u-danger-txt-color` | `#FFFFFF` |
-| `--u-warning-txt-color` | `#FFFFFF` |
-| `--u-txt-color-hover` | `var(--u-primary-color)` |
-| `--u-txt-color-active` | `var(--u-primary-color)` |
+| `--u-warning-txt-color` | `var(--u-neutral-1000)` |
+| `--u-txt-color-hover` | `var(--u-primary-color-strong)` |
+| `--u-txt-color-active` | `var(--u-primary-color-strong)` |
 | `--u-txt-color-disabled` | `var(--u-neutral-400)` |
 | `--u-txt-color-weak` | `var(--u-neutral-600)` |
 | `--u-txt-color-strong` | `var(--u-neutral-1000)` |
@@ -114,8 +114,8 @@
 | `--u-tooltip-txt-color` | `var(--u-neutral-0)` |
 | `--u-icon-color` | `var(--u-neutral-700)` |
 | `--u-icon-color-inverse` | `var(--u-neutral-0)` |
-| `--u-icon-color-hover` | `var(--u-primary-color)` |
-| `--u-icon-color-active` | `var(--u-primary-color)` |
+| `--u-icon-color-hover` | `var(--u-primary-color-strong)` |
+| `--u-icon-color-active` | `var(--u-primary-color-strong)` |
 | `--u-icon-color-disabled` | `var(--u-neutral-400)` |
 | `--u-border-color` | `var(--u-neutral-300)` |
 | `--u-border-color-weak` | `var(--u-neutral-200)` |
@@ -130,10 +130,12 @@
 | `--u-bg-color-hover` | `var(--u-neutral-100)` |
 | `--u-bg-color-active` | `var(--u-neutral-200)` |
 | `--u-bg-color-disabled` | `var(--u-neutral-50)` |
+| `--u-bg-color-raised` | `var(--u-neutral-50)` |
 | `--u-primary-bg-color` | `var(--u-blue-0)` |
 | `--u-info-bg-color` | `var(--u-blue-0)` |
 | `--u-success-bg-color` | `var(--u-green-0)` |
 | `--u-danger-bg-color` | `var(--u-red-0)` |
+| `--u-warning-bg-color` | `var(--u-yellow-200)` |
 | `--u-input-bg-color` | `var(--u-neutral-0)` |
 | `--u-panel-bg-color` | `var(--u-neutral-0)` |
 | `--u-overlay-bg-color` | `rgba(0, 0, 0, 0.5)` |

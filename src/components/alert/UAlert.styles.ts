@@ -7,25 +7,32 @@ export const styles = css`
     --alert-border-color: var(--u-neutral-300, #E0E0E0);
     --alert-background-color: var(--u-neutral-200, #EEEEEE);
   }
+  /* ★배경은 -weakest 가 아니라 면 토큰(--u-*-bg-color)이다.
+     -weakest 는 라이트에서 shade-200 이라 **면으로 쓰기에 너무 진했다** — 그 위의
+     아이콘(-strong)이 라이트 4/4 미달이었다(1.48~2.63, 기준 3.0). 다크는 통과했으므로
+     라이트 한쪽만의 결함이었고, 원인은 전경이 아니라 배경이다.
+     면 토큰으로 옮기면 두 테마 4/4 통과한다(4.58~7.00).
+     -weakest 는 진행바 버퍼 같은 **그래픽** 단으로 남는다 — 같은 단에 면과 그래픽을
+     겹쳐 두었던 것이 애초의 문제다. */
   :host([status="error"]) {
-    --alert-icon-color: var(--u-danger-color-strong, #D32F2F);
+    --alert-icon-color: var(--u-danger-color-strong, #C62828);
     --alert-border-color: var(--u-danger-color-weaker, #E57373);
-    --alert-background-color: var(--u-danger-color-weakest, #EF9A9A);
+    --alert-background-color: var(--u-danger-bg-color, #FFEBEE);
   }
   :host([status="warning"]) {
-    --alert-icon-color: var(--u-warning-color-strong, #FBC02D);
+    --alert-icon-color: var(--u-warning-color-strong, #8A4A00);
     --alert-border-color: var(--u-warning-color-weaker, #FFF176);
-    --alert-background-color: var(--u-warning-color-weakest, #FFF59D);
+    --alert-background-color: var(--u-warning-bg-color, #FFF59D);
   }
   :host([status="info"]) {
-    --alert-icon-color: var(--u-info-color-strong, #1976D2);
+    --alert-icon-color: var(--u-info-color-strong, #1565C0);
     --alert-border-color: var(--u-info-color-weaker, #64B5F6);
-    --alert-background-color: var(--u-info-color-weakest, #90CAF9);
+    --alert-background-color: var(--u-info-bg-color, #E3F2FD);
   }
   :host([status="success"]) {
-    --alert-icon-color: var(--u-success-color-strong, #388E3C);
+    --alert-icon-color: var(--u-success-color-strong, #1B5E20);
     --alert-border-color: var(--u-success-color-weaker, #81C784);
-    --alert-background-color: var(--u-success-color-weakest, #A5D6A7);
+    --alert-background-color: var(--u-success-bg-color, #E8F5E9);
   }
   :host([status="notice"]) {
     --alert-icon-color: var(--u-neutral-700, #616161);

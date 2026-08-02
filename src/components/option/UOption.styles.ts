@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --option-color: var(--u-primary-color, #1E88E5);
+    --option-color: var(--u-primary-color, #1976D2);
     --option-color-interactive: inherit;
     --option-border-color-interactive: var(--u-border-color-hover, #BDBDBD);
     --option-background-color-interactive: var(--u-bg-color-hover, #F5F5F5);
