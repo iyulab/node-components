@@ -128,12 +128,26 @@ describe('역할 토큰 대비 계약', () => {
         expect(fails).toEqual([]);
       });
 
-      it('중립 텍스트 토큰이 바탕 위에서 AA 를 받친다', () => {
+      it('중립 텍스트 토큰이 **표면 3종** 위에서 AA 를 받친다 (weak 는 아래 참조)', () => {
+        // ★1.19.0 이전에는 기준면이 `--u-bg-color` 하나였다. 그 사이 면 축이 늘었는데
+        //   (`-raised` 는 1.18.0 신설) **검사의 곱집합은 늘리지 않았다** — 축을 추가하면서
+        //   그 축과 기존 축의 교차를 재지 않은 것이다. 소비앱이 카드 위 보조 텍스트에서
+        //   그것을 먼저 밟았다(라이트 4.41 · 다크 4.16).
+        //
+        //   `-weak` 는 base 만 단언한다. raised·active 는 현재 미달이며 값을 고치는 것이
+        //   **게시된 전 컴포넌트의 보조 텍스트를 움직이는** 사람 판단이라, 아래 핀 블록 ⑷ 에
+        //   측정값으로 고정해 두고 감시한다.
+        const SURFACES = ['--u-bg-color', '--u-bg-color-raised', '--u-bg-color-active'];
         const fails: string[] = [];
-        for (const token of ['--u-txt-color', '--u-txt-color-weak', '--u-txt-color-strong']) {
-          const c = contrast(t[token], t['--u-bg-color']);
-          if (c < AA_TEXT) fails.push(`${token} ${t[token]} on ${t['--u-bg-color']} = ${show(c)}`);
+        for (const token of ['--u-txt-color', '--u-txt-color-strong']) {
+          for (const surface of SURFACES) {
+            const c = contrast(t[token], t[surface]);
+            if (c < AA_TEXT) fails.push(`${token} ${t[token]} on ${surface} ${t[surface]} = ${show(c)}`);
+          }
         }
+        const weak = contrast(t['--u-txt-color-weak'], t['--u-bg-color']);
+        if (weak < AA_TEXT)
+          fails.push(`--u-txt-color-weak ${t['--u-txt-color-weak']} on --u-bg-color = ${show(weak)}`);
         expect(fails).toEqual([]);
       });
 
@@ -143,6 +157,21 @@ describe('역할 토큰 대비 계약', () => {
           const surface = `--u-${role}-bg-color`;
           const c = contrast(t['--u-txt-color'], t[surface]);
           if (c < AA_TEXT) fails.push(`--u-txt-color on ${surface} ${t[surface]} = ${show(c)}`);
+        }
+        expect(fails).toEqual([]);
+      });
+
+      it('유채색 표면 위에서 **그 역할의 글자**도 읽힌다 (AA 4.5)', () => {
+        // 위 단언은 그 면 위의 **본문**(중립)을 재고, 이건 같은 면 위의 **유채색 글자**를
+        // 잰다 — u-tag 의 surface/filled variant 가 쓰는 실제 조합이다(1.19.0 역할 축).
+        // 태그는 의미를 색으로도 전달하므로 중립 본문으로 대체할 수 없다. 두 조합의
+        // 요구가 다르므로 단언도 둘이다.
+        const fails: string[] = [];
+        for (const role of ROLES) {
+          const fg = `--u-${role}-color-strong`;
+          const surface = `--u-${role}-bg-color`;
+          const c = contrast(t[fg], t[surface]);
+          if (c < AA_TEXT) fails.push(`${fg} ${t[fg]} on ${surface} ${t[surface]} = ${show(c)}`);
         }
         expect(fails).toEqual([]);
       });
@@ -210,5 +239,37 @@ describe('역할 토큰 대비 계약', () => {
       dark: Number(contrast(dark['--u-border-color-strong'], dark['--u-bg-color']).toFixed(2)),
     };
     expect(borders, '--u-border-color-strong on bg (기준 3.0)').toEqual({ light: 1.88, dark: 2.40 });
+
+    // ⑷ ★**보조 텍스트가 올림면 위에서 미달** — 두 테마 **같은 형태**다: 바탕에서는
+    //    아슬하게 통과하고(라이트 4.61 = 여유 0.11) 면이 한 단 올라가면 떨어진다.
+    //    `--u-bg-color-raised` 는 1.18.0 신설이므로 이 조합은 *"깨진 것"* 이 아니라
+    //    **교차 검증된 적이 없는 새 조합**이다.
+    //
+    //    ⚠소비자에게 선택지가 없다: 위 단은 `--u-txt-color`(본문)뿐이라 그것을 쓰면
+    //    보조 텍스트와 본문의 **위계가 사라진다**. ***읽히거나, 위계가 있거나*** 둘 중 하나다.
+    //
+    //    해소하려면 `--u-txt-color-weak` 를 양 테마에서 한 단씩 옮기면 된다(실측:
+    //    라이트 neutral-700 → 세 면 6.19/5.93/5.34 · 다크 neutral-800 → 8.64/6.62/5.01,
+    //    **6/6 통과**). 그런데 대가가 있다 — 보조↔본문 대비비가 **다크 2.33 → 1.46**,
+    //    라이트 3.49 → 2.60 으로 줄어 위계가 약해진다. 그리고 이 토큰은 **1.15.0 에서
+    //    이미 한 번 옮겼다**(neutral-500 → 600, 5패키지 50곳). 세 릴리스 만의 두 번째
+    //    이동이므로 사람 판단으로 남긴다.
+    //
+    //    ⇒ 같은 리포의 `u-widgets` 는 이미 *"보조 텍스트는 표면 위에서 잰다"* 로 판정했다
+    //    (`DL-146-2`). components 만 바탕 기준이라는 **비대칭이 이 핀의 실체**다.
+    const weakOnSurfaces = {
+      light: {
+        raised: Number(contrast(light['--u-txt-color-weak'], light['--u-bg-color-raised']).toFixed(2)),
+        active: Number(contrast(light['--u-txt-color-weak'], light['--u-bg-color-active']).toFixed(2)),
+      },
+      dark: {
+        raised: Number(contrast(dark['--u-txt-color-weak'], dark['--u-bg-color-raised']).toFixed(2)),
+        active: Number(contrast(dark['--u-txt-color-weak'], dark['--u-bg-color-active']).toFixed(2)),
+      },
+    };
+    expect(weakOnSurfaces, '--u-txt-color-weak 를 올림면 위에 썼을 때 (기준 4.5)').toEqual({
+      light: { raised: 4.41, active: 3.97 },
+      dark: { raised: 4.16, active: 3.15 },
+    });
   });
 });

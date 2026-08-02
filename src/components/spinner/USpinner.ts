@@ -4,8 +4,11 @@ import { customElement, property, state } from "lit/decorators.js";
 import { UElement } from "../UElement.js";
 import { styles } from './USpinner.styles.js';
 
+/** 역할 축(`primary`…`danger`, 의미 · 리브랜딩을 따라옴)과 장식 축(`blue`…, 색 자체 · 면역)이 병존한다. */
 export type SpinnerColor =
-  | "neutral" | "blue" | "green" | "yellow" | "red"
+  | "neutral"
+  | "primary" | "info" | "success" | "warning" | "danger"
+  | "blue" | "green" | "yellow" | "red"
   | "orange" | "teal" | "cyan" | "purple" | "pink";
 
 /**

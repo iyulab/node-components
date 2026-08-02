@@ -9,6 +9,57 @@ export const styles = css`
   }
 
   /* ==========================================================================
+     역할 축 — 의미 슬롯 매핑
+     color="danger" 는 색이 아니라 *"위험"* 을 뜻한다. 장식 축(아래)과 달리 팔레트가 아니라
+     **역할 토큰**을 읽으므로 리브랜딩을 따라오고, 대비 계약이 지키는 짝을 물려받는다.
+
+     슬롯이 여섯인 이유는 자리마다 대비 요구가 다르기 때문이다(실측, 두 테마 전건 AA):
+       solid    면 --u-{role}-color        + 그 위 글자 --u-{role}-txt-color   (4.60~15.05)
+       surface  연한 면 --u-{role}-bg-color + 그 위 글자 --u-{role}-color-strong (4.58~7.00)
+       outlined 바탕 위 글자 --u-{role}-color-strong                            (계약 검사 대상)
+     ========================================================================== */
+  :host([color="primary"]) {
+    --tag-hue-solid: var(--u-primary-color, #1976D2);
+    --tag-hue-on-solid: var(--u-primary-txt-color, #FFFFFF);
+    --tag-hue-line: var(--u-primary-color-weak, #2196F3);
+    --tag-hue-surface: var(--u-primary-bg-color, #E3F2FD);
+    --tag-hue-text: var(--u-primary-color-strong, #1565C0);
+    --tag-hue-text-outlined: var(--u-primary-color-strong, #1565C0);
+  }
+  :host([color="info"]) {
+    --tag-hue-solid: var(--u-info-color, #1976D2);
+    --tag-hue-on-solid: var(--u-info-txt-color, #FFFFFF);
+    --tag-hue-line: var(--u-info-color-weak, #2196F3);
+    --tag-hue-surface: var(--u-info-bg-color, #E3F2FD);
+    --tag-hue-text: var(--u-info-color-strong, #1565C0);
+    --tag-hue-text-outlined: var(--u-info-color-strong, #1565C0);
+  }
+  :host([color="success"]) {
+    --tag-hue-solid: var(--u-success-color, #2E7D32);
+    --tag-hue-on-solid: var(--u-success-txt-color, #FFFFFF);
+    --tag-hue-line: var(--u-success-color-weak, #4CAF50);
+    --tag-hue-surface: var(--u-success-bg-color, #E8F5E9);
+    --tag-hue-text: var(--u-success-color-strong, #1B5E20);
+    --tag-hue-text-outlined: var(--u-success-color-strong, #1B5E20);
+  }
+  :host([color="warning"]) {
+    --tag-hue-solid: var(--u-warning-color, #FDD835);
+    --tag-hue-on-solid: var(--u-warning-txt-color, #000000);
+    --tag-hue-line: var(--u-warning-color-weak, #FFEB3B);
+    --tag-hue-surface: var(--u-warning-bg-color, #FFF59D);
+    --tag-hue-text: var(--u-warning-color-strong, #8A4A00);
+    --tag-hue-text-outlined: var(--u-warning-color-strong, #8A4A00);
+  }
+  :host([color="danger"]) {
+    --tag-hue-solid: var(--u-danger-color, #D32F2F);
+    --tag-hue-on-solid: var(--u-danger-txt-color, #FFFFFF);
+    --tag-hue-line: var(--u-danger-color-weak, #F44336);
+    --tag-hue-surface: var(--u-danger-bg-color, #FFEBEE);
+    --tag-hue-text: var(--u-danger-color-strong, #C62828);
+    --tag-hue-text-outlined: var(--u-danger-color-strong, #C62828);
+  }
+
+  /* ==========================================================================
      장식 축 — 색 슬롯 매핑
      color="purple" 에는 역할 의미가 없다(장식이다). 그래서 역할 토큰이 아니라
      팔레트를 직접 읽으며, 브랜드 오버라이드에 의도적으로 면역이다.
@@ -82,7 +133,9 @@ export const styles = css`
 
   /* Variant: solid (강한 채움, 색 미지정 시 --tag-fill-color = 브랜드) */
   :host([variant="solid"]) {
-    --tag-color: var(--u-neutral-0, #FFFFFF);
+    /* 면 위의 글자. 장식 축은 슬롯이 비어 흰색으로 떨어진다(현행 보존) — 역할 축에서만
+       갈린다. warning 이 그 이유다: 노란 면 위의 흰 글자는 읽히지 않는다. */
+    --tag-color: var(--tag-hue-on-solid, var(--u-neutral-0, #FFFFFF));
     --tag-bg-color: var(--tag-hue-solid, var(--tag-fill-color));
     --tag-border-color: var(--tag-hue-solid, var(--tag-fill-color));
   }

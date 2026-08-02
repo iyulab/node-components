@@ -44,6 +44,13 @@ const INTERNAL: Record<string, string> = {
   '--tag-hue-text': 'u-tag 장식 축 내부 슬롯 (color= 구현)',
   '--tag-hue-text-outlined': 'u-tag 장식 축 내부 슬롯 (color= 구현)',
   '--checkbox-hue': 'u-checkbox 장식 축 내부 슬롯 (color= 구현)',
+
+  // 역할 축이 추가로 쓰는 슬롯. 장식 축은 이 슬롯을 비워 두고 variant 규칙의 폴백으로
+  // 떨어진다 — 그래서 장식 축 렌더가 변하지 않는다. 같은 이유로 내부다: 소비자가 만질
+  // 것은 `color` 속성이거나 시트의 역할 토큰이지 이 슬롯이 아니다.
+  '--tag-hue-on-solid': 'u-tag 역할 축 내부 슬롯 — 채운 면 위의 글자',
+  '--checkbox-hue-on-fill': 'u-checkbox 역할 축 내부 슬롯 — 채운 면 위의 체크 표시',
+  '--checkbox-hue-strong': 'u-checkbox 역할 축 내부 슬롯 — 바탕 위의 체크 표시',
 };
 
 /** 컴포넌트 `.ts` 전체에서 선언된 @cssprop 이름 */

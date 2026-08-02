@@ -8,8 +8,21 @@ import { styles } from "./UButton.styles.js";
 
 export type ButtonVariant = "solid" | "surface" | "filled" | "outlined" | "ghost" | "link";
 export type ButtonType = "button" | "submit" | "reset";
+/**
+ * 두 축이 한 속성에 병존한다.
+ *
+ * - **역할 축**(`primary`·`info`·`success`·`warning`·`danger`) — *의미*를 말한다.
+ *   색은 소비자의 역할 토큰이 정하므로 **리브랜딩을 따라오고**, 대비 계약을 물려받는다.
+ * - **장식 축**(`blue`·`purple` …) — *색 자체*를 말한다. 소비자가 고른 색이므로
+ *   리브랜딩에 **의도적으로 면역**이다.
+ *
+ * ★브랜드가 빨강인 제품에서 `color="red"` 는 브랜드와 위험을 같은 이름으로 만든다 —
+ * 그래서 위험은 `color="danger"` 로 쓴다.
+ */
 export type ButtonColor =
-  | "neutral" | "blue" | "green" | "red"
+  | "neutral"
+  | "primary" | "info" | "success" | "warning" | "danger"
+  | "blue" | "green" | "red"
   | "orange" | "teal" | "cyan" | "purple" | "pink";
 export type ButtonSize = "sm" | "md" | "lg";
 
@@ -31,8 +44,14 @@ export type ButtonSize = "sm" | "md" | "lg";
  * @cssprop --btn-padding-inline - 내부 버튼의 좌우 여백 (기본: 0.5em, variant="link"는 0)
  * @cssprop --btn-border-color - 내부 버튼의 테두리 색. variant/hover/active 규칙이 이 값을 정한다
  *   (기본: transparent)
- * @cssprop --btn-color - 버튼의 기준색. 아래 파생 토큰이 전부 이 값에서 color-mix()로 계산된다 —
+ * @cssprop --btn-color - 버튼의 **면** 색. 아래 파생 토큰이 전부 이 값에서 color-mix()로 계산된다 —
  *   보통 이것 하나만 덮으면 된다.
+ * @cssprop --btn-txt-color - 그 **면 위**의 글자색 — variant="solid" 가 읽는다
+ *   (기본: #fff · 역할 값 지정 시 --u-{role}-txt-color)
+ * @cssprop --btn-color-strong - **바탕 위**의 글자색 — variant="link" 가 읽는다.
+ *   면과 요구가 반대라 슬롯이 따로 있다 (기본: --btn-color 와 동일 · 역할 값 지정 시 --u-{role}-color-strong)
+ * @cssprop --btn-color-strong-hover - 바탕 위 글자 hover (기본: 85% + black · 역할 값은 움직이지 않고 밑줄로 강조)
+ * @cssprop --btn-color-strong-active - 바탕 위 글자 active (기본: 70% + black · 역할 값은 고정)
  * @cssprop --btn-color-hover - solid 배경 hover (기본: --btn-color 85% + black)
  * @cssprop --btn-color-active - solid 배경 active (기본: --btn-color 70% + black)
  * @cssprop --btn-color-surface - surface 배경 (기본: --btn-color 12% + 배경색)

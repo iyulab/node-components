@@ -44,7 +44,31 @@ export const styles = css`
     border-radius: var(--u-radius-circle, 50%);
   }
 
-  /* === Color (색상) === */
+  /* === Role (의미 축) ===
+     장식 축(아래)과 달리 역할 토큰을 읽어 리브랜딩을 따라오고, 면과 그 위 글자를
+     **쌍으로** 받아 대비 계약을 물려받는다. warning 이 흰 글자가 아닌 이유가 그것이다. */
+  :host([color="primary"]) {
+    color: var(--u-primary-txt-color, #FFFFFF);
+    background-color: var(--u-primary-color, #1976D2);
+  }
+  :host([color="info"]) {
+    color: var(--u-info-txt-color, #FFFFFF);
+    background-color: var(--u-info-color, #1976D2);
+  }
+  :host([color="success"]) {
+    color: var(--u-success-txt-color, #FFFFFF);
+    background-color: var(--u-success-color, #2E7D32);
+  }
+  :host([color="warning"]) {
+    color: var(--u-warning-txt-color, #000000);
+    background-color: var(--u-warning-color, #FDD835);
+  }
+  :host([color="danger"]) {
+    color: var(--u-danger-txt-color, #FFFFFF);
+    background-color: var(--u-danger-color, #D32F2F);
+  }
+
+  /* === Color (장식 축) === */
   :host([color="neutral"]) {
     color: var(--u-neutral-800, #424242);
     background-color: var(--u-neutral-200, #EEEEEE);

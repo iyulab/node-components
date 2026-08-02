@@ -43,7 +43,8 @@ export const styles = css`
   /* === Variant: filled - 배경 채움 === */
   :host([variant="filled"][checked]),
   :host([variant="filled"][indeterminate]) {
-    --checkbox-color: var(--u-neutral-100, #F5F5F5);
+    /* 체크 표시가 **채운 면 위**에 선다 — 역할 축에서만 on-color 로 갈린다(장식 축은 폴백). */
+    --checkbox-color: var(--checkbox-hue-on-fill, var(--u-neutral-100, #F5F5F5));
     --checkbox-border-color: var(--checkbox-hue, var(--checkbox-fill-color));
     --checkbox-background-color: var(--checkbox-hue, var(--checkbox-fill-color));
   }
@@ -51,9 +52,41 @@ export const styles = css`
   /* === Variant: outline - 테두리만 === */
   :host([variant="outline"][checked]),
   :host([variant="outline"][indeterminate]) {
-    --checkbox-color: var(--checkbox-hue, var(--checkbox-fill-color));
+    /* 여기서는 같은 표시가 **바탕 위**에 선다 — 면 단이 아니라 -strong 이 맡는다. */
+    --checkbox-color: var(--checkbox-hue-strong, var(--checkbox-hue, var(--checkbox-fill-color)));
     --checkbox-border-color: var(--checkbox-hue, var(--checkbox-fill-color));
     --checkbox-background-color: transparent;
+  }
+
+  /* ==========================================================================
+     역할 축 — 의미 슬롯. 장식 축(아래)과 달리 팔레트가 아니라 역할 토큰을 읽는다.
+     슬롯이 셋인 이유는 체크 표시가 두 자리에 서기 때문이다 —
+     filled 는 **채운 면 위**(그래서 on-color), outline 은 **바탕 위**(그래서 -strong).
+     ========================================================================== */
+  :host([color="primary"]) {
+    --checkbox-hue: var(--u-primary-color, #1976D2);
+    --checkbox-hue-on-fill: var(--u-primary-txt-color, #FFFFFF);
+    --checkbox-hue-strong: var(--u-primary-color-strong, #1565C0);
+  }
+  :host([color="info"]) {
+    --checkbox-hue: var(--u-info-color, #1976D2);
+    --checkbox-hue-on-fill: var(--u-info-txt-color, #FFFFFF);
+    --checkbox-hue-strong: var(--u-info-color-strong, #1565C0);
+  }
+  :host([color="success"]) {
+    --checkbox-hue: var(--u-success-color, #2E7D32);
+    --checkbox-hue-on-fill: var(--u-success-txt-color, #FFFFFF);
+    --checkbox-hue-strong: var(--u-success-color-strong, #1B5E20);
+  }
+  :host([color="warning"]) {
+    --checkbox-hue: var(--u-warning-color, #FDD835);
+    --checkbox-hue-on-fill: var(--u-warning-txt-color, #000000);
+    --checkbox-hue-strong: var(--u-warning-color-strong, #8A4A00);
+  }
+  :host([color="danger"]) {
+    --checkbox-hue: var(--u-danger-color, #D32F2F);
+    --checkbox-hue-on-fill: var(--u-danger-txt-color, #FFFFFF);
+    --checkbox-hue-strong: var(--u-danger-color-strong, #C62828);
   }
 
   /* ==========================================================================

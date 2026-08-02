@@ -197,6 +197,53 @@ green after you rebrand.
 rebrand moved the blue badge and left the other eight where they were. It now reads the palette
 like its siblings.
 
+### Role values on `color` — semantics instead of a hue (1.19.0)
+
+The same `color` attribute also accepts the five **role** values. They are the opposite of the
+decorative axis: they say *what the thing means*, they follow a rebrand, and they inherit the
+contrast contract.
+
+```html
+<u-button color="danger">Delete</u-button>     <!-- means "destructive" -->
+<u-button color="red">Delete</u-button>        <!-- means "red", stays red after rebrand -->
+```
+
+| Axis | Values | Follows rebrand | Contrast |
+|---|---|---|---|
+| **Role** | `primary` `info` `success` `warning` `danger` | yes | guaranteed by the contract tests |
+| **Decorative** | `blue` `green` `red` `orange` `teal` `cyan` `purple` `pink` (`yellow` where applicable) | no — deliberately immune | you pick the hue, you own the pairing |
+
+If your brand is red, `color="red"` makes *brand* and *danger* the same name. `color="danger"`
+is how you say the second one.
+
+**A role value brings its foreground with it.** That is the point of the axis, not a detail —
+the surface and the text on it arrive as a pair, so `warning` renders dark text on yellow rather
+than the white text every decorative value uses. The same applies where a mark sits on the page
+background instead of on a filled surface (`variant="link"`, `u-checkbox[variant="outline"]`,
+`u-spinner`): those read the `-strong` step, because a surface step used as text on the page
+background measures 3.07 in dark and fails AA.
+
+⚠ Role values are **additive** — every decorative value renders exactly as before.
+
+#### `neutral` does not mean the same thing everywhere
+
+Adding `primary` exposed an existing asymmetry rather than creating one. `color="neutral"` is
+the default on every component that has the attribute, but it resolves two different ways:
+
+| Component | `color="neutral"` resolves to | So `color="primary"` is… |
+|---|---|---|
+| `u-button` · `u-tag` · `u-spinner` | the **brand hook** (`--u-primary-color`) | the same colour, said explicitly |
+| `u-badge` · `u-checkbox` | a **grey** (`--u-neutral-800` / `--u-neutral-600`) | a genuinely different colour |
+
+Prefer `color="primary"` when you mean *"the brand colour"* — it says so, and it reads the same
+on all five components. `neutral` is kept as-is because changing either group would move
+already-published renders; unifying it is a visual change, not a naming one.
+
+`u-spinner` has a second wrinkle: it draws on the page background, so `color="primary"` reads the
+`-strong` step while the default still reads the surface step. Both clear the 3.0 non-text
+threshold (dark: 3.07 vs 5.17), so the default is not a defect — but the explicit value is the
+safer one in dark.
+
 ### Surfaces — three different jobs
 
 Backgrounds are not one axis. Three families exist because they answer different questions:

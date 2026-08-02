@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 27개 · 프로퍼티 120개**
+**컴포넌트 27개 · 프로퍼티 124개**
 
 ## `<u-alert>`
 
@@ -45,7 +45,11 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--btn-padding-block` | 내부 버튼의 상하 여백 (기본: 0.5em) |
 | `--btn-padding-inline` | 내부 버튼의 좌우 여백 (기본: 0.5em, variant="link"는 0) |
 | `--btn-border-color` | 내부 버튼의 테두리 색. variant/hover/active 규칙이 이 값을 정한다 (기본: transparent) |
-| `--btn-color` | 버튼의 기준색. 아래 파생 토큰이 전부 이 값에서 color-mix()로 계산된다 — 보통 이것 하나만 덮으면 된다. |
+| `--btn-color` | 버튼의 **면** 색. 아래 파생 토큰이 전부 이 값에서 color-mix()로 계산된다 — 보통 이것 하나만 덮으면 된다. |
+| `--btn-txt-color` | 그 **면 위**의 글자색 — variant="solid" 가 읽는다 (기본: #fff · 역할 값 지정 시 --u-{role}-txt-color) |
+| `--btn-color-strong` | **바탕 위**의 글자색 — variant="link" 가 읽는다. 면과 요구가 반대라 슬롯이 따로 있다 (기본: --btn-color 와 동일 · 역할 값 지정 시 --u-{role}-color-strong) |
+| `--btn-color-strong-hover` | 바탕 위 글자 hover (기본: 85% + black · 역할 값은 움직이지 않고 밑줄로 강조) |
+| `--btn-color-strong-active` | 바탕 위 글자 active (기본: 70% + black · 역할 값은 고정) |
 | `--btn-color-hover` | solid 배경 hover (기본: --btn-color 85% + black) |
 | `--btn-color-active` | solid 배경 active (기본: --btn-color 70% + black) |
 | `--btn-color-surface` | surface 배경 (기본: --btn-color 12% + 배경색) |

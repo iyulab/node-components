@@ -5,8 +5,15 @@ import { UElement } from "../UElement.js";
 import { styles } from "./UTag.styles.js";
 
 export type TagVariant = "solid" | "surface" | "filled" | "outlined";
+/**
+ * 두 축이 병존한다 — **역할 축**(`primary`·`info`·`success`·`warning`·`danger`)은 *의미*를
+ * 말하고 리브랜딩을 따라오며 대비 계약을 물려받는다. **장식 축**(`blue`·`purple` …)은
+ * *색 자체*를 말하고 리브랜딩에 의도적으로 면역이다.
+ */
 export type TagColor =
-  | "neutral" | "blue" | "green" | "yellow" | "red"
+  | "neutral"
+  | "primary" | "info" | "success" | "warning" | "danger"
+  | "blue" | "green" | "yellow" | "red"
   | "orange" | "teal" | "cyan" | "purple" | "pink";
 
 /**

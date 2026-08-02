@@ -9,6 +9,14 @@ export const styles = css`
   }
 
   /* Color variants */
+  /* 역할 축 — 스피너는 **바탕 위의 그래픽**이므로 면 단(-color)이 아니라 -strong 을
+     읽는다. 다크에서 -color 는 바탕 위 3.07 까지 떨어진다(Cycle 141 실측). */
+  :host([color="primary"]) { --spinner-indicator-color: var(--u-primary-color-strong, #1565C0); }
+  :host([color="info"])    { --spinner-indicator-color: var(--u-info-color-strong, #1565C0); }
+  :host([color="success"]) { --spinner-indicator-color: var(--u-success-color-strong, #1B5E20); }
+  :host([color="warning"]) { --spinner-indicator-color: var(--u-warning-color-strong, #8A4A00); }
+  :host([color="danger"])  { --spinner-indicator-color: var(--u-danger-color-strong, #C62828); }
+
   :host([color="blue"]) { --spinner-indicator-color: var(--u-blue-600, #1E88E5); }
   :host([color="green"]) { --spinner-indicator-color: var(--u-green-600, #43A047); }
   :host([color="yellow"]) { --spinner-indicator-color: var(--u-yellow-600, #FDD835); }

@@ -8,7 +8,10 @@ import { Locale } from "../../utilities/Locale.js";
 import { styles } from "./UCheckbox.styles.js";
 
 export type CheckboxVariant = "filled" | "outline";
-export type CheckboxColor = "blue" | "green" | "red" | "orange" | "teal" | "cyan" | "purple" | "pink" | "neutral";
+/** 역할 축(`primary`…`danger`, 의미 · 리브랜딩을 따라옴)과 장식 축(`blue`…, 색 자체 · 면역)이 병존한다. */
+export type CheckboxColor =
+  | "primary" | "info" | "success" | "warning" | "danger"
+  | "blue" | "green" | "red" | "orange" | "teal" | "cyan" | "purple" | "pink" | "neutral";
 
 /**
  * 선택/해제 상태를 토글하는 체크박스 컴포넌트입니다.

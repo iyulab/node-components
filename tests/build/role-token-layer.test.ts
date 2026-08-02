@@ -30,7 +30,20 @@ function ruleBlocks(css: string): Array<{ sel: string; body: string }> {
   return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(m => ({ sel: m[1], body: m[2] }));
 }
 
-const isDecorative = (sel: string) => /\[color[~^$*]?=/.test(sel);
+/** 역할 값 — `color=` 를 쓰지만 **의미 축**이라 장식 면제를 받으면 안 된다. */
+const ROLE_VALUES = ['primary', 'info', 'success', 'warning', 'danger'];
+
+/**
+ * `[color=X]` 라고 전부 장식인 것은 아니다.
+ *
+ * ★1.19.0 이전의 이 판정은 `/\[color=/` 하나였고, 그 결과 **역할 값 규칙이 팔레트를 직접
+ * 읽어도 아래 검사가 침묵했다.** 역할 값은 정의상 *"리브랜딩을 따라오는 축"* 이므로
+ * 팔레트 직참조는 그 축의 존재 이유를 무효화한다 — 장식 축과 정확히 반대 요구다.
+ * 면제는 **장식 값에만** 준다.
+ */
+const isDecorative = (sel: string) =>
+  /\[color[~^$*]?=/.test(sel) &&
+  !ROLE_VALUES.some(r => new RegExp(`\\[color[~^$*]?=["']?${r}["']?\\]`).test(sel));
 
 describe('역할 토큰 층', () => {
   it('두 시트가 5역할 × 5단 그리드를 전부 정의한다', () => {

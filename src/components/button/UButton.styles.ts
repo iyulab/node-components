@@ -4,6 +4,23 @@ export const styles = css`
   :host {
     /* --btn-color 하나만 정해지면 hover/active/surface/outline 톤이 전부 자동 파생 */
     --btn-color: var(--u-primary-color, #1976D2);
+
+    /* ★색 슬롯이 셋인 이유 — 같은 색이 세 자리에서 요구가 다르다.
+       시트의 역할 층이 이미 이 구분을 갖고 있어(-color = 면 · -strong = 바탕 위 글자 ·
+       -txt-color = 면 위 글자) 슬롯 이름을 그 어법에 1:1 로 맞춘다.
+
+         --btn-color         면(solid 배경 · 테두리 · surface 혼합의 원료)
+         --btn-txt-color     그 면 **위**의 글자   ← solid
+         --btn-color-strong  바탕 **위**의 글자    ← link
+
+       ⚠셋을 하나로 접으면 다크에서 깨진다: 바탕(#121212)과 on-color(#FFFFFF)가 정반대라
+       한 단이 둘을 맡을 수 없다(Cycle 141 실측 — 다크 primary 면 6.09 ✓ / 바탕 3.07 ✗).
+       장식 축(color="purple" 등)은 세 슬롯이 종전 값으로 수렴하므로 렌더가 변하지 않는다. */
+    --btn-txt-color: #fff;
+    --btn-color-strong: var(--btn-color);
+    --btn-color-strong-hover: color-mix(in srgb, var(--btn-color-strong) 85%, black);
+    --btn-color-strong-active: color-mix(in srgb, var(--btn-color-strong) 70%, black);
+
     --btn-color-hover: color-mix(in srgb, var(--btn-color) 85%, black);
     --btn-color-active: color-mix(in srgb, var(--btn-color) 70%, black);
     --btn-color-surface: color-mix(in srgb, var(--btn-color) 12%, var(--u-bg-color, #FFFFFF));
@@ -32,7 +49,53 @@ export const styles = css`
     cursor: pointer;
   }
 
-  /* === Color tokens === */
+  /* === Role tokens (의미 축) ===
+     color="danger" 는 *"위험한 동작"* 을 뜻하고, 그 색이 무엇인지는 소비자의 역할 토큰이
+     정한다. 장식 축과 반대로 **리브랜딩을 따라오고**, 대비 계약(token-contrast.test.ts)이
+     지키는 짝을 그대로 물려받는다.
+
+     ★장식 램프(shade-600)로 해석하면 안 된다 — 라이트에서 그 단 위의 흰 글자는 8색 중
+     6색이 AA 미달이다(green 3.30 · orange 2.37 · cyan 2.74 …). 역할 값을 쓰는 이유가
+     *의미 이름*인데 그 대가로 대비를 잃으면 앞뒤가 맞지 않는다. */
+  :host([color="primary"]) {
+    --btn-color: var(--u-primary-color, #1976D2);
+    --btn-color-strong: var(--u-primary-color-strong, #1565C0);
+    --btn-txt-color: var(--u-primary-txt-color, #FFFFFF);
+  }
+  :host([color="info"]) {
+    --btn-color: var(--u-info-color, #1976D2);
+    --btn-color-strong: var(--u-info-color-strong, #1565C0);
+    --btn-txt-color: var(--u-info-txt-color, #FFFFFF);
+  }
+  :host([color="success"]) {
+    --btn-color: var(--u-success-color, #2E7D32);
+    --btn-color-strong: var(--u-success-color-strong, #1B5E20);
+    --btn-txt-color: var(--u-success-txt-color, #FFFFFF);
+  }
+  :host([color="warning"]) {
+    --btn-color: var(--u-warning-color, #FDD835);
+    --btn-color-strong: var(--u-warning-color-strong, #8A4A00);
+    --btn-txt-color: var(--u-warning-txt-color, #000000);
+  }
+  :host([color="danger"]) {
+    --btn-color: var(--u-danger-color, #D32F2F);
+    --btn-color-strong: var(--u-danger-color-strong, #C62828);
+    --btn-txt-color: var(--u-danger-txt-color, #FFFFFF);
+  }
+
+  /* 역할 축의 link 는 쉬는 상태가 **이미 대비로 선택된 단**(-strong)이라 더 어둡게 하면
+     계약을 벗어난다. 강조는 밑줄이 맡는다 — neutral link 가 쓰는 어법과 같다.
+     장식 축은 종전대로 혼합 파생을 유지한다. */
+  :host([color="primary"]),
+  :host([color="info"]),
+  :host([color="success"]),
+  :host([color="warning"]),
+  :host([color="danger"]) {
+    --btn-color-strong-hover: var(--btn-color-strong);
+    --btn-color-strong-active: var(--btn-color-strong);
+  }
+
+  /* === Color tokens (장식 축) === */
   :host([color="blue"])   { --btn-color: var(--u-blue-600, #1E88E5); }
   :host([color="green"])  { --btn-color: var(--u-green-600, #43A047); }
   :host([color="red"])    { --btn-color: var(--u-red-600, #E53935); }
@@ -79,7 +142,7 @@ export const styles = css`
 
   /* solid: 강한 채움 (기본 color="neutral") */
   :host([variant="solid"]) {
-    color: #fff;
+    color: var(--btn-txt-color);
     background-color: var(--btn-color);
     --btn-border-color: var(--btn-color);
   }
@@ -164,15 +227,17 @@ export const styles = css`
     color: var(--u-primary-color-strong, #1565C0);
     text-decoration: underline;
   }
-  /* link + 명시적 non-neutral color: 링크 자체 색상을 재정의 (예: 파괴적 액션 링크) */
+  /* link + 명시적 non-neutral color: 링크 자체 색상을 재정의 (예: 파괴적 액션 링크)
+     ★여기는 **바탕 위의 글자**다 — 면 슬롯(--btn-color)이 아니라 --btn-color-strong 을
+     읽는다. 장식 축에서는 둘이 같은 값이라 렌더가 변하지 않고, 역할 축에서만 갈린다. */
   :host([variant="link"][color]:not([color="neutral"])) {
-    color: var(--btn-color);
+    color: var(--btn-color-strong);
   }
   :host([variant="link"][color]:not([color="neutral"]):hover) {
-    color: var(--btn-color-hover);
+    color: var(--btn-color-strong-hover);
   }
   :host([variant="link"][color]:not([color="neutral"]):active) {
-    color: var(--btn-color-active);
+    color: var(--btn-color-strong-active);
   }
 
   /* === Inner ===
