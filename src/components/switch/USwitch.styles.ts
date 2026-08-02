@@ -105,7 +105,7 @@ export const styles = css`
   .track-unchecked {
     opacity: 1;
     right: var(--switch-thumb-offset);
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
   }
   :host([checked]) .track-unchecked {
     opacity: 0;
@@ -163,7 +163,7 @@ export const styles = css`
   .thumb-unchecked {
     opacity: 1;
     transform: scale(1) rotate(0deg);
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
   }
   :host([checked]) .thumb-unchecked {
     opacity: 0;
@@ -182,7 +182,7 @@ export const styles = css`
 
   .description {
     margin-top: 0.5em;
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
     font-size: 0.75em;
     line-height: 1.3;
   }

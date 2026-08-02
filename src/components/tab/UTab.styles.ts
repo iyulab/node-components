@@ -7,7 +7,7 @@ export const styles = css`
     display: inline-flex;
     font-size: 0.9em;
     font-weight: 500;
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
     white-space: nowrap;
     user-select: none;
     cursor: pointer;

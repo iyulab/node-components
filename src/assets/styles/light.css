@@ -206,10 +206,24 @@
   /* Text Colors */
   --u-txt-color:             var(--u-neutral-900);
   --u-txt-color-inverse:     var(--u-neutral-0);
+  /* 유채색 배경 위의 글자. --u-txt-color-inverse 는 다크에서 neutral-100(#121212)이라
+     유채색 버튼 위에서 읽히지 않는다. 브랜드 색을 바꾸는 소비자가 전경색도 함께
+     조절할 수 있도록 별도 이름을 준다.
+     ⚠이 토큰이 흰색이라는 것과 그 위의 배경이 AA 를 받친다는 것은 별개다 —
+     라이트 팔레트의 shade-600 은 8색 중 6색이 흰 글자로 AA 에 미달한다(미해결). */
+  --u-primary-txt-color:     #FFFFFF;
+  --u-info-txt-color:        #FFFFFF;
+  --u-success-txt-color:     #FFFFFF;
+  --u-danger-txt-color:      #FFFFFF;
+  --u-warning-txt-color:     #FFFFFF;
+
   --u-txt-color-hover:       var(--u-primary-color);
   --u-txt-color-active:      var(--u-primary-color);
   --u-txt-color-disabled:    var(--u-neutral-400);
-  --u-txt-color-weak:        var(--u-neutral-500);
+  /* neutral-500(#9E9E9E)은 흰 배경 대비 2.68 로 WCAG AA(4.5) 미달이었다.
+     neutral-600(#757575) = 4.61 로 통과한다. 다크 매핑(neutral-700 = 5.43)은
+     원래 정상이라 손대지 않는다 — 라이트 한쪽만의 결함이었다. */
+  --u-txt-color-weak:        var(--u-neutral-600);
   --u-txt-color-strong:      var(--u-neutral-1000);
 
   --u-link-txt-color:        var(--u-primary-color-strong);
@@ -240,6 +254,18 @@
   --u-bg-color-active:       var(--u-neutral-200);
   --u-bg-color-disabled:     var(--u-neutral-50);
  
+  /* 유채색 표면 — 정보/성공/위험 상태의 '면'.
+     역할 층의 유채색은 전경 5단뿐이라, 상태 배경이 필요한 컴포넌트는 팔레트를 직접
+     읽고 다크를 손으로 보정해야 했다. 팔레트의 유채색 틴트는 다크에서 짓눌리므로
+     (바탕 대비 델타의 다크/라이트 비 — 청색 0.38~0.54) 두 테마가 **같은 단이 아니라
+     같은 세기**가 되도록 짝지었다. 실측 비: blue 1.09 · red 1.12 · green 0.91.
+     ⚠yellow(경고)는 빠져 있다 — 라이트 황색 틴트가 Δ0.071 로 거의 보이지 않아
+     어떤 짝을 골라도 비가 2배 밑으로 내려가지 않는다. 리터럴 재설계가 선행돼야 한다. */
+  --u-primary-bg-color:      var(--u-blue-0);
+  --u-info-bg-color:         var(--u-blue-0);
+  --u-success-bg-color:      var(--u-green-0);
+  --u-danger-bg-color:       var(--u-red-0);
+
   --u-input-bg-color:        var(--u-neutral-0);
   --u-panel-bg-color:        var(--u-neutral-0);
   --u-overlay-bg-color:      rgba(0, 0, 0, 0.5);

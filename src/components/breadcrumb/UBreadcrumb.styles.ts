@@ -28,7 +28,7 @@ export const styles = css`
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
     font-size: 0.75em;
     user-select: none;
   }

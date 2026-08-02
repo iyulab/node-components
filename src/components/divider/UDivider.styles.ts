@@ -58,7 +58,7 @@ export const styles = css`
   .label {
     display: none;
     padding: 0 var(--u-space-md, 12px);
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
     font-size: 0.85em;
     white-space: nowrap;
     user-select: none;

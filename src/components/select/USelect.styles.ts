@@ -118,7 +118,7 @@ export const styles = css`
   }
 
   .count {
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
     line-height: 1.25;
   }
 
@@ -131,7 +131,7 @@ export const styles = css`
     text-overflow: ellipsis;
   }
   .text-content.placeholder {
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
   }
 
   .chips-content {
@@ -183,7 +183,7 @@ export const styles = css`
     align-items: center;
     gap: 0.4em;
     padding: 0.3em 0.6em;
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
     border-bottom: 1px solid var(--u-border-color, #E0E0E0);
   }
   .search-input input {
@@ -193,6 +193,6 @@ export const styles = css`
     line-height: 1.5;
   }
   .search-input input::placeholder {
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
   }
 `;

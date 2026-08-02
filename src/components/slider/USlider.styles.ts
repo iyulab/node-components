@@ -117,7 +117,7 @@ export const styles = css`
     position: absolute;
     transform: translateX(-50%);
     font-size: 0.75em;
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
     white-space: nowrap;
   }
 `;

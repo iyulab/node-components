@@ -37,7 +37,7 @@ export const styles = css`
   }
   
   .footer {
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
     font-size: 0.75em;
     line-height: 1.2;
     margin-top: 0.5em;

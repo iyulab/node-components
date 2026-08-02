@@ -120,7 +120,7 @@ export const styles = css`
     line-height: 1.5;
   }
   input::placeholder {
-    color: var(--u-txt-color-weak, #9E9E9E);
+    color: var(--u-txt-color-weak, #757575);
   }
   input:disabled {
     cursor: not-allowed;
