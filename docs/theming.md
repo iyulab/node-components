@@ -197,7 +197,7 @@ green after you rebrand.
 rebrand moved the blue badge and left the other eight where they were. It now reads the palette
 like its siblings.
 
-### Role values on `color` — semantics instead of a hue (1.19.0)
+### Role values on `color` — semantics instead of a hue (1.20.0)
 
 The same `color` attribute also accepts the five **role** values. They are the opposite of the
 decorative axis: they say *what the thing means*, they follow a rebrand, and they inherit the
