@@ -20,11 +20,48 @@
 // ★배선은 **토큰 단위**로 나눌 수 있다(`--token`). use-site 단위로 자르면 중단 시
 // "일부 화면만 폴백을 가진" 상태가 되지만, 토큰 단위면 "이 토큰들은 시트 없이도 렌더된다"
 // 는 일관된 상태로 끊긴다.
-import { readFileSync, writeFileSync, globSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 
 const SHEET = 'src/assets/styles/light.css';
 const SOURCE_GLOB = 'src/**/*.ts';
+
+/**
+ * `<디렉터리>/**\/*.<확장자>` 형태 하나만 지원하는 최소 워커.
+ *
+ * ⚠**`fs.globSync` 를 쓰지 않는다** — 그것은 **Node 22 에서 추가**됐고, 이 파일은
+ * `npm run tokens:sync` · `npm run test:scripts` 두 경로에서 로드된다. Node 20 에서는
+ * **import 단계에서** 죽는데, 그 에러가 `SyntaxError: 'fs' does not provide an export
+ * named 'globSync'` 라서 *"Node 가 낡았다"* 로 읽히지 않는다.
+ * 실제로 이 리포 사용자의 셸 둘이 서로 다른 Node(20 / 24)를 쓰고 있었고, 한쪽에서만
+ * 검증 명령이 돌았다. ⇒ ***검사 장치가 환경에 따라 조용히 사라지면 안 된다.***
+ *
+ * 여기서 필요한 패턴은 `src/**\/*.ts` 하나뿐이므로 범용 glob 을 재구현하지 않는다.
+ * 다른 형태가 들어오면 **분명하게 실패**한다 — 조용히 빈 배열을 돌려주면 대조가
+ * *"스테일 0"* 이라는 거짓을 말하게 된다.
+ */
+function walkFiles(pattern, { cwd }) {
+  const m = /^([\w./-]+)\/\*\*\/\*(\.[\w.]+)$/.exec(pattern);
+  if (!m) throw new Error(`지원하지 않는 패턴: ${pattern} (형태는 <dir>/**/*.<ext>)`);
+  const [, base, ext] = m;
+
+  const out = [];
+  const walk = (rel) => {
+    let entries;
+    try {
+      entries = readdirSync(join(cwd, rel), { withFileTypes: true });
+    } catch {
+      return; // 디렉터리가 없다 — 호출자의 skip 규약과 같다
+    }
+    for (const e of entries) {
+      const next = `${rel}/${e.name}`;
+      if (e.isDirectory()) walk(next);
+      else if (e.name.endsWith(ext)) out.push(next);
+    }
+  };
+  walk(base);
+  return out.sort();
+}
 
 /**
  * ★정본 시트는 **light** 다.
@@ -185,7 +222,7 @@ export function planFallbacks(root, { tokens } = {}) {
   const edits = [];
   const skipped = { excluded: new Map(), unresolved: new Map() };
 
-  for (const rel of globSync(SOURCE_GLOB, { cwd: root })) {
+  for (const rel of walkFiles(SOURCE_GLOB, { cwd: root })) {
     const path = join(root, rel);
     const src = readFileSync(path, 'utf-8');
     const hits = [];
@@ -231,7 +268,7 @@ export function refreshFallbacks(root, { tokens, write = false, sheet, sourceGlo
   const only = tokens && tokens.length ? new Set(tokens) : null;
   const stale = [];
 
-  for (const rel of globSync(sourceGlob ?? SOURCE_GLOB, { cwd: root })) {
+  for (const rel of walkFiles(sourceGlob ?? SOURCE_GLOB, { cwd: root })) {
     const path = join(root, rel);
     const src = readFileSync(path, 'utf-8');
     const hits = [...parseFallbacks(src)].filter(({ name, literal }) => {
