@@ -70,7 +70,7 @@ export const styles = css`
     border: 1px solid var(--u-border-color, color-mix(in srgb, CanvasText 20%, Canvas));
     border-radius: var(--u-radius-lg, 6px);
     background: var(--u-panel-bg-color, Canvas);
-    box-shadow: var(--u-shadow-xl, 0 6px 18px rgba(0, 0, 0, 0.24));
+    box-shadow: var(--u-shadow-xl, 0 6px 18px rgba(0, 0, 0, 0.24), 0 2px 6px rgba(0, 0, 0, 0.08));
     pointer-events: auto;
     opacity: 0;
     transform: scale(0.92);

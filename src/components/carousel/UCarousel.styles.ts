@@ -60,11 +60,11 @@ export const styles = css`
     font-size: 20px;
     color: var(--u-neutral-900, #212121);
     background-color: var(--u-neutral-100, #F5F5F5);
-    box-shadow: var(--u-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.12));
+    box-shadow: var(--u-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.05));
   }
   .nav-button:hover {
     background-color: var(--u-neutral-200, #EEEEEE);
-    box-shadow: var(--u-shadow-lg, 0 4px 12px rgba(0, 0, 0, 0.16));
+    box-shadow: var(--u-shadow-lg, 0 4px 12px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.06));
     transform: translateY(-50%) scale(1.1);
   }
   .nav-button:active {

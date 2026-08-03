@@ -13,7 +13,16 @@ const AXIS_B = [
   'UDrawer', 'UDivider', 'UMenu', 'USlider', 'UTooltip',
 ];
 
-const SPACE_STEPS = { '3xs': '2px', '2xs': '4px', xs: '6px', sm: '8px', md: '12px', lg: '16px' };
+/**
+ * ★상단 4단(`xl`~`4xl`)은 **화면 리듬**이다(카드 안쪽·섹션 간격·페이지 여백).
+ * 종전에는 스케일이 `lg`(16px)에서 끊겨 그 구간을 소비자가 전부 리터럴로 적었다.
+ * ⚠`xs: 6px` 만 4px 격자를 벗어나 있다 — 이미 배선된 컨트롤 여백이 전부 움직이므로
+ *   **바꾸지 않는다**. 신규 단은 전부 4의 배수다(아래 단언이 지킨다).
+ */
+const SPACE_STEPS = {
+  '3xs': '2px', '2xs': '4px', xs: '6px', sm: '8px', md: '12px', lg: '16px',
+  xl: '20px', '2xl': '24px', '3xl': '32px', '4xl': '40px',
+};
 
 /** 여백을 지정하는 선언인가 (`padding-block-start`·`--menu-padding` 같은 파생형 포함) */
 const SPACING_DECL =

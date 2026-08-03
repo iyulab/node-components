@@ -205,7 +205,9 @@ describe('역할 토큰 층', () => {
 });
 
 describe('스케일 토큰 — 반경', () => {
-  const STEPS = ['none', 'sm', 'md', 'lg', 'xl', 'pill', 'circle'];
+  // ★상단 2단(`2xl`·`3xl`)은 **면(surface)용**이다 — 카드·패널·대화상자처럼 큰 사각형은
+  //   컨트롤과 같은 반경을 쓰면 각져 보인다. 기존 5단은 **컨트롤용**이고 값을 바꾸지 않는다.
+  const STEPS = ['none', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', 'pill', 'circle'];
 
   it('두 시트가 반경 스케일을 같은 값으로 정의한다', () => {
     const map = (sheet: string) => {
@@ -223,7 +225,7 @@ describe('스케일 토큰 — 반경', () => {
   it('컴포넌트가 스케일에 있는 반경을 리터럴로 쓰지 않는다', () => {
     // em 기반·다중값·calc 반경은 스케일 밖이다(폰트 크기를 따라야 하거나 기하 계산이다).
     // 여기서 막는 것은 **스케일에 이미 있는 값**을 리터럴로 다시 쓰는 것이다.
-    const SCALE = new Set(['0', '3px', '4px', '6px', '8px', '999px', '9999px', '50%']);
+    const SCALE = new Set(['0', '3px', '4px', '6px', '8px', '12px', '16px', '999px', '9999px', '50%']);
     const offenders: string[] = [];
     for (const f of styleFiles()) {
       for (const m of read(f).matchAll(/border-radius:\s*([^;]+);/g)) {

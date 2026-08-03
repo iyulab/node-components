@@ -175,7 +175,7 @@ export const styles = css`
     border: 1px solid var(--u-border-color, #E0E0E0);
     border-radius: var(--u-radius-lg, 6px);
     background-color: var(--u-panel-bg-color, #FFFFFF);
-    box-shadow: var(--u-shadow-lg, 0 4px 12px rgba(0, 0, 0, 0.16));
+    box-shadow: var(--u-shadow-lg, 0 4px 12px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.06));
     overflow-x: auto;
     overflow-y: auto;
   }

@@ -123,7 +123,7 @@ export const styles = css`
     height: var(--switch-thumb-size);
     border-radius: var(--switch-radius);
     background: var(--switch-thumb-color);
-    box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
+    box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04));
     overflow: hidden;
     transition:
       transform var(--switch-duration) cubic-bezier(0.4, 0, 0.2, 1),

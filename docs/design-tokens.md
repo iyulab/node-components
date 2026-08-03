@@ -10,7 +10,7 @@
 `dark.css` 는 같은 이름을 같은 구조로 정의하며 **값만** 다릅니다 — 다크 대응을 위해
 컴포넌트나 소비자가 할 일은 없습니다.
 
-**역할 25 · 스케일 13 · 시맨틱 60 · 팔레트 111**
+**역할 25 · 스케일 19 · 시맨틱 99 · 팔레트 111**
 
 ---
 
@@ -83,6 +83,8 @@
 | `--u-radius-md` | `4px` |
 | `--u-radius-lg` | `6px` |
 | `--u-radius-xl` | `8px` |
+| `--u-radius-2xl` | `12px` |
+| `--u-radius-3xl` | `16px` |
 | `--u-radius-pill` | `9999px` |
 | `--u-radius-circle` | `50%` |
 | `--u-space-3xs` | `2px` |
@@ -91,6 +93,10 @@
 | `--u-space-sm` | `8px` |
 | `--u-space-md` | `12px` |
 | `--u-space-lg` | `16px` |
+| `--u-space-xl` | `20px` |
+| `--u-space-2xl` | `24px` |
+| `--u-space-3xl` | `32px` |
+| `--u-space-4xl` | `40px` |
 
 ---
 
@@ -148,19 +154,58 @@
 | `--u-shadow-color-normal` | `rgba(0, 0, 0, 0.12)` |
 | `--u-shadow-color-strong` | `rgba(0, 0, 0, 0.16)` |
 | `--u-shadow-color-stronger` | `rgba(0, 0, 0, 0.24)` |
-| `--u-shadow-sm` | `0 1px 3px rgba(0, 0, 0, 0.08)` |
-| `--u-shadow-md` | `0 2px 8px rgba(0, 0, 0, 0.12)` |
-| `--u-shadow-lg` | `0 4px 12px rgba(0, 0, 0, 0.16)` |
-| `--u-shadow-xl` | `0 6px 18px rgba(0, 0, 0, 0.24)` |
+| `--u-shadow-sm` | `0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04)` |
+| `--u-shadow-md` | `0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.05)` |
+| `--u-shadow-lg` | `0 4px 12px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.06)` |
+| `--u-shadow-xl` | `0 6px 18px rgba(0, 0, 0, 0.24), 0 2px 6px rgba(0, 0, 0, 0.08)` |
+| `--u-text-display-size` | `26px` |
+| `--u-text-display-weight` | `700` |
+| `--u-text-display-leading` | `1.4` |
+| `--u-text-display-tracking` | `-0.02em` |
+| `--u-text-title-size` | `20px` |
+| `--u-text-title-weight` | `700` |
+| `--u-text-title-leading` | `1.45` |
+| `--u-text-title-tracking` | `-0.01em` |
+| `--u-text-subtitle-size` | `16px` |
+| `--u-text-subtitle-weight` | `600` |
+| `--u-text-subtitle-leading` | `1.5` |
+| `--u-text-subtitle-tracking` | `0` |
+| `--u-text-body-size` | `14px` |
+| `--u-text-body-weight` | `400` |
+| `--u-text-body-leading` | `1.6` |
+| `--u-text-body-tracking` | `0` |
+| `--u-text-label-size` | `13px` |
+| `--u-text-label-weight` | `600` |
+| `--u-text-label-leading` | `1.5` |
+| `--u-text-label-tracking` | `0` |
+| `--u-text-caption-size` | `12px` |
+| `--u-text-caption-weight` | `400` |
+| `--u-text-caption-leading` | `1.5` |
+| `--u-text-caption-tracking` | `0` |
+| `--u-text-overline-size` | `11px` |
+| `--u-text-overline-weight` | `700` |
+| `--u-text-overline-leading` | `1.45` |
+| `--u-text-overline-tracking` | `0.06em` |
+| `--u-duration-instant` | `80ms` |
+| `--u-duration-fast` | `140ms` |
+| `--u-duration-normal` | `220ms` |
+| `--u-duration-slow` | `320ms` |
+| `--u-ease-standard` | `cubic-bezier(0.2, 0, 0, 1)` |
+| `--u-ease-decelerate` | `cubic-bezier(0, 0, 0, 1)` |
+| `--u-ease-accelerate` | `cubic-bezier(0.3, 0, 1, 1)` |
 | `--u-scrollbar-color` | `var(--u-neutral-400)` |
 | `--u-scrollbar-color-hover` | `var(--u-neutral-500)` |
 | `--u-scrollbar-track-color` | `transparent` |
-| `--u-font-base` | `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'` |
+| `--u-font-base` | `'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', 'Hiragino Sans', 'Yu Gothic UI', 'Microsoft YaHei', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'` |
 | `--u-font-mono` | `ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace` |
 | `--u-font-serif` | `'Georgia', 'Times New Roman', Times, serif` |
 | `--u-font-display` | `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif` |
 | `--u-font-modern` | `'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif` |
 | `--u-font-rounded` | `'Nunito', 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif` |
+| `--u-duration-instant` | `0ms` |
+| `--u-duration-fast` | `0ms` |
+| `--u-duration-normal` | `0ms` |
+| `--u-duration-slow` | `0ms` |
 
 ---
 

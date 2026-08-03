@@ -188,7 +188,7 @@ export const styles = css`
   :host([variant="pill"]) ::slotted(u-tab[active]) {
     border-color: var(--u-border-color, #E0E0E0);
     background-color: var(--u-neutral-0, #FFFFFF);
-    box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
+    box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04));
   }
 
   /* Variant: plain */
