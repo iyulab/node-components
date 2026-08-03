@@ -120,6 +120,8 @@ export const styles = css`
   .count {
     color: var(--u-txt-color-weak, #757575);
     line-height: 1.25;
+    /* n / m 은 제자리에서 n 이 바뀐다 — 비례폭이면 선택할 때마다 라벨 줄이 흔들린다 */
+    font-variant-numeric: tabular-nums;
   }
 
   .text-content {

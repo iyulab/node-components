@@ -21,6 +21,14 @@ export const styles = css`
     font-family: var(--u-font-base);
   }
 
+  /* 라이브러리가 **스스로 그리는 숫자**는 고정폭 자릿수로 낸다.
+     둘 다 제자리에서 값이 바뀌는 자리라 비례폭이면 드래그 중 글자가 흔들린다.
+     ★툴팁은 슬롯을 건너 상속으로 닿는다 — font-variant-numeric 은 상속 프로퍼티다. */
+  [slot="label-aside"],
+  u-tooltip[part="thumb-tooltip"] {
+    font-variant-numeric: tabular-nums;
+  }
+
   .container {
     position: relative;
     height: var(--slider-thumb-size);
