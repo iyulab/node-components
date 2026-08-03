@@ -89,7 +89,7 @@ export const styles = css`
     justify-content: space-between;
     gap: var(--u-space-sm, 8px);
     padding: var(--u-space-md, 12px) var(--u-space-lg, 16px);
-    font-size: 18px;
+    font-size: var(--u-text-subtitle-size, 16px);
     font-weight: 600;
     line-height: 1.3;
     border-bottom: 1px solid var(--u-border-color, #E0E0E0);

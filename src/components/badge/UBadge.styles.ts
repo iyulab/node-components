@@ -140,6 +140,12 @@ export const styles = css`
     transform: translate(-50%, 50%);
   }
 
+  /* 상태 아이콘 — prefix 슬롯과 같은 간격을 쓴다. */
+  .icon {
+    flex-shrink: 0;
+    margin-right: 0.25em;
+  }
+
   /* === Slots === */
   ::slotted([slot="prefix"]) {
     margin-right: 0.25em;

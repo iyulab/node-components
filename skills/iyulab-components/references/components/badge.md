@@ -34,5 +34,6 @@ Status badge for numbers, labels, or dot indicators. Use `anchor` to position it
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `variant` | `'pill'\|'dot'\|'square'` | `'pill'` | ✓ | Shape variant; `dot` renders no content |
-| `color` | `'neutral'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | `'neutral'` | ✓ | Badge color |
+| `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | `'blue'` | ✓ | Badge color (role axis = semantics, decorative axis = the color itself) |
 | `anchor` | `'top-right'\|'top-left'\|'bottom-right'\|'bottom-left'` | — | ✓ | Absolute anchor position relative to parent |
+| `icon` | `boolean` | `false` | ✓ | Adds a status icon so the meaning survives without color (`info`/`success`/`warning`/`danger`; not drawn for `variant="dot"`) |

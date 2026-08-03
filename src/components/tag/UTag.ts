@@ -1,8 +1,10 @@
-import { html } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
+import { statusIcon } from "../../utilities/statusIcon.js";
 import { styles } from "./UTag.styles.js";
+import '../icon/UIcon.js';
 
 export type TagVariant = "solid" | "surface" | "filled" | "outlined";
 /**
@@ -24,6 +26,7 @@ export type TagColor =
  * @slot suffix - 태그 뒤에 표시할 콘텐츠
  *
  * @csspart content - 콘텐츠 영역
+ * @csspart icon - 상태 아이콘 (`icon` + 역할 색일 때만 렌더된다)
  *
  * @cssprop --tag-color - 텍스트 색상
  * @cssprop --tag-bg-color - 배경 색상
@@ -43,10 +46,20 @@ export class UTag extends UElement {
   @property({ type: String, reflect: true }) color: TagColor = "neutral";
   /** 태그를 둥글게 표시합니다. */
   @property({ type: Boolean, reflect: true }) rounded = false;
+  /**
+   * 상태를 **색과 무관하게** 나르는 아이콘을 붙입니다(`info`·`success`·`warning`·`danger`).
+   * 색각 이상·흑백 인쇄에서 상태가 갈리게 하는 축입니다.
+   * 의미가 없는 색(`neutral`·`primary`·장식 축)에서는 아무것도 그리지 않습니다.
+   */
+  @property({ type: Boolean, reflect: true }) icon = false;
 
   render() {
+    const iconName = this.icon ? statusIcon(this.color) : undefined;
     return html`
       <div class="base" part="base">
+        ${iconName
+          ? html`<u-icon class="icon" part="icon" lib="internal" name=${iconName}></u-icon>`
+          : nothing}
         <slot name="prefix"></slot>
         <span class="content" part="content">
           <slot></slot>

@@ -49,17 +49,69 @@ function detectLocale(): LocaleTag {
 
 let active: LocaleTag = detectLocale();
 
-/** 정확 일치 → base 언어(ko-KR → ko) → en 순으로 값을 찾는다. */
-function lookup(locale: string, key: LocaleMessageKey): string {
+/** 정확 일치 → base 언어(ko-KR → ko) → en 순의 조회 사슬. */
+function chainOf(locale: string): string[] {
   const norm = locale.toLowerCase();
   const base = norm.split('-')[0];
-  const chain = base === norm ? [norm, 'en'] : [norm, base, 'en'];
+  return base === norm ? [norm, 'en'] : [norm, base, 'en'];
+}
 
-  for (const tag of chain) {
+/** 템플릿의 `{name}` 자리를 치환한다. 값이 없는 자리는 그대로 남긴다(디버깅 단서). */
+function interpolate(template: string, params?: Record<string, string | number>): string {
+  return params
+    ? template.replace(/\{(\w+)\}/g, (_, name) => (params[name] != null ? String(params[name]) : `{${name}}`))
+    : template;
+}
+
+function lookup(locale: string, key: LocaleMessageKey): string {
+  for (const tag of chainOf(locale)) {
     const value = overrides.get(tag)?.[key] ?? builtins.get(tag)?.[key];
     if (value) return value;
   }
   return builtins.get('en')![key];
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   네임스페이스 — Layer 2+ 패키지가 자기 문자열을 담는 자리 (1.23.0~)
+
+   ★**왜 필요했나**: 위의 `register`/`getValue` 는 `LocaleMessageKey`(검증 메시지 9키)
+   라는 **닫힌 유니온**을 받는다. 상위 패키지의 화면 문자열은 그 유니온에 없고, 넣으면
+   기반 라이브러리에 소비자 도메인 어휘가 쌓인다(확장 정책의 domain-boundary 위반).
+   그래서 종전에는 각 패키지가 **자기 레지스트리를 손으로 만들거나**(실측 2곳) 문자열을
+   **한국어로 하드코딩**했다(실측 27건). 세 번째 레지스트리가 생기기 직전이었다.
+
+   ⚠**위 세 시그니처를 하나도 건드리지 않는다** — 순수 가산이다. 기존 9키는 종전 저장소에
+   그대로 남고, 네임스페이스는 별도 저장소를 쓴다. 조회 사슬(`chainOf`)과 치환
+   (`interpolate`)만 공유한다.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/** ns → 정규화 로케일 태그 → 테이블. */
+const namespaces = new Map<string, Map<string, Record<string, string>>>();
+
+/**
+ * 한 패키지(또는 앱 영역)의 문자열 묶음.
+ *
+ * 키 유니온을 **소비자가** 정하므로 라이브러리의 키셋은 커지지 않는다:
+ * ```ts
+ * const t = Locale.namespace<'empty' | 'loading'>('u-data-view');
+ * t.register('en', { empty: 'No data', loading: 'Loading…' });
+ * t.text('empty');
+ * ```
+ */
+export interface LocaleNamespace<K extends string = string> {
+  /** 네임스페이스 이름. */
+  readonly name: string;
+  /**
+   * 로케일 하나의 테이블(전체 또는 일부)을 등록한다.
+   * 같은 로케일에 반복 호출하면 **병합**된다 — 일부 키만 넘겨도 나머지가 사라지지 않는다.
+   */
+  register(locale: LocaleTag, table: Partial<Record<K, string>>): void;
+  /**
+   * 활성 로케일 기준으로 문자열을 찾는다.
+   * 사슬(정확 일치 → base → en)에 없으면 **키 자체를 돌려준다** — 조용히 빈 문자열이
+   * 되는 것보다 화면에 드러나는 편이 낫다.
+   */
+  text(key: K, params?: Record<string, string | number>): string;
 }
 
 /**
@@ -94,9 +146,34 @@ export class Locale {
    * `params`가 있으면 템플릿의 `{name}` 자리를 치환합니다.
    */
   public static getValue(key: LocaleMessageKey, params?: Record<string, string | number>): string {
-    const template = lookup(active, key);
-    return params
-      ? template.replace(/\{(\w+)\}/g, (_, name) => (params[name] != null ? String(params[name]) : `{${name}}`))
-      : template;
+    return interpolate(lookup(active, key), params);
+  }
+
+  /**
+   * 네임스페이스 핸들을 얻습니다 — 같은 이름이면 **같은 저장소**를 가리킵니다.
+   *
+   * 상위 패키지가 자기 화면 문자열을 담는 자리입니다. 검증 메시지(`getValue`)의 키셋과
+   * 완전히 분리돼 있어, 이 API 를 써도 라이브러리의 `LocaleMessageKey` 는 커지지 않습니다.
+   *
+   * @param name 네임스페이스 이름. 패키지·컴포넌트 단위를 권장합니다(예: `'u-data-view'`).
+   */
+  public static namespace<K extends string = string>(name: string): LocaleNamespace<K> {
+    return {
+      name,
+      register(locale: LocaleTag, table: Partial<Record<K, string>>): void {
+        const byLocale = namespaces.get(name) ?? new Map<string, Record<string, string>>();
+        const norm = locale.toLowerCase();
+        byLocale.set(norm, { ...byLocale.get(norm), ...(table as Record<string, string>) });
+        namespaces.set(name, byLocale);
+      },
+      text(key: K, params?: Record<string, string | number>): string {
+        const byLocale = namespaces.get(name);
+        for (const tag of chainOf(active)) {
+          const value = byLocale?.get(tag)?.[key];
+          if (value) return interpolate(value, params);
+        }
+        return key;
+      },
+    };
   }
 }

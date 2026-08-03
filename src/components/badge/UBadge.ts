@@ -2,7 +2,9 @@ import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
+import { statusIcon } from "../../utilities/statusIcon.js";
 import { styles } from "./UBadge.styles.js";
+import '../icon/UIcon.js';
 
 export type BadgeVariant = "pill" | "dot" | "square";
 /** 역할 축(`primary`…`danger`, 의미 · 리브랜딩을 따라옴)과 장식 축(`blue`…, 색 자체 · 면역)이 병존한다. */
@@ -34,13 +36,22 @@ export class UBadge extends UElement {
   @property({ type: String, reflect: true }) color: BadgeColor = "blue";
   /** 부모 요소 기준 배치 위치 (설정 시 position: absolute) */
   @property({ type: String, reflect: true }) anchor?: BadgeAnchor;
+  /**
+   * 상태를 **색과 무관하게** 나르는 아이콘을 붙입니다(`info`·`success`·`warning`·`danger`).
+   * 의미가 없는 색(`neutral`·`primary`·장식 축)과 `variant="dot"` 에서는 그리지 않습니다.
+   */
+  @property({ type: Boolean, reflect: true }) icon = false;
 
   render() {
     if (this.variant === "dot")
       return nothing;
 
+    const iconName = this.icon ? statusIcon(this.color) : undefined;
     return html`
       <div class="base" part="base">
+        ${iconName
+          ? html`<u-icon class="icon" part="icon" lib="internal" name=${iconName}></u-icon>`
+          : nothing}
         <slot name="prefix"></slot>
         <slot></slot>
         <slot name="suffix"></slot>

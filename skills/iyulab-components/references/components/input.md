@@ -50,6 +50,12 @@ Text input field with prefix/suffix slots and label. Add `u-option` children for
 | `autofocus` | `boolean` | `false` | — | Auto-focus on render |
 | `autocomplete` | `AutoFill` | — | — | Browser autocomplete |
 | `spellcheck` | `boolean` | `false` | — | Spellcheck |
+| `dirname` | `string` | — | — | Native `dirname` — submits the text direction with the form |
+| `inputmode` | `'none'\|'text'\|'decimal'\|'numeric'\|'tel'\|'search'\|'email'\|'url'` | — | — | Virtual keyboard hint |
+| `enterkeyhint` | `'enter'\|'done'\|'go'\|'next'\|'previous'\|'search'\|'send'` | — | — | Enter-key label hint |
+| `autocorrect` | `boolean` | `false` | — | Native autocorrect (Safari/iOS) |
+| `autocapitalize` | `'off'\|'none'\|'on'\|'sentences'\|'words'\|'characters'` | `'off'` | — | Auto-capitalization behavior |
+| `size` | `number` | — | — | Native `size` — visible width in characters |
 | `disabled` | `boolean` | `false` | ✓ | Disabled |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
 | `required` | `boolean` | `false` | ✓ | Required |

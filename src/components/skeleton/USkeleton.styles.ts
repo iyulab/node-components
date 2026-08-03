@@ -52,6 +52,23 @@ export const styles = css`
     transform: translateX(-100%);
   }
 
+  /* ★**장식만 멈춘다.**
+     시트의 reduce 규칙은 지속시간 축(--u-duration-*)을 0 으로 누르는 방식이라 animation
+     속성을 직접 쓰는 이 자리에는 닿지 않는다 — 그 규칙이 animation: none 으로 강제하지
+     않는 것은 의도다(로딩 스피너처럼 «회전 자체가 신호»인 움직임까지 죽이면 진행 여부를
+     알 수 없다).
+
+     스켈레톤은 다르다: **기본값이 이미 animation: none** 이고, 정지한 회색 블록이
+     «로딩 중»을 그대로 나른다. 즉 pulse/shimmer 는 **opt-in 장식**이고, WCAG 2.2.2 의
+     «움직임이 본질인 것» 예외에 해당하지 않는다.
+     ⇒ 여기서만 멈춘다. u-spinner 는 건드리지 않는다. */
+  @media (prefers-reduced-motion: reduce) {
+    :host([effect="pulse"]),
+    :host([effect="shimmer"])::after {
+      animation: none;
+    }
+  }
+
   @keyframes pulse {
     0%, 100% {
       opacity: 1;

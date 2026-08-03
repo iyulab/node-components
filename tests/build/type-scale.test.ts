@@ -99,6 +99,29 @@ describe('타입 스케일 축', () => {
     expect(positive).toEqual(['overline']);
   });
 
+  /**
+   * 🔴**같은 위계가 두 값이면 스케일이 스케일이 아니다.**
+   *
+   * 실측(2026-08-04): `u-dialog`·`u-drawer` 제목이 **18px 리터럴**이고 `u-alert` 제목은
+   * `--u-text-subtitle-size`(16px) 였다 — *다이얼로그 제목 18 · 얼럿 제목 16* 으로 **같은
+   * 위계가 두 값**이었다. 18px 는 스케일에 **없는 단**이라 리터럴로만 존재할 수 있었다.
+   *
+   * ⚠**단을 늘려 18px 를 만들지 않았다** — 요구처가 둘뿐이라 단일 수요 선제 확장이다.
+   * 대신 두 자리를 기존 단으로 옮겼다(2026-08-04 사람 채택).
+   */
+  it('🔴제목 위계를 가진 컴포넌트가 «같은 단»을 읽는다 (리터럴로 갈라지지 않는다)', () => {
+    const TITLED = ['alert/UAlert', 'dialog/UDialog', 'drawer/UDrawer'];
+    const bad: string[] = [];
+    for (const c of TITLED) {
+      const src = read(join(root, `src/components/${c}.styles.ts`));
+      // 헤더 규칙(`.header {`)의 font-size 만 본다 — 아이콘 크기·본문은 다른 축이다.
+      const header = src.match(/\.header\s*\{[^}]*\}/)?.[0] ?? '';
+      if (!/font-size:\s*var\(--u-text-subtitle-size/.test(header))
+        bad.push(`${c}: ${header.match(/font-size:[^;]*/)?.[0] ?? '(font-size 없음)'}`);
+    }
+    expect(bad, '제목 단이 갈렸다 — 같은 위계는 같은 토큰을 읽어야 한다').toEqual([]);
+  });
+
   it('굵기가 100~900 범위의 100 단위다', () => {
     const css = sheet('light');
     const bad: string[] = [];

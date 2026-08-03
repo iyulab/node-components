@@ -104,6 +104,38 @@ Theme.set('system');
 
 자세한 내용은 [docs/theming.md](./docs/theming.md)를 참고하세요.
 
+## Localization
+
+라이브러리가 **스스로 생성하는 문자열**(검증 메시지)은 내장 로케일 14종을 갖고 있으며,
+활성 로케일 하나로 전부 따라옵니다.
+
+```ts
+import { Locale } from '@iyulab/components';
+
+Locale.set('ko');                                   // 활성 로케일
+Locale.register('nl', { valueMissing: '…' });       // 검증 메시지 override
+```
+
+### 네임스페이스 — 상위 패키지·앱의 문자열 (1.23.0~)
+
+검증 메시지 키셋은 **닫혀 있습니다**(9키). 그 위에 자기 문자열을 담으려면 네임스페이스를
+씁니다 — 키 유니온은 **쓰는 쪽이** 정하므로 라이브러리 키셋은 커지지 않습니다.
+
+```ts
+const t = Locale.namespace<'empty' | 'loading'>('u-data-view');
+
+t.register('en', { empty: 'No data', loading: 'Loading…' });   // 기본은 영어
+t.register('ko', { empty: '데이터가 없습니다' });               // 필요한 언어만 추가
+
+t.text('empty');                        // 활성 로케일 기준
+t.text('greet', { who: 'Ann' });        // {name} 치환
+```
+
+- 조회 사슬은 검증 메시지와 같습니다: **정확 일치 → base 언어(`ko-KR` → `ko`) → `en`**.
+- 같은 이름의 네임스페이스는 **같은 저장소**를 가리킵니다(모듈 어디서 만들어도 됩니다).
+- 사슬에 없는 키는 **키 자체**를 돌려줍니다 — 조용히 빈 문자열이 되지 않습니다.
+- `Locale.set()` 하나로 검증 메시지와 네임스페이스가 함께 전환됩니다.
+
 ## Documentation
 
 | 문서 | 내용 |

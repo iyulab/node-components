@@ -45,12 +45,14 @@ Versatile button with multiple visual variants. Renders as an `<a>` element when
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `variant` | `'solid'\|'surface'\|'filled'\|'outlined'\|'ghost'\|'link'` | `'solid'` | ✓ | Visual style |
-| `color` | `'neutral'\|'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | `'neutral'` | ✓ | Semantic color, independent of `variant`. `ghost` is unaffected (see notes below). |
+| `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | `'neutral'` | ✓ | Semantic color, independent of `variant`. `ghost` is unaffected (see notes below). |
 | `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Button size (12px/14px/16px font-size; padding, spinner, and icon slots scale proportionally). |
 | `rounded` | `boolean` | `false` | ✓ | Pill-shaped border radius |
 | `disabled` | `boolean` | `false` | ✓ | Disable the button |
 | `loading` | `boolean` | `false` | ✓ | Show loading spinner; disables interaction |
 | `type` | `'button'\|'submit'\|'reset'` | `'button'` | — | Button `type` attribute |
+| `name` | `string` | — | ✓ | Form field name — submitted with the form |
+| `value` | `string` | — | ✓ | Form field value — submitted with the form |
 | `href` | `string` | — | — | Link URL (renders as `<a>`) |
 | `target` | `string` | — | — | Link `target` |
 | `rel` | `string` | — | — | Link `rel` |

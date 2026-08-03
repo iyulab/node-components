@@ -189,6 +189,10 @@ export const styles = css`
     border: 1px solid var(--tag-border-color);
     border-radius: inherit;
   }
+  /* 상태 아이콘 — .base 의 gap 이 간격을 정한다. */
+  .icon {
+    flex-shrink: 0;
+  }
   :host([rounded]) {
     border-radius: var(--u-radius-pill, 9999px);
   }

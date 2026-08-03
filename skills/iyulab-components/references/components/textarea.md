@@ -34,6 +34,11 @@ Multi-line text input with auto-resize and optional character counter. Form-asso
 | `autofocus` | `boolean` | `false` | — | Auto-focus on render |
 | `autocomplete` | `AutoFill` | — | — | Browser autocomplete |
 | `spellcheck` | `boolean` | `false` | — | Spellcheck |
+| `dirname` | `string` | — | — | Native `dirname` — submits the text direction with the form |
+| `inputmode` | `'none'\|'text'\|'decimal'\|'numeric'\|'tel'\|'search'\|'email'\|'url'` | — | — | Virtual keyboard hint |
+| `enterkeyhint` | `'enter'\|'done'\|'go'\|'next'\|'previous'\|'search'\|'send'` | — | — | Enter-key label hint |
+| `autocorrect` | `boolean` | `false` | — | Native autocorrect (Safari/iOS) |
+| `autocapitalize` | `'off'\|'none'\|'on'\|'sentences'\|'words'\|'characters'` | `'off'` | — | Auto-capitalization behavior |
 | `disabled` | `boolean` | `false` | ✓ | Disable |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
 | `required` | `boolean` | `false` | ✓ | Required |
