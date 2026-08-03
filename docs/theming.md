@@ -343,6 +343,87 @@ Then provide all `--u-*` tokens yourself. Components will still read them from t
 
 ---
 
+## Fonts and Non-Latin Scripts
+
+`--u-font-base` ships a system-UI stack. On the platforms most consumers target it already
+resolves to a font that covers the script the OS is configured for — `-apple-system` and
+`BlinkMacSystemFont` map to the platform UI font, which on a Japanese macOS is Hiragino Sans
+and on a Korean Windows is Malgun Gothic. **For most apps nothing needs to change.**
+
+Where it goes wrong is the **mixed case**: a browser whose UI language differs from the
+content's script. Then the stack falls through to `Helvetica`/`Arial`, neither of which has
+CJK coverage, and the browser substitutes per-glyph — often a different face than the rest
+of the paragraph, with a different vertical rhythm. The symptom is subtle: text is readable
+but the line looks uneven, and numerals or punctuation sit at a different weight.
+
+### Adding a script-specific stack
+
+Insert the script's face **before** the generic families and keep the rest of the stack
+intact — you are extending the fallback chain, not replacing it:
+
+```css
+:root:lang(ja) {
+  --u-font-base: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic',
+                 'Noto Sans JP', 'Segoe UI', sans-serif;
+}
+:root:lang(ko) {
+  --u-font-base: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic',
+                 'Noto Sans KR', 'Segoe UI', sans-serif;
+}
+:root:lang(zh-CN) {
+  --u-font-base: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei',
+                 'Noto Sans SC', 'Segoe UI', sans-serif;
+}
+:root:lang(zh-TW) {
+  --u-font-base: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Microsoft JhengHei',
+                 'Noto Sans TC', 'Segoe UI', sans-serif;
+}
+:root:lang(th) {
+  --u-font-base: -apple-system, BlinkMacSystemFont, 'Thonburi', 'Leelawadee UI',
+                 'Noto Sans Thai', 'Segoe UI', sans-serif;
+}
+:root:lang(ar) {
+  --u-font-base: -apple-system, BlinkMacSystemFont, 'Geeza Pro', 'Segoe UI',
+                 'Noto Sans Arabic', sans-serif;
+}
+```
+
+This requires `<html lang="ja">` to be set. If your app switches language at runtime, set
+`lang` on the same element you set `theme` on — both are document-level state.
+
+**Note the ordering rule.** `-apple-system`/`BlinkMacSystemFont` stay first: when the OS
+already matches the content language they resolve correctly *and* give you the platform's
+own metrics. The named faces are the fallback for the mismatch case, and `Noto Sans <script>`
+is last among them because it is the one a consumer might have installed but the OS would
+not pick on its own.
+
+### Monospace and CJK
+
+`--u-font-mono` has no CJK coverage by design — the fixed-width faces in it are Latin-only.
+Where code blocks contain CJK comments, the browser substitutes a proportional face for those
+runs and the column alignment breaks. If that matters, append a CJK monospace explicitly:
+
+```css
+:root:lang(ja) {
+  --u-font-mono: ui-monospace, 'Cascadia Code', Menlo, 'BIZ UDGothic', 'MS Gothic', monospace;
+}
+```
+
+### Two limits worth knowing
+
+⚠**These tokens have no literal fallback.** Unlike colours, font stacks are not wired into
+each use site — the literals are long enough that baking them everywhere costs more than it
+returns, and a missing font stack degrades to the browser default without breaking the layout
+(a missing colour does break it). So a consumer who does not load the token sheet gets the
+browser default font, not the stack above. Load the sheet or set `font-family` yourself.
+
+⚠**`--u-font-display`/`-modern`/`-rounded` name webfonts** (`Inter`, `Nunito`, `Quicksand`)
+that this package does not ship. They fall through to the system stack unless you load the
+font yourself. They are opt-in accents, not defaults — `--u-font-base` never depends on a
+webfont.
+
+---
+
 ## Styling Internals with `::part()`
 
 Tokens cover color and typography globally. For per-component presentation that is **an application design decision rather than a library default**, style the exposed CSS parts directly.
