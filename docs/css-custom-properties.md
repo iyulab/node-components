@@ -43,7 +43,7 @@ u-button.cta { --btn-color: #0f9d58; }
 |---|---|
 | `--u-primary-color` | color="neutral"일 때 버튼 기준색. 지정 시 hover/active/surface 톤이 color-mix()로 자동 파생. |
 | `--btn-padding-block` | 내부 버튼의 상하 여백 (기본: 0.5em) |
-| `--btn-padding-inline` | 내부 버튼의 좌우 여백 (기본: 0.5em, variant="link"는 0) |
+| `--btn-padding-inline` | 내부 버튼의 좌우 여백 (기본: 1em, variant="link"는 0). ⚠1.20.0 에서 0.5em → 1em. 세로와 같은 값이라 글자가 테두리에 붙어 있었다. 최소높이는 상하 여백에서 파생되므로(`1.5em + 상하×2 + 2px`) 이 값을 덮어도 높이는 안 변한다. |
 | `--btn-border-color` | 내부 버튼의 테두리 색. variant/hover/active 규칙이 이 값을 정한다 (기본: transparent) |
 | `--btn-color` | 버튼의 **면** 색. 아래 파생 토큰이 전부 이 값에서 color-mix()로 계산된다 — 보통 이것 하나만 덮으면 된다. |
 | `--btn-txt-color` | 그 **면 위**의 글자색 — variant="solid" 가 읽는다 (기본: #fff · 역할 값 지정 시 --u-{role}-txt-color) |

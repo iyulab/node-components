@@ -3,7 +3,7 @@ import { css } from 'lit';
 export const styles = css`
   :host {
     --progress-ring-size: 6em;
-    --progress-ring-color: var(--u-primary-color, #1976D2);
+    --progress-ring-color: var(--u-primary-color-strong, #1565C0);
     --progress-ring-track-width: 6;
     --progress-ring-track-color: var(--u-neutral-200, #EEEEEE);
     --progress-ring-buffer-color: color-mix(in srgb, var(--progress-ring-color) 35%, var(--u-bg-color, #FFFFFF));
@@ -11,19 +11,19 @@ export const styles = css`
 
   /* === Status Colors === */
   :host([status="success"]) { 
-    --progress-ring-color: var(--u-success-color, #2E7D32);
+    --progress-ring-color: var(--u-success-color-strong, #1B5E20);
     --progress-ring-buffer-color: var(--u-success-color-weakest, #A5D6A7);
   }
   :host([status="warning"]) { 
-    --progress-ring-color: var(--u-warning-color-weak, #FFEB3B);
+    --progress-ring-color: var(--u-warning-color-strong, #8A4A00);
     --progress-ring-buffer-color: var(--u-warning-color-weakest, #FFF59D);
   }
   :host([status="error"]) { 
-    --progress-ring-color: var(--u-danger-color, #D32F2F);
+    --progress-ring-color: var(--u-danger-color-strong, #C62828);
     --progress-ring-buffer-color: var(--u-danger-color-weakest, #EF9A9A);
   }
   :host([status="info"]) { 
-    --progress-ring-color: var(--u-info-color-weak, #2196F3);
+    --progress-ring-color: var(--u-info-color-strong, #1565C0);
     --progress-ring-buffer-color: var(--u-info-color-weakest, #90CAF9);
   }
 

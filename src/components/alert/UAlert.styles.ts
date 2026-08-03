@@ -47,7 +47,7 @@ export const styles = css`
     max-width: 100%;
     max-height: 50vh;
     border-radius: var(--u-radius-xl, 8px);
-    box-shadow: 0 4px 12px var(--u-shadow-color-normal, rgba(0, 0, 0, 0.12));
+    box-shadow: var(--u-shadow-lg, 0 4px 12px rgba(0, 0, 0, 0.16));
     
     opacity: 0;
     transform: scale(0.8);
@@ -89,6 +89,8 @@ export const styles = css`
     --alert-border-color: rgba(255, 255, 255, 0.3);
     background: rgba(255, 255, 255, 0.2);
     border-radius: 16px;
+    /* ⚠**높이 축(--u-shadow-*)을 쓰지 않는다** — 이 값은 유리 질감 레시피의 일부이고
+       (30px 번짐 + backdrop-filter), 높이를 뜻하지 않는다. 축으로 접으면 질감이 사라진다. */
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);

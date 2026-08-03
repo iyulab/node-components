@@ -5,7 +5,7 @@ export const styles = css`
     --splitter-size: 4px;
     --splitter-color: var(--u-neutral-200, #EEEEEE);
     --splitter-color-hover: var(--u-primary-color-weaker, #64B5F6);
-    --splitter-color-active: var(--u-primary-color-weak, #2196F3);
+    --splitter-color-active: var(--u-primary-color-strong, #1565C0);
   }
 
   :host {

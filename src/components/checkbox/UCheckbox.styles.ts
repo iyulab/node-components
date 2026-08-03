@@ -138,7 +138,7 @@ export const styles = css`
   input:focus-visible ~ .checkbox {
     box-shadow:
       0 0 0 1px var(--u-input-border-color-focus, #1565C0),
-      0 0 0 3px rgba(59, 130, 246, 0.22);
+      0 0 0 3px color-mix(in srgb, var(--u-primary-color-strong, #1565C0) 22%, transparent);
   }
 
   /* 체크박스 외형 */

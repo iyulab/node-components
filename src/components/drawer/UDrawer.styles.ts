@@ -57,7 +57,7 @@ export const styles = css`
     display: flex;
     flex-direction: column;
     background: var(--u-panel-bg-color, Canvas);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--u-shadow-xl, 0 6px 18px rgba(0, 0, 0, 0.24));
     pointer-events: auto;
     /*
      * easeOutQuart (cubic-bezier(0.22, 1, 0.36, 1)) — 빠르게 시작해서 부드럽게 정착.

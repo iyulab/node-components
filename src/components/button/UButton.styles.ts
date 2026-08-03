@@ -105,7 +105,20 @@ export const styles = css`
   :host([color="purple"]) { --btn-color: var(--u-purple-600, #8E24AA); }
   :host([color="pink"])   { --btn-color: var(--u-pink-600, #D81B60); }
 
-  /* === Size === */
+  /* === Size ===
+   *
+   * ★**크기 축은 font-size 하나로 움직인다** — 여백·최소높이가 전부 em 이라 비례로 따라온다.
+   *   이것은 결손이 아니라 설계다: 폼·인라인 요소의 여백은 상속된 font-size 에 비례하는 것이
+   *   의도이며(--u-space-* 는 컨테이너/오버레이의 레이아웃 여백 축이라 여기 닿지 않는다),
+   *   px 계단을 따로 두면 두 축이 갈라진다.
+   *
+   * ⚠**그런데 두 값이 그 비례에서 빠져 있었다** (1.20.0 에서 해소):
+   *   ⑴ 가로 여백이 세로와 **같은 0.5em** 이라 글자가 테두리에 붙었다(실측 md 7px/7px).
+   *   ⑵ min-height 가 **없어서** 아이콘만 든 버튼이 글자 버튼과 높이가 달랐다 —
+   *      실측: 같은 size 인데 md 아이콘 32px vs 글자 37px. 툴바에서 5px 어긋난다.
+   *      그리고 아이콘 버튼의 계단(30/32/34)이 글자 버튼(32/37/42)과 기울기가 달라
+   *      size 를 올릴수록 어긋남이 커졌다.
+   */
   :host([size="sm"]) {
     font-size: 12px;
   }
@@ -259,9 +272,20 @@ export const styles = css`
     align-items: center;
     justify-content: space-between;
 
-    padding: var(--btn-padding-block, 0.5em) var(--btn-padding-inline, 0.5em);
+    padding: var(--btn-padding-block, 0.5em) var(--btn-padding-inline, 1em);
     border: 1px solid var(--btn-border-color, transparent);
     border-radius: inherit;
+
+    /* ★**글자 버튼의 자연 높이를 그대로 바닥값으로 쓴다** — 값을 새로 고른 것이 아니라
+     * 같은 식을 다시 쓴 것이다:
+     *
+     *     line-height(1.5em) + 상하 여백 ×2 + 테두리 ×2
+     *
+     * 그래서 글자 버튼의 높이는 **변하지 않고**(sm 32 · md 37 · lg 42 그대로),
+     * 아이콘만 든 버튼이 같은 높이로 올라온다. 상수를 박으면 이 성질이 깨진다 —
+     * 소비자가 --btn-padding-block 을 덮는 순간 둘이 다시 갈라진다. */
+    min-height: calc(1.5em + 2 * var(--btn-padding-block, 0.5em) + 2px);
+
   }
   a {
     text-decoration: none;

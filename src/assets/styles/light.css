@@ -315,6 +315,27 @@
   --u-shadow-color-strong:   rgba(0, 0, 0, 0.16);
   --u-shadow-color-stronger: rgba(0, 0, 0, 0.24);
 
+  /* ==========================================================================
+     Elevation Scale — 높이(그림자)
+
+     ★색 축은 있었지만 **높이 축이 없었다.** 그 결과 컴포넌트가 그림자를 리터럴로
+     썼고, 같은 리듬을 의도한 자리에 서로 다른 값 11가지가 생겼다(카드 .1 vs 캐러셀
+     .15 — 둘 다 "표면에 얹힌 카드"인데 알파가 다르다).
+
+     ⚠**그리고 그 리터럴들은 테마를 몰랐다** — `rgba(0,0,0,.1)` 은 다크 바탕에서
+     거의 보이지 않는다. 이 축을 경유하면 다크의 진한 알파(.25~.60)를 자동으로 받는다.
+
+     ⚠**알파를 `--u-shadow-color-*` 로 중첩하지 않고 인라인한다.** use-site 폴백
+     생성기는 합성 값을 리터럴로 다루므로, 중첩하면 `var(--u-shadow-md, 0 2px 8px
+     var(--u-shadow-color-normal))` 처럼 **폴백 안에 또 토큰이 들어간다** — 시트가
+     없을 때 그 폴백도 함께 무효가 되어 그림자가 통째로 사라진다.
+     두 축의 알파가 어긋나지 않는지는 `tests/build/elevation-scale.test.ts` 가 지킨다.
+     ========================================================================== */
+  --u-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);    /* = shadow-color-weak     — 표면에 얹힌 작은 컨트롤(탭·손잡이) */
+  --u-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);    /* = shadow-color-normal   — 카드·표면 */
+  --u-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.16);   /* = shadow-color-strong   — 떠 있는 레이어(드롭다운·알림) */
+  --u-shadow-xl: 0 6px 18px rgba(0, 0, 0, 0.24);   /* = shadow-color-stronger — 모달·최상위(대화상자·툴팁) */
+
   /* Scrollbar Colors */
   --u-scrollbar-color:       var(--u-neutral-400);
   --u-scrollbar-color-hover: var(--u-neutral-500);

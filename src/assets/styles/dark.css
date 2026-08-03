@@ -287,6 +287,14 @@
   --u-shadow-color-strong:   rgba(0, 0, 0, 0.45);
   --u-shadow-color-stronger: rgba(0, 0, 0, 0.60);
 
+  /* Elevation Scale — 근거는 light.css 의 같은 자리 주석 참조.
+     ★다크는 알파가 3배 가까이 진하다 — 리터럴로 흩어져 있던 종전에는 이 차이가
+     적용되지 않아 다크에서 그림자가 사실상 보이지 않았다. */
+  --u-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);    /* = shadow-color-weak */
+  --u-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.35);    /* = shadow-color-normal */
+  --u-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.45);   /* = shadow-color-strong */
+  --u-shadow-xl: 0 6px 18px rgba(0, 0, 0, 0.60);   /* = shadow-color-stronger */
+
   /* Scrollbar Colors */
   --u-scrollbar-color:       var(--u-neutral-500);
   --u-scrollbar-color-hover: var(--u-neutral-600);

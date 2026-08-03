@@ -139,7 +139,7 @@ export const styles = css`
     border: 1px solid var(--u-border-color, #E0E0E0);
     border-radius: var(--u-radius-md, 4px);
     background-color: var(--u-panel-bg-color, #FFFFFF);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--u-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.12));
     transform: scale(0.8);
     transition: opacity 0.2s ease, visibility 0s 0.2s, transform 0.2s ease;
   }

@@ -206,6 +206,22 @@ describe('역할 토큰 대비 계약', () => {
         expect(fails).toEqual([]);
       });
 
+      it('★바탕 위 그래픽(-strong)이 바탕에서도 트랙 위에서도 보인다 (비텍스트 3.0)', () => {
+        // 포커스 링 · 진행바 · 별점 · 스플리터가 읽는 단이다. 두 표면을 모두 재는 이유는
+        // 진행바가 **트랙 위에** 그려지기 때문이다(바탕만 재면 그 자리를 놓친다).
+        // 1.20.0 이전에는 이 자리들이 `-weak` 였고 트랙 위에서 10칸 중 9칸이 미달이었다.
+        const SURFACES = ['--u-bg-color', '--u-neutral-200'];
+        const fails: string[] = [];
+        for (const role of ROLES) {
+          const fg = `--u-${role}-color-strong`;
+          for (const surface of SURFACES) {
+            const c = contrast(t[fg], t[surface]);
+            if (c < AA_NONTEXT) fails.push(`${fg} ${t[fg]} on ${surface} ${t[surface]} = ${show(c)}`);
+          }
+        }
+        expect(fails).toEqual([]);
+      });
+
       it('아이콘 토큰이 바탕 위에서 보인다 (비텍스트 3.0)', () => {
         // 테두리는 여기 없다 — 아래 todo ⑶ 참조. 아이콘은 의미를 나르므로 1.4.11 대상이
         // 명확하지만, 테두리는 무엇이 "UI 컴포넌트 경계"인지가 판단을 요구한다.

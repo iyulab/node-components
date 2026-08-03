@@ -67,14 +67,14 @@ export const styles = css`
     border: 2px solid var(--slider-thumb-border-color);
     border-radius: var(--u-radius-circle, 50%);
     background: var(--slider-thumb-color);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
     transition: transform 0.15s ease, box-shadow 0.15s ease;
     cursor: pointer;
   }
   .thumb:hover .thumb-content,
   .thumb:active .thumb-content {
     transform: scale(1.15);
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--u-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.12));
   }
   .thumb:focus-visible .thumb-content {
     box-shadow: 0 0 0 1px var(--slider-fill-color);

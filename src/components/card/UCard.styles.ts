@@ -5,7 +5,7 @@ export const styles = css`
     display: flex;
     border-radius: var(--u-radius-xl, 8px);
     background-color: var(--u-panel-bg-color, #FFFFFF);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--u-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.12));
     overflow: hidden;
 
     --card-border-width: 1px;
@@ -41,7 +41,7 @@ export const styles = css`
   }
   :host([hoverable]:hover) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--u-shadow-lg, 0 4px 12px rgba(0, 0, 0, 0.16));
   }
 
   .media {

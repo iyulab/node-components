@@ -57,7 +57,7 @@ export const styles = css`
   input:focus-visible ~ .track {
     box-shadow:
       0 0 0 1px var(--u-input-border-color-focus, #1565C0),
-      0 0 0 3px rgba(59, 130, 246, 0.22);
+      0 0 0 3px color-mix(in srgb, var(--u-primary-color-strong, #1565C0) 22%, transparent);
   }
 
   /* === 트랙 === */
@@ -123,7 +123,7 @@ export const styles = css`
     height: var(--switch-thumb-size);
     border-radius: var(--switch-radius);
     background: var(--switch-thumb-color);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
     overflow: hidden;
     transition:
       transform var(--switch-duration) cubic-bezier(0.4, 0, 0.2, 1),

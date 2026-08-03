@@ -41,7 +41,9 @@ export type ButtonSize = "sm" | "md" | "lg";
  *
  * @cssprop --u-primary-color - color="neutral"일 때 버튼 기준색. 지정 시 hover/active/surface 톤이 color-mix()로 자동 파생.
  * @cssprop --btn-padding-block - 내부 버튼의 상하 여백 (기본: 0.5em)
- * @cssprop --btn-padding-inline - 내부 버튼의 좌우 여백 (기본: 0.5em, variant="link"는 0)
+ * @cssprop --btn-padding-inline - 내부 버튼의 좌우 여백 (기본: 1em, variant="link"는 0).
+ *   ⚠1.20.0 에서 0.5em → 1em. 세로와 같은 값이라 글자가 테두리에 붙어 있었다.
+ *   최소높이는 상하 여백에서 파생되므로(`1.5em + 상하×2 + 2px`) 이 값을 덮어도 높이는 안 변한다.
  * @cssprop --btn-border-color - 내부 버튼의 테두리 색. variant/hover/active 규칙이 이 값을 정한다
  *   (기본: transparent)
  * @cssprop --btn-color - 버튼의 **면** 색. 아래 파생 토큰이 전부 이 값에서 color-mix()로 계산된다 —

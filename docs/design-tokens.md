@@ -10,7 +10,7 @@
 `dark.css` 는 같은 이름을 같은 구조로 정의하며 **값만** 다릅니다 — 다크 대응을 위해
 컴포넌트나 소비자가 할 일은 없습니다.
 
-**역할 25 · 스케일 13 · 시맨틱 56 · 팔레트 111**
+**역할 25 · 스케일 13 · 시맨틱 60 · 팔레트 111**
 
 ---
 
@@ -145,6 +145,10 @@
 | `--u-shadow-color-normal` | `rgba(0, 0, 0, 0.12)` |
 | `--u-shadow-color-strong` | `rgba(0, 0, 0, 0.16)` |
 | `--u-shadow-color-stronger` | `rgba(0, 0, 0, 0.24)` |
+| `--u-shadow-sm` | `0 1px 3px rgba(0, 0, 0, 0.08)` |
+| `--u-shadow-md` | `0 2px 8px rgba(0, 0, 0, 0.12)` |
+| `--u-shadow-lg` | `0 4px 12px rgba(0, 0, 0, 0.16)` |
+| `--u-shadow-xl` | `0 6px 18px rgba(0, 0, 0, 0.24)` |
 | `--u-scrollbar-color` | `var(--u-neutral-400)` |
 | `--u-scrollbar-color-hover` | `var(--u-neutral-500)` |
 | `--u-scrollbar-track-color` | `transparent` |

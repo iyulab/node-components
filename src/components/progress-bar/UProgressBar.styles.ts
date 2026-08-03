@@ -3,26 +3,26 @@ import { css } from 'lit';
 export const styles = css`
   :host {
     --progress-bar-height: 0.5em;
-    --progress-bar-color: var(--u-primary-color, #1976D2);
+    --progress-bar-color: var(--u-primary-color-strong, #1565C0);
     --progress-bar-buffer-color: color-mix(in srgb, var(--progress-bar-color) 35%, var(--u-bg-color, #FFFFFF));
     --progress-bar-track-color: var(--u-neutral-200, #EEEEEE);
   }
 
   /* === Status Colors === */
   :host([status="success"]) { 
-    --progress-bar-color: var(--u-success-color, #2E7D32); 
+    --progress-bar-color: var(--u-success-color-strong, #1B5E20); 
     --progress-bar-buffer-color: var(--u-success-color-weakest, #A5D6A7); 
   }
   :host([status="warning"]) { 
-    --progress-bar-color: var(--u-warning-color-weak, #FFEB3B); 
+    --progress-bar-color: var(--u-warning-color-strong, #8A4A00); 
     --progress-bar-buffer-color: var(--u-warning-color-weakest, #FFF59D); 
   }
   :host([status="error"]) { 
-    --progress-bar-color: var(--u-danger-color, #D32F2F); 
+    --progress-bar-color: var(--u-danger-color-strong, #C62828); 
     --progress-bar-buffer-color: var(--u-danger-color-weakest, #EF9A9A); 
   }
   :host([status="info"]) { 
-    --progress-bar-color: var(--u-info-color-weak, #2196F3); 
+    --progress-bar-color: var(--u-info-color-strong, #1565C0); 
     --progress-bar-buffer-color: var(--u-info-color-weakest, #90CAF9); 
   }
 
