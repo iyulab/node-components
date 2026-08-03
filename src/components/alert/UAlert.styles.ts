@@ -54,9 +54,9 @@ export const styles = css`
     visibility: hidden;
     pointer-events: none;
     transition: 
-      visibility 0s 0.2s,
-      opacity 0.2s ease,
-      transform 0.2s ease-out;
+      visibility 0s var(--u-duration-normal, 220ms),
+      opacity var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
+      transform var(--u-duration-normal, 220ms) ease-out;
   }
   :host([open]) {
     opacity: 1;
@@ -117,7 +117,7 @@ export const styles = css`
     align-items: center;
     gap: var(--u-space-md, 12px);
     margin-bottom: var(--u-space-2xs, 4px);
-    font-size: 16px;
+    font-size: var(--u-text-subtitle-size, 16px);
     user-select: none;
   }
   .header .icon {

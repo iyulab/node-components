@@ -48,7 +48,7 @@ export const styles = css`
     font-size: 0.75em;
     color: inherit;
     opacity: 0.5;
-    transition: opacity 0.15s ease;
+    transition: opacity var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   .remove-btn:hover {
     opacity: 1;

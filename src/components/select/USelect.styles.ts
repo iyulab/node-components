@@ -24,7 +24,7 @@ export const styles = css`
     border: 1px solid var(--u-input-border-color, #E0E0E0);
     border-radius: 0.25em;
     background-color: var(--u-input-bg-color, #FFFFFF);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), box-shadow var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     overflow: hidden;
     user-select: none;
     cursor: pointer;
@@ -155,7 +155,7 @@ export const styles = css`
     margin-left: 0.25em;
     font-size: 1em;
     color: var(--u-icon-color, #616161);
-    transition: color 0.2s ease;
+    transition: color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     cursor: pointer;
   }
   .suffix-item:hover {

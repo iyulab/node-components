@@ -15,7 +15,7 @@ export const styles = css`
     border: 1px solid var(--u-input-border-color, #E0E0E0);
     border-radius: 0.25em;
     background-color: var(--u-input-bg-color, #FFFFFF);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    transition: border-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), box-shadow var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), background-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   :host([readonly]) .container,
   :host([disabled]) .container {

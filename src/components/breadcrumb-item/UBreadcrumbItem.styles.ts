@@ -26,7 +26,7 @@ export const styles = css`
     gap: 0.2em;
     color: inherit;
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     cursor: inherit;
   }
 

@@ -18,7 +18,7 @@ export const styles = css`
 
   :host {
     display: flex;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition: background-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     user-select: none;
     cursor: pointer;
 
@@ -102,7 +102,7 @@ export const styles = css`
     border: 2px solid var(--u-neutral-400, #BDBDBD);
     border-radius: var(--u-radius-circle, 50%);
     background-color: var(--u-bg-color, #FFFFFF);
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+    transition: border-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), background-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   :host([marker="radio"]:not([disabled]):hover) .radio-marker,
   :host([marker="radio"]:not([disabled]):focus-visible) .radio-marker {
@@ -127,7 +127,7 @@ export const styles = css`
     border-radius: var(--u-radius-circle, 50%);
     background-color: var(--option-color-active);
     transform: scale(0);
-    transition: transform 0.15s ease;
+    transition: transform var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   :host([marker="radio"][selected]) .radio-marker::after {
     transform: scale(1);

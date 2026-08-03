@@ -8,13 +8,13 @@ export const styles = css`
   :host {
     color: var(--u-tooltip-txt-color, #FFFFFF);
     font-family: var(--u-font-display, inherit);
-    font-size: 12px;
+    font-size: var(--u-text-caption-size, 12px);
     line-height: 1.25;
     border-radius: var(--u-radius-md, 4px);
     background-color: var(--u-tooltip-bg-color, rgba(0, 0, 0, 0.75));
     box-shadow: var(--u-shadow-xl, 0 6px 18px rgba(0, 0, 0, 0.24), 0 2px 6px rgba(0, 0, 0, 0.08));
     transform: scale(0.9);
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s 0.2s;
+    transition: opacity var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), transform var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), visibility 0s var(--u-duration-normal, 220ms);
 
     --tooltip-padding-block: var(--u-space-xs, 6px);
     --tooltip-padding-inline: var(--u-space-sm, 8px);

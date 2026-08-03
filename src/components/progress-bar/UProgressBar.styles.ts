@@ -77,7 +77,7 @@ export const styles = css`
     background-color: var(--progress-bar-color);
     transform-origin: left center;
     transform: scaleX(0);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform var(--u-duration-slow, 320ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     will-change: transform;
   }
 
@@ -89,7 +89,7 @@ export const styles = css`
     background-color: var(--progress-bar-buffer-color);
     transform-origin: left center;
     transform: scaleX(0);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform var(--u-duration-slow, 320ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     will-change: transform;
   }
 

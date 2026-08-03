@@ -43,7 +43,7 @@ export const styles = css`
     border-radius: var(--u-radius-lg, 6px);
     background-color: transparent;
 
-    transition: all 0.2s ease;
+    transition: all var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     overflow: hidden;
     user-select: none;
     cursor: pointer;

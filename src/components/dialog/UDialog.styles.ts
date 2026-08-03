@@ -74,7 +74,7 @@ export const styles = css`
     pointer-events: auto;
     opacity: 0;
     transform: scale(0.92);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity var(--u-duration-slow, 320ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), transform var(--u-duration-slow, 320ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   :host([open]) .panel {
     opacity: 1;

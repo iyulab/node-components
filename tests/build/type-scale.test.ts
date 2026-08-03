@@ -1,11 +1,14 @@
 // @vitest-environment node
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'fs';
-import { resolve, join } from 'path';
+import { readFileSync, globSync } from 'fs';
+import { resolve, join, basename } from 'path';
 
 const root = resolve(__dirname, '..', '..');
 const sheet = (t: 'light' | 'dark') =>
   readFileSync(join(root, 'src/assets/styles', `${t}.css`), 'utf-8');
+const read = (p: string) => readFileSync(p, 'utf-8');
+const styleFiles = () =>
+  globSync('src/**/*.styles.ts', { cwd: root }).map(p => join(root, p));
 
 /** 단은 크기가 아니라 **역할**이다 — 큰 것부터 작은 것 순. */
 const STEPS = [
@@ -130,5 +133,42 @@ describe('모션 축', () => {
     for (const d of DURATIONS)
       expect(block![1], `--u-duration-${d} 가 0 으로 눌리지 않았다`)
         .toMatch(new RegExp(`--u-duration-${d}\\s*:\\s*0ms`));
+  });
+
+  /**
+   * 🔴**이 단언이 없어서 축이 0 곳에 배선된 채로 출하될 뻔했다.**
+   *
+   * 시트에 토큰이 있고 reduced-motion 블록도 있었지만 **어떤 컴포넌트도 그 축을 읽지
+   * 않았다**(실측 0건). 위 두 단언은 **둘 다 통과한다** — 시트만 보기 때문이다.
+   * 그 상태에서 CHANGELOG 는 *"이 축을 경유하는 모든 애니메이션이 함께 멈춘다"* 고
+   * 적혀 있었고, 경유하는 것이 0개라 아무것도 멈추지 않았다.
+   *
+   * ⇒ ***축의 계약은 "토큰이 있다" 가 아니라 "컴포넌트가 그것을 지난다" 이다.***
+   * `scale-tokens` 초안 §4-2 가 수용 기준으로 요구한 것이 정확히 이것이다.
+   */
+  it('🔴컴포넌트의 `transition` 이 리터럴 지속시간을 쓰지 않는다 (축을 경유한다)', () => {
+    const offenders: string[] = [];
+    for (const file of styleFiles()) {
+      for (const decl of read(file).match(/transition:\s*[^;]+;/g) ?? []) {
+        // ⚠축을 경유한 자리의 **폴백**은 위반이 아니다 — `var(--u-duration-x, 220ms)` 의
+        //   `220ms` 는 시트 부재 시 렌더를 살리는 장치이고, 시트가 있으면 축을 지난다.
+        //   이것을 빼지 않으면 배선된 33곳이 전부 위반으로 잡힌다(첫 판 실측).
+        const bare = decl.replace(/var\(\s*--u-(?:duration|ease)-[\w-]+\s*,[^)]*\)/g, '');
+        // `0s` 는 축 밖이다 — 지연 없음/즉시를 뜻하고 눌러야 할 시간이 아니다.
+        if (/(?<![\w.])(?!0s\b)\d*\.?\d+m?s\b/.test(bare))
+          offenders.push(`${basename(file)}: ${decl.trim()}`);
+      }
+    }
+    expect(offenders, '리터럴 지속시간은 prefers-reduced-motion 을 비껴간다').toEqual([]);
+  });
+
+  it('컴포넌트-로컬 지속시간 토큰도 공용 축에서 파생한다', () => {
+    // 로컬 축 자체는 정당하다(소비자가 그 컴포넌트만 조절). 다만 **기본값**이 리터럴이면
+    // 그 컴포넌트만 reduced-motion 을 비껴간다 — `--switch-duration` 이 실제로 그랬다.
+    const bad: string[] = [];
+    for (const file of styleFiles())
+      for (const m of read(file).matchAll(/(--[\w-]*duration[\w-]*)\s*:\s*([^;]+);/g))
+        if (!m[2].includes('var(--u-duration-')) bad.push(`${basename(file)}: ${m[0].trim()}`);
+    expect(bad).toEqual([]);
   });
 });

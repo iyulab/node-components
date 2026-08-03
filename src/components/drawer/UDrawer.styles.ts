@@ -66,7 +66,7 @@ export const styles = css`
      * UOverlayElement의 backdrop opacity transition과 동일 duration/easing으로 맞춤.
      * 호스트 앱이 ::part(panel) { transition: ... }로 추가 override 가능.
      */
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform var(--u-duration-slow, 320ms) var(--u-ease-decelerate, cubic-bezier(0, 0, 0, 1));
   }
 
   .header {

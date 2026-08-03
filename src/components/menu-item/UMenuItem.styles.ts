@@ -25,7 +25,7 @@ export const styles = css`
     padding: 0.25em 0.5em;
     padding-left: calc(var(--menu-indent-size) * var(--menu-item-depth) + 0.5em);
     background-color: transparent;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition: background-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     user-select: none;
     cursor: pointer;
   }
@@ -77,7 +77,7 @@ export const styles = css`
     position: absolute;
     border-radius: 1px;
     background-color: currentColor;
-    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   /* 기본: 위 방향 chevron (∧) */
   .suffix-toggler::before {
@@ -141,7 +141,7 @@ export const styles = css`
     background-color: var(--u-panel-bg-color, #FFFFFF);
     box-shadow: var(--u-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.05));
     transform: scale(0.8);
-    transition: opacity 0.2s ease, visibility 0s 0.2s, transform 0.2s ease;
+    transition: opacity var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), visibility 0s var(--u-duration-normal, 220ms), transform var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   .popover[open] {
     transform: scale(1);

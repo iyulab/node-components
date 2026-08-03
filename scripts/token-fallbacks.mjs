@@ -96,10 +96,47 @@ export function* parseFallbacks(src) {
   }
 }
 
-/** `--name: value;` 선언을 맵으로. */
+/**
+ * 조건부 at-rule 블록(`@media`·`@supports`·`@container`)을 통째로 걷어낸다.
+ *
+ * ★**그 안의 값은 정본이 아니다.** 폴백의 계약은 *"시트가 없을 때 이 리터럴로 렌더한다"*
+ * 이고, 시트가 없는 환경에는 미디어 조건도 없다 — 무조건 선언이 유일하게 정합한 값이다.
+ *
+ * ⚠**이 결손은 모션 축이 들어오기 전까지 드러나지 않았다.** `prefers-reduced-motion`
+ * 블록이 `--u-duration-*` 를 **0ms 로 재선언**하는데, `new Map()` 은 뒤에 온 값을 남기므로
+ * 대조기가 정본을 **0ms 로 읽었다**. 그 결과 배선된 폴백(220ms) 전부가 *"시트와 불일치"*
+ * 로 보고됐다(실측 55건). 값이 틀린 것이 아니라 **읽는 쪽이 조건부를 몰랐다.**
+ *
+ * 중첩 블록도 세어야 한다 — `@media` 안의 규칙에도 중괄호가 있다.
+ */
+function stripConditionalBlocks(css) {
+  let out = '';
+  let i = 0;
+  const RE = /@(?:media|supports|container)\b/g;
+  let m;
+  while ((m = RE.exec(css)) !== null) {
+    out += css.slice(i, m.index);
+    // 여는 중괄호까지 전진한 뒤 짝을 맞춰 블록 끝을 찾는다.
+    let j = css.indexOf('{', m.index);
+    if (j === -1) break;
+    let depth = 1;
+    for (j++; j < css.length && depth > 0; j++) {
+      if (css[j] === '{') depth++;
+      else if (css[j] === '}') depth--;
+    }
+    i = j;
+    RE.lastIndex = j;
+  }
+  return out + css.slice(i);
+}
+
+/** `--name: value;` 선언을 맵으로. 조건부 블록 안의 재선언은 정본이 아니다(위 참조). */
 function declarations(css) {
   return new Map(
-    [...css.matchAll(/^\s*(--[\w-]+)\s*:\s*([^;]+);/gm)].map(m => [m[1], m[2].trim()]),
+    [...stripConditionalBlocks(css).matchAll(/^\s*(--[\w-]+)\s*:\s*([^;]+);/gm)].map(m => [
+      m[1],
+      m[2].trim(),
+    ]),
   );
 }
 

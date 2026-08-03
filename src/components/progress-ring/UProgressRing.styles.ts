@@ -60,7 +60,7 @@ export const styles = css`
   /* === Mask === */
   .mask-progress,
   .mask-buffer {
-    transition: stroke-dashoffset 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: stroke-dashoffset var(--u-duration-slow, 320ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
 
   /* === Track === */

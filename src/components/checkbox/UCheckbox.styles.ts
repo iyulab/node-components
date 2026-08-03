@@ -154,14 +154,14 @@ export const styles = css`
     border: 2px solid var(--checkbox-border-color);
     border-radius: 0.2em;
     background-color: var(--checkbox-background-color);
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+    transition: border-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), background-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
 
   /* 체크박스 아이콘 */
   .checkbox u-icon {
     font-size: 0.85em;
     transform: scale(0);
-    transition: transform 0.15s ease;
+    transition: transform var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
 
   .label {

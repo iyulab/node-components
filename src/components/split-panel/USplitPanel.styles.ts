@@ -36,7 +36,7 @@ export const styles = css`
     align-items: center;
     justify-content: center;
     background-color: var(--splitter-color);
-    transition: background-color 0.15s ease;
+    transition: background-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     touch-action: none;
   }
   .splitter:hover {

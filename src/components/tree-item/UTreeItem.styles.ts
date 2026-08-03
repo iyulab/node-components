@@ -27,7 +27,7 @@ export const styles = css`
       var(--tree-indent-size) * var(--tree-item-depth)
       + var(--tree-indent-guide-offset)
     );
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition: background-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     user-select: none;
     cursor: pointer;
   }
@@ -89,7 +89,7 @@ export const styles = css`
     border-radius: var(--u-radius-sm, 3px);
     border: 1.5px solid var(--u-input-border-color, #E0E0E0);
     background-color: transparent;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
+    transition: background-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), border-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     cursor: pointer;
   }
   .prefix-checkbox u-icon {

@@ -39,7 +39,7 @@ export const styles = css`
     width: 100%;
     height: 100%;
     gap: var(--slide-gap, 0px);
-    transition: transform 0.3s ease-in-out;
+    transition: transform var(--u-duration-slow, 320ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
 
   ::slotted(*) {
@@ -97,7 +97,7 @@ export const styles = css`
     border-radius: var(--u-radius-circle, 50%);
     background-color: var(--u-neutral-400, #BDBDBD);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   .dot:hover {
     background-color: var(--u-neutral-200, #EEEEEE);

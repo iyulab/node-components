@@ -12,7 +12,7 @@ export const styles = css`
     visibility: hidden;
     pointer-events: none;
     /* 패널 슬라이드와 동일 duration + easing으로 맞춰 '띠요옹' 느낌 제거 (타이밍 미스매치 방지) */
-    transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.35s;
+    transition: opacity var(--u-duration-slow, 320ms) var(--u-ease-decelerate, cubic-bezier(0, 0, 0, 1)), visibility 0s var(--u-duration-slow, 320ms);
     overflow: hidden;
   }
   :host([open]) {

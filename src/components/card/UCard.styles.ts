@@ -37,7 +37,7 @@ export const styles = css`
   }
   :host([hoverable]) {
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   :host([hoverable]:hover) {
     transform: translateY(-2px);

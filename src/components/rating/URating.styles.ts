@@ -29,7 +29,7 @@ export const styles = css`
     outline: none;
     border-radius: 0.15em;
     color: var(--rating-symbol-off-color);
-    transition: color 0.15s ease, transform 0.15s ease;
+    transition: color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), transform var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   .symbol:focus-visible {
     outline: 2px solid var(--u-primary-color-strong, #1565C0);

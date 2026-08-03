@@ -11,7 +11,10 @@ export const styles = css`
     --switch-thumb-color: #fff;
     --switch-thumb-color-checked: #fff;
     --switch-radius: 9999px;
-    --switch-duration: 0.25s;
+    /* ★로컬 축이지만 **기본값은 공용 축에서 파생**한다 — 그러지 않으면
+       prefers-reduced-motion 이 이 컴포넌트만 비껴간다(축을 경유해야 함께 멈춘다).
+       소비자가 --switch-duration 을 덮으면 그 값이 이긴다(로컬 축의 존재 이유). */
+    --switch-duration: var(--u-duration-normal, 220ms);
     --switch-move-width: calc(var(--switch-track-width) - var(--switch-thumb-size) - var(--switch-thumb-offset) * 2);
   }
 
@@ -70,7 +73,7 @@ export const styles = css`
     height: var(--switch-track-height);
     border-radius: var(--switch-radius);
     background: var(--switch-track-color);
-    transition: background var(--switch-duration) ease;
+    transition: background var(--switch-duration) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   :host([checked]) .track {
     background: var(--switch-track-color-checked);
@@ -92,7 +95,7 @@ export const styles = css`
     line-height: 1;
     white-space: nowrap;
     pointer-events: none;
-    transition: opacity var(--switch-duration) ease;
+    transition: opacity var(--switch-duration) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   .track-checked {
     opacity: 0;
@@ -126,8 +129,8 @@ export const styles = css`
     box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04));
     overflow: hidden;
     transition:
-      transform var(--switch-duration) cubic-bezier(0.4, 0, 0.2, 1),
-      background var(--switch-duration) ease;
+      transform var(--switch-duration) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
+      background var(--switch-duration) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   :host([checked]) .thumb {
     transform: translateX(var(--switch-move-width));
@@ -148,8 +151,8 @@ export const styles = css`
     line-height: 1;
     pointer-events: none;
     transition:
-      opacity var(--switch-duration) ease,
-      transform var(--switch-duration) ease;
+      opacity var(--switch-duration) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
+      transform var(--switch-duration) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   .thumb-checked {
     opacity: 0;

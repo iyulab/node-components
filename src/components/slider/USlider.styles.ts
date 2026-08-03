@@ -76,7 +76,7 @@ export const styles = css`
     border-radius: var(--u-radius-circle, 50%);
     background: var(--slider-thumb-color);
     box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04));
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), box-shadow var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     cursor: pointer;
   }
   .thumb:hover .thumb-content,

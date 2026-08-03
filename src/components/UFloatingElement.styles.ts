@@ -19,7 +19,7 @@ export const styles = css`
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.2s ease, visibility 0s 0.2s;
+    transition: opacity var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), visibility 0s var(--u-duration-normal, 220ms);
   }
   :host([open]) {
     opacity: 1;

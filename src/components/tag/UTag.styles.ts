@@ -163,7 +163,7 @@ export const styles = css`
 
   :host {
     display: inline-flex;
-    font-size: 12px;
+    font-size: var(--u-text-caption-size, 12px);
     font-weight: 500;
     border-radius: var(--u-radius-md, 4px);
 
