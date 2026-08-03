@@ -223,6 +223,23 @@ export const styles = css`
   :host([variant="ghost"]:active) {
     background-color: var(--u-bg-color-active, #EEEEEE);
   }
+  /* ghost + 명시적 non-neutral color: 글자색이 색 축을 따른다 (link 와 같은 어법)
+     ★**ghost 는 색이 «필요 없는» variant 가 아니라 색이 «유일한 신호»인 variant 다.**
+     면도 테두리도 없으므로 글자색이 사라지면 남는 구분이 없다 — 파괴적 액션을 ghost 로
+     두는 화면에서 위험 신호가 통째로 없어진다.
+     ⚠종전에는 이 세 줄이 없어 color 속성을 무엇으로 주든 중립색이 나왔다. solid·outlined
+     는 따르고 link 도 아래에서 따르는데 여기만 빠져 있었다 — 축이 **한 자리에서만**
+     끊긴 형태라, 12조합을 격자로 대조하기 전에는 드러나지 않는다.
+     link 와 같은 이유로 면 슬롯(--btn-color)이 아니라 --btn-color-strong 을 읽는다. */
+  :host([variant="ghost"][color]:not([color="neutral"])) {
+    color: var(--btn-color-strong);
+  }
+  :host([variant="ghost"][color]:not([color="neutral"]):hover) {
+    color: var(--btn-color-strong-hover);
+  }
+  :host([variant="ghost"][color]:not([color="neutral"]):active) {
+    color: var(--btn-color-strong-active);
+  }
 
   /* link: blue 링크 스타일 (기본값, color="neutral"일 때도 유지 — 기존 동작 보존)
      ★종전 3단(weak → color → strong)은 쉬는 상태가 --u-primary-color-weak (흰 바탕 3.12)라

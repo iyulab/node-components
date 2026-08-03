@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.22.0] - 2026-08-03
+
+### Added
+
+- **`u-button` 의 `variant="ghost"` 가 `color` 축을 따른다.** 종전에는 `color` 를 무엇으로
+  주든 같은 중립색이 나왔다 — `solid`·`outlined`·`link` 셋은 따르는데 **`ghost` 한 자리에서만
+  축이 끊겨** 있었다.
+
+  ```html
+  <u-button variant="ghost" color="danger">삭제</u-button>   <!-- 이제 위험색 -->
+  ```
+
+  ★**`ghost` 는 색이 «필요 없는» variant 가 아니라 색이 «유일한 신호»인 variant 다.** 면도
+  테두리도 없으므로 글자색이 사라지면 남는 구분이 없다 — 파괴적 액션을 `ghost` 로 두는
+  화면에서 위험 신호가 통째로 없어진다.
+
+  `link` 와 같은 이유로 면 슬롯(`--btn-color`)이 아니라 **`--btn-color-strong`**(바탕 위 글자
+  단)을 읽는다. 실측 대비: primary **5.75** · danger **5.62**(흰 바탕).
+
+  ⚠**`color` 를 주지 않은 `ghost` 는 변화 없다** — 가산 변경이다.
+
+  ⚠**축이 한 자리에서만 끊기면 개별 확인으로는 보이지 않는다.** `ghost` 를 혼자 보면
+  *"원래 수수한 것"* 으로 읽힌다. `tests/browser/button-variant-color-grid.browser.test.ts`
+  가 **variant × color 를 격자로** 놓고 행 사이를 비교한다 — variant 마다 축이 나타나는
+  자리가 다르므로(면·테두리·글자) 그 자리를 각각 잰다.
+
 ## [1.21.0] - 2026-08-03
 
 > **디자인 파운데이션 릴리스.** 이 패키지에는 **글자 크기·굵기·행간·자간 토큰이 하나도
