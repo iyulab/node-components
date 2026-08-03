@@ -101,10 +101,22 @@ describe('역할 토큰 브라우저 해석', () => {
 
     expect(px(btn, '--btn-color'), 'u-button 이 브랜드색을 따르지 않았다').toBe(BRAND);
     expect(px(bar, '--progress-bar-color'), 'u-progress-bar 가 브랜드색을 따르지 않았다').toBe(BRAND);
-    expect(
-      getComputedStyle(document.documentElement).getPropertyValue('--u-input-border-color-focus').trim(),
-      '시맨틱 층이 역할 층을 경유하지 않았다',
-    ).toBe(BRAND);
+
+    // ★**리브랜딩은 역할당 한 단이 아니라 5단 전부다** — 시트가 그렇게 적어 놓았다
+    // ("아래 25개만 재정의하면"). `-color` 는 **면**의 단이고, 바탕/면 위에 서는 자리
+    // (링크·hover 텍스트·아이콘·상태 테두리)는 `-strong` 을 경유한다. 그래서 `-color`
+    // 하나만 덮은 상태에서 상태 테두리가 안 따라오는 것은 **결함이 아니라 계약**이다.
+    // 이 단언이 그 계약을 지킨다 — 여기서 깨지면 두 단 중 하나가 층을 건너뛴 것이다.
+    const BRAND_STRONG = 'rgb(153, 0, 77)';
+    const semantic = (name: string) =>
+      getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+    expect(semantic('--u-input-border-color-focus'), '`-color` 만 덮었는데 상태 테두리가 움직였다')
+      .not.toBe(BRAND);
+
+    document.documentElement.style.setProperty('--u-primary-color-strong', BRAND_STRONG);
+    for (const token of ['--u-input-border-color-focus', '--u-link-txt-color', '--u-icon-color-hover'])
+      expect(semantic(token), `${token} 이 역할 층(-strong)을 경유하지 않았다`).toBe(BRAND_STRONG);
   });
 
   it('--u-primary-color 오버라이드가 장식 축(color=X)에는 침범하지 않는다', async () => {

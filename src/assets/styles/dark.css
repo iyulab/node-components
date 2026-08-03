@@ -246,10 +246,12 @@
   --u-border-color-strong:   var(--u-neutral-500);
   --u-border-color-hover:    var(--u-neutral-500);
 
+  /* ★상태 테두리는 `-strong` 단이다 — light.css 의 같은 자리 주석 참조.
+     이 테마가 실제로 미달이었다: focus 2.74 · invalid 2.44 → 4.74 / 4.34. */
   --u-input-border-color:         var(--u-neutral-400);
   --u-input-border-color-hover:   var(--u-neutral-500);
-  --u-input-border-color-focus:   var(--u-primary-color);
-  --u-input-border-color-invalid: var(--u-danger-color);
+  --u-input-border-color-focus:   var(--u-primary-color-strong);
+  --u-input-border-color-invalid: var(--u-danger-color-strong);
 
   /* Background Colors */
   --u-bg-color:              var(--u-neutral-100);

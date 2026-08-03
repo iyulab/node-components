@@ -123,8 +123,8 @@
 | `--u-border-color-hover` | `var(--u-neutral-400)` |
 | `--u-input-border-color` | `var(--u-neutral-300)` |
 | `--u-input-border-color-hover` | `var(--u-neutral-400)` |
-| `--u-input-border-color-focus` | `var(--u-primary-color)` |
-| `--u-input-border-color-invalid` | `var(--u-danger-color)` |
+| `--u-input-border-color-focus` | `var(--u-primary-color-strong)` |
+| `--u-input-border-color-invalid` | `var(--u-danger-color-strong)` |
 | `--u-bg-color` | `var(--u-neutral-0)` |
 | `--u-bg-color-inverse` | `var(--u-neutral-900)` |
 | `--u-bg-color-hover` | `var(--u-neutral-100)` |

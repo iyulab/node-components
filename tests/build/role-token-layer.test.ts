@@ -122,15 +122,19 @@ describe('역할 토큰 층', () => {
     // ★hover/active 텍스트·아이콘은 `-strong` 을 경유한다(Cycle 141). `-color` 는 **면**의
     // 단이라 다크에서 바탕 위 글자로 쓰면 3.07 로 미달한다 — 두 용도의 대비 요구가
     // 다크에서 정반대 방향이기 때문이다(token-contrast.test.ts 참조).
-    // 테두리(`-focus`·`-invalid`)는 글자가 아니라 비텍스트(3.0)라 `-color` 로 충분하다.
+    // 🔴~~테두리(`-focus`·`-invalid`)는 글자가 아니라 비텍스트(3.0)라 `-color` 로 충분하다.~~
+    //    **반증됐다 (1.19.0)** — 실측하니 다크에서 `focus` 2.74 · `invalid` 2.44 로 그
+    //    비텍스트 기준 자체에 미달이었다. 이 문장은 *"기준이 낮으니 낮은 단으로 충분"* 을
+    //    **재지 않고** 추론했다. 테두리는 면이 아니라 **면 위에 그리는 선**이므로 글자와
+    //    같은 쪽(`-strong`)이 맞다. ⇒ token-contrast.test.ts 가 이제 실제로 잰다.
     const routed = {
       '--u-txt-color-hover': '--u-primary-color-strong',
       '--u-txt-color-active': '--u-primary-color-strong',
       '--u-icon-color-hover': '--u-primary-color-strong',
       '--u-icon-color-active': '--u-primary-color-strong',
       '--u-link-txt-color': '--u-primary-color-strong',
-      '--u-input-border-color-focus': '--u-primary-color',
-      '--u-input-border-color-invalid': '--u-danger-color',
+      '--u-input-border-color-focus': '--u-primary-color-strong',
+      '--u-input-border-color-invalid': '--u-danger-color-strong',
     };
     for (const sheet of ['light.css', 'dark.css']) {
       const css = read(join(root, 'src/assets/styles', sheet));

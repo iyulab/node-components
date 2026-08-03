@@ -259,10 +259,14 @@
   --u-border-color-strong:   var(--u-neutral-400);
   --u-border-color-hover:    var(--u-neutral-400);
 
+  /* ★상태 테두리는 `-strong` 단이다 — 면이 아니라 **면 위에 그리는 선**이기 때문이다.
+     1.16.0 이 가른 용도(`-color` = 면 / `-strong` = 면·바탕 위)에 이 자리가 맞춰지지
+     않아 다크에서 미달이었다: focus 2.74 · invalid 2.44 (WCAG 1.4.11 기준 3.0).
+     `-strong` 으로 옮기면 다크 4.74 / 4.34, 라이트 5.75 / 5.62 — 두 테마 모두 단조 상승. */
   --u-input-border-color:         var(--u-neutral-300);
   --u-input-border-color-hover:   var(--u-neutral-400);
-  --u-input-border-color-focus:   var(--u-primary-color);
-  --u-input-border-color-invalid: var(--u-danger-color);
+  --u-input-border-color-focus:   var(--u-primary-color-strong);
+  --u-input-border-color-invalid: var(--u-danger-color-strong);
 
   /* Background Colors */
   --u-bg-color:              var(--u-neutral-0);

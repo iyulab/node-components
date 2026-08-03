@@ -26,10 +26,10 @@ export const styles = css`
     box-shadow: 0 0 0 1px var(--u-input-border-color-hover, #BDBDBD);
   }
   :host(:not([readonly]):not([disabled])) .container:focus-within {
-    box-shadow: 0 0 0 1px var(--u-input-border-color-focus, #1976D2);
+    box-shadow: 0 0 0 1px var(--u-input-border-color-focus, #1565C0);
   }
   :host([invalid]:not([readonly]):not([disabled])) .container {
-    box-shadow: 0 0 0 1px var(--u-input-border-color-invalid, #D32F2F);
+    box-shadow: 0 0 0 1px var(--u-input-border-color-invalid, #C62828);
   }
 
   /* ===== Variant: filled ===== */
@@ -51,11 +51,11 @@ export const styles = css`
   }
   :host([variant="filled"]:not([readonly]):not([disabled])) .container:focus-within {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-focus, #1976D2);
+    border-bottom-color: var(--u-input-border-color-focus, #1565C0);
   }
   :host([variant="filled"][invalid]:not([readonly]):not([disabled])) .container {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-invalid, #D32F2F);
+    border-bottom-color: var(--u-input-border-color-invalid, #C62828);
   }
 
   /* ===== Variant: underlined ===== */
@@ -78,12 +78,12 @@ export const styles = css`
   }
   :host([variant="underlined"]:not([readonly]):not([disabled])) .container:focus-within {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-focus, #1976D2);
+    border-bottom-color: var(--u-input-border-color-focus, #1565C0);
     border-bottom-width: 2px;
   }
   :host([variant="underlined"][invalid]:not([readonly]):not([disabled])) .container {
     box-shadow: none;
-    border-bottom-color: var(--u-input-border-color-invalid, #D32F2F);
+    border-bottom-color: var(--u-input-border-color-invalid, #C62828);
   }
 
   /* ===== Variant: borderless ===== */

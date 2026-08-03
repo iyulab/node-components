@@ -137,7 +137,7 @@ export const styles = css`
   }
   input:focus-visible ~ .checkbox {
     box-shadow:
-      0 0 0 1px var(--u-input-border-color-focus, #1976D2),
+      0 0 0 1px var(--u-input-border-color-focus, #1565C0),
       0 0 0 3px rgba(59, 130, 246, 0.22);
   }
 

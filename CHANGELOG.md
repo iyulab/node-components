@@ -2,6 +2,26 @@
 
 ## [1.19.0] - 2026-08-03
 
+### Fixed
+
+- ★**다크 테마에서 입력 오류·포커스를 테두리로 알 수 없던 문제** — 상태 테두리 두 토큰이
+  **면**의 단(`-color`)을 읽고 있었다. 테두리는 면이 아니라 **면 위에 그리는 선**이므로
+  `-strong` 이 맞고, 그 어긋남이 다크에서 WCAG 1.4.11(비텍스트 3.0) 미달로 나타났다.
+
+  ```
+                                입력면 위 대비        라이트          다크
+  --u-input-border-color-focus    → -strong        4.60 → 5.75    2.74 ✗ → 4.74 ✓
+  --u-input-border-color-invalid  → -strong        4.98 → 5.62    2.44 ✗ → 4.34 ✓
+  ```
+
+  두 테마 모두 **더 잘 보이는 쪽으로만** 움직인다. 영향 범위는 `u-input` · `u-textarea` ·
+  `u-select` · `u-checkbox` · `u-switch` 의 포커스/오류 표시다.
+
+  ⚠**리브랜딩 시**: 상태 테두리는 이제 `--u-primary-color-strong` · `--u-danger-color-strong`
+  을 따른다. 역할당 5단을 모두 재정의하는 정규 경로를 쓰고 있다면 조치가 필요 없다.
+  `--u-primary-color` **한 단만** 덮고 있었다면 포커스 테두리가 따라오지 않으므로
+  `-strong` 도 함께 덮을 것.
+
 ### Added
 
 - **`color` 속성이 역할 값을 받는다** — `primary` · `info` · `success` · `warning` · `danger`.

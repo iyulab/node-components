@@ -190,6 +190,22 @@ describe('역할 토큰 대비 계약', () => {
         expect(fails).toEqual([]);
       });
 
+      it('★입력 상태 테두리가 입력면 위에서 보인다 (비텍스트 3.0)', () => {
+        // 여기만 테두리를 잰다 — 1.4.11 은 *상태를 식별하는 데 필요한* 경계를 요구하고,
+        // focus/invalid 는 정확히 그것이다("여기 입력한다" · "이 값이 틀렸다").
+        // 카드 경계·구분선은 장식이라 대상이 아니다(아래 todo ⑶ 이 그 자리를 지킨다).
+        //
+        // ⚠**바탕이 아니라 입력면 위에서 잰다.** 테두리는 입력 상자를 두르므로 실제로
+        // 인접한 것은 `--u-input-bg-color` 다 — 다크에서 둘이 다르다(neutral-200 vs 바탕).
+        const fails: string[] = [];
+        for (const token of ['--u-input-border-color-focus', '--u-input-border-color-invalid']) {
+          const c = contrast(t[token], t['--u-input-bg-color']);
+          if (c < AA_NONTEXT)
+            fails.push(`${token} ${t[token]} on --u-input-bg-color ${t['--u-input-bg-color']} = ${show(c)}`);
+        }
+        expect(fails).toEqual([]);
+      });
+
       it('아이콘 토큰이 바탕 위에서 보인다 (비텍스트 3.0)', () => {
         // 테두리는 여기 없다 — 아래 todo ⑶ 참조. 아이콘은 의미를 나르므로 1.4.11 대상이
         // 명확하지만, 테두리는 무엇이 "UI 컴포넌트 경계"인지가 판단을 요구한다.
@@ -231,9 +247,13 @@ describe('역할 토큰 대비 계약', () => {
     const weakOnBg = Number(contrast(dark['--u-primary-color-weak'], dark['--u-bg-color']).toFixed(2));
     expect(weakOnBg, '다크 --u-primary-color-weak on bg (기준 3.0)').toBe(2.31);
 
-    // ⑶ 테두리 토큰 — 양 테마 모두 1.4.11(3.0) 미달. 무엇이 "UI 컴포넌트 경계"인지의
-    //    판단이 선행돼야 하며(입력 테두리는 대상, 장식 구분선은 비대상), 값을 올리면
-    //    전 컴포넌트의 시각 무게가 바뀐다.
+    // ⑶ **평상** 테두리 토큰 — 양 테마 모두 1.4.11(3.0) 미달. ★상태 테두리(focus·invalid)는
+    //    1.19.0 에서 `-strong` 으로 옮겨 해소됐고 위 describe 블록으로 승격됐다. 남은 것은
+    //    카드 경계·구분선이며 **성격이 다르다**: 1.4.11 은 *상태를 식별하는 데 필요한* 경계만
+    //    요구하므로 장식 구분선은 애초에 대상이 아니다.
+    //    ⚠그리고 *"`-strong` 단으로 올리면 통과한다"* 는 **틀렸다** — 아래 값이 보여주듯
+    //    `-strong` 자체가 미달이다. 통과하려면 `neutral-600`(라이트 4.61 · 다크 3.27 =
+    //    보조 텍스트와 같은 진하기)까지 가야 하고, 그것은 큰 시각 변경이다.
     const borders = {
       light: Number(contrast(light['--u-border-color-strong'], light['--u-bg-color']).toFixed(2)),
       dark: Number(contrast(dark['--u-border-color-strong'], dark['--u-bg-color']).toFixed(2)),
