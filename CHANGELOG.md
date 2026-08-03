@@ -40,8 +40,13 @@
   `neutral`·`primary` 는 상태가 아니다. 없는 의미를 아이콘으로 지어내면 그 아이콘이 **잘못된
   정보를 나른다**. `u-badge variant="dot"` 도 콘텐츠를 렌더하지 않으므로 대상이 아니다.
 
-  ⚠**가산이다** — `icon` 을 주지 않으면 종전 렌더 그대로다. 아이콘은 **내장 번들**에서 오므로
+  ⚠**렌더는 가산이다** — `icon` 을 주지 않으면 종전 그대로다. 아이콘은 **내장 번들**에서 오므로
   네트워크를 타지 않는다(오프라인에서도 그려진다).
+
+  ⚠**다만 번들 크기는 가산이 아니다** — `u-tag`·`u-badge` 가 `u-icon` 을 import 하고, 내부
+  아이콘 번들은 **빌드 시점 eager glob** 이다. 그래서 `dist/components/tag/UTag.js` 만 deep
+  import 하던 소비자도 이제 `UIcon`(2.3 KB)과 내장 SVG 세트(**~9.8 KB**, 19종)를 함께 받는다.
+  전체 라이브러리를 쓰는 소비자에게는 변화가 없다(이미 포함돼 있다).
 
 - **`u-skeleton` 의 `pulse`/`shimmer` 가 `prefers-reduced-motion: reduce` 에서 멈춘다.**
 
