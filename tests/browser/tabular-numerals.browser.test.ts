@@ -50,12 +50,20 @@ describe('고정폭 자릿수', () => {
   });
 
   it('★u-slider 썸 툴팁에 상속으로 닿는다 — 슬롯을 건너는 경로', async () => {
-    // 이 단언이 이 파일의 존재 이유다. 툴팁 텍스트는 u-tooltip 의 슬롯 콘텐츠라
+    // 이 단언이 이 파일의 존재 이유다. 툴팁 텍스트는 u-tooltip 의 **슬롯 콘텐츠**라
     // 선언이 닿는 경로가 상속뿐이고, 그 경로는 눈으로 확인할 수 없다.
+    //
+    // ⚠**호스트를 재면 안 된다** — `u-tooltip[part="thumb-tooltip"]` 규칙이 호스트에
+    //   직접 걸리므로 그 단언은 **구성상 참**이고, 값이 렌더된 텍스트까지 가든 말든
+    //   똑같이 통과한다. 툴팁이 콘텐츠를 포털로 옮겼다면 상속은 끊기는데 그것을
+    //   구분하지 못한다. ⇒ **슬롯을 감싼 요소를 툴팁의 섀도 안에서** 잰다.
     const el = await mount('u-slider', { 'show-tooltip': '', value: '7', max: '100' });
     const tip = el.shadowRoot!.querySelector('u-tooltip[part="thumb-tooltip"]');
     expect(tip, '썸 툴팁을 찾지 못했다').toBeTruthy();
-    expect(numeric(tip)).toBe('tabular-nums');
+
+    const slot = tip!.shadowRoot?.querySelector('slot');
+    expect(slot?.parentElement, '툴팁이 슬롯으로 렌더하지 않는다 — 상속 경로가 성립하지 않는다').toBeTruthy();
+    expect(getComputedStyle(slot!.parentElement!).fontVariantNumeric).toBe('tabular-nums');
   });
 
   it('u-select 개수 표시(`n / m`)에 닿는다', async () => {
