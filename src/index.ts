@@ -20,6 +20,7 @@ export * from './components/copy-button/UCopyButton.js';
 export * from './components/dialog/UDialog.js';
 export * from './components/divider/UDivider.js';
 export * from './components/drawer/UDrawer.js';
+export * from './components/expander/UExpander.js';
 export * from './components/field/UField.js';
 export * from './components/form/UForm.js';
 export * from './components/icon/UIcon.js';

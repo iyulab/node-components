@@ -98,7 +98,8 @@ import { UButton, UInput } from '@iyulab/components/react';
 - [`u-card`](./references/components/card.md) — Content card with media, header, and footer slots
 - [`u-carousel`](./references/components/carousel.md) — Slide carousel with autoplay, navigation, and pagination
 - [`u-split-panel`](./references/components/split-panel.md) — Resizable two-panel layout
-- [`u-panel`](./references/components/panel.md) — General-purpose content panel with optional collapsing
+- [`u-panel`](./references/components/panel.md) — General-purpose content panel
+- [`u-expander`](./references/components/expander.md) — Disclosure section; header toggles the body open/closed
 - [`u-divider`](./references/components/divider.md) — Horizontal or vertical separator line
 
 ### Data Display

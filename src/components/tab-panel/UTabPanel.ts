@@ -38,8 +38,10 @@ export class UTabPanel extends UElement {
   @property({ type: String, reflect: true }) placement: TabPanelPlacement = 'top';
   /** 선택된 탭값 */
   @property({ type: String, reflect: true }) value = '';
-  /** 탭 추가/삭제 가능 여부 */
-  @property({ type: Boolean, reflect: true }) editable = false;
+  /**
+   * 네이티브 전역 속성. ⚠**이 컴포넌트에 탭 재정렬 기능은 없다** — 브라우저의 드래그를
+   * 켤 뿐이고, 놓았을 때 순서를 바꾸는 코드는 존재한 적이 없다.
+   */
   @property({ type: Boolean, reflect: true }) draggable = false;
 
   @state() private tabs: UTab[] = [];

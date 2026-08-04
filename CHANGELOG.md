@@ -4,6 +4,39 @@
 
 ### Added
 
+- **`u-expander` — 제목을 눌러 본문을 접고 펴는 디스클로저.**
+
+  ```html
+  <u-expander label="배송 정보" open>
+    <p>본문</p>
+  </u-expander>
+  ```
+
+  헤더는 **네이티브 `<button>`** 이라 Enter/Space·포커스 순서가 그대로 따라온다. 높이 전환은
+  grid 트랙(`0fr` ↔ `1fr`)이라 콘텐츠 높이를 JS 로 재지 않으며, `prefers-reduced-motion:
+  reduce` 에서 멈춘다(접힘/펼침의 결과는 정지 상태에서도 그대로 읽히므로 이 전환은 장식이다).
+
+  ⚠**접힘의 요점은 높이가 아니라 «도달 불가»다** — `overflow: hidden` 만으로 접으면 화면에서
+  사라진 콘텐츠가 **접근성 트리와 탭 순서에 그대로 남는다.** `visibility` 를 함께 옮겨
+  접힌 본문이 포커스를 받지 못하게 한다(회귀 테스트가 이 조건만 따로 잰다).
+
+### Removed
+
+- 🔴**한 번도 동작한 적 없는 선언 3종을 걷었다.** 전부 «선언 + 문서»만 있고 그 값을 읽는
+  코드가 **어디에도 없었다**(전수 검색). 동작이 없었으므로 **깨질 동작도 없다.**
+
+  | 제거 | 문서가 약속하던 것 | 대체 |
+  |---|---|---|
+  | `u-panel[collapsible]` | *"Allow the panel to collapse"* | **`u-expander`**(위) |
+  | `u-tab-panel[editable]` | *"Allow adding/removing tabs"* | 없음 — 탭 추가/삭제는 소비자가 슬롯을 직접 다룬다 |
+  | `u-tree[droppable]` · `u-tree-item[droppable]` | *"Enable drop" / "Accepts drops"* | 없음 — 아래 참조 |
+
+  ⚠**`draggable` 은 남는다** — 그것은 네이티브 전역 속성이라 브라우저가 드래그 자체는
+  켜 준다. 다만 문서가 *"Allow reordering tabs by drag"*·*"Enable drag"* 로 **재정렬/드롭
+  기능을 약속**하고 있었고 그런 코드는 존재한 적이 없다 ⇒ **문서를 사실로 정정**했다
+  (*"native drag attribute — no built-in reordering"*). 드래그 재정렬·트리 드롭은 수요가
+  모이면 기능으로 설계한다.
+
 - **`Locale.namespace()` — 상위 패키지가 자기 화면 문자열을 담을 자리.**
 
   ```ts
@@ -24,6 +57,38 @@
   조회 사슬(정확 일치 → base 언어 → `en`)과 `{name}` 치환은 검증 메시지와 **같은 구현을
   공유한다** — 두 벌로 두면 한쪽만 고쳐진다. 사슬에 없는 키는 **키 자체**를 돌려준다
   (조용히 빈 문자열이 되는 것보다 화면에 드러나는 편이 낫다).
+
+- **`u-skeleton` 에 `lines` — 여러 줄 자리표시자.**
+
+  ```html
+  <u-skeleton lines="3" height="1em"></u-skeleton>   <!-- 막대 3개 · 마지막 줄은 짧게 -->
+  ```
+
+  종전에는 목록 한 줄·문단 자리표시자를 만들 때 **폭만 다른 막대를 손으로 반복**해야 했다
+  (이 리포 안에서만 12사용처). 마지막 줄을 짧게 그리는 것은 장식이 아니라 **문단의 끝**을
+  나타내는 신호다(`--skeleton-last-line-width`, 기본 60%). 줄 간격은
+  `--skeleton-line-gap`(기본 `0.5em`).
+
+  ⚠**단일 막대의 모양은 바뀌지 않는다** — `lines` 가 없으면 종전과 완전히 같고, 회귀
+  테스트가 그 계약을 감시한다. `pulse`/`shimmer` 는 줄마다 적용되며 `prefers-reduced-motion`
+  에서 함께 멈춘다.
+
+- **오버레이가 열릴 때 `autofocus` 를 존중하고, 없으면 첫 입력으로 간다** (`u-dialog`·`u-drawer`).
+
+  ```html
+  <u-drawer closable>
+    <span slot="header">주문 편집</span>
+    <u-input label="수량" autofocus></u-input>   <!-- 여기로 간다 -->
+  </u-drawer>
+  ```
+
+  종전에는 `focus-trap` 의 기본값(**첫 tabbable 노드**)에 맡겨져 있었다. 그 결과 ⑴`autofocus`
+  가 **무시되고**(focus-trap 은 그 속성을 보지 않는다) ⑵**버튼이 마크업 앞에 있으면 버튼이
+  포커스를 가져갔다**(확인/취소가 먼저 오는 다이얼로그가 그 모양이다 — 실측: 입력이 아니라
+  첫 버튼). ⇒ 순서를 계약으로 고정한다: `[autofocus]` → 첫 입력 컨트롤 → 첫 tabbable.
+
+  ⚠**시각적 변화가 있을 수 있다** — 버튼이 앞에 오는 다이얼로그는 이제 **입력**에서 시작한다.
+  기존 동작을 원하면 그 버튼에 `autofocus` 를 준다.
 
 - **`u-tag`·`u-badge` 에 `icon` — 상태가 «색 없이도» 구분된다.**
 

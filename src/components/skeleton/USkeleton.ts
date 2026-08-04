@@ -29,6 +29,13 @@ export class USkeleton extends UElement {
   @property({ type: String }) width?: string;
   /** 높이 (CSS 값) */
   @property({ type: String }) height?: string;
+  /**
+   * 여러 줄 자리표시자로 그릴 줄 수. **2 이상일 때만** 호스트가 «막대들의 통»이 되고,
+   * 마지막 줄은 짧게(`--skeleton-last-line-width`, 기본 60%) 그린다 — 문단의 끝을 그렇게 읽는다.
+   *
+   * ⚠**단일 막대(기본)의 모양은 바꾸지 않는다** — 이 속성이 없으면 종전과 완전히 같다.
+   */
+  @property({ type: Number, reflect: true }) lines?: number;
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
@@ -42,7 +49,9 @@ export class USkeleton extends UElement {
   }
 
   render() {
-    return html`<slot></slot>`;
+    const n = this.lines ?? 0;
+    if (n < 2) return html`<slot></slot>`;
+    return html`${Array.from({ length: n }, () => html`<span class="line" part="line"></span>`)}`;
   }
 }
 

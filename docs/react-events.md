@@ -21,7 +21,7 @@ import { UDialog } from '@iyulab/components/react';
 
 `detail` 열이 `unknown` 이면 `CustomEvent`(detail 타입 미지정)로 노출된다.
 
-**컴포넌트 24개 · 이벤트 37개**
+**컴포넌트 25개 · 이벤트 39개**
 
 ## `<u-alert>`
 
@@ -68,6 +68,13 @@ import { UDialog } from '@iyulab/components/react';
 |---|---|---|---|
 | `onShow` | `show` | `ShowEventDetail` | 오버레이가 표시되기 직전 발생합니다. 핸들러에서 취소하면 표시되지 않습니다. |
 | `onHide` | `hide` | `HideEventDetail` | 오버레이가 숨겨지기 직전 발생합니다. 핸들러에서 취소하면 닫히지 않습니다. |
+
+## `<u-expander>`
+
+| React prop | 이벤트 | detail | 설명 |
+|---|---|---|---|
+| `onExpand` | `expand` | `ExpandEventDetail` | 펼쳐질 때 발생 (취소 가능) |
+| `onCollapse` | `collapse` | `CollapseEventDetail` | 접힐 때 발생 (취소 가능) |
 
 ## `<u-form>`
 

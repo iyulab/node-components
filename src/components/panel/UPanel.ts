@@ -15,8 +15,6 @@ export class UPanel extends UElement {
 
   /** 패널 비활성화 여부 */
   @property({ type: Boolean, reflect: true }) disabled = false;
-  /** 패널 접기 가능 여부 */
-  @property({ type: Boolean, reflect: true }) collapsible = false;
   /** 패널 고유값 (매칭 시 사용) */
   @property({ type: String, reflect: true }) value = "";
 

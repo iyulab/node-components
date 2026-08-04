@@ -48,7 +48,8 @@
     "docs:cssprops": "node scripts/cssprops-doc.mjs --write",
     "docs:react-events": "node scripts/react-events-doc.mjs --write",
     "docs:tokens": "node scripts/design-tokens-doc.mjs --write",
-    "build:plugins": "tsc -p plugins/tsconfig.build.json"
+    "build:plugins": "tsc -p plugins/tsconfig.build.json",
+    "probe:seed-ramp": "node scripts/seed-ramp.mjs"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.8.0",

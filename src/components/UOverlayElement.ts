@@ -141,12 +141,42 @@ export abstract class UOverlayElement extends UElement {
           clickOutsideDeactivates: false,
           allowOutsideClick: true,
           fallbackFocus: this,
+          initialFocus: () => this.resolveInitialFocus(),
           trapStack: OverlayManager.trapStack,
           tabbableOptions: { getShadowRoot: true },
         });
       }
       this.focusTrap.activate();
     }
+  }
+
+  /**
+   * 열릴 때 포커스를 받을 요소를 정한다 — **입력을 먼저 본다.**
+   *
+   * 순서: `[autofocus]` → 첫 입력 컨트롤 → (없으면) focus-trap 기본값(첫 tabbable).
+   *
+   * 🔴**두 분기가 «각각» 무엇을 하는지 되돌려 재서 갈랐다** — 이 함수는 그 기록이다.
+   *
+   *   `[autofocus]`  → `u-drawer` 에서 갈린다. `focus-trap` 은 그 속성을 존중하지 않는다
+   *                    (v7 `getInitialFocusNode` 는 «첫 tabbable» 로 폴백한다).
+   *   첫 입력 우선   → `u-dialog` 에서 갈린다. 버튼이 DOM 순서상 앞이면 기본값은 **버튼**을
+   *                    잡는다(실측: 제거하면 `button#b1`, 복원하면 `input`).
+   *
+   * ⚠**`u-drawer` 만으로는 두 번째 분기를 판별할 수 없었다** — 슬롯 배치 때문에 기본값도
+   * 우연히 첫 입력에 떨어진다. *"되돌려도 통과한다"* 를 *"이 코드는 아무것도 안 한다"* 로
+   * 읽을 뻔했고, **판별하는 입력을 찾은 뒤에야** 갈렸다.
+   * (`tests/browser/overlay-initial-focus.browser.test.ts` 가 둘 다 감시한다.)
+   */
+  private resolveInitialFocus(): HTMLElement | false | undefined {
+    const explicit = this.querySelector<HTMLElement>('[autofocus]');
+    if (explicit) return explicit;
+
+    const control = this.querySelector<HTMLElement>(
+      'input, select, textarea, u-input, u-textarea, u-select, u-checkbox, u-radio, u-switch, u-slider',
+    );
+    if (control) return control;
+
+    return undefined; // focus-trap 기본값(첫 tabbable)에 맡긴다
   }
 
   /** 오버레이가 닫힐 때 설정을 해제합니다. */

@@ -52,6 +52,51 @@ export const styles = css`
     transform: translateX(-100%);
   }
 
+  /* === 여러 줄(lines) ===
+     기본(단일 막대)에서는 :host 자신이 막대다 — 그 모양을 바꾸지 않는다. lines 가 붙었을
+     때만 호스트가 «막대들의 통»이 되고, 색·모양·효과는 각 .line 이 받는다.
+     ⚠마지막 줄을 짧게 만드는 것은 장식이 아니라 신호다 — 문단의 끝을 그렇게 읽는다. */
+  :host([lines]) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--skeleton-line-gap, 0.5em);
+    height: auto;
+    background-color: transparent;
+    animation: none;
+    overflow: visible;
+  }
+  :host([lines])::after {
+    content: none;
+  }
+  :host([lines]) .line {
+    height: var(--skeleton-height);
+    background-color: var(--skeleton-color);
+    border-radius: inherit;
+  }
+  :host([lines]) .line:last-child {
+    width: var(--skeleton-last-line-width, 60%);
+  }
+  :host([lines][effect="pulse"]) .line {
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  :host([lines][effect="shimmer"]) .line {
+    position: relative;
+    overflow: hidden;
+  }
+  :host([lines][effect="shimmer"]) .line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--skeleton-shimmer-color),
+      transparent
+    );
+    animation: shimmer 1.5s infinite;
+    transform: translateX(-100%);
+  }
+
   /* ★**장식만 멈춘다.**
      시트의 reduce 규칙은 지속시간 축(--u-duration-*)을 0 으로 누르는 방식이라 animation
      속성을 직접 쓰는 이 자리에는 닿지 않는다 — 그 규칙이 animation: none 으로 강제하지
@@ -64,7 +109,9 @@ export const styles = css`
      ⇒ 여기서만 멈춘다. u-spinner 는 건드리지 않는다. */
   @media (prefers-reduced-motion: reduce) {
     :host([effect="pulse"]),
-    :host([effect="shimmer"])::after {
+    :host([effect="shimmer"])::after,
+    :host([lines][effect="pulse"]) .line,
+    :host([lines][effect="shimmer"]) .line::after {
       animation: none;
     }
   }

@@ -43,8 +43,7 @@ Hierarchical tree with support for selection, checkboxes, cascade check, and dra
 | `selectLeaf` | `boolean` | `false` | ✓ | Only leaf nodes are selectable |
 | `checkable` | `boolean` | `false` | ✓ | Show checkboxes |
 | `checkCascade` | `boolean` | `false` | ✓ | Parent/child checkbox cascade |
-| `draggable` | `boolean` | `false` | ✓ | Enable drag |
-| `droppable` | `boolean` | `false` | ✓ | Enable drop |
+| `draggable` | `boolean` | `false` | ✓ | Native drag attribute — **no built-in drag & drop** |
 | `trigger` | `'item'\|'icon'` | `'item'` | — | Click target to expand/collapse |
 
 ### Events
@@ -98,8 +97,7 @@ Hierarchical tree with support for selection, checkboxes, cascade check, and dra
 | `selectable` | `boolean` | `false` | ✓ | This item can be selected |
 | `checkable` | `boolean` | `false` | ✓ | Show checkbox |
 | `loading` | `boolean` | `false` | ✓ | Loading state (async children) |
-| `draggable` | `boolean` | `false` | ✓ | Draggable |
-| `droppable` | `boolean` | `false` | ✓ | Accepts drops |
+| `draggable` | `boolean` | `false` | ✓ | Native drag attribute — **no built-in drag & drop** |
 | `trigger` | `'item'\|'icon'` | `'item'` | — | Expand trigger target |
 
 ### Events

@@ -6,11 +6,14 @@ import '@iyulab/components/dist/components/panel/UPanel.js';
 
 **Tag:** `u-panel`
 
-General-purpose content panel. Matches a tab or tree node when using `value`. Supports optional collapsing.
+General-purpose content panel. Matches a tab or tree node when using `value`.
+
+> Looking for a collapsible section? Use [`u-expander`](expander.md). `u-panel` previously
+> declared a `collapsible` property that was never implemented — it has been removed.
 
 ```html
-<!-- Standalone collapsible panel -->
-<u-panel collapsible>Content inside panel</u-panel>
+<!-- Standalone panel -->
+<u-panel>Content inside panel</u-panel>
 
 <!-- Inside u-tab-panel (matched by value) -->
 <u-tab-panel>
@@ -35,4 +38,3 @@ General-purpose content panel. Matches a tab or tree node when using `value`. Su
 |----------|------|---------|---------|-------------|
 | `value` | `string` | `''` | ✓ | Identifier used for tab/tree matching |
 | `disabled` | `boolean` | `false` | ✓ | Disable the panel |
-| `collapsible` | `boolean` | `false` | ✓ | Allow the panel to collapse |

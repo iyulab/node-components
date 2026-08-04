@@ -61,3 +61,33 @@ Side panel that slides in from any screen edge. Extends `UOverlayElement` (focus
 | `header` | Header area |
 | `body` | Body area |
 | `close-btn` | Close button |
+
+---
+
+## Edit-panel pattern
+
+A side panel for editing a record needs no extra component — `u-drawer` already provides the
+whole contract. Measured in a real browser
+(`tests/browser/drawer-edit-panel-pattern.browser.test.ts`):
+
+```html
+<u-drawer id="edit" placement="right" closable>
+  <span slot="header">Edit order</span>
+
+  <u-input label="Quantity" autofocus></u-input>
+  <u-textarea label="Note"></u-textarea>
+
+  <div slot="footer">
+    <u-button variant="ghost" @click=${() => edit.hide()}>Cancel</u-button>
+    <u-button color="primary" @click=${save}>Save</u-button>
+  </div>
+</u-drawer>
+```
+
+| Requirement | How it is met |
+|---|---|
+| Focus the first input on open, restore the trigger on close | `[autofocus]` → first input control → first tabbable; focus is returned by the trap |
+| Body scrolls, footer stays visible | `part="body"` is `flex: 1; overflow: auto`; the `footer` slot is `flex-shrink: 0` |
+| Focus cannot leave the panel | `mode="modal"` (default) activates the focus trap |
+| `Esc` closes, background scroll is locked | `closeOn` defaults to `['escape','backdrop','button']` |
+| Nothing pops open by itself | Selects/comboboxes open only on user interaction |

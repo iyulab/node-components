@@ -41,9 +41,11 @@ export class UTree extends UElement {
   /** 트리 펼치기 트리거 방식 */
   @property({ type: String }) trigger: TreeItemTrigger = 'item';
 
-  /** 드래그 앤드 드롭 지원 */
+  /**
+   * 네이티브 전역 속성. ⚠**이 컴포넌트에 드래그 앤드 드롭 구현은 없다** — 브라우저의
+   * 드래그를 켤 뿐이고, 드롭을 받아 트리를 재배치하는 코드는 존재한 적이 없다.
+   */
   @property({ type: Boolean, reflect: true }) draggable: boolean = false;
-  @property({ type: Boolean, reflect: true }) droppable: boolean = false;
 
   @state() private expandIcon?: Node;
   @state() private collapseIcon?: Node;

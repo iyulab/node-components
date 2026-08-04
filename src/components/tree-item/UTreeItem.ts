@@ -49,8 +49,11 @@ export class UTreeItem extends UElement {
   /** 아이템의 고유값 */
   @property({ type: String }) value: string = '';
 
+  /**
+   * 네이티브 전역 속성. ⚠**드롭을 받아 트리를 재배치하는 구현은 없다** — `UTree` 의 같은
+   * 속성과 같은 상태다.
+   */
   @property({ type: Boolean, reflect: true }) draggable: boolean = false;
-  @property({ type: Boolean, reflect: true }) droppable: boolean = false;
 
   @state() leaf: boolean = true;
   @state() depth: number = 0;

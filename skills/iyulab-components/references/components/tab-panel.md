@@ -21,8 +21,8 @@ Tab-based content switcher. Pair each `u-tab` with a `u-panel` of the same `valu
   <u-panel value="settings">Settings content</u-panel>
 </u-tab-panel>
 
-<!-- Card variant, right placement, editable -->
-<u-tab-panel variant="card" placement="left" editable draggable>
+<!-- Card variant, left placement -->
+<u-tab-panel variant="card" placement="left">
   <u-tab value="a" removable>Tab A</u-tab>
   <u-panel value="a">Panel A</u-panel>
 </u-tab-panel>
@@ -46,8 +46,7 @@ Tab-based content switcher. Pair each `u-tab` with a `u-panel` of the same `valu
 | `value` | `string` | `''` | ✓ | Currently active tab value |
 | `variant` | `'line'\|'card'\|'pill'\|'plain'` | `'line'` | ✓ | Tab bar style |
 | `placement` | `'top'\|'bottom'\|'left'\|'right'` | `'top'` | ✓ | Tab bar position |
-| `editable` | `boolean` | `false` | ✓ | Allow adding/removing tabs |
-| `draggable` | `boolean` | `false` | ✓ | Allow reordering tabs by drag |
+| `draggable` | `boolean` | `false` | ✓ | Native drag attribute — **no built-in reordering** |
 | `disabled` | `boolean` | `false` | ✓ | Disable all tabs |
 
 ### Events
@@ -84,7 +83,7 @@ Tab-based content switcher. Pair each `u-tab` with a `u-panel` of the same `valu
 | `value` | `string` | `''` | ✓ | Matches a `u-panel` with the same `value` |
 | `disabled` | `boolean` | `false` | ✓ | Disable the tab |
 | `removable` | `boolean` | `false` | ✓ | Show close/remove button |
-| `draggable` | `boolean` | `false` | ✓ | Allow dragging to reorder |
+| `draggable` | `boolean` | `false` | ✓ | Native drag attribute — **no built-in reordering** |
 
 ### Events
 
