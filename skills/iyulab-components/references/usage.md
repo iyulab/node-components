@@ -78,6 +78,32 @@ accent surface ≥ 4.5:1, accent text on the page background ≥ 4.5:1, `-strong
 from `-color`, and `-weak` usable as a non-text graphic (≥ 3:1). It is **recalculated when the
 theme changes**, because those targets are relative to the page background.
 
+#### How many tokens does the `primary` role have? **Seven.**
+
+`Theme.accent()` sets **six** of them:
+
+| Token | `Theme.accent()` | What reads it |
+|---|---|---|
+| `--u-primary-color` | ✅ | accent surface — 21 source files |
+| `--u-primary-color-strong` | ✅ | text/icons on the page background; hover · active · link · focus ring — 14 files |
+| `--u-primary-color-weak` | ✅ | non-text graphics |
+| `--u-primary-color-weaker` | ✅ | decorative |
+| `--u-primary-color-weakest` | ✅ | decorative |
+| `--u-primary-txt-color` | ✅ | text on the accent surface |
+| **`--u-primary-bg-color`** | 🔴**no** | tinted **surface behind text** — `u-tag`'s `--tag-hue-surface` |
+
+🔴 **`Theme.accent()` does not touch `--u-primary-bg-color`.** It stays on the sheet default
+(a blue tint), so a seeded brand leaves tinted surfaces blue. Set it yourself alongside the seed:
+
+```ts
+Theme.accent('#7c3aed');
+document.documentElement.style.setProperty('--u-primary-bg-color', '#f3e8ff');
+```
+
+Pick a tint that keeps your body text readable on it — the built-in sheet values sit at roughly
+1.14:1 (light) and 1.03:1 (dark) against the page background. Deriving this step automatically is
+tracked as open work, because the sheet pairs it by hand across five colour roles and two themes.
+
 **Manual override** — you must set the steps you use, not just one:
 
 ```css
@@ -86,11 +112,14 @@ theme changes**, because those targets are relative to the page background.
   --u-primary-color: #7c3aed;         /* accent surface */
   --u-primary-color-strong: #5b21b6;  /* text/icons on the page background */
   --u-primary-txt-color: #ffffff;     /* text on the accent surface */
+  --u-primary-bg-color: #f3e8ff;      /* tinted surface behind text */
 }
 ```
 
 ⚠ Setting `--u-primary-color` alone is **not enough**: hover/focus/link colors resolve from
 `--u-primary-color-strong`, so they stay on the default ramp and your brand looks half-applied.
+The measured symptom is a *selected table row* or *tag* that stays blue while buttons turn brand —
+that one is `--u-primary-bg-color`.
 
 ---
 

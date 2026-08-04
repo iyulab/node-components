@@ -30,7 +30,18 @@ Renders an SVG icon by name from a registered icon library. Inline `src` also ac
 <u-icon src='<svg ...>...</svg>'></u-icon>
 ```
 
+```html
+<!-- Fallback: drawn when the name does not resolve -->
+<u-icon name="might-not-exist" fallback='<svg viewBox="0 0 16 16">...</svg>'></u-icon>
+```
+
 For registering custom libraries, see [icons.md](../utilities/icons.md).
+
+> **When you need `fallback`.** An icon that fails to resolve renders nothing. That is usually
+> harmless — but not where the icon is the only hit target. A collapsed sidebar hides labels, so
+> a nav item with no visible icon becomes an **empty row the user cannot click**: the screen
+> becomes unreachable. `fallback` covers all three failure modes (no `name`, 404, unparseable SVG).
+> Keep the fallback **inline**; a fallback that fetches reproduces the very failure it covers.
 
 ---
 
@@ -41,6 +52,7 @@ For registering custom libraries, see [icons.md](../utilities/icons.md).
 | `lib` | `'internal'\|'tabler'\|'heroicons'\|'lucide'\|'bootstrap'\|string` | — | Icon library identifier |
 | `name` | `string` | — | Icon name (library-specific; append `:filled` / `:solid` for filled variants) |
 | `src` | `string` | — | Raw SVG string (overrides `lib`/`name`) |
+| `fallback` | `string` | — | Raw SVG drawn when `name`/`src` cannot be resolved (missing, 404, or unparseable) |
 
 ## CSS Parts
 

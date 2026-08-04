@@ -1,7 +1,7 @@
 {
   "name": "@iyulab/components",
   "description": "web-components library based on lit-element made by iyulab",
-  "version": "1.23.0",
+  "version": "1.23.1",
   "keywords": [
     "iyulab",
     "components",
@@ -42,14 +42,15 @@
     "test:browser": "vitest run --project=browser",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
-    "build": "eslint && npm run typecheck:plugins && vite build && npm run build:plugins && npm run test:react-types",
+    "build": "npm run typecheck && eslint && npm run typecheck:plugins && vite build && npm run build:plugins && npm run test:react-types",
     "test:react-types": "tsc -p tsconfig.react-smoke.json",
     "typecheck:plugins": "tsc -p plugins/tsconfig.json",
     "docs:cssprops": "node scripts/cssprops-doc.mjs --write",
     "docs:react-events": "node scripts/react-events-doc.mjs --write",
     "docs:tokens": "node scripts/design-tokens-doc.mjs --write",
     "build:plugins": "tsc -p plugins/tsconfig.build.json",
-    "probe:seed-ramp": "node scripts/seed-ramp.mjs"
+    "probe:seed-ramp": "node scripts/seed-ramp.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.8.0",

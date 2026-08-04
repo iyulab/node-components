@@ -242,6 +242,19 @@ export class Theme {
    *
    * ⚠**변수는 `documentElement` 의 인라인 스타일로 들어간다** — 시트보다 우선하므로
    * 로드 순서에 기대지 않는다.
+   *
+   * 🔴**`--u-primary-bg-color` 는 세팅하지 않는다 — 이 자가 덮는 것은 7종 중 6종이다.**
+   * 그 토큰은 «글자를 얹는 옅은 면»(`u-tag` 의 `--tag-hue-surface`)이라 램프의 어느 단과도
+   * 성질이 다르고, 시트는 그 자리를 **5계열 × 2테마 = 10개 값으로 손수 짝지어** 두었다
+   * (라이트/다크가 같은 대비비를 쓰지 않는다 — 실측 1.14 대 1.03). 도출식으로 바꾸는 것은
+   * 팔레트 값 결정이라 사람 판단이 필요하다.
+   *
+   * ⇒ **시드만 넣으면 태그·선택된 행 같은 옅은 면이 파랑으로 남는다.** 함께 세팅할 것:
+   *
+   * ```ts
+   * Theme.accent('#7c3aed');
+   * document.documentElement.style.setProperty('--u-primary-bg-color', '#f3e8ff');
+   * ```
    */
   public static accent(seed: string | null): void {
     this.accentSeed = seed;
