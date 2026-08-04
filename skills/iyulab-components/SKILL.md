@@ -59,6 +59,7 @@ import { UButton, UInput } from '@iyulab/components/react';
 
 - [`u-button`](./references/components/button.md) — Versatile button with multiple variants; renders as `<a>` when `href` is set
 - [`u-icon-button`](./references/components/icon-button.md) — Square icon-only button with built-in tooltip
+- [`u-copy-button`](./references/components/copy-button.md) — Copies text to the clipboard with a transient confirmation
 - [`u-button-group`](./references/components/button-group.md) — Groups buttons with shared variant and disabled state
 
 ### Form Controls
