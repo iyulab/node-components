@@ -424,6 +424,43 @@ webfont.
 
 ---
 
+## Typography scale — seven semantic steps
+
+Alongside the font stacks, the sheet defines seven **semantic steps** — `display`, `title`,
+`subtitle`, `body`, `label`, `caption`, `overline` — each with four properties
+(`-size`, `-weight`, `-leading`, `-tracking`). Rebranding typography means overriding those
+tokens, not restyling every screen:
+
+```css
+:root {
+  --u-text-title-size: 22px;
+  --u-text-title-weight: 800;
+}
+```
+
+Use the steps from markup with [`u-text`](../skills/iyulab-components/references/components/text.md)
+rather than referencing the tokens in your own CSS:
+
+```html
+<u-text level="1" variant="display">Document title</u-text>
+<u-text variant="subtitle" tone="weak">One-line description</u-text>
+<u-text variant="caption" tone="weak">Helper text</u-text>
+```
+
+The visual step (`variant`) and the document level (`level`) are independent, so a
+second-level heading can be the largest thing on the page without the outline lying about it.
+
+⚠**Referencing the tokens directly is right in one case** — when you are authoring a component
+with its own shadow CSS. Then write them with a fallback, e.g.
+`font-size: var(--u-text-title-size, 20px)`. If page markup is reaching for these tokens, that
+place wants `u-text` instead.
+
+⚠**A step is four properties, not five.** `overline` is not upper-cased for you: transforming
+text changes what the author wrote and does nothing for CJK, which would make the same step
+look different depending on the language. Apply `text-transform` at the site that wants it.
+
+---
+
 ## Styling Internals with `::part()`
 
 Tokens cover color and typography globally. For per-component presentation that is **an application design decision rather than a library default**, style the exposed CSS parts directly.

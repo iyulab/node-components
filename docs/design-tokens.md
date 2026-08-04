@@ -76,6 +76,27 @@
 `body` 타이포를 키워도 이 넷은 커지지 않습니다 — 크기를 바꾸려면 각 컴포넌트의
 여백 훅(`--tag-padding-block` 등)을 쓰세요.
 
+### 의미 타이포 7단을 쓰는 법 — `u-text`
+
+아래 `--u-text-*` 는 **7단 × 4속성**(크기·굵기·행간·자간)입니다. 이 값들을 직접
+참조하지 말고 [`u-text`](../skills/iyulab-components/references/components/text.md) 를
+쓰세요 — 자기 CSS 를 쓰지 않고 스케일에 올라탈 수 있습니다.
+
+```html
+<u-text level="1" variant="display">문서 제목</u-text>
+<u-text variant="subtitle" tone="weak">한 줄 설명</u-text>
+<u-text>본문</u-text>
+<u-text variant="caption" tone="weak">보조 문구</u-text>
+```
+
+★**시각 축(`variant`)과 의미 축(`level`)은 독립**입니다. `level` 을 주면 실제
+`<h1>`~`<h6>` 으로 렌더되어 heading 으로 읽히므로, *"페이지의 두 번째 제목이
+시각적으로 가장 큰"* 배치도 마크업을 거짓말시키지 않고 표현됩니다.
+
+⚠아래 표를 직접 참조하는 것이 맞는 경우도 있습니다 — **자기 섀도 CSS 를 가진
+컴포넌트**를 만들 때입니다. 그때는 `var(--u-text-title-size, 20px)` 처럼 폴백과 함께
+쓰세요. 반면 **화면 마크업**에서 이 토큰을 참조하고 있다면 그 자리는 `u-text` 입니다.
+
 | 토큰 | 값 |
 |---|---|
 | `--u-radius-none` | `0` |

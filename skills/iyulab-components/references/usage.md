@@ -121,6 +121,28 @@ tracked as open work, because the sheet pairs it by hand across five colour role
 The measured symptom is a *selected table row* or *tag* that stays blue while buttons turn brand —
 that one is `--u-primary-bg-color`.
 
+### Typography
+
+The sheet defines seven semantic steps — `display`, `title`, `subtitle`, `body`, `label`,
+`caption`, `overline` — each with `-size`, `-weight`, `-leading`, `-tracking`. Use them from
+markup with [`u-text`](./components/text.md) instead of writing your own CSS:
+
+```html
+<u-text level="1" variant="display">Document title</u-text>
+<u-text variant="subtitle" tone="weak">One-line description</u-text>
+<u-text>Body copy</u-text>
+<u-text variant="caption" tone="weak">Helper text</u-text>
+```
+
+`variant` is the visual step and `level` is the document level — they are independent, and
+`level` renders a real `<h1>`–`<h6>` so the heading is read as one.
+
+To rebrand typography, override the tokens rather than the screens:
+
+```css
+:root { --u-text-title-size: 22px; --u-text-title-weight: 800; }
+```
+
 ---
 
 ## Icon Setup
