@@ -109,6 +109,7 @@ import { UButton, UInput } from '@iyulab/components/react';
 - [`u-chip`](./references/components/chip.md) — Selectable/removable chip tag
 - [`u-tag`](./references/components/tag.md) — Non-interactive label tag
 - [`u-icon`](./references/components/icon.md) — SVG icon from built-in or external icon library
+- [`u-text`](./references/components/text.md) — Semantic typography step; optional heading level
 
 ---
 

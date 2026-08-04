@@ -76,7 +76,7 @@ npx skills add ./node_modules/@iyulab/components
 
 **Navigation** — `u-menu`, `u-menu-item`, `u-tab-panel`, `u-breadcrumb`, `u-breadcrumb-item`, `u-tree`, `u-tree-item`
 
-**Layout & Display** — `u-avatar`, `u-card`, `u-carousel`, `u-divider`, `u-icon`, `u-panel`, `u-split-panel`, `u-tag`
+**Layout & Display** — `u-avatar`, `u-card`, `u-carousel`, `u-divider`, `u-icon`, `u-panel`, `u-split-panel`, `u-tag`, `u-text`
 
 ## Theming
 
