@@ -64,13 +64,33 @@ const current = Theme.get(); // 'system' | 'light' | 'dark' | undefined
 
 ### Brand color customization
 
+**Recommended — derive the whole ramp from one seed:**
+
+```ts
+import { Theme } from '@iyulab/components';
+
+Theme.accent('#7c3aed');   // computes --u-primary-color-{weakest,weaker,weak,…,strong} + txt
+Theme.accent(null);        // back to the sheet defaults
+```
+
+The computed ramp satisfies the contrast contract this library tests against — text on the
+accent surface ≥ 4.5:1, accent text on the page background ≥ 4.5:1, `-strong` distinguishable
+from `-color`, and `-weak` usable as a non-text graphic (≥ 3:1). It is **recalculated when the
+theme changes**, because those targets are relative to the page background.
+
+**Manual override** — you must set the steps you use, not just one:
+
 ```css
 :root {
-  --u-primary-color: #7c3aed;
+  --u-primary-color-weak: #a78bfa;    /* graphics on the page background */
+  --u-primary-color: #7c3aed;         /* accent surface */
+  --u-primary-color-strong: #5b21b6;  /* text/icons on the page background */
+  --u-primary-txt-color: #ffffff;     /* text on the accent surface */
 }
 ```
 
-Interactive components derive hover/active/surface/outline styles from this token.
+⚠ Setting `--u-primary-color` alone is **not enough**: hover/focus/link colors resolve from
+`--u-primary-color-strong`, so they stay on the default ramp and your brand looks half-applied.
 
 ---
 

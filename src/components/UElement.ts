@@ -26,12 +26,13 @@ function warnIfTokensMissing(): void {
     .getPropertyValue('--u-blue-600').trim();
   if (probe) return;
   console.warn(
-    '[@iyulab/components] 디자인 토큰 시트가 문서에 없습니다 — 컴포넌트가 내장 폴백(라이트 ' +
-    '기준 고정값)으로 렌더됩니다. 다크 테마와 테마 변수 오버라이드가 적용되지 않습니다.\n' +
-    "  정적 CSS:  import '@iyulab/components/styles/tokens.css'\n" +
-    '  또는 런타임: Theme.init()\n' +
-    '  (@iyulab/modern-app 셸은 Theme.init() 을 대신 호출합니다. 셸 밖에서 렌더되는 화면' +
-    '(로그인·온보딩·임베드)에서는 위 둘 중 하나가 필요합니다.)',
+    '[@iyulab/components] No design-token sheet found in the document — components render ' +
+    'with their built-in fallbacks (baked from the light theme). Dark theme and theme ' +
+    'variable overrides will not apply.\n' +
+    "  Static CSS:  import '@iyulab/components/styles/tokens.css'\n" +
+    '  At runtime:  Theme.init()\n' +
+    '  (The @iyulab/modern-app shell calls Theme.init() for you. Screens rendered outside ' +
+    'the shell — login, onboarding, embeds — need one of the two.)',
   );
 }
 

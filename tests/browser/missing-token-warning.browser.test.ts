@@ -21,7 +21,9 @@ describe('토큰 부재 경고', () => {
       await (a as HTMLElement & { updateComplete: Promise<unknown> }).updateComplete;
 
       const messages = warn.mock.calls.map(c => String(c[0]));
-      const hit = messages.filter(m => m.includes('디자인 토큰 시트가 문서에 없습니다'));
+      // ⚠문구는 2026-08-04 에 영어로 이주했다(콘솔 진단 언어 정책). 판별은 «무엇을
+      //   말하는가»에 걸고 문장 전체에 걸지 않는다 — 문구가 다듬어질 때마다 깨진다.
+      const hit = messages.filter(m => m.includes('No design-token sheet found'));
       expect(hit.length, `경고가 발화하지 않았다. 받은 경고: ${JSON.stringify(messages)}`).toBe(1);
       expect(hit[0]).toContain('@iyulab/components/styles/tokens.css');
 

@@ -203,7 +203,7 @@ class IconRegistry {
         return svg;
       } catch (error) {
         // 일시 오류 — 캐시하지 않고 undefined로 종결. 다음 조회 시 재시도된다.
-        console.error(`[IconRegistry] '${key}' 아이콘 리졸브 실패 (재시도 가능):`, error);
+        console.error(`[IconRegistry] Failed to resolve icon '${key}' (will retry):`, error);
         return undefined;
       }
     })();

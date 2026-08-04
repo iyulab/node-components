@@ -186,7 +186,7 @@ export class Dialog {
       // 업데이트가 실패하면 다이얼로그를 띄울 수 없다. 여기서 매달리지 않고
       // "닫힘 = null" 규약대로 종료한다(과거에는 async executor 가 예외를
       // 삼켜 호출자가 영원히 대기했다).
-      console.error('[Dialog] 다이얼로그를 표시하지 못했습니다.', error);
+      console.error('[Dialog] Failed to show the dialog.', error);
       dialog.remove();
       return null;
     }

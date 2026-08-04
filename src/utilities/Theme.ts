@@ -1,4 +1,10 @@
 import { BrowserStorage, BrowserStorageOptions } from './BrowserStorage.js';
+import { accentCustomProperties, deriveAccentRamp, type AccentRamp } from './accent.js';
+
+/** 프로퍼티 «이름»만 필요할 때 쓰는 더미 — 값은 쓰지 않는다. */
+const EMPTY_RAMP: AccentRamp = {
+  weakest: '#000', weaker: '#000', weak: '#000', color: '#000', strong: '#000', txt: '#000',
+};
 
 /**
  * 스타일 시트 번들 로드, 내부 자산에서 CSS를 인라인으로 가져옵니다.
@@ -194,6 +200,10 @@ export class Theme {
       this.log('Error applying theme:', e);
     }
 
+    // 브랜드 시드가 있으면 **새 바탕에 맞춰 램프를 다시 계산한다** — 라이트와 다크는
+    // 같은 시드에서 다른 램프를 갖는다(대비 목표가 바탕 기준이기 때문이다).
+    this.applyAccent();
+
     // 설정된 테마를 스토리지에 저장합니다.
     if (this.storage !== null) {
       this.storage.set(this.STORAGE_THEME_KEY, theme);
@@ -207,8 +217,54 @@ export class Theme {
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       document.documentElement.setAttribute('theme', isDark ? 'dark' : 'light');
       this.log('system theme changed, applied', isDark ? 'dark' : 'light');
+      this.applyAccent();
     }
   };
+
+  /** 마지막으로 지정된 브랜드 시드. 테마가 바뀌면 이 값으로 램프를 다시 계산한다. */
+  private static accentSeed: string | null = null;
+
+  /**
+   * 브랜드 색 하나로 `--u-primary-*` 램프를 만든다.
+   *
+   * ```ts
+   * Theme.accent('#6A1B9A');   // 램프 5단 + 면 위 글자색이 계산된다
+   * Theme.accent(null);        // 해제 — 시트 기본값으로 되돌아간다
+   * ```
+   *
+   * 종전에는 소비자가 램프를 **손으로 열 줄 적었고**, 그 값이 대비 계약을 만족하는지는
+   * 아무것도 확인하지 않았다. 여기서는 «면 위 글자 4.5 · 바탕 위 글자 4.5 · 단 구분 1.20 ·
+   * 그래픽 3.0» 을 만족하는 값을 **계산해서** 넣는다(`utilities/accent.ts`).
+   *
+   * ⚠**바탕은 계산 시점의 `--u-bg-color` 를 읽는다** — 소비자가 바탕을 덮었으면 그 값을
+   * 기준으로 계산되고, 테마가 바뀌면 **다시 계산한다**(라이트/다크가 다른 램프를 갖는다).
+   * ⇒ `Theme.set()` · 시스템 테마 변경 뒤에 자동으로 재적용된다.
+   *
+   * ⚠**변수는 `documentElement` 의 인라인 스타일로 들어간다** — 시트보다 우선하므로
+   * 로드 순서에 기대지 않는다.
+   */
+  public static accent(seed: string | null): void {
+    this.accentSeed = seed;
+    this.applyAccent();
+  }
+
+  /** 현재 시드를 현재 테마의 바탕에 맞춰 다시 계산해 적용한다. */
+  private static applyAccent(): void {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    const names = Object.keys(accentCustomProperties(EMPTY_RAMP));
+
+    if (!this.accentSeed) {
+      for (const n of names) root.style.removeProperty(n);
+      return;
+    }
+
+    const bg = getComputedStyle(root).getPropertyValue('--u-bg-color').trim() || '#ffffff';
+    const ramp = deriveAccentRamp(this.accentSeed, bg);
+    for (const [name, value] of Object.entries(accentCustomProperties(ramp)))
+      root.style.setProperty(name, value);
+    this.log('accent applied', this.accentSeed, '→', ramp);
+  }
 
   /** 디버그 모드시 로그 출력 함수 (인스턴스 스코프) */
   private static log(...args: unknown[]) {
