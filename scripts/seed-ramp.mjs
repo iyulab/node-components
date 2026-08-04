@@ -176,3 +176,19 @@ if (process.argv[1]?.endsWith('seed-ramp.mjs')) {
   console.log(`통과: 후보② ${targeted}/${ROLES.length}`);
   console.log(`🔴그러나 «-strong == -color» 가 ${sameStep}/${ROLES.length} — 계약은 만족하는데 **단이 사라진다**\n`);
 }
+
+/**
+ * 후보 ③ — **목표 둘을 동시에**: 바탕 대비 `minContrast` 이면서 `-color` 와 `minSep` 만큼 갈린다.
+ *
+ * 후보②(대비만)가 4역할에서 `-strong == -color` 를 만든 것이 이 함수의 존재 이유다.
+ * 대비를 이미 만족하는 시드에서는 탐색이 시드 자신에서 멈추므로, **단 구분을 별도 목표로**
+ * 걸어야 위계가 남는다.
+ */
+export function deriveStrong2(seed, bg, { minContrast = 4.5, minSep = 1.2 } = {}) {
+  for (let p = 1; p >= 0; p -= 0.02) {
+    const c = mix(seed, '#000000', p);
+    if (contrast(c, bg) >= minContrast && contrast(c, seed) >= minSep)
+      return { value: c, ratio: Number(p.toFixed(2)) };
+  }
+  return { value: '#000000', ratio: 0 };
+}
