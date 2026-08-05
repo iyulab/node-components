@@ -34,7 +34,7 @@ Checkbox with `indeterminate` state support. Form-associated (`formAssociated = 
 | `checked` | `boolean` | `false` | ✓ | Checked state |
 | `indeterminate` | `boolean` | `false` | ✓ | Partial / indeterminate state |
 | `variant` | `'filled'\|'outline'` | `'filled'` | ✓ | Visual style |
-| `color` | `'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'\|'neutral'` | `'blue'` | ✓ | Accent color |
+| `color` | `'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'\|'neutral'` | `'blue'` | ✓ | Accent color — role axis (`primary`…`danger`, follows rebranding) and decorative axis (`blue`…, immune to it) |
 | `disabled` | `boolean` | `false` | ✓ | Disable the control |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
 | `required` | `boolean` | `false` | ✓ | Required field |

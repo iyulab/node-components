@@ -28,7 +28,7 @@ Animated circular spinner for loading states. Optional label below the spinner v
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
-| `color` | `'neutral'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | — | ✓ | Spinner color preset |
+| `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | — | ✓ | Spinner color preset — role axis (`primary`…`danger`, follows rebranding) and decorative axis (`blue`…, immune to it) |
 
 ## CSS Parts
 
