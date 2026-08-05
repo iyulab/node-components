@@ -1,5 +1,24 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- 🔴**`u-field`: the documented `validation-message` attribute never applied.** Lit derives
+  the default attribute name by **lowercasing** the property name — not by kebab-casing it —
+  so `validationMessage` was only reachable as `validationmessage`. Every usage in the
+  documentation and examples wrote `validation-message`, which set nothing and left the
+  error text invisible. The attribute name is now declared explicitly, matching the
+  convention already used elsewhere (`show-delay`, `hide-delay`).
+
+  ```html
+  <u-field label="Name" invalid validation-message="Name is required.">
+    <u-input></u-input>
+  </u-field>
+  ```
+
+  Property bindings (`.validationMessage=${…}`) are unaffected.
+
 ## [1.24.0] - 2026-08-04
 
 ### Added

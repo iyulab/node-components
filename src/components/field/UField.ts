@@ -26,8 +26,15 @@ export class UField extends UElement {
   @property({ type: String }) label?: string;
   /** 하단 설명 텍스트 */
   @property({ type: String }) description?: string;
-  /** 유효성 검사 실패 시 표시할 메시지 */
-  @property({ type: String }) validationMessage?: string;
+  /**
+   * 유효성 검사 실패 시 표시할 메시지.
+   *
+   * ⚠**속성 이름을 명시한다.** Lit 의 기본 속성명은 프로퍼티명을 **소문자화**한 것이라
+   * (kebab 이 아니다) 그대로 두면 `validationmessage` 가 되는데, 문서·샘플·소비 코드가
+   * 전부 `validation-message` 로 적고 있었고 그 형태는 **아무것도 설정하지 않았다**.
+   * 형제 프로퍼티들도 명시형을 쓴다(`show-delay`·`hide-delay`).
+   */
+  @property({ type: String, attribute: 'validation-message' }) validationMessage?: string;
 
   render() {
     return html`
