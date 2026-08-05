@@ -21,6 +21,12 @@ const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf-8')) as {
  * 실제로 두 소비 패키지가 **네 번의 릴리스를 지나** 정상으로 보이다가 한꺼번에 실패했다.
  *
  * ⇒ 게시 계약은 **게시하는 쪽에서** 검사해야 한다. 소비하는 쪽은 너무 늦게 안다.
+ *
+ * ★2026-08-05: `exports` 의 `.` 이 SRC형으로 바뀌었다(`./src/index.js` 등) — 로컬은
+ * 소스를 직접 보고 게시 시에는 배포 워크플로가 `src/` → `dist/` 로 치환한다(루트
+ * `exports-check.js` 와 같은 정책). 이 테스트는 **게시본 형태**를 검증하는 것이 목적이므로
+ * 같은 치환을 적용한 뒤 존재를 확인한다 — 치환 없이 보면 `./src/index.d.ts` 는 리포에
+ * 실재하지 않는 표기라 정당한 SRC형에 발화한다.
  */
 describe('게시 계약 — exports 대상이 실재한다', () => {
   const targets = () =>
@@ -29,7 +35,8 @@ describe('게시 계약 — exports 대상이 실재한다', () => {
         const paths = typeof value === 'string' ? [value] : Object.values(value as object);
         return paths.map(p => [spec, String(p)] as const);
       })
-      .filter(([, p]) => p.startsWith('./'));
+      .filter(([, p]) => p.startsWith('./'))
+      .map(([spec, p]) => [spec, p.replace(/^\.\/src\//, './dist/')] as const);
 
   it('와일드카드가 아닌 진입점이 전부 존재한다', () => {
     const missing = targets()
