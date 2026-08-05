@@ -6,10 +6,23 @@
   // 실패하고 doctor 타입 스윕까지 오염된다. 그래서 `build` 파이프라인 끝에서만 돌린다.
   //
   // 메인과 다른 점은 둘뿐이다 — JSX 활성화, 그리고 dist 를 exclude 하지 않는 것.
+  //
+  // ⚠**패키지 자기 이름은 이 프로젝트 안에서 «산출물»로 해석한다.** `exports` 맵은 이
+  // 리포에서 `.` 이 소스형(`./src/index.d.ts`)이고 `./react` 가 산출물형인데(래퍼는 빌드
+  // 시점에 생성되므로 `src/react` 가 없다), 이 픽스처는 **둘 다** import 한다. 그대로 두면
+  // 같은 클래스가 서로 다른 선언 트리에서 와서 `RefObject<src UButton>` 이
+  // `Ref<dist UButton>` 에 대입 불가가 된다(TS2322·TS2717) — 라이브러리 결함이 아니라
+  // **소스 트리 한정의 해석 스큐**다. 게시본에서는 배포 워크플로가 `.` 도 산출물형으로
+  // 치환하므로 트리가 하나로 합쳐진다.
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@iyulab/components": ["./dist/index.d.ts"],
+      "@iyulab/components/react": ["./dist/react/index.d.ts"]
+    }
   },
   "include": ["tests/types/**/*"],
   "exclude": ["node_modules"]
