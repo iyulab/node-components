@@ -37,7 +37,7 @@ export const styles = css`
     position: relative;
     display: inline-flex;
 
-    font-size: 14px;
+    font-size: var(--u-density, 14px);
     font-weight: 500;
     line-height: 1.5;
     border-radius: var(--u-radius-lg, 6px);
@@ -118,6 +118,10 @@ export const styles = css`
    *      실측: 같은 size 인데 md 아이콘 32px vs 글자 37px. 툴바에서 5px 어긋난다.
    *      그리고 아이콘 버튼의 계단(30/32/34)이 글자 버튼(32/37/42)과 기울기가 달라
    *      size 를 올릴수록 어긋남이 커졌다.
+   *
+   * ⚠**size 미지정 기본값만 --u-density 를 읽는다(위 :host 블록) — sm/lg 는 리터럴로
+   *   남긴다.** 밀도 스위치가 저자가 명시한 size=sm/lg 를 비례로 덮어써야 하는지는
+   *   별도 제품 결정이라 이 스코프에 넣지 않았다(Pending Human Decision).
    */
   :host([size="sm"]) {
     font-size: 12px;

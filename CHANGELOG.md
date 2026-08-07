@@ -4,6 +4,13 @@
 
 ### Added
 
+- **`--u-density` switch.** `u-button`, `u-form`, and `u-button-group` now read
+  `font-size: var(--u-density, <current default>)` at their base rule instead of a hardcoded
+  literal. Setting `--u-density` on an ancestor rescales these controls (and, since padding/
+  min-height are expressed in `em`, everything proportional to them) without touching each
+  component individually. Unset, rendering is byte-identical to before. An explicit `size="sm"`/
+  `size="lg"` on `u-button` still wins — the switch only affects the unattributed default, not an
+  author's explicit per-instance choice.
 - **New token `--u-bg-color-raised-hover`.** In dark, `--u-bg-color-raised` and the global
   `--u-bg-color-hover` resolved to the same value, so hovering a card or table header produced no
   visible feedback — a single global hover token has no way to know what surface it sits on. The

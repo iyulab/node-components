@@ -5,7 +5,8 @@ export const styles = css`
     display: inline-flex;
     flex-direction: row;
     align-items: stretch;
-    font-size: 14px;
+    /* ★밀도 스위치 진입점 — ::slotted 자식이 font-size: inherit 로 이 값을 따라온다. */
+    font-size: var(--u-density, 14px);
   }
 
   :host([vertical]) {
