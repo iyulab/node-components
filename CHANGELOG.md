@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Added
+
+- **New token `--u-bg-color-raised-hover`.** In dark, `--u-bg-color-raised` and the global
+  `--u-bg-color-hover` resolved to the same value, so hovering a card or table header produced no
+  visible feedback — a single global hover token has no way to know what surface it sits on. The
+  new token is computed relative to `--u-bg-color-raised` via `color-mix()` in dark; in light it
+  aliases the existing hover token, since that palette already keeps raised and hover apart.
+  Purely additive.
+
 ### Fixed
 
 - 🔴**`sideEffects` omitted this package's own entry barrel, so bundlers dropped every element
