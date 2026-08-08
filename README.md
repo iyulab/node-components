@@ -70,7 +70,7 @@ npx skills add ./node_modules/@iyulab/components
 
 **Buttons & Actions** — `u-button`, `u-button-group`, `u-icon-button`, `u-copy-button`, `u-chip`
 
-**Form Controls** — `u-input`, `u-textarea`, `u-select`, `u-checkbox`, `u-radio`, `u-switch`, `u-slider`, `u-rating`, `u-field`, `u-form`, `u-option`
+**Form Controls** — `u-input`, `u-textarea`, `u-select`, `u-date-picker`, `u-checkbox`, `u-radio`, `u-switch`, `u-slider`, `u-rating`, `u-field`, `u-form`, `u-option`
 
 **Overlay & Floating** — `u-dialog`, `u-drawer`, `u-popover`, `u-tooltip`
 
