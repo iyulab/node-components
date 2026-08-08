@@ -141,4 +141,28 @@ describe('UDatePicker — 키보드 내비게이션', () => {
     await settle(el);
     expect(el.value).toBe('2026-02-15'); // 변경 안 됨
   });
+
+  it('헤더의 "다음 달" 버튼을 클릭해도 포커스가 그리드로 옮겨가지 않는다', async () => {
+    const el = createDatePicker({ value: '2026-02-15' });
+    document.body.appendChild(el);
+    await settle(el);
+
+    const container = el.shadowRoot!.querySelector('.container') as HTMLElement;
+    container.click();
+    await settle(el);
+
+    // u-icon-button itself carries no tabindex (no delegatesFocus) — the truly focusable
+    // node is the native <button> two shadow boundaries down (u-icon-button > u-button > button).
+    const iconButton = el.shadowRoot!.querySelector('u-icon-button[aria-label="Next month"]') as HTMLElement;
+    const innerButton = iconButton.shadowRoot!.querySelector('u-button') as HTMLElement;
+    const nativeButton = innerButton.shadowRoot!.querySelector('button') as HTMLButtonElement;
+
+    nativeButton.focus();
+    nativeButton.click();
+    await settle(el);
+
+    expect(el.shadowRoot!.querySelector('.calendar-title')!.textContent).toContain('March');
+    // Focus should stay on the header button — not get yanked into the day grid.
+    expect(el.shadowRoot!.activeElement).toBe(iconButton);
+  });
 });

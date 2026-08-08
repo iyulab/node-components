@@ -105,13 +105,24 @@ export class UDatePicker extends UFormControlElement<string> {
   @state() private viewDate: Date = startOfMonth(new Date());
   @state() private focusedDate: Date = new Date();
 
+  // Distinguishes "focusedDate changed because the user is navigating the grid with arrow
+  // keys" from "focusedDate changed because the header's prev/next-month button was clicked".
+  // Only the former should yank focus into the grid — the latter would steal focus back off
+  // the header button the user just activated. Set by `moveFocus`/`handlePopoverShow`, left
+  // `false` by `navigateMonth`, and consumed (reset) once `updated()` acts on it.
+  private grabFocusOnUpdate = false;
+
   protected updated(changed: PropertyValues): void {
     super.updated(changed);
 
     if (changed.has('value')) {
       this.internals?.setFormValue(this.value ?? '');
     }
-    if ((changed.has('open') && this.open) || (changed.has('focusedDate') && this.open)) {
+    const shouldGrabFocus =
+      (changed.has('open') && this.open) ||
+      (changed.has('focusedDate') && this.open && this.grabFocusOnUpdate);
+    if (shouldGrabFocus) {
+      this.grabFocusOnUpdate = false;
       // The popover's `open` attribute (and the `visibility: hidden -> visible` CSS it drives)
       // reflects on the popover's own update cycle, which runs after this one — focusing a day
       // button before that resolves is a no-op because it is still `visibility: hidden`.
@@ -239,6 +250,7 @@ export class UDatePicker extends UFormControlElement<string> {
   private handleNextMonth = () => this.navigateMonth(1);
 
   private navigateMonth(delta: number): void {
+    this.grabFocusOnUpdate = false;
     const next = addMonths(this.viewDate, delta);
     this.viewDate = next;
     const clampedDay = Math.min(this.focusedDate.getDate(), daysInMonth(next));
@@ -285,6 +297,7 @@ export class UDatePicker extends UFormControlElement<string> {
   };
 
   private moveFocus(from: Date, deltaDays: number): void {
+    this.grabFocusOnUpdate = true;
     const next = addDays(from, deltaDays);
     if (next.getMonth() !== this.viewDate.getMonth() || next.getFullYear() !== this.viewDate.getFullYear()) {
       this.viewDate = startOfMonth(next);
@@ -294,6 +307,7 @@ export class UDatePicker extends UFormControlElement<string> {
 
   private handlePopoverShow = () => {
     this.open = true;
+    this.grabFocusOnUpdate = true;
     const base = this.value ? parseISODate(this.value) : new Date();
     this.viewDate = startOfMonth(base);
     this.focusedDate = base;
