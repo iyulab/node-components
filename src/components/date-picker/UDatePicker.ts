@@ -101,6 +101,9 @@ export class UDatePicker extends UFormControlElement<string> {
   @query('.container', true) containerEl?: HTMLElement;
   @query('u-popover', true) popoverEl?: UPopover;
 
+  /** Unique id wiring the combobox's `aria-controls` to the calendar dialog — mirrors USelect's `listboxId`. */
+  private readonly calendarId = `u-date-picker-calendar-${Math.random().toString(36).slice(2, 8)}`;
+
   @state() private open: boolean = false;
   @state() private viewDate: Date = startOfMonth(new Date());
   @state() private focusedDate: Date = new Date();
@@ -150,6 +153,8 @@ export class UDatePicker extends UFormControlElement<string> {
           aria-haspopup="dialog"
           aria-expanded=${this.open}
           aria-label=${ifDefined(this.label)}
+          aria-description=${ifDefined(this.description)}
+          aria-controls=${this.calendarId}
         >
           <span class="text-content ${!displayText ? 'placeholder' : ''}">${displayText || this.placeholder || ''}</span>
           <u-icon class="suffix-item"
@@ -166,6 +171,7 @@ export class UDatePicker extends UFormControlElement<string> {
       </u-field>
 
       <u-popover part="popover"
+        id=${this.calendarId}
         role="dialog"
         aria-label="Choose date"
         for=".container"
