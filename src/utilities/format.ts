@@ -1,21 +1,25 @@
 import { Locale, type LocaleTag } from './Locale.js';
 
 /**
- * "YYYY-MM-DD" 를 **로컬 시간대**의 자정으로 파싱한다.
- * `Date.parse("YYYY-MM-DD")`(UTC 해석)를 쓰면 음수 UTC 오프셋 지역에서 하루가 밀린다 —
- * y/m/d 를 분리해 `new Date(y, m-1, d)` 로 직접 만든다.
+ * Parses "YYYY-MM-DD" as midnight in the **local** timezone.
+ * Using `Date.parse("YYYY-MM-DD")` (UTC interpretation) shifts the date
+ * back a day in negative-UTC-offset regions — split y/m/d and construct
+ * `new Date(y, m-1, d)` directly instead.
  */
 function parseISODate(iso: string): Date {
   const [y, m, d] = iso.split('-').map(Number);
   return new Date(y, m - 1, d);
 }
 
+/**
+ * Resolves a Date or ISO date string to a Date object.
+ */
 function resolve(value: Date | string): Date {
   return typeof value === 'string' ? parseISODate(value) : value;
 }
 
 /**
- * `Intl.NumberFormat`을 활성 로케일(`Locale.get()`, 생략 시)로 감싼다.
+ * Wraps `Intl.NumberFormat` with the active locale (`Locale.get()` if omitted).
  */
 export function formatNumber(
   value: number,
@@ -26,8 +30,11 @@ export function formatNumber(
 }
 
 /**
- * 통화 포맷. `currency` 는 **기본값이 없다** — 호출측이 항상 명시한다(예: `'KRW'`).
- * 어떤 통화가 맞는지는 도메인 지식이고, 이 유틸리티는 그것을 가정하지 않는다.
+ * Formats a number as currency. The `currency` code is **required and has no default** —
+ * the caller must always specify it (e.g. `'KRW'`, `'USD'`). Currency selection is domain knowledge,
+ * and this utility does not assume a default.
+ *
+ * @note If `options` contains `currency` or `style`, they will override the explicit `currency` argument.
  */
 export function formatCurrency(
   value: number,
@@ -43,8 +50,8 @@ export function formatCurrency(
 }
 
 /**
- * `Intl.DateTimeFormat`을 활성 로케일로 감싼다. 문자열이면 ISO `YYYY-MM-DD` 로컬 날짜로,
- * `Date` 면 그대로 포맷한다.
+ * Wraps `Intl.DateTimeFormat` with the active locale. Accepts a Date object or
+ * an ISO `YYYY-MM-DD` date string (parsed as local time, not UTC).
  */
 export function formatDate(
   value: Date | string,

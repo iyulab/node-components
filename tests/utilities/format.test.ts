@@ -33,8 +33,9 @@ describe('format utilities', () => {
 
   describe('formatDate', () => {
     it('parses an ISO date string as a local date, not UTC', () => {
-      // "2026-02-24" 를 Date.parse 로 읽으면(UTC) UTC-5 이하 시간대에서 2026-02-23 로 밀린다.
-      // y/m/d 분리 파싱이면 어느 시간대에서든 24일로 남는다.
+      // Date.parse("2026-02-24") (UTC interpretation) shifts the date back to 2026-02-23
+      // in UTC-5 or lower regions. Splitting y/m/d and parsing via new Date(y, m-1, d)
+      // keeps it as the 24th regardless of timezone.
       const text = formatDate('2026-02-24', { year: 'numeric', month: '2-digit', day: '2-digit' }, 'en');
       expect(text).toContain('24');
       expect(text).toContain('2026');
