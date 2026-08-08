@@ -82,7 +82,7 @@ export const styles = css`
     padding: 0 4px 8px;
   }
   .calendar-title {
-    font-size: var(--u-text-label-size, 0.875em);
+    font-size: var(--u-text-label-size, 13px);
     font-weight: var(--u-text-label-weight, 600);
   }
 
@@ -98,7 +98,7 @@ export const styles = css`
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--u-text-caption-size, 0.75em);
+    font-size: var(--u-text-caption-size, 12px);
     color: var(--u-txt-color-weak, #757575);
   }
 
@@ -111,14 +111,14 @@ export const styles = css`
     align-items: center;
     justify-content: center;
     border: none;
-    border-radius: 999px;
+    border-radius: var(--u-radius-circle, 50%);
     background: transparent;
     color: var(--u-txt-color, #212121);
     font-size: 1em;
     font-family: inherit;
     cursor: pointer;
   }
-  .day:hover:not(:disabled) {
+  .day:hover:not([aria-disabled="true"]) {
     background-color: var(--u-bg-color-hover, #F5F5F5);
   }
   .day:focus-visible {
@@ -127,13 +127,13 @@ export const styles = css`
   }
   .day[data-today] {
     font-weight: 700;
-    color: var(--u-primary-color, #1565C0);
+    color: var(--u-primary-color, #1976D2);
   }
   .day[aria-selected="true"] {
-    background-color: var(--u-primary-color, #1565C0);
+    background-color: var(--u-primary-color, #1976D2);
     color: var(--u-primary-txt-color, #FFFFFF);
   }
-  .day:disabled {
+  .day[aria-disabled="true"] {
     color: var(--u-txt-color-disabled, #BDBDBD);
     cursor: not-allowed;
   }

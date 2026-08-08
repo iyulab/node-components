@@ -95,7 +95,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     await settle(el);
 
     const outOfRange = el.shadowRoot!.querySelector('button.day[data-iso="2026-02-05"]') as HTMLButtonElement;
-    expect(outOfRange.disabled).toBe(true);
+    expect(outOfRange.getAttribute('aria-disabled')).toBe('true');
 
     outOfRange.click();
     await settle(el);

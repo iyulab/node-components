@@ -21,7 +21,7 @@ import { UDialog } from '@iyulab/components/react';
 
 `detail` 열이 `unknown` 이면 `CustomEvent`(detail 타입 미지정)로 노출된다.
 
-**컴포넌트 25개 · 이벤트 39개**
+**컴포넌트 26개 · 이벤트 40개**
 
 ## `<u-alert>`
 
@@ -54,6 +54,12 @@ import { UDialog } from '@iyulab/components/react';
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
 | `onCopy` | `copy` | `unknown` | 클립보드에 실제로 쓰기 전에 발생하는 네이티브 ClipboardEvent. |
+
+## `<u-date-picker>`
+
+| React prop | 이벤트 | detail | 설명 |
+|---|---|---|---|
+| `onChange` | `change` | `unknown` | fires when the user clicks a date cell, confirms via keyboard, or clicks the clear button. |
 
 ## `<u-dialog>`
 

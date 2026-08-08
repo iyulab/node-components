@@ -112,7 +112,10 @@ export class UDatePicker extends UFormControlElement<string> {
       this.internals?.setFormValue(this.value ?? '');
     }
     if ((changed.has('open') && this.open) || (changed.has('focusedDate') && this.open)) {
-      this.focusDayButton(this.focusedDate);
+      // The popover's `open` attribute (and the `visibility: hidden -> visible` CSS it drives)
+      // reflects on the popover's own update cycle, which runs after this one — focusing a day
+      // button before that resolves is a no-op because it is still `visibility: hidden`.
+      this.popoverEl?.updateComplete.then(() => this.focusDayButton(this.focusedDate));
     }
   }
 
@@ -198,9 +201,10 @@ export class UDatePicker extends UFormControlElement<string> {
         data-iso=${toISODate(date)}
         tabindex=${focused ? 0 : -1}
         aria-selected=${selected}
+        aria-disabled=${outOfRange}
         ?data-today=${today}
-        ?disabled=${outOfRange}
         @click=${() => this.selectDay(date)}
+        @keydown=${(e: KeyboardEvent) => this.handleDayKeydown(e, date)}
         @focus=${() => { this.focusedDate = date; }}
       >${date.getDate()}</button>
     `;
@@ -236,6 +240,53 @@ export class UDatePicker extends UFormControlElement<string> {
     this.viewDate = next;
     const clampedDay = Math.min(this.focusedDate.getDate(), daysInMonth(next));
     this.focusedDate = new Date(next.getFullYear(), next.getMonth(), clampedDay);
+  }
+
+  private handleDayKeydown = (e: KeyboardEvent, date: Date) => {
+    switch (e.key) {
+      case 'ArrowRight':
+        e.preventDefault();
+        this.moveFocus(date, 1);
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        this.moveFocus(date, -1);
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        this.moveFocus(date, 7);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        this.moveFocus(date, -7);
+        break;
+      case 'Home':
+        e.preventDefault();
+        this.moveFocus(date, -date.getDay());
+        break;
+      case 'End':
+        e.preventDefault();
+        this.moveFocus(date, 6 - date.getDay());
+        break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        this.selectDay(date);
+        break;
+      case 'Escape':
+        e.preventDefault();
+        this.popoverEl?.hide();
+        this.containerEl?.focus();
+        break;
+    }
+  };
+
+  private moveFocus(from: Date, deltaDays: number): void {
+    const next = addDays(from, deltaDays);
+    if (next.getMonth() !== this.viewDate.getMonth() || next.getFullYear() !== this.viewDate.getFullYear()) {
+      this.viewDate = startOfMonth(next);
+    }
+    this.focusedDate = next;
   }
 
   private handlePopoverShow = () => {

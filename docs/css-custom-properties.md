@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 27개 · 프로퍼티 124개**
+**컴포넌트 28개 · 프로퍼티 125개**
 
 ## `<u-alert>`
 
@@ -76,6 +76,12 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--checkbox-border-color` | 체크박스 테두리 색상 |
 | `--checkbox-background-color` | 체크박스 배경색 (filled variant) |
 | `--checkbox-fill-color` | 체크된 상태의 채움색 (기본: --u-primary-color) |
+
+## `<u-date-picker>`
+
+| 프로퍼티 | 설명 |
+|---|---|
+| `--date-picker-popover-width` | width of the calendar popover (default: 296px, independent of trigger width — a fixed-width calendar reads more naturally) |
 
 ## `<u-divider>`
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.27.0] - 2026-08-08
+
+### Added
+
+- **`formatNumber`/`formatCurrency`/`formatDate` utilities** (`utilities/format.ts`). Thin
+  wrappers around `Intl.NumberFormat`/`Intl.DateTimeFormat` that default to the active
+  `Locale.get()` locale. `formatCurrency` has no default currency — callers must pass one
+  explicitly.
+- **`u-date-picker`** — a single-date picker form control (`UFormControlElement`), matching
+  the value contract of a native `input[type=date]` (ISO `YYYY-MM-DD`). Renders a calendar
+  grid in a popover with full keyboard navigation (arrow keys, Home/End, Enter/Space, Escape)
+  following the WAI-ARIA Date Picker Dialog pattern. `min`/`max` mark out-of-range days
+  `aria-disabled` (focusable but not selectable, so keyboard users can still perceive and
+  navigate past them) and drive `rangeUnderflow`/`rangeOverflow` validity. Date ranges and
+  `datetime-local` are out of scope for this release.
+
 ## [1.26.0] - 2026-08-07
 
 ### Added
