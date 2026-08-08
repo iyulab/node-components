@@ -120,7 +120,10 @@ export class UDatePicker extends UFormControlElement<string> {
   }
 
   render() {
-    const displayText = this.value ? formatDate(parseISODate(this.value)) : '';
+    // Routed through format.ts's `formatDate` directly (not this file's local `parseISODate`)
+    // so a malformed `value` attribute degrades to the raw string instead of throwing and
+    // blanking the whole component — `formatDate` owns that fallback.
+    const displayText = this.value ? formatDate(this.value) : '';
     return html`
       <u-field part="field"
         ?required=${this.required}
