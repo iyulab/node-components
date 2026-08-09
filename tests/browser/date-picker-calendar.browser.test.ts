@@ -102,6 +102,30 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     expect(el.value).toBe('2026-02-15');
   });
 
+  it('그리드가 WAI-ARIA Date Picker Dialog 패턴의 row 레이어를 갖는다 — grid > row > gridcell', async () => {
+    const el = createDatePicker();
+    document.body.appendChild(el);
+    await settle(el);
+
+    const container = el.shadowRoot!.querySelector('.container') as HTMLElement;
+    container.click();
+    await settle(el);
+
+    const grid = el.shadowRoot!.querySelector('.calendar-grid')!;
+    expect(grid.getAttribute('role')).toBe('grid');
+    const rows = grid.querySelectorAll(':scope > [role="row"]');
+    expect(rows.length).toBeGreaterThan(0);
+    for (const row of rows) {
+      const directChildren = row.children;
+      expect(directChildren.length).toBeGreaterThan(0);
+      for (const cell of directChildren) {
+        expect(cell.getAttribute('role')).toBe('gridcell');
+      }
+    }
+    const headerCells = el.shadowRoot!.querySelectorAll('.calendar-weekdays [role="columnheader"]');
+    expect(headerCells.length).toBe(7);
+  });
+
   it('clearable 이면 지우기 아이콘 클릭으로 값이 비워지고 change 가 발화한다', async () => {
     const el = createDatePicker({ value: '2026-02-15', clearable: 'true' });
     document.body.appendChild(el);

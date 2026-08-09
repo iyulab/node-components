@@ -59,6 +59,13 @@ function buildMonthGrid(viewDate: Date): (Date | null)[] {
   return cells;
 }
 
+/** Splits the flat cell list into 7-day weeks — the `role="row"` grouping the APG grid pattern expects. */
+function chunkWeeks<T>(cells: T[]): T[][] {
+  const weeks: T[][] = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+  return weeks;
+}
+
 /** 2023-01-01 was a Sunday — a fixed reference date that always yields Sun..Sat order regardless of today. */
 function getWeekdayLabels(locale?: LocaleTag): string[] {
   const formatter = new Intl.DateTimeFormat(locale ?? Locale.get(), { weekday: 'narrow' });
@@ -69,6 +76,12 @@ function getWeekdayLabels(locale?: LocaleTag): string[] {
 /**
  * A single-date-selection form control. The value follows the same convention as the
  * native `input[type=date]`: an ISO `YYYY-MM-DD` string.
+ *
+ * The calendar week always starts on Sunday, regardless of locale — harmless for the
+ * locales this library currently ships (en/ko), but not correct for locales where Monday
+ * (most of Europe) or Saturday is conventional. Fix when a consumer needs it: derive the
+ * first day of week from `Intl.Locale(locale).weekInfo?.firstDay`, falling back to Sunday
+ * where unsupported.
  *
  * @csspart field - the u-field element
  * @csspart container - the element wrapping the trigger area
@@ -200,10 +213,14 @@ export class UDatePicker extends UFormControlElement<string> {
           <u-icon-button lib="internal" name="chevron-right" aria-label="Next month" @click=${this.handleNextMonth}></u-icon-button>
         </div>
         <div class="calendar-weekdays" part="calendar-weekdays" role="row">
-          ${weekdayLabels.map(w => html`<span class="weekday">${w}</span>`)}
+          ${weekdayLabels.map(w => html`<span class="weekday" role="columnheader">${w}</span>`)}
         </div>
         <div class="calendar-grid" part="calendar-grid" role="grid">
-          ${cells.map(date => date ? this.renderDay(date) : html`<span class="day-empty"></span>`)}
+          ${chunkWeeks(cells).map(week => html`
+            <div class="calendar-week" part="calendar-week" role="row">
+              ${week.map(date => date ? this.renderDay(date) : html`<span class="day-empty" role="gridcell" aria-hidden="true"></span>`)}
+            </div>
+          `)}
         </div>
       </div>
     `;

@@ -8,6 +8,8 @@ import '@iyulab/components/dist/components/date-picker/UDatePicker.js';
 
 Single-date selection with a popover calendar. The value follows the same convention as the native `input[type=date]`: an ISO `YYYY-MM-DD` string. Form-associated.
 
+> The calendar week always starts on Sunday, regardless of locale.
+
 ```html
 <u-date-picker name="start-date" label="Start date"></u-date-picker>
 

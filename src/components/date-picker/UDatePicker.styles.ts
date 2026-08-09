@@ -94,6 +94,11 @@ export const styles = css`
   .calendar-weekdays {
     padding-bottom: 4px;
   }
+  /* role="row" wrapper for APG grid semantics — display:contents keeps it out of the
+     CSS grid track so its day cells still lay out as direct grid items. */
+  .calendar-week {
+    display: contents;
+  }
   .weekday {
     display: flex;
     align-items: center;
