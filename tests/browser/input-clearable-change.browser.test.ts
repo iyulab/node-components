@@ -46,3 +46,46 @@ describe('UInput clearable — clear 버튼이 change를 발화하고 폼 값을
     expect(clearIcon.hasAttribute('hidden')).toBe(true);
   });
 });
+
+describe('UInput — 폼 제출값이 value 변경 경로 전부와 동기화된다', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  function mountInForm(attrs: Record<string, string> = {}): { form: HTMLFormElement; input: UInput } {
+    const form = document.createElement('form');
+    const input = createInput({ name: 'q', ...attrs });
+    form.appendChild(input);
+    document.body.appendChild(form);
+    return { form, input };
+  }
+
+  it('초기 value 속성만으로도(blur 없이) 즉시 제출값에 반영된다', async () => {
+    const { form, input } = mountInForm({ value: 'hello' });
+    await input.updateComplete;
+
+    expect(new FormData(form).get('q')).toBe('hello');
+  });
+
+  it('프로그램적 .value= 대입도(blur 없이) 즉시 제출값에 반영된다', async () => {
+    const { form, input } = mountInForm();
+    await input.updateComplete;
+
+    input.value = 'typed via API';
+    await input.updateComplete;
+
+    expect(new FormData(form).get('q')).toBe('typed via API');
+  });
+
+  it('clear 버튼 클릭도(blur 없이) 즉시 제출값을 비운다', async () => {
+    const { form, input } = mountInForm({ clearable: '', value: 'hello' });
+    await input.updateComplete;
+    expect(new FormData(form).get('q')).toBe('hello');
+
+    const clearIcon = input.shadowRoot!.querySelector('u-icon[name="x"]') as HTMLElement;
+    clearIcon.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await input.updateComplete;
+
+    expect(new FormData(form).get('q')).toBe('');
+  });
+});

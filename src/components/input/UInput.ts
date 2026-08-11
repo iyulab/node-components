@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { live } from "lit/directives/live.js";
@@ -183,6 +183,18 @@ export class UInput extends UFormControlElement<string> {
     `;
   }
 
+  /** `value`가 바뀌는 모든 경로(초기 속성 설정 · 프로그램적 대입 · clear 버튼)에서
+   *  폼 제출값을 동기화한다 — 종전에는 `handleInputBlur`에서만 수동으로 호출해,
+   *  blur 전에 폼이 제출되면(다른 컨트롤의 Enter 등) `FormData`가 낡은 값을 돌려줬다.
+   *  형제 `USelect`의 `updated()`+`onChangeValue()` 패턴과 같은 경계 — `T`가 이미
+   *  `string`이라 `valueAsString` 같은 변환 없이 그대로 넘긴다. */
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (changedProperties.has('value')) {
+      this.internals?.setFormValue(this.value ?? '');
+    }
+  }
+
   protected setValidity(): void {
     const v = this.inputEl?.validity;
     let flags: ValidityStateFlags = {};
@@ -296,7 +308,6 @@ export class UInput extends UFormControlElement<string> {
 
   private handleInputBlur = (_: FocusEvent) => {
     this.value = this.inputEl?.value || '';
-    this.internals?.setFormValue(this.value);
 
     if (!this.novalidate) {
       this.validate();

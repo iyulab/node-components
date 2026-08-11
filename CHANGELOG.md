@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.27.2] - 2026-08-11
+
+### Fixed
+
+- **`u-input`'s form submission value now stays in sync with `value` across every change
+  path**, not just on blur. Previously, `ElementInternals.setFormValue()` was only called from
+  the blur handler, so submitting a form before a field lost focus (an initial `value`
+  attribute, a programmatic `.value =` assignment, or the clear button from 1.27.1) could send a
+  stale or missing value. Sync now happens reactively whenever `value` changes, matching
+  `u-select`'s existing contract.
+
 ## [1.27.1] - 2026-08-11
 
 ### Fixed
