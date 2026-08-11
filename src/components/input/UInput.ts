@@ -335,6 +335,10 @@ export class UInput extends UFormControlElement<string> {
   private handleClearButtonClick = (e: PointerEvent) => {
     e.stopImmediatePropagation();
     this.reset();
+    this.dispatchEvent(new Event('change', {
+      bubbles: true,
+      composed: true
+    }));
     this.focus();
   }
 

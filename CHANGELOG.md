@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.27.1] - 2026-08-11
+
+### Fixed
+
+- **`u-input[clearable]`'s built-in clear button now dispatches `change`**, matching the
+  existing contract on `u-select` and `u-date-picker`. Previously, clicking the clear icon
+  emptied the value visually but fired no event, so consumers binding to `change` (e.g. a
+  filter bound to `.value`/`@input`) never saw the reset.
+
 ## [1.27.0] - 2026-08-08
 
 ### Added
