@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.27.3] - 2026-08-11
+
+### Fixed
+
+- **`u-textarea`'s form submission value now stays in sync with `value` across every change
+  path**, not just on `change`. Previously, `ElementInternals.setFormValue()` was only called
+  from the `change` handler, so submitting a form before the field lost focus (an initial
+  `value` attribute or a programmatic `.value =` assignment) could send a stale or missing
+  value. Sync now happens reactively whenever `value` changes, matching `u-input`'s contract.
+- **`u-checkbox`/`u-switch`'s form submission value now stays in sync with `checked` across
+  every change path**, not just on the native `change` event. Previously,
+  `ElementInternals.setFormValue()` was only called from the click handler, so submitting a
+  form before interaction (an initial `checked` attribute or a programmatic `.checked =`
+  assignment) could send a stale or missing value. Sync now happens reactively whenever
+  `checked` (or `value`) changes.
+
 ## [1.27.2] - 2026-08-11
 
 ### Fixed

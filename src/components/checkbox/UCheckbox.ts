@@ -52,6 +52,19 @@ export class UCheckbox extends UFormControlElement<string> {
     return super.shouldValidate(changed) || changed.has('checked');
   }
 
+  /** `checked`(또는 그 값을 함께 결정하는 `value`)가 바뀌는 모든 경로(초기 속성 설정 ·
+   *  프로그램적 대입 · 사용자 클릭)에서 폼 제출값을 동기화한다 — `UInput`/`UTextarea`와
+   *  같은 경계(`DL-289-1`). */
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (changedProperties.has('checked') || changedProperties.has('value')) {
+      this.internals?.setFormValue(
+        this.checked
+        ? this.value || String(this.checked)
+        : String(this.checked));
+    }
+  }
+
   render() {
     return html`
       <label class="wrapper" part="wrapper">
@@ -105,10 +118,6 @@ export class UCheckbox extends UFormControlElement<string> {
     const input = e.target as HTMLInputElement;
     this.indeterminate = false;
     this.checked = input.checked;
-    this.internals?.setFormValue(
-      this.checked
-      ? this.value || String(this.checked)
-      : String(this.checked));
 
     if (!this.novalidate) {
       this.validate();

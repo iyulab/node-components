@@ -64,6 +64,11 @@ export class UTextarea extends UFormControlElement<string> {
 
   protected async updated(changedProperties: PropertyValues): Promise<void> {
     super.updated(changedProperties);
+
+    if (changedProperties.has('value')) {
+      this.internals?.setFormValue(this.value ?? '');
+    }
+
     await this.updateComplete;
 
     if (this.resize === 'auto' && (['value','minRows','maxRows','resize']
@@ -175,7 +180,6 @@ export class UTextarea extends UFormControlElement<string> {
 
   private handleTextareaChange = (e: Event) => {
     this.value = this.textareaEl?.value;
-    this.internals?.setFormValue(this.value || '');
 
     if (!this.novalidate) {
       this.validate();
