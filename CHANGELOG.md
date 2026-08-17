@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.28.0] - 2026-08-17
+
+### Added
+
+- **`u-alert` now sets its own ARIA `role`/`aria-atomic` instead of leaving it to the
+  consumer.** `status="error"`/`"warning"` renders `role="alert"` (implicit
+  `aria-live="assertive"`); every other status (including no status) renders `role="status"`
+  (implicit `aria-live="polite"`). `aria-atomic="true"` is always set so the whole message is
+  announced as one unit. Previously a screen-reader user got no announcement at all when an
+  alert appeared unless the consumer manually attached `role="alert"` at every call site —
+  `status` already carries the severity, so the component derives the role from it.
+
 ## [1.27.3] - 2026-08-11
 
 ### Fixed

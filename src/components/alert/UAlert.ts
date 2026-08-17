@@ -59,10 +59,15 @@ export class UAlert extends UElement {
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
-    
+
     if (changedProperties.has('open')) {
       this.setTimer(this.open);
     }
+
+    // status가 이미 심각도를 표현하므로 role/aria-live는 소비자가 매 사용처마다 반복
+    // 부착할 것이 아니라 컴포넌트가 스스로 안다 — WAI-ARIA Alert/Status 패턴.
+    this.setAttribute('role', this.mapRole(this.status));
+    this.setAttribute('aria-atomic', 'true');
   }
 
   render() {
@@ -129,6 +134,21 @@ export class UAlert extends UElement {
       case 'info': return 'info-circle-fill';
       case 'notice': return 'bell-fill';
       default: return 'bell-fill';
+    }
+  }
+
+  /**
+   * Alert 상태에 따른 ARIA role을 반환합니다 — `error`/`warning`은 시간에 민감한 방해로
+   * `alert`(암묵적 `aria-live="assertive"`), 그 외(`success`/`info`/`notice`/상태 없음)는
+   * `status`(암묵적 `aria-live="polite"`)로 안내됩니다.
+   */
+  private mapRole(status?: AlertStatus): 'alert' | 'status' {
+    switch (status) {
+      case 'error':
+      case 'warning':
+        return 'alert';
+      default:
+        return 'status';
     }
   }
 
