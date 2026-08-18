@@ -8,7 +8,7 @@ import type { URating } from '../../src/components/rating/URating.js';
 import type { USlider } from '../../src/components/slider/USlider.js';
 import type { UOption } from '../../src/components/option/UOption.js';
 
-// slotchange → @state 갱신 → 후속 업데이트까지 전부 소화시킨다.
+// drains everything from slotchange → @state update → the follow-up update.
 async function settle(el: HTMLElement & { updateComplete: Promise<boolean> }) {
   await el.updateComplete;
   await new Promise(r => setTimeout(r, 0));
@@ -25,7 +25,7 @@ beforeEach(() => {
   document.body.innerHTML = '';
 });
 
-describe('URadio change 이벤트 의미론 (사용자 상호작용에서만 발화)', () => {
+describe('URadio change event semantics (fires only from user interaction)', () => {
   function createRadio(values: string[]): URadio {
     const radio = document.createElement('u-radio') as URadio;
     for (const v of values) {
@@ -37,7 +37,7 @@ describe('URadio change 이벤트 의미론 (사용자 상호작용에서만 발
     return radio;
   }
 
-  it('마운트·옵션 등록·프로그램적 value 세팅은 change를 발화하지 않는다', async () => {
+  it('mount, option registration, and a programmatic value set do not fire change', async () => {
     const radio = createRadio(['a', 'b']);
     const seen = trackChanges(radio);
     radio.value = 'b';
@@ -49,7 +49,7 @@ describe('URadio change 이벤트 의미론 (사용자 상호작용에서만 발
     expect((radio.querySelector('u-option[value="b"]') as UOption).selected).toBe(true);
   });
 
-  it('사용자 옵션 클릭은 change를 1회 발화하고, 선택된 옵션 재클릭은 발화하지 않는다', async () => {
+  it('a user option click fires change once, and re-clicking the selected option does not', async () => {
     const radio = createRadio(['a', 'b']);
     document.body.appendChild(radio);
     await settle(radio);
@@ -67,8 +67,8 @@ describe('URadio change 이벤트 의미론 (사용자 상호작용에서만 발
   });
 });
 
-describe('URating change 이벤트 의미론 (사용자 상호작용에서만 발화)', () => {
-  it('프로그램적 value 세팅은 change를 발화하지 않는다', async () => {
+describe('URating change event semantics (fires only from user interaction)', () => {
+  it('a programmatic value set does not fire change', async () => {
     const rating = document.createElement('u-rating') as URating;
     const seen = trackChanges(rating);
     document.body.appendChild(rating);
@@ -79,7 +79,7 @@ describe('URating change 이벤트 의미론 (사용자 상호작용에서만 �
     expect(rating.value).toBe(3);
   });
 
-  it('심볼 클릭은 change를 발화한다 (같은 심볼 재클릭은 0으로 토글되며 역시 발화)', async () => {
+  it('clicking a symbol fires change (re-clicking the same symbol toggles it to 0, which also fires)', async () => {
     const rating = document.createElement('u-rating') as URating;
     document.body.appendChild(rating);
     await settle(rating);
@@ -98,7 +98,7 @@ describe('URating change 이벤트 의미론 (사용자 상호작용에서만 �
   });
 });
 
-describe('USlider change 이벤트 의미론 (사용자 상호작용에서만 발화)', () => {
+describe('USlider change event semantics (fires only from user interaction)', () => {
   function createSlider(): USlider {
     const slider = document.createElement('u-slider') as USlider;
     slider.style.width = '200px';
@@ -106,7 +106,7 @@ describe('USlider change 이벤트 의미론 (사용자 상호작용에서만 �
     return slider;
   }
 
-  it('마운트·프로그램적 value 세팅은 change를 발화하지 않는다', async () => {
+  it('mount and a programmatic value set do not fire change', async () => {
     const slider = createSlider();
     const seen = trackChanges(slider);
     document.body.appendChild(slider);
@@ -119,7 +119,7 @@ describe('USlider change 이벤트 의미론 (사용자 상호작용에서만 �
     expect(slider.value).toBe(42);
   });
 
-  it('키보드 조작은 조작마다 change를 1회 발화한다', async () => {
+  it('each keyboard action fires change once', async () => {
     const slider = createSlider();
     slider.value = 50;
     document.body.appendChild(slider);
@@ -134,7 +134,7 @@ describe('USlider change 이벤트 의미론 (사용자 상호작용에서만 �
     expect(slider.value).toBe(51);
   });
 
-  it('드래그는 pointerup 시점에 change를 1회만 발화한다 (드래그 중 미발화)', async () => {
+  it('a drag fires change exactly once, at pointerup (not during the drag)', async () => {
     const slider = createSlider();
     slider.value = 0;
     document.body.appendChild(slider);
@@ -153,7 +153,7 @@ describe('USlider change 이벤트 의미론 (사용자 상호작용에서만 �
       clientX: rect.left + rect.width * 0.6, bubbles: true,
     }));
     await settle(slider);
-    expect(seen.count).toBe(0); // 드래그 중에는 발화하지 않는다
+    expect(seen.count).toBe(0); // does not fire during the drag
 
     document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
     await settle(slider);

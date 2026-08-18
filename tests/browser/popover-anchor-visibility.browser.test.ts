@@ -6,20 +6,21 @@ import type { USelect } from '../../src/components/select/USelect.js';
 import type { UPopover } from '../../src/components/popover/UPopover.js';
 
 /**
- * 앵커가 클리핑 영역 밖으로 나갔을 때 팝오버 가시성.
+ * Popover visibility when its anchor moves outside the clipping area.
  *
- * cycle-09 에서 `scroll` dismiss 가 실앵커를 더 이상 닫지 않게 되면서 드러난 케이스다.
- * `strategy="fixed"` 팝오버는 overflow 조상에 클립되지 않으므로(그것이 fixed 를 쓰는 이유 —
- * select-popover-strategy.browser.test.ts 참조), 앵커가 스크롤 패널 밖으로 나가도 팝오버만
- * 화면에 남아 무관한 콘텐츠 위를 덮을 수 있다. floating-ui `hide` middleware 로 숨기되
- * **닫지는 않아** 되돌려 스크롤하면 열린 상태 그대로 복귀한다.
+ * Surfaced in cycle-09, once `scroll` dismiss stopped closing on a real anchor. A
+ * `strategy="fixed"` popover isn't clipped by an overflow ancestor (that's the reason it
+ * uses fixed — see select-popover-strategy.browser.test.ts), so if the anchor scrolls out
+ * of a scroll panel, the popover alone can stay on screen and cover unrelated content. It's
+ * hidden via the floating-ui `hide` middleware but **not closed**, so scrolling back returns
+ * it open as-is.
  */
 
 async function settle(ms = 200): Promise<void> {
   await new Promise(r => setTimeout(r, ms));
 }
 
-/** 스크롤 패널 안에 u-select 를 넣고 열어 반환한다. */
+/** Mounts a u-select inside a scroll panel, opens it, and returns the handles. */
 async function mountInScrollPanel(): Promise<{
   panel: HTMLElement;
   select: USelect;
@@ -34,12 +35,12 @@ async function mountInScrollPanel(): Promise<{
   for (let i = 0; i < 3; i++) {
     const option = document.createElement('u-option');
     option.setAttribute('value', `v${i}`);
-    option.textContent = `옵션 ${i}`;
+    option.textContent = `Option ${i}`;
     select.appendChild(option);
   }
   panel.appendChild(select);
 
-  // 앵커를 패널 밖으로 밀어낼 수 있도록 아래에 여유 콘텐츠를 둔다
+  // extra content below, so the anchor can be scrolled out of the panel
   const filler = document.createElement('div');
   filler.style.height = '1200px';
   panel.appendChild(filler);
@@ -54,19 +55,19 @@ async function mountInScrollPanel(): Promise<{
   return { panel, select, popover };
 }
 
-describe('앵커 가시성에 따른 팝오버 숨김', () => {
+describe('popover hiding based on anchor visibility', () => {
   beforeEach(async () => {
     document.body.replaceChildren();
     window.scrollTo(0, 0);
     await settle(150);
   });
 
-  it('앵커가 스크롤 패널 밖으로 나가면 숨기고, 되돌아오면 열린 채 복귀한다', async () => {
+  it('hides when the anchor scrolls out of the panel, and returns open when it scrolls back', async () => {
     const { panel, popover } = await mountInScrollPanel();
     expect(popover.open).toBe(true);
     expect(popover.hasAttribute('anchor-hidden')).toBe(false);
 
-    // 앵커를 패널의 클리핑 영역 밖으로 완전히 밀어낸다
+    // push the anchor fully out of the panel's clipping area
     panel.scrollTop = 600;
     await settle();
 
@@ -74,7 +75,7 @@ describe('앵커 가시성에 따른 팝오버 숨김', () => {
       .toBe('open=true hidden=true');
     expect(getComputedStyle(popover).visibility).toBe('hidden');
 
-    // 되돌리면 닫히지 않고 그대로 복귀해야 한다
+    // scrolling back must not close it — it should return open as-is
     panel.scrollTop = 0;
     await settle();
 
@@ -83,7 +84,7 @@ describe('앵커 가시성에 따른 팝오버 숨김', () => {
     expect(getComputedStyle(popover).visibility).toBe('visible');
   });
 
-  it('앵커가 보이는 동안에는 anchor-hidden 이 붙지 않는다 — 회귀 방지', async () => {
+  it('does not get anchor-hidden while the anchor is visible — regression guard', async () => {
     const { popover } = await mountInScrollPanel();
 
     expect(popover.open).toBe(true);
