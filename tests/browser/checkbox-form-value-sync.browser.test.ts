@@ -16,19 +16,19 @@ function mountInForm(attrs: Record<string, string> = {}): { form: HTMLFormElemen
   return { form, checkbox };
 }
 
-describe('UCheckbox — 폼 제출값이 checked 변경 경로 전부와 동기화된다', () => {
+describe('UCheckbox — the submitted form value stays in sync across every checked-change path', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });
 
-  it('초기 checked 속성만으로도(사용자 클릭 없이) 즉시 제출값에 반영된다', async () => {
+  it('reflects the initial checked attribute alone (no user click) immediately in the submit value', async () => {
     const { form, checkbox } = mountInForm({ checked: '' });
     await checkbox.updateComplete;
 
     expect(new FormData(form).get('q')).toBe('true');
   });
 
-  it('프로그램적 .checked= 대입도(사용자 클릭 없이) 즉시 제출값에 반영된다', async () => {
+  it('reflects a programmatic .checked= assignment (no user click) immediately in the submit value', async () => {
     const { form, checkbox } = mountInForm();
     await checkbox.updateComplete;
     expect(new FormData(form).get('q')).toBe('false');
