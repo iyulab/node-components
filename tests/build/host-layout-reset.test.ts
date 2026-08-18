@@ -5,36 +5,39 @@ import { resolve, join, basename } from 'path';
 const root = resolve(__dirname, '../..');
 
 /**
- * `:host` 에 둔 여백·테두리는 소비 앱의 CSS 리셋(`* { padding:0; border:0; margin:0 }`)에
- * **지워진다** — 호스트 요소에 대해서는 문서 작성자 스타일이 섀도의 `:host` 규칙을 이기기
- * 때문이다. 에러는 없고 컴포넌트는 동작한다. 작아질 뿐이라 소비자는 이것을
- * *"업스트림이 못생겼다"* 로 읽고 각자 다시 칠한다(실제로 두 소비앱이 서로 다르게 칠했고,
- * 한쪽은 칠하지 못해 운영 화면이 깨진 채로 돌았다).
+ * Spacing/borders placed on `:host` get **wiped out** by a consumer app's CSS reset
+ * (`* { padding:0; border:0; margin:0 }`) — because for a host element, author stylesheets
+ * beat the shadow's own `:host` rules. There's no error and the component still works. It
+ * just shrinks, so a consumer reads it as *"upstream looks ugly"* and repaints it themselves
+ * (two consumer apps actually painted it differently, and one couldn't paint it at all,
+ * running with a broken production screen).
  *
- * Tailwind preflight 는 특수 케이스가 아니라 가장 흔한 소비 환경이다.
+ * Tailwind preflight isn't a special case — it's the most common consumer environment.
  *
- * 이 검사는 **목록이 늘어나는 것을 막는다.** 아래 기준선은 "아직 안 고친 것"이며,
- * 고칠 때마다 줄여 나간다. 새 컴포넌트가 같은 실수를 하면 즉시 실패한다.
+ * This check **stops the list from growing.** The baseline below is "not yet fixed", and it
+ * shrinks with every fix. If a new component makes the same mistake, this fails immediately.
  */
 
-/** 문서 리셋이 실제로 지우는 속성 (width/height 는 preflight 대상이 아니다) */
+/** The properties a document-level reset actually wipes out (width/height aren't a preflight target) */
 const RESET_VULNERABLE = /^\s*(padding|margin|border)(-(top|right|bottom|left|inline|block|width|style))?\s*:/;
 
 /**
- * 아직 `:host` 에 여백/테두리를 둔 컴포넌트.
+ * Components that still keep spacing/borders on `:host`.
  *
- * 고치려면 섀도 DOM 에 래퍼 엘리먼트가 필요하다 — prefix/suffix 가 호스트 flex 에 직접
- * 슬롯되므로 기존 내부 요소만으로는 전체를 감쌀 수 없다. 래퍼 도입은 `::part` 소비자에게
- * 영향을 주는 구조 변경이라 사람 판단 대상이며, Pending Human Decisions 에 있다.
+ * Fixing this needs a wrapper element in the shadow DOM — since prefix/suffix slot directly
+ * into the host's flex, the existing inner elements alone can't wrap everything. Introducing
+ * a wrapper is a structural change that affects `::part` consumers, so it's a human decision
+ * and lives in Pending Human Decisions.
  */
-// ✅ 비어 있다 — 9개 컴포넌트 전부 리셋 내성을 갖췄다.
+// ✅ empty — all 9 components now have reset resilience.
 //
-// ★ `UDivider` 가 마지막까지 남았던 이유와, 그 근거가 왜 절반만 맞았는지는 기록해 둔다.
-//   *"`:host` 의 margin 은 형제 간 간격이라 내부로 옮기면 상쇄된다"* 는 **margin 을 옮길
-//   때만** 참이다. 내부 요소의 **padding** 으로 옮기면 호스트 박스 자체가 커지므로 형제는
-//   종전대로 밀려나고, padding 은 섀도 내부라 문서 리셋이 닿지 못한다.
-//   실제 렌더 측정으로 증명했다 — `tests/browser/divider-spacing-reset.browser.test.ts`.
-//   ⇒ 해법이 없다고 적힌 항목을 다시 열어 볼 값어치가 있었다.
+// ★ Recording why `UDivider` was the last one left, and why its stated reasoning was only
+//   half right: *"`:host`'s margin is spacing between siblings, so moving it inside would
+//   collapse it"* is only true **when moving margin**. Moving it to an inner element's
+//   **padding** grows the host's own box instead, so siblings still get pushed apart as
+//   before — and padding lives inside the shadow, so a document-level reset can't reach it.
+//   Proven with an actual render measurement — `tests/browser/divider-spacing-reset.browser.test.ts`.
+//   ⇒ it was worth reopening an item that had been written off as unsolvable.
 const KNOWN_GAPS = new Set<string>([]);
 
 function hostLayoutDeclarations(css: string): string[] {
@@ -47,7 +50,7 @@ function hostLayoutDeclarations(css: string): string[] {
   return found;
 }
 
-describe(':host 레이아웃의 CSS 리셋 내성', () => {
+describe(':host layout — CSS reset resilience', () => {
   const offenders = new Map<string, string[]>();
   for (const rel of globSync('src/components/**/*.styles.ts', { cwd: root })) {
     const comp = basename(rel).replace('.styles.ts', '');
@@ -55,21 +58,21 @@ describe(':host 레이아웃의 CSS 리셋 내성', () => {
     if (decls.length) offenders.set(comp, decls);
   }
 
-  it('알려진 목록 밖의 컴포넌트가 :host 에 여백/테두리를 두지 않는다', () => {
+  it('a component outside the known list does not put spacing/borders on :host', () => {
     const unexpected = [...offenders.keys()].filter(c => !KNOWN_GAPS.has(c)).sort();
     expect(unexpected).toEqual([]);
   });
 
-  it('고쳐진 컴포넌트가 알려진 목록에 남아 있지 않다', () => {
-    // 목록이 실제보다 넓으면 회귀를 놓친다 — 고친 즉시 지워야 한다.
+  it('a fixed component does not linger in the known list', () => {
+    // if the list is wider than reality, a regression slips through — remove it the moment it's fixed.
     const stale = [...KNOWN_GAPS].filter(c => !offenders.has(c)).sort();
     expect(stale).toEqual([]);
   });
 
-  it('u-button 은 여백·테두리를 내부 요소가 그린다', () => {
+  it('u-button has its inner elements draw spacing and borders', () => {
     const css = readFileSync(join(root, 'src/components/button/UButton.styles.ts'), 'utf-8');
-    expect(hostLayoutDeclarations(css), ':host 에 남은 레이아웃 선언').toEqual([]);
-    // 내부 요소 규칙에 실제로 옮겨졌는지 확인 (선언만 지우면 버튼이 사라진다)
+    expect(hostLayoutDeclarations(css), 'layout declarations left on :host').toEqual([]);
+    // confirm it actually moved to the inner-element rule (removing the declaration alone would make the button disappear)
     expect(css).toMatch(/button,\s*a\s*\{[\s\S]*?padding:\s*var\(--btn-padding-block/);
     expect(css).toMatch(/button,\s*a\s*\{[\s\S]*?border:\s*1px solid var\(--btn-border-color/);
   });

@@ -7,14 +7,16 @@ import {
 } from '../../src/utilities/accent.js';
 
 /**
- * **시드 → 악센트 램프 파생의 계약.**
+ * **The contract for the seed → accent-ramp derivation.**
  *
- * 이 검사가 지키는 것은 *"파생된 값이 우리 대비 계약을 만족하는가"* 다 — 시트의 손 튜닝된
- * 값에는 `4.60 ✓` 같은 **손으로 잰 주석**이 붙어 있지만, 계산된 램프는 그 보증을 이어받지
- * 못한다(그 사실이 이 기능을 여기까지 미룬 잠금이었다).
+ * What this check guards is *"does the derived value satisfy our contrast contract"* — the
+ * sheet's hand-tuned values carry **hand-measured comments** like `4.60 ✓`, but a computed
+ * ramp doesn't inherit that guarantee (that fact was the lock that deferred this feature
+ * until now).
  *
- * ⚠**두 테마를 같은 알고리즘으로 잰다** — 방향은 «바탕에서 멀어지는 쪽/가까워지는 쪽»으로만
- * 정의되므로 라이트(`#FFFFFF`)와 다크(`#121212`)가 같은 코드로 돈다.
+ * ⚠**Both themes are measured by the same algorithm** — direction is defined only as
+ * «moving away from / toward the background», so light (`#FFFFFF`) and dark (`#121212`) run
+ * through the same code.
  */
 
 const root = resolve(__dirname, '../..');
@@ -31,19 +33,19 @@ function sheetValue(file: string, name: string): string {
   return read(name);
 }
 
-/** 실제 브랜드 시드로 쓰일 법한 색들 — 밝은 것(노랑)이 이 검사의 시금석이다. */
+/** Colors plausible as a real brand seed — the bright one (yellow) is this check's litmus test. */
 const SEEDS = ['#1976D2', '#2E7D32', '#D32F2F', '#FDD835', '#6A1B9A', '#00838F', '#212121', '#F5F5F5'];
 
-describe('악센트 램프 파생', () => {
+describe('accent ramp derivation', () => {
   for (const [themeName, sheet] of [['light', 'light.css'], ['dark', 'dark.css']] as const) {
     describe(themeName, () => {
       const bg = sheetValue(sheet, '--u-bg-color');
 
-      it('바탕값을 시트에서 읽는다 (하드코딩하지 않는다)', () => {
+      it('reads the background value from the sheet (not hard-coded)', () => {
         expect(parseColor(bg)).not.toBeNull();
       });
 
-      it('🔴모든 시드에서 대비 계약을 만족한다 — 면 위 글자 4.5 · 바탕 위 글자 4.5', () => {
+      it('🔴satisfies the contrast contract for every seed — text-on-surface 4.5 · text-on-background 4.5', () => {
         const fails: string[] = [];
         for (const seed of SEEDS) {
           const r = deriveAccentRamp(seed, bg);
@@ -55,17 +57,17 @@ describe('악센트 램프 파생', () => {
         expect(fails).toEqual([]);
       });
 
-      it('🔴`-strong` 이 `-color` 와 갈린다 — 계약만 맞추면 두 단이 같아진다', () => {
+      it('🔴`-strong` diverges from `-color` — matching the contract alone would make the two steps identical', () => {
         const fails: string[] = [];
         for (const seed of SEEDS) {
           const r = deriveAccentRamp(seed, bg);
           const sep = contrast(r.strong, r.color);
-          if (sep < MIN_STEP_SEPARATION) fails.push(`${seed} 구분 ${sep.toFixed(2)}`);
+          if (sep < MIN_STEP_SEPARATION) fails.push(`${seed} separation ${sep.toFixed(2)}`);
         }
         expect(fails).toEqual([]);
       });
 
-      it('`-weak` 은 바탕 위 그래픽으로 보인다 (비텍스트 3.0)', () => {
+      it('`-weak` reads as graphical against the background (non-text 3.0)', () => {
         const fails: string[] = [];
         for (const seed of SEEDS) {
           const c = contrast(deriveAccentRamp(seed, bg).weak, bg);
@@ -74,7 +76,7 @@ describe('악센트 램프 파생', () => {
         expect(fails).toEqual([]);
       });
 
-      it('단이 바탕 쪽으로 단조롭게 옅어진다 (weakest → weak)', () => {
+      it('steps lighten monotonically toward the background (weakest → weak)', () => {
         for (const seed of SEEDS) {
           const r = deriveAccentRamp(seed, bg);
           const d = (c: string) => contrast(c, bg);
@@ -85,15 +87,15 @@ describe('악센트 램프 파생', () => {
     });
   }
 
-  it('시트 기본 시드를 넣으면 시트 값 근방이 나온다 (동떨어지지 않는다)', () => {
+  it('feeding in the sheet\'s own default seed lands near the sheet value (not way off)', () => {
     const bg = sheetValue('light.css', '--u-bg-color');
     const r = deriveAccentRamp(sheetValue('light.css', '--u-primary-color'), bg);
     const sheetStrong = sheetValue('light.css', '--u-primary-color-strong');
-    // 같은 값을 요구하지 않는다 — 손 튜닝과 계산은 다른 근거를 갖는다. «가깝다»만 본다.
+    // does not demand an identical value — hand-tuning and computation rest on different grounds. only checks «close».
     expect(Math.abs(contrast(r.strong, bg) - contrast(sheetStrong, bg))).toBeLessThan(1.5);
   });
 
-  it('커스텀 프로퍼티 이름이 시트의 역할 토큰과 1:1 이다', () => {
+  it('custom property names are 1:1 with the sheet\'s role tokens', () => {
     const props = accentCustomProperties(deriveAccentRamp('#1976D2', '#FFFFFF'));
     expect(Object.keys(props).sort()).toEqual([
       '--u-primary-color',
@@ -105,20 +107,20 @@ describe('악센트 램프 파생', () => {
     ]);
   });
 
-  describe('색 유틸', () => {
-    it('mix 는 CSS color-mix(in srgb) 와 같다 (경계값)', () => {
+  describe('color utilities', () => {
+    it('mix computes the same as CSS color-mix(in srgb) (boundary values)', () => {
       expect(mix('#ffffff', '#000000', 1)).toBe('#ffffff');
       expect(mix('#ffffff', '#000000', 0)).toBe('#000000');
       expect(mix('#ffffff', '#000000', 0.5)).toBe('#808080');
     });
 
-    it('3자리 hex 와 rgb() 를 모두 읽는다 — 시트/계산값이 둘 다 온다', () => {
+    it('reads both 3-digit hex and rgb() — both the sheet and computed values arrive in these forms', () => {
       expect(parseColor('#fff')).toEqual([255, 255, 255]);
       expect(parseColor('rgb(25, 118, 210)')).toEqual([25, 118, 210]);
       expect(parseColor('nope')).toBeNull();
     });
 
-    it('면 위 글자는 대비가 큰 쪽을 고른다 — 노랑은 검정이다', () => {
+    it('text on a surface picks whichever side has higher contrast — yellow gets black', () => {
       expect(pickOnColor('#FDD835')).toBe('#000000');
       expect(pickOnColor('#1976D2')).toBe('#ffffff');
     });
