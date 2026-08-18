@@ -3,27 +3,25 @@ import '../../src/components/skeleton/USkeleton.js';
 import '../../src/components/spinner/USpinner.js';
 
 /**
- * Under `prefers-reduced-motion: reduce`, **what stops and what doesn't.**
+ * `prefers-reduced-motion: reduce` 에서 **무엇이 멈추고 무엇이 멈추지 않는가.**
  *
- * ## The fork isn't «stop or not»
+ * ## 갈림길은 «멈추냐 마냐»가 아니었다
  *
- * The sheet's reduce rule works by **pinning the duration axis to 0**, so it doesn't reach a
- * spot that sets `animation` directly — and that's by design (forcing `animation: none`
- * would also kill motion that **carries meaning**). So each spot has to be judged separately:
+ * 시트의 reduce 규칙은 **지속시간 축을 0 으로 누르는** 방식이라 `animation` 을 직접 쓰는
+ * 자리에는 닿지 않는다 — 그리고 그것은 의도다(`animation: none` 강제는 **의미를 나르는**
+ * 움직임까지 죽인다). 그래서 자리마다 갈라야 한다:
  *
- * - `USkeleton`'s `pulse`/`shimmer` → **decoration**. Its default is already
- *   `animation: none`, and a static block still communicates "loading" just fine ⇒ **stops.**
- * - `USpinner`'s rotation → **a signal**. Stopping it leaves no way to tell whether it's
- *   progressing ⇒ **stays** (WCAG 2.2.2 exempts motion that is essential, like a loading
- *   indicator).
+ * - `USkeleton` 의 `pulse`/`shimmer` → **장식**. 기본값이 이미 `animation: none` 이고
+ *   정지한 블록이 «로딩 중»을 그대로 나른다 ⇒ **멈춘다.**
+ * - `USpinner` 의 회전 → **신호**. 멈추면 진행 여부를 알 수 없다 ⇒ **유지한다**
+ *   (WCAG 2.2.2 는 로딩 표시처럼 움직임이 본질인 것을 예외로 둔다).
  *
- * ## ⚠ A measurement limit — the media state can't be forced
+ * ## ⚠ 측정의 한계 — 미디어 상태를 강제할 수 없다
  *
- * There's no way to toggle `prefers-reduced-motion` in the browser runner, so this **can't
- * be measured via computed style.** It instead **reads the CSSOM** — stronger than a string
- * match: if a selector has a typo or a rule fails to parse, the browser **drops it**, and
- * this assertion fires. And the «stays» side (the spinner) is measured too, to catch
- * *over-stopping* — that was the actual fork for this item.
+ * 브라우저 러너에서 `prefers-reduced-motion` 을 켤 수단이 없어 **계산값으로는 못 잰다.**
+ * 대신 **CSSOM 을 판독한다** — 문자열 대조보다 강하다: 셀렉터에 오타가 있거나 규칙이
+ * 파싱되지 않으면 브라우저가 **버리므로** 이 단언이 발화한다. 그리고 «유지» 쪽(스피너)도
+ * 함께 재서 *과잉 정지*가 들어오면 잡는다 — 이 항목의 갈림길이 그쪽이었기 때문이다.
  */
 
 const reduceRules = (el: Element): CSSRule[] =>
@@ -41,34 +39,34 @@ const mount = async (tag: string, attrs: Record<string, string> = {}) => {
   return el;
 };
 
-describe('prefers-reduced-motion — separates decoration from signal', () => {
-  it('🔴decoration stops — pulse/shimmer are animation: none inside the reduce block', async () => {
+describe('prefers-reduced-motion — 장식과 신호를 가른다', () => {
+  it('🔴장식은 멈춘다 — pulse·shimmer 가 reduce 블록에서 animation: none 이다', async () => {
     const el = await mount('u-skeleton', { effect: 'pulse' });
     const stopped = reduceRules(el)
       .filter((r): r is CSSStyleRule => r instanceof CSSStyleRule)
       .filter(r => r.style.getPropertyValue('animation-name') === 'none'
         || /animation:\s*none/.test(r.cssText));
     const selectors = stopped.map(r => r.selectorText).join(' | ');
-    expect(selectors, 'pulse is not among the stopped selectors').toContain('pulse');
-    expect(selectors, 'shimmer is not among the stopped selectors').toContain('shimmer');
+    expect(selectors, 'pulse 가 정지 대상에 없다').toContain('pulse');
+    expect(selectors, 'shimmer 가 정지 대상에 없다').toContain('shimmer');
     el.remove();
   });
 
-  it('🔴the signal stays — u-spinner has no reduce-stop rule', async () => {
-    // ⚠This is the actual fork for this item. If a blanket "stop everything" policy
-    // killed the spinner too, users would have no way to tell it's still progressing.
+  it('🔴신호는 유지된다 — u-spinner 에는 reduce 정지 규칙이 없다', async () => {
+    // ⚠이쪽이 이 항목의 진짜 갈림길이다. «전부 멈춘다»는 처방이 스피너를 죽이면
+    // 사용자는 진행 중인지 알 수 없게 된다.
     const el = await mount('u-spinner');
     expect(reduceRules(el).map(r => r.cssText)).toEqual([]);
     el.remove();
   });
 
-  it('decoration actually animates normally (adding the rule did not kill the default)', async () => {
+  it('평상시에는 장식이 실제로 돈다 (규칙을 더하면서 기본을 죽이지 않았다)', async () => {
     const el = await mount('u-skeleton', { effect: 'pulse' });
     expect(getComputedStyle(el).animationName).toBe('pulse');
     el.remove();
   });
 
-  it('a skeleton with no effect stays static as before', async () => {
+  it('effect 를 주지 않은 스켈레톤은 종전대로 정적이다', async () => {
     const el = await mount('u-skeleton');
     expect(getComputedStyle(el).animationName).toBe('none');
     el.remove();

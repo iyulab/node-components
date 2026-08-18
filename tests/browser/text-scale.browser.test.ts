@@ -4,18 +4,18 @@ import '../../src/assets/styles/light.css';
 import '../../src/components/text/UText.js';
 
 /**
- * **`u-text` acceptance criteria** — this pins *relationships*, not values.
+ * **`u-text` 의 수용 기준** — 값을 박지 않고 *관계*를 고정한다.
  *
- * This component exists as "the place in markup that uses the sheet's 7-step scale",
- * so what's guarded is not "which size" but ***"does it use the value the sheet states"***.
- * Hard-coding values means every design tweak has to update the test too, at which point
- * the test guards nothing (a cost this repo already paid once, in the `flex-table` fallbacks).
+ * 이 컴포넌트의 존재 이유는 «시트의 7단 스케일을 마크업에서 쓸 자리»이므로,
+ * 지켜야 할 것은 «어떤 크기인가»가 아니라 ***«시트가 말한 그 값을 쓰는가»*** 다.
+ * 값을 그대로 적으면 디자인 조정 때마다 테스트를 고쳐야 하고, 그러면 테스트가
+ * 아무것도 지키지 않는다(이 리포가 `flex-table` 폴백에서 이미 치른 대가다).
  *
- * Four things are checked:
- *   ⑴ each of the 7 steps reads its **4 sheet properties** as-is (it doesn't become a second definition site)
- *   ⑵ `level` is **read as a heading** — the shadow root's h1~h6, with the slotted text as its name
- *   ⑶ the visual axis and the semantic axis are **independent**
- *   ⑷ `tone` is a **neutral-emphasis axis** (not a role color)
+ * 넷을 잰다:
+ *   ⑴ 7단이 각자 **시트의 4속성**을 그대로 읽는다 (두 번째 정의처가 되지 않는다)
+ *   ⑵ `level` 이 **heading 으로 읽힌다** — 섀도 루트의 h1~h6 + 슬롯 텍스트가 이름
+ *   ⑶ 시각 축과 의미 축이 **독립**이다
+ *   ⑷ `tone` 은 **중립 강조 축**이다 (역할색이 아니다)
  */
 
 const VARIANTS = ['display', 'title', 'subtitle', 'body', 'label', 'caption', 'overline'] as const;
@@ -34,16 +34,16 @@ async function mount(attrs: Record<string, string> = {}, text = '문서 제목')
 
 const partBase = (el: HTMLElement) => el.shadowRoot!.querySelector('[part="base"]')!;
 
-describe('u-text — semantic typography scale', () => {
+describe('u-text — 의미 타이포그래피 스케일', () => {
   beforeAll(() => {
-    expect(tokenOf('--u-text-body-size'), 'this test assumes the token sheet is loaded').not.toBe('');
+    expect(tokenOf('--u-text-body-size'), '이 테스트는 토큰 시트를 전제한다').not.toBe('');
   });
 
   afterEach(() => {
     document.body.replaceChildren();
   });
 
-  it('★each of the 7 steps reads its size/weight/leading/tracking from the sheet as-is', async () => {
+  it('★7단이 각자 시트의 크기·굵기·행간·자간을 그대로 읽는다', async () => {
     for (const variant of VARIANTS) {
       const el = await mount({ variant });
       const cs = getComputedStyle(partBase(el));
@@ -51,9 +51,8 @@ describe('u-text — semantic typography scale', () => {
       expect(cs.fontSize, `${variant} size`).toBe(tokenOf(`--u-text-${variant}-size`));
       expect(cs.fontWeight, `${variant} weight`).toBe(tokenOf(`--u-text-${variant}-weight`));
 
-      // leading/tracking come out of getComputedStyle as px, so they can't be compared
-      // directly against the sheet's multiplier/em values. Instead this checks the
-      // **ratio to size** — that's what these tokens actually mean.
+      // leading·tracking 은 계산값이 px 로 나오므로 시트의 배수/em 과 직접 비교할 수 없다.
+      // 대신 **크기에 대한 비율**로 확인한다 — 그것이 이 토큰들의 의미다.
       const size = parseFloat(cs.fontSize);
       const leading = parseFloat(tokenOf(`--u-text-${variant}-leading`));
       expect(parseFloat(cs.lineHeight) / size, `${variant} leading`).toBeCloseTo(leading, 2);
@@ -67,7 +66,7 @@ describe('u-text — semantic typography scale', () => {
     }
   });
 
-  it('the steps have distinct sizes in monotonically decreasing order', async () => {
+  it('단들이 서로 다른 크기를 갖고 순서가 단조 감소한다', async () => {
     const sizes: number[] = [];
     for (const variant of VARIANTS) {
       const el = await mount({ variant });
@@ -80,30 +79,30 @@ describe('u-text — semantic typography scale', () => {
     }
   });
 
-  it('defaults to body when no variant is given', async () => {
+  it('variant 를 주지 않으면 body 다', async () => {
     const bare = await mount();
     const body = await mount({ variant: 'body' });
     expect(getComputedStyle(partBase(bare)).fontSize)
       .toBe(getComputedStyle(partBase(body)).fontSize);
   });
 
-  it('an unknown variant does not silently lose its font — it falls through to body', async () => {
+  it('알 수 없는 variant 는 조용히 폰트를 잃지 않고 body 로 흐른다', async () => {
     const junk = await mount({ variant: 'gigantic' });
     expect(getComputedStyle(partBase(junk)).fontSize).toBe(tokenOf('--u-text-body-size'));
   });
 
-  it('★giving level reads as a heading, with the slotted text as its accessible name', async () => {
+  it('★level 을 주면 heading 으로 읽히고 슬롯 텍스트가 접근가능 이름이 된다', async () => {
     await mount({ level: '2', variant: 'title' }, '설정 요약');
     expect(page.getByRole('heading', { level: 2, name: '설정 요약' }).elements().length).toBe(1);
   });
 
-  it('NEGATIVE — without level it is not a heading (renders as p)', async () => {
+  it('NEGATIVE — level 이 없으면 heading 이 아니다 (p 로 렌더된다)', async () => {
     const el = await mount({ variant: 'title' }, '설정 요약');
     expect(page.getByRole('heading').elements().length).toBe(0);
     expect(partBase(el).tagName).toBe('P');
   });
 
-  it('1~6 each read as that heading level', async () => {
+  it('1~6 이 각각 그 단계로 읽힌다', async () => {
     for (const level of [1, 2, 3, 4, 5, 6]) {
       const el = await mount({ level: String(level) }, `제목 ${level}`);
       expect(partBase(el).tagName).toBe(`H${level}`);
@@ -112,19 +111,19 @@ describe('u-text — semantic typography scale', () => {
     }
   });
 
-  it('NEGATIVE — an out-of-range level does not create a heading', async () => {
+  it('NEGATIVE — 범위 밖 level 은 heading 을 만들지 않는다', async () => {
     const el = await mount({ level: '9' }, '범위 밖');
     expect(partBase(el).tagName).toBe('P');
     expect(page.getByRole('heading').elements().length).toBe(0);
   });
 
-  it('★the visual axis and semantic axis are independent — a level-2 heading can be the largest text', async () => {
+  it('★시각 축과 의미 축이 독립이다 — 2단 제목이 가장 큰 글자일 수 있다', async () => {
     const el = await mount({ level: '2', variant: 'display' }, '큰 2단 제목');
     expect(partBase(el).tagName).toBe('H2');
     expect(getComputedStyle(partBase(el)).fontSize).toBe(tokenOf('--u-text-display-size'));
   });
 
-  it('★tone is a neutral-emphasis axis — default/weak/strong/inverse each read a sheet value', async () => {
+  it('★tone 은 중립 강조 축이다 — 기본/약함/강함/반전이 시트 값을 읽는다', async () => {
     const cases: Array<[string, string]> = [
       ['default', '--u-txt-color'],
       ['weak', '--u-txt-color-weak'],
@@ -144,15 +143,14 @@ describe('u-text — semantic typography scale', () => {
       probe.remove();
       el.remove();
     }
-    expect(seen.size, 'the four tones are four distinct colors').toBe(4);
+    expect(seen.size, '네 tone 이 서로 다른 색이다').toBe(4);
   });
 
-  it('🔴NEGATIVE — no step alters the text a consumer wrote', async () => {
-    // There was a temptation to add uppercase to overline, and it was actually added once
-    // and then removed. The sheet defines only four properties, so pinning a fifth here
-    // would make this component a «second definition site». And it has no effect on CJK
-    // text — **the same step would look different depending on language** — which is a
-    // defect in a repo that has adopted a locale standard.
+  it('🔴NEGATIVE — 어떤 단도 소비자가 쓴 글자를 바꾸지 않는다', async () => {
+    // overline 에 uppercase 를 붙이고 싶은 충동이 있었고, 실제로 한 번 붙였다가 걷었다.
+    // 시트가 정의하는 것은 네 속성뿐이므로 다섯 번째를 여기서 정하면 이 컴포넌트가
+    // «두 번째 정의처»가 된다. 그리고 CJK 에는 효과가 없어 **같은 단이 언어에 따라
+    // 다르게 보인다** — 로케일 표준을 채택한 리포에서 그것은 결함이다.
     for (const variant of VARIANTS) {
       const el = await mount({ variant }, 'section');
       expect(getComputedStyle(partBase(el)).textTransform, variant).toBe('none');
@@ -160,7 +158,7 @@ describe('u-text — semantic typography scale', () => {
     }
   });
 
-  it('is a block element and leaves no UA margin — spacing is the consumer layout\'s call', async () => {
+  it('블록 요소이고 UA 마진을 남기지 않는다 — 간격은 소비자의 레이아웃이 정한다', async () => {
     const el = await mount({ level: '1' });
     expect(getComputedStyle(el).display).toBe('block');
     const cs = getComputedStyle(partBase(el));

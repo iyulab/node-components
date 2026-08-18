@@ -2,11 +2,11 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import '../../src/components/alert/UAlert.js';
 
 /**
- * u-alert didn't set its own role/aria-live, so consumers had to attach role="alert" at
- * every call site (screen-reader users missed dynamic appearances like a failed login).
- * Since status already expresses severity, role is derived from it (the WAI-ARIA
- * Alert/Status pattern) — error/warning get role="alert" (implicit assertive), everything
- * else gets role="status" (implicit polite).
+ * u-alert가 role/aria-live를 내부에서 스스로 잡지 않아, 소비자가 매 사용처마다
+ * role="alert"를 직접 부착해야 했다(스크린리더 사용자는 로그인 실패 같은 동적 등장을
+ * 놓쳤다). status가 이미 심각도를 표현하므로 그 값에서 role을 유도한다(WAI-ARIA
+ * Alert/Status 패턴) — error/warning은 role="alert"(암묵적 assertive), 그 외는
+ * role="status"(암묵적 polite).
  */
 describe('u-alert ARIA role', () => {
   beforeEach(() => {
@@ -21,42 +21,42 @@ describe('u-alert ARIA role', () => {
     return el;
   }
 
-  it('status="error" is role="alert"', async () => {
+  it('status="error"는 role="alert"다', async () => {
     const el = await mount({ status: 'error' });
     expect(el.getAttribute('role')).toBe('alert');
   });
 
-  it('status="warning" is role="alert"', async () => {
+  it('status="warning"은 role="alert"다', async () => {
     const el = await mount({ status: 'warning' });
     expect(el.getAttribute('role')).toBe('alert');
   });
 
-  it('status="info" is role="status"', async () => {
+  it('status="info"는 role="status"다', async () => {
     const el = await mount({ status: 'info' });
     expect(el.getAttribute('role')).toBe('status');
   });
 
-  it('status="success" is role="status"', async () => {
+  it('status="success"는 role="status"다', async () => {
     const el = await mount({ status: 'success' });
     expect(el.getAttribute('role')).toBe('status');
   });
 
-  it('status="notice" is role="status" (treated as non-urgent notice)', async () => {
+  it('status="notice"는 role="status"다(비긴급 안내로 취급)', async () => {
     const el = await mount({ status: 'notice' });
     expect(el.getAttribute('role')).toBe('status');
   });
 
-  it('no status (default) is role="status" — with severity unknown, it does not interrupt assertively', async () => {
+  it('status 미지정(기본)은 role="status"다 — 심각도를 알 수 없으면 assertive로 방해하지 않는다', async () => {
     const el = await mount();
     expect(el.getAttribute('role')).toBe('status');
   });
 
-  it('aria-atomic="true" is always set (the whole content is read as one announcement)', async () => {
+  it('aria-atomic="true"가 항상 설정된다(전체 내용이 하나의 알림으로 낭독됨)', async () => {
     const el = await mount({ status: 'error' });
     expect(el.getAttribute('aria-atomic')).toBe('true');
   });
 
-  it('when status changes dynamically, role updates along with it', async () => {
+  it('status가 동적으로 바뀌면 role도 함께 갱신된다', async () => {
     const el = await mount({ status: 'info' }) as HTMLElement & { status?: string; updateComplete: Promise<unknown> };
     expect(el.getAttribute('role')).toBe('status');
 

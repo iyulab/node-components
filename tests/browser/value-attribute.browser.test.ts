@@ -20,11 +20,10 @@ beforeEach(() => {
   document.body.innerHTML = '';
 });
 
-// Checks that a value declared as a markup attribute is parsed into the right value type
-// for each control. (When the base was type: Object, JSON.parse failures silently turned
-// everything into null — that gap is what this guards.)
-describe('form control value attribute declared in markup', () => {
-  it('u-input: a plain string value attribute is reflected as-is', async () => {
+// 마크업 attribute로 선언한 value가 각 컨트롤의 값 타입으로 올바르게 해석되는지 검증한다.
+// (base가 type: Object였을 때는 JSON.parse 실패로 전부 null이 되는 갭이 있었다)
+describe('폼 컨트롤 value attribute 마크업 선언', () => {
+  it('u-input: 일반 문자열 value attribute가 그대로 반영된다', async () => {
     const input = document.createElement('u-input') as UInput;
     input.setAttribute('value', 'hello');
     document.body.appendChild(input);
@@ -33,7 +32,7 @@ describe('form control value attribute declared in markup', () => {
     expect(input.value).toBe('hello');
   });
 
-  it('u-select: a single string value attribute is reflected and that option becomes selected', async () => {
+  it('u-select: 단일 문자열 value attribute가 반영되고 해당 옵션이 selected 된다', async () => {
     const select = document.createElement('u-select') as USelect;
     select.setAttribute('value', 'b');
     for (const v of ['a', 'b']) {
@@ -49,7 +48,7 @@ describe('form control value attribute declared in markup', () => {
     expect((select.querySelector('u-option[value="b"]') as UOption).selected).toBe(true);
   });
 
-  it('u-select multiple: a JSON array value attribute is parsed into an array', async () => {
+  it('u-select multiple: JSON 배열 value attribute가 배열로 해석된다', async () => {
     const select = document.createElement('u-select') as USelect;
     select.setAttribute('multiple', '');
     select.setAttribute('value', '["a","b"]');
@@ -65,7 +64,7 @@ describe('form control value attribute declared in markup', () => {
     expect(select.value).toEqual(['a', 'b']);
   });
 
-  it('u-rating: a numeric value attribute is parsed into a number', async () => {
+  it('u-rating: 숫자 value attribute가 number로 해석된다', async () => {
     const rating = document.createElement('u-rating') as URating;
     rating.setAttribute('value', '3');
     document.body.appendChild(rating);
@@ -74,7 +73,7 @@ describe('form control value attribute declared in markup', () => {
     expect(rating.value).toBe(3);
   });
 
-  it('u-slider: a numeric value attribute becomes a number, and a JSON array becomes a range array', async () => {
+  it('u-slider: 숫자 value attribute가 number로, JSON 배열은 range 배열로 해석된다', async () => {
     const slider = document.createElement('u-slider') as USlider;
     slider.setAttribute('value', '42');
     document.body.appendChild(slider);

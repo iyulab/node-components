@@ -21,12 +21,12 @@ async function openWithFocus(el: UDatePicker): Promise<HTMLButtonElement> {
   return el.shadowRoot!.activeElement as HTMLButtonElement;
 }
 
-describe('UDatePicker — keyboard navigation', () => {
+describe('UDatePicker — 키보드 내비게이션', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });
 
-  it('opening focuses the cell for the selected date (or today)', async () => {
+  it('열리면 선택된 날짜(또는 오늘)의 셀에 포커스가 간다', async () => {
     const el = createDatePicker({ value: '2026-02-15' });
     document.body.appendChild(el);
     await settle(el);
@@ -35,7 +35,7 @@ describe('UDatePicker — keyboard navigation', () => {
     expect(focused.dataset.iso).toBe('2026-02-15');
   });
 
-  it('ArrowRight moves a day, ArrowDown moves a week', async () => {
+  it('ArrowRight 로 하루, ArrowDown 으로 한 주 이동한다', async () => {
     const el = createDatePicker({ value: '2026-02-15' });
     document.body.appendChild(el);
     await settle(el);
@@ -52,13 +52,13 @@ describe('UDatePicker — keyboard navigation', () => {
     expect(focused.dataset.iso).toBe('2026-02-23');
   });
 
-  it('crossing a month boundary flips the calendar to the next/previous month', async () => {
+  it('월 경계를 넘어가면 달력이 다음/이전 달로 넘어간다', async () => {
     const el = createDatePicker({ value: '2026-02-27' });
     document.body.appendChild(el);
     await settle(el);
     let focused = await openWithFocus(el);
 
-    // starting from 2026-02-27 (Fri), advance a day at a time past the last day of Feb (28) into March
+    // 2026-02-27 (금) 에서 하루씩 전진하며 2월 마지막날(28)을 지나 3월로 넘어간다
     for (let i = 0; i < 2; i++) {
       focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
       await settle(el);
@@ -68,8 +68,8 @@ describe('UDatePicker — keyboard navigation', () => {
     expect(el.shadowRoot!.querySelector('.calendar-title')!.textContent).toContain('March');
   });
 
-  it('Home/End move to the start/end of that week', async () => {
-    const el = createDatePicker({ value: '2026-02-18' }); // Wednesday
+  it('Home/End 로 그 주의 처음/끝으로 이동한다', async () => {
+    const el = createDatePicker({ value: '2026-02-18' }); // 수요일
     document.body.appendChild(el);
     await settle(el);
     let focused = await openWithFocus(el);
@@ -77,15 +77,15 @@ describe('UDatePicker — keyboard navigation', () => {
     focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true, composed: true }));
     await settle(el);
     focused = el.shadowRoot!.activeElement as HTMLButtonElement;
-    expect(focused.dataset.iso).toBe('2026-02-15'); // that week's Sunday
+    expect(focused.dataset.iso).toBe('2026-02-15'); // 그 주 일요일
 
     focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true, composed: true }));
     await settle(el);
     focused = el.shadowRoot!.activeElement as HTMLButtonElement;
-    expect(focused.dataset.iso).toBe('2026-02-21'); // that week's Saturday
+    expect(focused.dataset.iso).toBe('2026-02-21'); // 그 주 토요일
   });
 
-  it('Enter selects the focused date and closes the popover', async () => {
+  it('Enter 로 포커스된 날짜를 선택하고 팝오버를 닫는다', async () => {
     const el = createDatePicker({ value: '2026-02-15' });
     document.body.appendChild(el);
     await settle(el);
@@ -105,7 +105,7 @@ describe('UDatePicker — keyboard navigation', () => {
     expect(el.shadowRoot!.querySelector('u-popover')!.hasAttribute('open')).toBe(false);
   });
 
-  it('Escape closes the popover and returns focus to the trigger', async () => {
+  it('Escape 로 팝오버를 닫고 트리거로 포커스를 되돌린다', async () => {
     const el = createDatePicker({ value: '2026-02-15' });
     document.body.appendChild(el);
     await settle(el);
@@ -118,19 +118,19 @@ describe('UDatePicker — keyboard navigation', () => {
     expect(el.shadowRoot!.activeElement).toBe(el.shadowRoot!.querySelector('.container'));
   });
 
-  it('pressing Enter on an out-of-range date does not select it', async () => {
+  it('범위 밖 날짜에서 Enter 를 눌러도 선택되지 않는다', async () => {
     const el = createDatePicker({ value: '2026-02-15', min: '2026-02-10', max: '2026-02-16' });
     document.body.appendChild(el);
     await settle(el);
     let focused = await openWithFocus(el);
 
-    // move to 2026-02-16 (max)
+    // 2026-02-16(max) 까지 이동
     focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
     await settle(el);
     focused = el.shadowRoot!.activeElement as HTMLButtonElement;
     expect(focused.dataset.iso).toBe('2026-02-16');
 
-    // one more — focus moves out of range (2026-02-17), but it's disabled
+    // 한 칸 더 — 범위 밖(2026-02-17)으로 포커스는 이동하되 disabled
     focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
     await settle(el);
     focused = el.shadowRoot!.activeElement as HTMLButtonElement;
@@ -139,10 +139,10 @@ describe('UDatePicker — keyboard navigation', () => {
 
     focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
     await settle(el);
-    expect(el.value).toBe('2026-02-15'); // unchanged
+    expect(el.value).toBe('2026-02-15'); // 변경 안 됨
   });
 
-  it('clicking the header\'s "next month" button does not move focus into the grid', async () => {
+  it('헤더의 "다음 달" 버튼을 클릭해도 포커스가 그리드로 옮겨가지 않는다', async () => {
     const el = createDatePicker({ value: '2026-02-15' });
     document.body.appendChild(el);
     await settle(el);

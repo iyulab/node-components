@@ -17,12 +17,12 @@ function trackChanges(el: UInput): { count: number; values: unknown[] } {
   return seen;
 }
 
-describe('UInput clearable — the clear button fires change and syncs the form value', () => {
+describe('UInput clearable — clear 버튼이 change를 발화하고 폼 값을 동기화한다', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });
 
-  it('clicking the clear icon fires change exactly once and empties value', async () => {
+  it('clear 아이콘 클릭은 change를 정확히 1회 발화하고 value를 비운다', async () => {
     const input = createInput({ clearable: '', value: 'hello' });
     document.body.appendChild(input);
     await input.updateComplete;
@@ -37,7 +37,7 @@ describe('UInput clearable — the clear button fires change and syncs the form 
     expect(input.value).toBe('');
   });
 
-  it('without clearable, the clear icon itself does not render', async () => {
+  it('clearable이 아니면 clear 아이콘 자체가 렌더되지 않는다', async () => {
     const input = createInput({ value: 'hello' });
     document.body.appendChild(input);
     await input.updateComplete;
@@ -47,7 +47,7 @@ describe('UInput clearable — the clear button fires change and syncs the form 
   });
 });
 
-describe('UInput — the submitted form value stays in sync across every value-change path', () => {
+describe('UInput — 폼 제출값이 value 변경 경로 전부와 동기화된다', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });
@@ -60,14 +60,14 @@ describe('UInput — the submitted form value stays in sync across every value-c
     return { form, input };
   }
 
-  it('reflects the initial value attribute alone (no blur) immediately in the submit value', async () => {
+  it('초기 value 속성만으로도(blur 없이) 즉시 제출값에 반영된다', async () => {
     const { form, input } = mountInForm({ value: 'hello' });
     await input.updateComplete;
 
     expect(new FormData(form).get('q')).toBe('hello');
   });
 
-  it('reflects a programmatic .value= assignment (no blur) immediately in the submit value', async () => {
+  it('프로그램적 .value= 대입도(blur 없이) 즉시 제출값에 반영된다', async () => {
     const { form, input } = mountInForm();
     await input.updateComplete;
 
@@ -77,7 +77,7 @@ describe('UInput — the submitted form value stays in sync across every value-c
     expect(new FormData(form).get('q')).toBe('typed via API');
   });
 
-  it('clicking the clear button also (no blur) immediately empties the submit value', async () => {
+  it('clear 버튼 클릭도(blur 없이) 즉시 제출값을 비운다', async () => {
     const { form, input } = mountInForm({ clearable: '', value: 'hello' });
     await input.updateComplete;
     expect(new FormData(form).get('q')).toBe('hello');

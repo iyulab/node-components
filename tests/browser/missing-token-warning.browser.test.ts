@@ -2,18 +2,17 @@ import { describe, it, expect, vi } from 'vitest';
 import '../../src/components/button/UButton.js';
 
 /**
- * Without a token sheet, a component renders unstyled with **no error** — the CSS gives no
- * signal at all. A dev-build warning is the only thing that breaks that silence, so this
- * checks that it actually fires.
+ * 토큰 시트가 없으면 컴포넌트는 **에러 없이** 무스타일로 렌더된다 — CSS 는 아무 신호도 내지
+ * 않는다. 개발 빌드 경고가 그 침묵을 깨는 유일한 장치이므로, 실제로 발화하는지 확인한다.
  *
- * (This test environment never calls `Theme.init()` and never imports the CSS, so no tokens
- *  are present — it reproduces the problem state as-is.)
+ * (이 테스트 환경은 `Theme.init()` 을 부르지 않고 CSS 도 임포트하지 않으므로 토큰이 없다 —
+ *  즉 문제 상황을 그대로 재현한다.)
  */
-describe('missing-token warning', () => {
-  it('warns once, on the first component connecting, when tokens are absent', async () => {
+describe('토큰 부재 경고', () => {
+  it('토큰이 없을 때 첫 컴포넌트 연결에서 1회 경고한다', async () => {
     const probe = getComputedStyle(document.documentElement)
       .getPropertyValue('--u-blue-600').trim();
-    expect(probe, 'this test assumes no tokens are present').toBe('');
+    expect(probe, '이 테스트는 토큰이 없는 상태를 전제한다').toBe('');
 
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     try {
@@ -22,19 +21,18 @@ describe('missing-token warning', () => {
       await (a as HTMLElement & { updateComplete: Promise<unknown> }).updateComplete;
 
       const messages = warn.mock.calls.map(c => String(c[0]));
-      // ⚠The message text moved to English on 2026-08-04 (console-diagnostics language
-      //   policy). This checks *what it says*, not the full sentence — pinning the whole
-      //   string would break on every wording tweak.
+      // ⚠문구는 2026-08-04 에 영어로 이주했다(콘솔 진단 언어 정책). 판별은 «무엇을
+      //   말하는가»에 걸고 문장 전체에 걸지 않는다 — 문구가 다듬어질 때마다 깨진다.
       const hit = messages.filter(m => m.includes('No design-token sheet found'));
-      expect(hit.length, `the warning did not fire. warnings received: ${JSON.stringify(messages)}`).toBe(1);
+      expect(hit.length, `경고가 발화하지 않았다. 받은 경고: ${JSON.stringify(messages)}`).toBe(1);
       expect(hit[0]).toContain('@iyulab/components/styles/tokens.css');
 
-      // the second component does not warn again (avoids noise)
+      // 두 번째 컴포넌트에서는 다시 경고하지 않는다 (소음 방지)
       warn.mockClear();
       const b = document.createElement('u-button');
       document.body.appendChild(b);
       await (b as HTMLElement & { updateComplete: Promise<unknown> }).updateComplete;
-      expect(warn.mock.calls.filter(c => String(c[0]).includes('No design-token sheet found'))).toHaveLength(0);
+      expect(warn.mock.calls.filter(c => String(c[0]).includes('디자인 토큰'))).toHaveLength(0);
 
       a.remove();
       b.remove();

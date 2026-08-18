@@ -8,8 +8,8 @@ describe('Locale', () => {
 
   describe('get / set', () => {
     it('defaults to the detected navigator/OS locale, or en as fallback', () => {
-      // Both Node 21+ and browsers expose navigator.language, so the value varies with the
-      // host locale — this checks the detection logic itself rather than expecting a fixed value.
+      // Node 21+와 브라우저 모두 navigator.language를 노출하므로 호스트 로케일에 따라 값이 달라진다 —
+      // 고정값을 기대하지 않고 감지 로직 자체를 검증한다.
       const detected = typeof navigator !== 'undefined' && navigator.language ? navigator.language : 'en';
       expect(Locale.get()).toBe(detected);
     });
@@ -76,7 +76,7 @@ describe('Locale', () => {
       Locale.register('ko', { valueMissing: '커스텀 메시지' });
       Locale.set('ko');
       expect(Locale.getValue('valueMissing')).toBe('커스텀 메시지');
-      // other built-in keys for the same locale must remain unaffected
+      // 같은 로케일의 다른 내장 키는 그대로 유지되어야 한다
       expect(Locale.getValue('rangeUnderflow')).toBe('값은 {min} 이상이어야 합니다');
     });
 
