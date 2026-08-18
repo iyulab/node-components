@@ -16,19 +16,19 @@ function mountInForm(attrs: Record<string, string> = {}): { form: HTMLFormElemen
   return { form, textarea };
 }
 
-describe('UTextarea — 폼 제출값이 value 변경 경로 전부와 동기화된다', () => {
+describe('UTextarea — the submitted form value stays in sync across every value-change path', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });
 
-  it('초기 value 속성만으로도(change 없이) 즉시 제출값에 반영된다', async () => {
+  it('reflects the initial value attribute alone (no change event) immediately in the submit value', async () => {
     const { form, textarea } = mountInForm({ value: 'hello' });
     await textarea.updateComplete;
 
     expect(new FormData(form).get('q')).toBe('hello');
   });
 
-  it('프로그램적 .value= 대입도(change 없이) 즉시 제출값에 반영된다', async () => {
+  it('reflects a programmatic .value= assignment (no change event) immediately in the submit value', async () => {
     const { form, textarea } = mountInForm();
     await textarea.updateComplete;
 

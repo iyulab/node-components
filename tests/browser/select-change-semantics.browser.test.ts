@@ -5,7 +5,7 @@ import type { USelect } from '../../src/components/select/USelect.js';
 import type { UOption } from '../../src/components/option/UOption.js';
 import type { UChip } from '../../src/components/chip/UChip.js';
 
-// slotchange → options(@state) 갱신 → 후속 업데이트까지 전부 소화시킨다.
+// drains everything from slotchange → options(@state) update → the follow-up update.
 async function settle(el: USelect) {
   await el.updateComplete;
   await new Promise(r => setTimeout(r, 0));
@@ -33,12 +33,12 @@ function trackChanges(select: USelect): { count: number; values: unknown[] } {
   return seen;
 }
 
-describe('USelect change 이벤트 의미론 (사용자 상호작용에서만 발화)', () => {
+describe('USelect change event semantics (fires only from user interaction)', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });
 
-  it('마운트·옵션 등록 과정에서 change를 발화하지 않는다', async () => {
+  it('does not fire change during mount / option registration', async () => {
     const select = createSelect(['a', 'b', 'c']);
     const seen = trackChanges(select);
     document.body.appendChild(select);
@@ -48,14 +48,14 @@ describe('USelect change 이벤트 의미론 (사용자 상호작용에서만 �
     expect(select.value).toBeUndefined();
   });
 
-  it('옵션 등록 전에 세팅한 value가 등록 후에도 보존되고 change는 발화하지 않는다', async () => {
+  it('a value set before options register is preserved after registration, and change does not fire', async () => {
     const select = createSelect([]);
     const seen = trackChanges(select);
     select.value = 'b';
     document.body.appendChild(select);
     await select.updateComplete;
 
-    // 옵션은 마운트 이후에 늦게 등록된다 (React 래퍼 시나리오 재현)
+    // options register late, after mount (reproduces the React-wrapper scenario)
     for (const v of ['a', 'b', 'c']) {
       const option = document.createElement('u-option');
       option.setAttribute('value', v);
@@ -70,7 +70,7 @@ describe('USelect change 이벤트 의미론 (사용자 상호작용에서만 �
     expect(optionB.selected).toBe(true);
   });
 
-  it('프로그램적 value 변경은 change를 발화하지 않고 selected만 동기화한다', async () => {
+  it('a programmatic value change does not fire change, only syncs selected', async () => {
     const select = createSelect(['a', 'b']);
     document.body.appendChild(select);
     await settle(select);
@@ -84,7 +84,7 @@ describe('USelect change 이벤트 의미론 (사용자 상호작용에서만 �
     expect(optionA.selected).toBe(true);
   });
 
-  it('사용자 옵션 클릭은 change를 정확히 1회 발화하고, 리스너 시점에 value가 반영돼 있다', async () => {
+  it('a user option click fires change exactly once, and value is already updated when the listener runs', async () => {
     const select = createSelect(['a', 'b']);
     document.body.appendChild(select);
     await settle(select);
@@ -98,7 +98,7 @@ describe('USelect change 이벤트 의미론 (사용자 상호작용에서만 �
     expect(select.value).toBe('b');
   });
 
-  it('동일 옵션 재클릭은 change를 발화하지 않는다', async () => {
+  it('re-clicking the same option does not fire change', async () => {
     const select = createSelect(['a', 'b']);
     document.body.appendChild(select);
     await settle(select);
@@ -115,7 +115,7 @@ describe('USelect change 이벤트 의미론 (사용자 상호작용에서만 �
     expect(select.value).toBe('b');
   });
 
-  it('multiple: 옵션 클릭 토글과 칩 제거가 각각 change를 발화한다', async () => {
+  it('multiple: both an option-click toggle and chip removal fire change', async () => {
     const select = createSelect(['a', 'b'], { multiple: '' });
     document.body.appendChild(select);
     await settle(select);
@@ -138,7 +138,7 @@ describe('USelect change 이벤트 의미론 (사용자 상호작용에서만 �
     expect(select.value).toEqual(['b']);
   });
 
-  it('clearable 지우기 클릭은 change를 발화하고 값을 초기화한다', async () => {
+  it('clicking clearable\'s clear icon fires change and resets the value', async () => {
     const select = createSelect(['a', 'b'], { clearable: '' });
     document.body.appendChild(select);
     await settle(select);

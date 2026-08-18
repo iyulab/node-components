@@ -14,12 +14,12 @@ function createDatePicker(attrs: Record<string, string> = {}): UDatePicker {
   return el;
 }
 
-describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
+describe('UDatePicker — calendar render + mouse selection', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });
 
-  it('초기 상태에서 팝오버가 닫혀 있고 값이 없다', async () => {
+  it('starts with the popover closed and no value', async () => {
     const el = createDatePicker();
     document.body.appendChild(el);
     await settle(el);
@@ -29,7 +29,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     expect(popover.hasAttribute('open')).toBe(false);
   });
 
-  it('트리거 클릭으로 팝오버가 열리고 오늘이 포함된 달의 그리드가 보인다', async () => {
+  it('clicking the trigger opens the popover and shows the grid for the month containing today', async () => {
     const el = createDatePicker();
     document.body.appendChild(el);
     await settle(el);
@@ -43,7 +43,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     expect(title).toContain(String(today.getFullYear()));
   });
 
-  it('값이 있으면 트리거에 로케일 포맷으로 표시된다', async () => {
+  it('when a value is set, the trigger shows it in locale format', async () => {
     const el = createDatePicker({ value: '2026-02-24' });
     document.body.appendChild(el);
     await settle(el);
@@ -53,7 +53,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     expect(text).not.toBe('');
   });
 
-  it('날짜 셀 클릭으로 값이 설정되고 change 가 발화하며 팝오버가 닫힌다', async () => {
+  it('clicking a date cell sets the value, fires change, and closes the popover', async () => {
     const el = createDatePicker({ value: '2026-02-01' });
     document.body.appendChild(el);
     await settle(el);
@@ -75,7 +75,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     expect(popover.hasAttribute('open')).toBe(false);
   });
 
-  it('마운트만으로는 change 를 발화하지 않는다', async () => {
+  it('mounting alone does not fire change', async () => {
     const el = createDatePicker({ value: '2026-02-01' });
     let changeCount = 0;
     el.addEventListener('change', () => changeCount++);
@@ -85,7 +85,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     expect(changeCount).toBe(0);
   });
 
-  it('min/max 범위 밖 날짜 셀은 disabled 이고 클릭해도 값이 바뀌지 않는다', async () => {
+  it('a date cell outside the min/max range is disabled and clicking it does not change the value', async () => {
     const el = createDatePicker({ value: '2026-02-15', min: '2026-02-10', max: '2026-02-20' });
     document.body.appendChild(el);
     await settle(el);
@@ -102,7 +102,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     expect(el.value).toBe('2026-02-15');
   });
 
-  it('그리드가 WAI-ARIA Date Picker Dialog 패턴의 row 레이어를 갖는다 — grid > row > gridcell', async () => {
+  it('the grid has the row layer from the WAI-ARIA Date Picker Dialog pattern — grid > row > gridcell', async () => {
     const el = createDatePicker();
     document.body.appendChild(el);
     await settle(el);
@@ -126,7 +126,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     expect(headerCells.length).toBe(7);
   });
 
-  it('clearable 이면 지우기 아이콘 클릭으로 값이 비워지고 change 가 발화한다', async () => {
+  it('when clearable, clicking the clear icon empties the value and fires change', async () => {
     const el = createDatePicker({ value: '2026-02-15', clearable: 'true' });
     document.body.appendChild(el);
     await settle(el);
