@@ -7,5 +7,7 @@
   "rangeOverflow": "El valor debe ser como máximo {max}",
   "stepMismatch": "El valor debe ser múltiplo de {step}",
   "tooShort": "Debe ser como mínimo {min}",
-  "tooLong": "Debe ser como máximo {max}"
+  "tooLong": "Debe ser como máximo {max}",
+  "increment": "Aumentar valor",
+  "decrement": "Disminuir valor"
 }

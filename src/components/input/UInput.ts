@@ -164,6 +164,22 @@ export class UInput extends UFormControlElement<string> {
             name="x"
             @click=${this.handleClearButtonClick}
           ></u-icon>
+          <u-icon class="suffix-item stepper-btn"
+            ?hidden=${this.type !== 'number' || this.disabled || this.readonly}
+            aria-disabled=${!this.canDecrement}
+            aria-label=${Locale.getValue('decrement')}
+            lib="internal"
+            name="minus"
+            @click=${this.handleStepperClick(-1)}
+          ></u-icon>
+          <u-icon class="suffix-item stepper-btn"
+            ?hidden=${this.type !== 'number' || this.disabled || this.readonly}
+            aria-disabled=${!this.canIncrement}
+            aria-label=${Locale.getValue('increment')}
+            lib="internal"
+            name="plus"
+            @click=${this.handleStepperClick(1)}
+          ></u-icon>
         </div>
       </u-field>
 
@@ -350,6 +366,40 @@ export class UInput extends UFormControlElement<string> {
       bubbles: true,
       composed: true
     }));
+    this.focus();
+  }
+
+  /** 경계(min/max)에 걸리면 시각적으로만 흐리게 한다 — 네이티브 stepUp/stepDown 자체가
+   *  경계에서 조용히 no-op이므로 클릭을 막을 필요는 없다(§패턴: password-toggle/clear와
+   *  같이 `u-icon`은 순수 표시 요소라 `disabled` 개념이 없다). */
+  private get canIncrement(): boolean {
+    if (this.max === undefined || this.max === '' || !this.value) return true;
+    return Number(this.value) < Number(this.max);
+  }
+
+  private get canDecrement(): boolean {
+    if (this.min === undefined || this.min === '' || !this.value) return true;
+    return Number(this.value) > Number(this.min);
+  }
+
+  /** 네이티브 `<input type="number">`의 stepUp/stepDown에 위임한다 — min/max/step 클램핑을
+   *  다시 구현하지 않는다. 클릭이 곧 "값을 확정"하는 동작이라 change도 함께 낸다(네이티브
+   *  스핀 버튼과 동일하게, 타이핑 중 blur 대기가 아니다). */
+  private handleStepperClick = (delta: 1 | -1) => (e: PointerEvent) => {
+    e.stopImmediatePropagation();
+    const input = this.inputEl;
+    if (!input) return;
+    try {
+      if (delta === 1) input.stepUp();
+      else input.stepDown();
+    } catch {
+      // 값이 step 기준선에 정렬돼 있지 않으면(예: step="4"인데 값이 "5") 네이티브가
+      // InvalidStateError를 던진다 — 이 클릭만 조용히 무시한다(다음 클릭은 값이 바뀌지
+      // 않아 여전히 실패할 수 있으나, 사용자는 직접 타이핑으로 벗어날 수 있다).
+      return;
+    }
+    input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+    this.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
     this.focus();
   }
 

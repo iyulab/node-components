@@ -166,6 +166,13 @@ export const styles = css`
   .suffix-item:active {
     color: var(--u-icon-color-active, #1565C0);
   }
+  .stepper-btn {
+    font-size: 0.85em;
+  }
+  .stepper-btn[aria-disabled="true"] {
+    opacity: 0.35;
+    pointer-events: none;
+  }
 
   u-popover {
     width: var(--input-popover-width, var(--anchor-width, 100%));

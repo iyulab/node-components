@@ -21,7 +21,15 @@ Text input field with prefix/suffix slots and label. Add `u-option` children for
   <u-option value="us">United States</u-option>
   <u-option value="kr">South Korea</u-option>
 </u-input>
+
+<!-- Number with a stepper — click +/- to adjust by `step` -->
+<u-input type="number" value="5000" step="1000" min="0"></u-input>
 ```
+
+`type="number"` replaces the browser's native spin buttons with `−`/`+` icons in the suffix
+area — clicking delegates to the native `stepUp()`/`stepDown()`, so `min`/`max`/`step` are
+respected exactly as they are for keyboard arrows. A field-specific step (e.g. `step="1000"`
+for a KRW amount) is the consumer's call — the library does not infer one from field meaning.
 
 ---
 
@@ -45,7 +53,7 @@ Text input field with prefix/suffix slots and label. Add `u-option` children for
 | `maxlength` | `number` | — | — | Maximum character count |
 | `min` | `string` | — | — | Minimum value (number/date) |
 | `max` | `string` | — | — | Maximum value |
-| `step` | `number` | — | — | Step increment |
+| `step` | `number` | — | — | Step increment used by both keyboard arrows and the stepper buttons below. Unset behaves like the native default of `1` |
 | `pattern` | `string` | — | — | Regex validation pattern |
 | `autofocus` | `boolean` | `false` | — | Auto-focus on render |
 | `autocomplete` | `AutoFill` | — | — | Browser autocomplete |

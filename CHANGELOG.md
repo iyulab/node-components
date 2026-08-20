@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.29.0] - 2026-08-20
+
+### Added
+
+- **`u-input[type="number"]` now has click `−`/`+` stepper buttons.** The native browser spin
+  buttons were already hidden by CSS with nothing put in their place, so there was no way to
+  adjust a number field with the mouse — only by typing or, undiscoverably, the keyboard arrow
+  keys. The new buttons delegate to the native `stepUp()`/`stepDown()`, so `min`/`max`/`step`
+  are respected exactly as they already were for the keyboard path; a button dims (and stops
+  responding to clicks) once its direction would go past `min`/`max`. Hidden when the field is
+  `disabled`, `readonly`, or not `type="number"`. Two new `Locale` keys, `increment`/
+  `decrement`, back their `aria-label`s and are translated into all 14 built-in locales.
+
 ## [1.28.0] - 2026-08-17
 
 ### Added
