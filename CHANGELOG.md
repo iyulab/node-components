@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.31.0] - 2026-08-20
+
+### Added
+
+- **`u-chip`'s remove button and `u-tab`'s close button are now keyboard-operable.** Both
+  render a real `<u-button>`, but it carried an explicit `tabindex="-1"` — which, despite the
+  inner native `<button>` still reporting `tabIndex === 0`, removes it from the browser's
+  actual Tab sequence (verified in real Chromium; the property alone doesn't tell you this).
+  Neither component offered any alternative keyboard path to trigger removal, so a
+  keyboard-only user could see a removable chip or a closable tab but never dismiss it without
+  a mouse. The `tabindex="-1"` override is removed, restoring each button's normal default
+  focusability — Tab now reaches it like any other button, and Enter/Space activate it
+  natively.
+
 ## [1.30.0] - 2026-08-20
 
 ### Added
