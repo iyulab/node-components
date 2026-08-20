@@ -9,5 +9,8 @@
   "tooShort": "至少需要{min}",
   "tooLong": "最多不能超過{max}",
   "increment": "增加值",
-  "decrement": "減少值"
+  "decrement": "減少值",
+  "clear": "清除值",
+  "showPassword": "顯示密碼",
+  "hidePassword": "隱藏密碼"
 }

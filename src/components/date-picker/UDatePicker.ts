@@ -172,9 +172,13 @@ export class UDatePicker extends UFormControlElement<string> {
           <span class="text-content ${!displayText ? 'placeholder' : ''}">${displayText || this.placeholder || ''}</span>
           <u-icon class="suffix-item"
             ?hidden=${!this.clearable || !this.value || this.disabled || this.readonly}
+            role="button"
+            tabindex="0"
+            aria-label=${Locale.getValue('clear')}
             lib="internal"
             name="x"
             @click=${this.handleClearClick}
+            @keydown=${this.handleClearKeydown}
           ></u-icon>
           <u-icon class="suffix-item"
             lib="internal"
@@ -347,6 +351,15 @@ export class UDatePicker extends UFormControlElement<string> {
     this.value = undefined;
     if (hadValue) this.emitChange();
     this.containerEl?.focus();
+  };
+
+  /** suffix `u-icon`은 순수 표시 요소(버튼 아님)라 네이티브 키보드 활성화가 없다 —
+   *  `role="button"`+`tabindex="0"`로 포커스 가능하게 한 뒤, Enter/Space를 같은 클릭
+   *  핸들러로 릴레이한다(`UInput`/`USelect`의 동일 패턴과 일치). */
+  private handleClearKeydown = (e: KeyboardEvent) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    this.handleClearClick(e as unknown as MouseEvent);
   };
 
   private emitChange(): void {

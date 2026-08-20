@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.30.0] - 2026-08-20
+
+### Added
+
+- **`u-input`, `u-select`, and `u-date-picker`'s suffix action icons (clear, password
+  show/hide, and the new number stepper) are now keyboard-operable.** They were mouse-only —
+  a plain `u-icon` with a click handler, no `tabindex`, no role, no accessible name — so a
+  keyboard-only or screen-reader user had no way to clear a field or toggle password
+  visibility. They now get `role="button"`, `tabindex="0"`, an `aria-label`, and Enter/Space
+  activation, matching how the rest of the library already treats icon-triggered actions.
+  Three new `Locale` keys — `clear`, `showPassword`, `hidePassword` — join `increment`/
+  `decrement` from `1.29.0`, translated into all 14 built-in locales.
+
 ## [1.29.0] - 2026-08-20
 
 ### Added

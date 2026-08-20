@@ -9,5 +9,8 @@
   "tooShort": "{min}以上である必要があります",
   "tooLong": "{max}以下である必要があります",
   "increment": "値を増やす",
-  "decrement": "値を減らす"
+  "decrement": "値を減らす",
+  "clear": "値をクリア",
+  "showPassword": "パスワードを表示",
+  "hidePassword": "パスワードを隠す"
 }

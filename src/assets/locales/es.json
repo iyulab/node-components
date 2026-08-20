@@ -9,5 +9,8 @@
   "tooShort": "Debe ser como mínimo {min}",
   "tooLong": "Debe ser como máximo {max}",
   "increment": "Aumentar valor",
-  "decrement": "Disminuir valor"
+  "decrement": "Disminuir valor",
+  "clear": "Borrar valor",
+  "showPassword": "Mostrar contraseña",
+  "hidePassword": "Ocultar contraseña"
 }

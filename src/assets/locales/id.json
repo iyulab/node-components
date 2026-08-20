@@ -9,5 +9,8 @@
   "tooShort": "Harus minimal {min}",
   "tooLong": "Harus maksimal {max}",
   "increment": "Tambah nilai",
-  "decrement": "Kurangi nilai"
+  "decrement": "Kurangi nilai",
+  "clear": "Hapus nilai",
+  "showPassword": "Tampilkan kata sandi",
+  "hidePassword": "Sembunyikan kata sandi"
 }

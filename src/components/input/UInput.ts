@@ -154,31 +154,45 @@ export class UInput extends UFormControlElement<string> {
 
           <u-icon class="suffix-item"
             ?hidden=${this.type !== 'password' || this.disabled || this.readonly}
+            role="button"
+            tabindex="0"
+            aria-label=${Locale.getValue(this.showPassword ? 'hidePassword' : 'showPassword')}
             lib="internal"
             name=${this.showPassword ? 'eye-off' : 'eye'}
             @click=${this.handlePasswordTogglerClick}
+            @keydown=${this.handleSuffixIconKeydown(this.handlePasswordTogglerClick)}
           ></u-icon>
           <u-icon class="suffix-item"
             ?hidden=${!this.clearable || this.disabled || this.readonly || !this.value}
+            role="button"
+            tabindex="0"
+            aria-label=${Locale.getValue('clear')}
             lib="internal"
             name="x"
             @click=${this.handleClearButtonClick}
+            @keydown=${this.handleSuffixIconKeydown(this.handleClearButtonClick)}
           ></u-icon>
           <u-icon class="suffix-item stepper-btn"
             ?hidden=${this.type !== 'number' || this.disabled || this.readonly}
+            role="button"
+            tabindex="0"
             aria-disabled=${!this.canDecrement}
             aria-label=${Locale.getValue('decrement')}
             lib="internal"
             name="minus"
             @click=${this.handleStepperClick(-1)}
+            @keydown=${this.handleSuffixIconKeydown(this.handleStepperClick(-1))}
           ></u-icon>
           <u-icon class="suffix-item stepper-btn"
             ?hidden=${this.type !== 'number' || this.disabled || this.readonly}
+            role="button"
+            tabindex="0"
             aria-disabled=${!this.canIncrement}
             aria-label=${Locale.getValue('increment')}
             lib="internal"
             name="plus"
             @click=${this.handleStepperClick(1)}
+            @keydown=${this.handleSuffixIconKeydown(this.handleStepperClick(1))}
           ></u-icon>
         </div>
       </u-field>
@@ -353,6 +367,15 @@ export class UInput extends UFormControlElement<string> {
     }
   };
 
+  /** suffix `u-icon`은 순수 표시 요소(버튼 아님)라 네이티브 키보드 활성화가 없다 —
+   *  `role="button"`+`tabindex="0"`로 포커스 가능하게 한 뒤, Enter/Space를 같은 클릭
+   *  핸들러로 릴레이한다. `e.preventDefault()`는 Space가 페이지를 스크롤시키는 것을 막는다. */
+  private handleSuffixIconKeydown = (action: (e: PointerEvent) => void) => (e: KeyboardEvent) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    action(e as unknown as PointerEvent);
+  };
+
   private handlePasswordTogglerClick = (e: PointerEvent) => {
     e.stopImmediatePropagation();
     this.showPassword = !this.showPassword;
@@ -369,9 +392,10 @@ export class UInput extends UFormControlElement<string> {
     this.focus();
   }
 
-  /** 경계(min/max)에 걸리면 시각적으로만 흐리게 한다 — 네이티브 stepUp/stepDown 자체가
-   *  경계에서 조용히 no-op이므로 클릭을 막을 필요는 없다(§패턴: password-toggle/clear와
-   *  같이 `u-icon`은 순수 표시 요소라 `disabled` 개념이 없다). */
+  /** 경계(min/max)에 걸리면 시각적으로 흐리고 마우스 클릭을 막는다(CSS `pointer-events:
+   *  none`) — 네이티브 stepUp/stepDown 자체가 경계에서 조용히 no-op이라 값이 튀지는
+   *  않지만, 헛클릭 피드백을 준다. 키보드 Enter/Space는 `pointer-events`의 영향을 받지
+   *  않아 그대로 stepUp/stepDown까지 가지만 결과는 동일하게 no-op이다. */
   private get canIncrement(): boolean {
     if (this.max === undefined || this.max === '' || !this.value) return true;
     return Number(this.value) < Number(this.max);
