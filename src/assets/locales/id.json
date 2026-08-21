@@ -7,5 +7,10 @@
   "rangeOverflow": "Nilai harus maksimal {max}",
   "stepMismatch": "Nilai harus kelipatan dari {step}",
   "tooShort": "Harus minimal {min}",
-  "tooLong": "Harus maksimal {max}"
+  "tooLong": "Harus maksimal {max}",
+  "increment": "Tambah nilai",
+  "decrement": "Kurangi nilai",
+  "clear": "Hapus nilai",
+  "showPassword": "Tampilkan kata sandi",
+  "hidePassword": "Sembunyikan kata sandi"
 }

@@ -68,7 +68,6 @@ export class UChip extends UElement {
           ?hidden=${!this.removable}
           rounded
           variant="ghost"
-          tabindex="-1"
           aria-label="Remove"
           @click=${this.handleRemoveClick}>
           <u-icon lib="internal" name="x"></u-icon>

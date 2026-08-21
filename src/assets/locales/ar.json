@@ -7,5 +7,10 @@
   "rangeOverflow": "يجب ألا تتجاوز القيمة {max}",
   "stepMismatch": "يجب أن تكون القيمة من مضاعفات {step}",
   "tooShort": "يجب أن تكون {min} على الأقل",
-  "tooLong": "يجب ألا تتجاوز {max}"
+  "tooLong": "يجب ألا تتجاوز {max}",
+  "increment": "زيادة القيمة",
+  "decrement": "إنقاص القيمة",
+  "clear": "مسح القيمة",
+  "showPassword": "إظهار كلمة المرور",
+  "hidePassword": "إخفاء كلمة المرور"
 }

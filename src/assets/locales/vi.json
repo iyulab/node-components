@@ -7,5 +7,10 @@
   "rangeOverflow": "Giá trị phải nhỏ hơn hoặc bằng {max}",
   "stepMismatch": "Giá trị phải là bội số của {step}",
   "tooShort": "Phải lớn hơn hoặc bằng {min}",
-  "tooLong": "Phải nhỏ hơn hoặc bằng {max}"
+  "tooLong": "Phải nhỏ hơn hoặc bằng {max}",
+  "increment": "Tăng giá trị",
+  "decrement": "Giảm giá trị",
+  "clear": "Xóa giá trị",
+  "showPassword": "Hiện mật khẩu",
+  "hidePassword": "Ẩn mật khẩu"
 }

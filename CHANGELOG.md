@@ -1,5 +1,45 @@
 # Changelog
 
+## [1.31.0] - 2026-08-20
+
+### Added
+
+- **`u-chip`'s remove button and `u-tab`'s close button are now keyboard-operable.** Both
+  render a real `<u-button>`, but it carried an explicit `tabindex="-1"` — which, despite the
+  inner native `<button>` still reporting `tabIndex === 0`, removes it from the browser's
+  actual Tab sequence (verified in real Chromium; the property alone doesn't tell you this).
+  Neither component offered any alternative keyboard path to trigger removal, so a
+  keyboard-only user could see a removable chip or a closable tab but never dismiss it without
+  a mouse. The `tabindex="-1"` override is removed, restoring each button's normal default
+  focusability — Tab now reaches it like any other button, and Enter/Space activate it
+  natively.
+
+## [1.30.0] - 2026-08-20
+
+### Added
+
+- **`u-input`, `u-select`, and `u-date-picker`'s suffix action icons (clear, password
+  show/hide, and the new number stepper) are now keyboard-operable.** They were mouse-only —
+  a plain `u-icon` with a click handler, no `tabindex`, no role, no accessible name — so a
+  keyboard-only or screen-reader user had no way to clear a field or toggle password
+  visibility. They now get `role="button"`, `tabindex="0"`, an `aria-label`, and Enter/Space
+  activation, matching how the rest of the library already treats icon-triggered actions.
+  Three new `Locale` keys — `clear`, `showPassword`, `hidePassword` — join `increment`/
+  `decrement` from `1.29.0`, translated into all 14 built-in locales.
+
+## [1.29.0] - 2026-08-20
+
+### Added
+
+- **`u-input[type="number"]` now has click `−`/`+` stepper buttons.** The native browser spin
+  buttons were already hidden by CSS with nothing put in their place, so there was no way to
+  adjust a number field with the mouse — only by typing or, undiscoverably, the keyboard arrow
+  keys. The new buttons delegate to the native `stepUp()`/`stepDown()`, so `min`/`max`/`step`
+  are respected exactly as they already were for the keyboard path; a button dims (and stops
+  responding to clicks) once its direction would go past `min`/`max`. Hidden when the field is
+  `disabled`, `readonly`, or not `type="number"`. Two new `Locale` keys, `increment`/
+  `decrement`, back their `aria-label`s and are translated into all 14 built-in locales.
+
 ## [1.28.0] - 2026-08-17
 
 ### Added

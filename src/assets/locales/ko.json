@@ -7,5 +7,10 @@
   "rangeOverflow": "값은 {max} 이하여야 합니다",
   "stepMismatch": "값은 {step}의 배수여야 합니다",
   "tooShort": "최소 {min} 이상이어야 합니다",
-  "tooLong": "최대 {max} 이하여야 합니다"
+  "tooLong": "최대 {max} 이하여야 합니다",
+  "increment": "값 증가",
+  "decrement": "값 감소",
+  "clear": "값 지우기",
+  "showPassword": "비밀번호 표시",
+  "hidePassword": "비밀번호 숨기기"
 }

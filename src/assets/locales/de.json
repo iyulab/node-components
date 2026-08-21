@@ -7,5 +7,10 @@
   "rangeOverflow": "Der Wert darf höchstens {max} betragen",
   "stepMismatch": "Der Wert muss ein Vielfaches von {step} sein",
   "tooShort": "Muss mindestens {min} betragen",
-  "tooLong": "Darf höchstens {max} betragen"
+  "tooLong": "Darf höchstens {max} betragen",
+  "increment": "Wert erhöhen",
+  "decrement": "Wert verringern",
+  "clear": "Wert löschen",
+  "showPassword": "Passwort anzeigen",
+  "hidePassword": "Passwort verbergen"
 }

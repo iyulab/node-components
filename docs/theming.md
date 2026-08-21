@@ -498,3 +498,5 @@ u-input.amount::part(input) { text-align: right; }
 ### Numeric Formatting
 
 `u-input` does not format values (thousands separators, currency, locale decimals). Its `value` is the raw string the control holds, so it stays a faithful form primitive. Format for display in your app layer, or use a grid component such as `flex-table` when you need formatted, column-aligned numbers.
+
+`type="number"` ships a click stepper (`min`/`max`/`step` aware — see the [`u-input` reference](../skills/iyulab-components/references/components/input.md)), but the *size* of that step is a field-meaning decision the library cannot make: a quantity field wants `step="1"`, a KRW amount usually wants `step="1000"`, a two-decimal currency wants `step="0.01"`. Set `step` per field; there is no built-in "currency" input type.

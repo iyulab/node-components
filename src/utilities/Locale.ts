@@ -25,7 +25,12 @@ export type LocaleMessageKey =
   | 'rangeOverflow'
   | 'stepMismatch'
   | 'tooShort'
-  | 'tooLong';
+  | 'tooLong'
+  | 'increment'
+  | 'decrement'
+  | 'clear'
+  | 'showPassword'
+  | 'hidePassword';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 
