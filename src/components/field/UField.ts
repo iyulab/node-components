@@ -61,15 +61,20 @@ export class UField extends UElement {
   }
 
   private handleLabelClick = () => {
+    this.focus();
+  };
+
+  /** 슬롯에 꽂힌 첫 포커스 가능 폼 컨트롤로 포커스를 위임한다 (라벨 클릭과 동일 경로). */
+  public focus(options?: FocusOptions): void {
     const slot = this.shadowRoot?.querySelector('slot:not([name])') as HTMLSlotElement | null;
     const nodes = slot?.assignedElements({ flatten: true }) || [];
     for (const node of nodes) {
       if (isFocusable(node)) {
-        (node as HTMLElement).focus();
+        (node as HTMLElement).focus(options);
         return;
       }
     }
-  };
+  }
 }
 
 declare global {

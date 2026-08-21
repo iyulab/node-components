@@ -234,6 +234,11 @@ export class USelect extends UFormControlElement<string | string[]> {
     this.invalid = false;
   }
 
+  /** 트리거 영역(.container)으로 포커스를 위임한다 — u-input과 동일한 계약(호스트 자체는 포커스 불가). */
+  public focus(options?: FocusOptions): void {
+    this.containerEl?.focus(options);
+  }
+
   private setup(options: UOption[]) {
     for (const option of options) {
       option.removeEventListener('click', this.handleOptionClick);
