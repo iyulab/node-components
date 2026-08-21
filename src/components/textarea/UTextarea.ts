@@ -146,6 +146,14 @@ export class UTextarea extends UFormControlElement<string> {
     this.invalid = false;
   }
 
+  public focus(options?: FocusOptions): void {
+    this.textareaEl?.focus(options);
+  }
+
+  public blur(): void {
+    this.textareaEl?.blur();
+  }
+
   private resizeTextarea(): void {
     const textarea = this.textareaEl;
     if (!textarea) return;

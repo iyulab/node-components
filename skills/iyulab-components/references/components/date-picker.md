@@ -49,6 +49,8 @@ Single-date selection with a popover calendar. The value follows the same conven
 |--------|--------------|
 | `validate()` | Validate; sets `invalid` |
 | `reset()` | Reset value |
+| `focus(options?)` | Focus the trigger |
+| `blur()` | Blur the trigger |
 
 ## CSS Parts
 

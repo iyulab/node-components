@@ -87,6 +87,9 @@ export class USlider extends UFormControlElement<number | number[]> {
   @state() private dragging: ThumbId | null = null;
   @query('.track') private trackEl!: HTMLElement;
   @query('.container') private containerEl?: HTMLElement;
+  /** `.container`는 포인터 이벤트 좌표 계산용 래퍼일 뿐 tabindex가 없다 — 실제
+   *  포커스 가능한 대상은 min thumb(단일 모드의 유일한 thumb, range 모드의 시작값)다. */
+  @query('.thumb[data-thumb="min"]') private minThumbEl?: HTMLElement;
 
   protected shouldValidate(changed: PropertyValues): boolean {
     return super.shouldValidate(changed) || changed.has('min') || changed.has('max');
@@ -211,6 +214,18 @@ export class USlider extends UFormControlElement<number | number[]> {
       this.value = this.offset ?? this.min;
     }
     this.invalid = false;
+  }
+
+  /** thumb는 div라 네이티브 `disabled`가 없다 — disabled일 때 `tabindex="-1"`로만 Tab
+   *  순서에서 빠지고 프로그램적 `.focus()`는 여전히 통과하므로, `UInput.focus()`가
+   *  네이티브 `disabled` `<input>`에서 얻는 것과 같은 no-op을 여기서 직접 재현한다. */
+  public focus(options?: FocusOptions): void {
+    if (this.disabled) return;
+    this.minThumbEl?.focus(options);
+  }
+
+  public blur(): void {
+    this.minThumbEl?.blur();
   }
 
   private onChangeValue() {

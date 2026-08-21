@@ -66,6 +66,8 @@ Dropdown select with single or multiple selection, search, and clear support. Fo
 |--------|-------------|
 | `validate()` | Validate; sets `invalid` |
 | `reset()` | Reset value |
+| `focus(options?)` | Focus the trigger |
+| `blur()` | Blur the trigger |
 
 ## CSS Parts
 

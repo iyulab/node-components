@@ -40,3 +40,9 @@ Layout wrapper for form controls. Renders label, required marker, description te
 | `required` | `boolean` | `false` | ✓ | Show required marker |
 | `invalid` | `boolean` | `false` | ✓ | Show validation error state |
 | `disabled` | `boolean` | `false` | ✓ | Disable state forwarding |
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `focus(options?)` | Focus the first focusable slotted child |

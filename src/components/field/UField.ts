@@ -60,15 +60,22 @@ export class UField extends UElement {
     return html`<div class="footer">${message}</div>`;
   }
 
-  private handleLabelClick = () => {
+  /** 슬롯에 꽂힌 첫 포커스 가능 자식으로 위임한다 — 라벨 클릭과 같은 대상 탐색 로직을
+   *  공개 API로도 노출해, 소비자가 임의의 폼 컨트롤(자체 웹 컴포넌트가 아닌 것 포함)을
+   *  슬롯에 꽂아도 host의 `.focus()`가 `UInput.focus()`와 같은 계약으로 동작하게 한다. */
+  public focus(options?: FocusOptions): void {
     const slot = this.shadowRoot?.querySelector('slot:not([name])') as HTMLSlotElement | null;
     const nodes = slot?.assignedElements({ flatten: true }) || [];
     for (const node of nodes) {
       if (isFocusable(node)) {
-        (node as HTMLElement).focus();
+        (node as HTMLElement).focus(options);
         return;
       }
     }
+  }
+
+  private handleLabelClick = () => {
+    this.focus();
   };
 }
 

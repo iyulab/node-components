@@ -60,6 +60,8 @@ Range slider. Single-thumb or dual-thumb (range) mode. Supports marks, value dis
 |--------|-------------|
 | `validate()` | Validate; sets `invalid` |
 | `reset()` | Reset value |
+| `focus(options?)` | Focus the first (min) thumb |
+| `blur()` | Blur the first (min) thumb |
 
 ## CSS Parts
 

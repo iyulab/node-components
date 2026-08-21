@@ -61,6 +61,8 @@ Multi-line text input with auto-resize and optional character counter. Form-asso
 |--------|-------------|
 | `validate()` | Validate; sets `invalid` |
 | `reset()` | Reset value |
+| `focus(options?)` | Focus the textarea |
+| `blur()` | Blur the textarea |
 
 ## CSS Parts
 

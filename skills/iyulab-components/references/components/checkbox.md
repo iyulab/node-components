@@ -50,6 +50,8 @@ Checkbox with `indeterminate` state support. Form-associated (`formAssociated = 
 |--------|---------|-------------|
 | `validate()` | `boolean` | Run validation; sets `invalid` |
 | `reset()` | `void` | Clear value and validation state |
+| `focus(options?)` | `void` | Focus the checkbox input |
+| `blur()` | `void` | Blur the checkbox input |
 
 ## CSS Parts
 

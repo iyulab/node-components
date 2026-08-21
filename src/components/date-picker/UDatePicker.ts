@@ -389,6 +389,18 @@ export class UDatePicker extends UFormControlElement<string> {
     this.value = undefined;
     this.invalid = false;
   }
+
+  /** `.container`는 div라 네이티브 `disabled`가 없다 — disabled일 때 `tabindex="-1"`로만
+   *  Tab 순서에서 빠지고 프로그램적 `.focus()`는 여전히 통과하므로, `UInput.focus()`가
+   *  네이티브 `disabled` `<input>`에서 얻는 것과 같은 no-op을 여기서 직접 재현한다. */
+  public focus(options?: FocusOptions): void {
+    if (this.disabled) return;
+    this.containerEl?.focus(options);
+  }
+
+  public blur(): void {
+    this.containerEl?.blur();
+  }
 }
 
 declare global {

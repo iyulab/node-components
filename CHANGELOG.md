@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.32.0] - 2026-08-21
+
+### Added
+
+- **`u-select`, `u-date-picker`, `u-textarea`, `u-checkbox`, `u-switch`, and `u-slider` now
+  support `.focus()`/`.blur()` on the host element**, matching `u-input`'s existing contract.
+  Previously only `u-input` delegated `.focus()` to its actual interactive element; calling
+  `.focus()` on any of the others was a silent no-op, since the host element itself carries no
+  `tabindex` — only an internal element does (the container, the native `<input>`/`<textarea>`,
+  or, for `u-slider`, the first thumb). Any consumer building a generic "scroll to and focus
+  the first invalid field" flow now gets consistent behavior across every form control this
+  library ships, instead of having to special-case each one.
+- **`u-field` now exposes `.focus()` publicly**, delegating to the first focusable slotted
+  child — the same lookup its label-click handler already used internally, now available to
+  consumers slotting an arbitrary form control (not one of this library's own) directly into
+  `<u-field>`.
+
 ## [1.31.0] - 2026-08-20
 
 ### Added

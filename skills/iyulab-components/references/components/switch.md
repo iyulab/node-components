@@ -55,6 +55,8 @@ Toggle switch (on/off). Supports custom track and thumb content via slots. Form-
 |--------|-------------|
 | `validate()` | Validate; sets `invalid` |
 | `reset()` | Reset state |
+| `focus(options?)` | Focus the switch input |
+| `blur()` | Blur the switch input |
 
 ## CSS Parts
 

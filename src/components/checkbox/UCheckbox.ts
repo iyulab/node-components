@@ -108,6 +108,14 @@ export class UCheckbox extends UFormControlElement<string> {
     this.invalid = false;
   }
 
+  public focus(options?: FocusOptions): void {
+    this.inputEl?.focus(options);
+  }
+
+  public blur(): void {
+    this.inputEl?.blur();
+  }
+
   private handleInputChange = (e: Event) => {
     e.stopImmediatePropagation();
 
