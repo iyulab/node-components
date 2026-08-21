@@ -146,6 +146,21 @@ export class URating extends UFormControlElement<number> {
     this.invalid = false;
   }
 
+  /** 첫(최저 점수) 심볼로 위임한다(선택된 값과 무관 — 나머지 폼 컨트롤과 같은
+   *  "위임 대상이 하나로 고정된 단순 계약"을 유지한다). 심볼은 shadow DOM 안의
+   *  `<span>`이라 disabled/readonly일 때 `tabindex="-1"`(=`!interactive`)이고,
+   *  다른 컴포넌트의 `.container`/thumb와 같은 이유로 프로그램적 focus는 여전히
+   *  통과하므로 직접 가드한다. */
+  public focus(options?: FocusOptions): void {
+    if (!this.interactive) return;
+    const first = this.renderRoot.querySelector<HTMLElement>('.symbol');
+    first?.focus(options);
+  }
+
+  public blur(): void {
+    (this.shadowRoot?.activeElement as HTMLElement | null)?.blur();
+  }
+
   private onChangeValue() {
     this.buffer = -1;
     this.internals?.setFormValue(this.value?.toString() || '');

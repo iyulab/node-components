@@ -92,6 +92,18 @@ export class URadio extends UFormControlElement<string> {
     this.invalid = false;
   }
 
+  /** 그룹의 첫 포커스 가능 옵션으로 위임한다(선택된 값과 무관 — 나머지 폼 컨트롤과
+   *  같은 "위임 대상이 하나로 고정된 단순 계약"을 유지한다). 옵션 자신이 host에
+   *  실제 tabindex를 갖는 커스텀 엘리먼트라 `UOption.focus()`가 이미 동작한다. */
+  public focus(options?: FocusOptions): void {
+    const first = this.options.find(o => !o.disabled);
+    first?.focus(options);
+  }
+
+  public blur(): void {
+    (this.shadowRoot?.activeElement as HTMLElement | null)?.blur();
+  }
+
   private setup(options: UOption[]) {
     for (const option of options) {
       option.removeEventListener('click', this.handleOptionClick);

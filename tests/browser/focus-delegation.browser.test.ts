@@ -7,6 +7,8 @@ import '../../src/components/textarea/UTextarea.js';
 import '../../src/components/checkbox/UCheckbox.js';
 import '../../src/components/switch/USwitch.js';
 import '../../src/components/slider/USlider.js';
+import '../../src/components/radio/URadio.js';
+import '../../src/components/rating/URating.js';
 import type { USelect } from '../../src/components/select/USelect.js';
 import type { UField } from '../../src/components/field/UField.js';
 import type { UDatePicker } from '../../src/components/date-picker/UDatePicker.js';
@@ -14,6 +16,8 @@ import type { UTextarea } from '../../src/components/textarea/UTextarea.js';
 import type { UCheckbox } from '../../src/components/checkbox/UCheckbox.js';
 import type { USwitch } from '../../src/components/switch/USwitch.js';
 import type { USlider } from '../../src/components/slider/USlider.js';
+import type { URadio } from '../../src/components/radio/URadio.js';
+import type { URating } from '../../src/components/rating/URating.js';
 
 describe('폼 컨트롤 host.focus()/.blur() 위임 — UInput.focus()와 같은 계약을 나머지 폼 컨트롤로 확장', () => {
   beforeEach(() => {
@@ -156,5 +160,64 @@ describe('폼 컨트롤 host.focus()/.blur() 위임 — UInput.focus()와 같은
 
     el.focus();
     expect(document.activeElement).not.toBe(el);
+  });
+
+  it('URadio — host.focus()가 첫 옵션으로 위임된다(선택된 값과 무관)', async () => {
+    const radio = document.createElement('u-radio') as URadio;
+    for (const v of ['a', 'b', 'c']) {
+      const option = document.createElement('u-option');
+      option.setAttribute('value', v);
+      option.textContent = v;
+      radio.appendChild(option);
+    }
+    radio.value = 'b';
+    document.body.appendChild(radio);
+    await radio.updateComplete;
+    await new Promise(r => setTimeout(r, 0));
+
+    radio.focus();
+    const firstOption = radio.querySelector('u-option[value="a"]');
+    expect(document.activeElement).toBe(firstOption);
+
+    radio.blur();
+    expect(radio.shadowRoot?.activeElement).toBeNull();
+  });
+
+  it('URadio — disabled 상태에서는 host.focus()가 no-op이다', async () => {
+    const radio = document.createElement('u-radio') as URadio;
+    radio.setAttribute('disabled', '');
+    const option = document.createElement('u-option');
+    option.setAttribute('value', 'a');
+    radio.appendChild(option);
+    document.body.appendChild(radio);
+    await radio.updateComplete;
+    await new Promise(r => setTimeout(r, 0));
+
+    radio.focus();
+    expect(document.activeElement).not.toBe(radio.querySelector('u-option'));
+  });
+
+  it('URating — host.focus()가 첫(최저 점수) 심볼로 위임된다', async () => {
+    const rating = document.createElement('u-rating') as URating;
+    rating.value = 3;
+    document.body.appendChild(rating);
+    await rating.updateComplete;
+
+    rating.focus();
+    const firstSymbol = rating.shadowRoot!.querySelector('.symbol');
+    expect(rating.shadowRoot?.activeElement).toBe(firstSymbol);
+
+    rating.blur();
+    expect(rating.shadowRoot?.activeElement).toBeNull();
+  });
+
+  it('URating — disabled 상태에서는 host.focus()가 no-op이다', async () => {
+    const rating = document.createElement('u-rating') as URating;
+    rating.setAttribute('disabled', '');
+    document.body.appendChild(rating);
+    await rating.updateComplete;
+
+    rating.focus();
+    expect(rating.shadowRoot?.activeElement).toBeNull();
   });
 });

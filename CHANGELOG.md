@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.33.0] - 2026-08-21
+
+### Added
+
+- **`u-radio` and `u-rating` now support `.focus()`/`.blur()` on the host element too**,
+  completing the same contract added to the rest of the form controls in `1.32.0`. Both are
+  option/symbol *groups* rather than a single target, so `.focus()` delegates to the first
+  option (`u-radio`) or the first symbol (`u-rating`) regardless of the current selection —
+  the same "one fixed delegation target" contract every other control in this library now
+  shares, rather than adding value-aware branching.
+
 ## [1.32.0] - 2026-08-21
 
 ### Added

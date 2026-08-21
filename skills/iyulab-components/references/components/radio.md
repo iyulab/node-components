@@ -58,6 +58,8 @@ Radio group built from `u-option` children. Form-associated.
 |--------|-------------|
 | `validate()` | Validate; sets `invalid` |
 | `reset()` | Reset selection |
+| `focus(options?)` | Focus the first option (regardless of selection) |
+| `blur()` | Blur the currently focused option, if any |
 
 ## CSS Parts
 

@@ -56,6 +56,8 @@ Star/custom-symbol rating input. Supports fractional precision and custom symbol
 |--------|-------------|
 | `validate()` | Validate; sets `invalid` |
 | `reset()` | Reset value |
+| `focus(options?)` | Focus the first symbol (regardless of value) |
+| `blur()` | Blur the currently focused symbol, if any |
 
 ## CSS Parts
 
