@@ -93,17 +93,21 @@ export class UFloatingElement extends UElement {
   @property({ type: Boolean }) arrow: boolean = false;
 
 
-  /** 
-   * 엘리먼트가 표시되기 전 지연 시간(ms)입니다. 
-   * 
+  /**
+   * 엘리먼트가 표시되기 전 지연 시간(ms)입니다.
+   *
+   * @attr {number} show-delay - HTML에서는 이 kebab-case 이름으로만 반영됩니다
+   *   (`showDelay`로 적으면 조용히 무시됩니다).
    * @default 0
    */
   @property({ type: Number, attribute: 'show-delay' }) showDelay: number = 0;
-  
-  /** 
+
+  /**
    * 엘리먼트가 숨겨지기 전 지연 시간(ms)입니다.
    *
-   * @default 0 
+   * @attr {number} hide-delay - HTML에서는 이 kebab-case 이름으로만 반영됩니다
+   *   (`hideDelay`로 적으면 조용히 무시됩니다).
+   * @default 0
    */
   @property({ type: Number, attribute: 'hide-delay' }) hideDelay: number = 0;
 

@@ -13,6 +13,12 @@
   submenu, which uses the same trigger). Mouse and `focus`/`focusin` triggers are
   unaffected.
 
+### Docs
+
+- `UFloatingElement`'s `show-delay`/`hide-delay` now document their kebab-case HTML
+  attribute name explicitly — the corresponding `showDelay`/`hideDelay` camelCase
+  spelling is silently ignored, and this wasn't called out before.
+
 ## [1.33.1] - 2026-08-25
 
 ### Fixed
