@@ -130,10 +130,33 @@ export class UButton extends UElement {
     super.disconnectedCallback();
   }
 
+  /**
+   * 호스트에 세팅된 `aria-label`은 실제 접근 가능한(포커스 대상) 엘리먼트가 아니라 —
+   * 그 안쪽 shadow DOM 의 네이티브 `<a>`/`<button>`이다. 섀도우 경계를 넘지 않으므로
+   * 접근성 트리에 자동 반영되지 않는다(docket #75 실측 — 속성은 붙어 있는데
+   * 접근성 이름이 비어 있음). `render()`가 이 값을 읽어 내부 엘리먼트에 직접 옮긴다.
+   *
+   * `aria-label`은 Lit 리액티브 프로퍼티로 선언돼 있지 않아 `observedAttributes`에
+   * 없다 — 그 목록에 없는 속성은 `attributeChangedCallback` 자체가 호출되지 않는다
+   * (커스텀 엘리먼트 표준 동작). 초기 렌더는 되지만 연결 후 동적 변경은 반영되지
+   * 않았다 — 목록에 명시적으로 추가해야 한다.
+   */
+  static override get observedAttributes(): string[] {
+    return [...super.observedAttributes, 'aria-label'];
+  }
+
+  override attributeChangedCallback(name: string, old: string | null, value: string | null): void {
+    super.attributeChangedCallback(name, old, value);
+    if (name === 'aria-label') this.requestUpdate();
+  }
+
   render() {
+    const ariaLabel = this.getAttribute('aria-label') ?? undefined;
+
     if (this.href) {
       return html`
         <a part="link"
+          aria-label=${ifDefined(ariaLabel)}
           ?disabled=${this.disabled || this.loading}
           tabindex=${this.disabled || this.loading ? -1 : 0}
           href=${ifDefined(this.disabled || this.loading ? undefined : this.href)}
@@ -149,6 +172,7 @@ export class UButton extends UElement {
 
     return html`
       <button part="button"
+        aria-label=${ifDefined(ariaLabel)}
         type=${this.type}
         ?disabled=${this.disabled || this.loading}
       >

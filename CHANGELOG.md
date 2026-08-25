@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.33.1] - 2026-08-25
+
+### Fixed
+
+- **`aria-label` set on `<u-button>` never reached the accessibility tree.** The host
+  attribute was present, but the actual interactive node exposed to assistive technology is
+  the native `<button>`/`<a>` rendered inside the shadow root — ARIA content attributes on a
+  shadow host do not cross the shadow boundary to label a descendant. Icon-only buttons using
+  `aria-label` for their accessible name were announced as unnamed controls. `render()` now
+  forwards the host's `aria-label` onto the internal element, and attribute changes made after
+  connection are observed and re-rendered (previously only the initial value would have had
+  any chance of being picked up).
+
 ## [1.33.0] - 2026-08-21
 
 ### Added
