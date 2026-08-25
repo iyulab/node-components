@@ -2,6 +2,7 @@ import { html, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { arrayAttrConverter } from "../../utilities/converters.js";
+import { isCoarsePointer } from "../../utilities/elements.js";
 import { UFloatingElement } from "../UFloatingElement.js";
 import { styles } from "./UPopover.styles.js";
 
@@ -228,18 +229,32 @@ export class UPopover extends UFloatingElement {
 
   private handleAnchorPointerEnter = (e: PointerEvent) => {
     this.cancelSafeTimer();
+    if (isCoarsePointer(e)) {
+      // 터치/펜은 지속되는 hover 상태가 없다 — pointerenter 직후 pointerleave가
+      // 뒤따르므로(§UFloatingElement.isCoarsePointer 참조) hover 타이머 대신
+      // 클릭처럼 토글한다(Floating UI/Radix 계열의 관행).
+      if (this.open) {
+        this.hide();
+      } else {
+        this.show(e.currentTarget as HTMLElement);
+      }
+      return;
+    }
     this.show(e.currentTarget as HTMLElement);
   };
 
-  private handleAnchorPointerLeave = () => {
+  private handleAnchorPointerLeave = (e: PointerEvent) => {
+    if (isCoarsePointer(e)) return; // 닫기는 토글(위) 또는 문서 클릭 dismiss가 담당
     this.startSafeTimer();
   };
 
-  private handlePopoverPointerEnter = () => {
+  private handlePopoverPointerEnter = (e: PointerEvent) => {
+    if (isCoarsePointer(e)) return;
     this.cancelSafeTimer();
   };
 
-  private handlePopoverPointerLeave = () => {
+  private handlePopoverPointerLeave = (e: PointerEvent) => {
+    if (isCoarsePointer(e)) return;
     this.startSafeTimer();
   };
 

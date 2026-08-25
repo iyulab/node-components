@@ -51,3 +51,12 @@ export function querySelectorAllWithin(element: Element, selectors: string): HTM
     return [];
   }
 }
+
+/**
+ * 터치/펜처럼 지속되는 hover 상태가 없는 포인터인지 여부입니다.
+ * - 이런 포인터는 탭 시 `pointerenter` 직후 `pointerleave`가 뒤따르므로, hover 트리거
+ *   컴포넌트가 이를 구분하지 않으면 열리자마자 닫히는 결함으로 이어집니다(docket #104).
+ */
+export function isCoarsePointer(event: PointerEvent): boolean {
+  return event.pointerType === 'touch' || event.pointerType === 'pen';
+}
