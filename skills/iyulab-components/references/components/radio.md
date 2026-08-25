@@ -67,3 +67,10 @@ Radio group built from `u-option` children. Form-associated.
 |------|-------------|
 | `field` | Outer field wrapper |
 | `container` | Options container |
+
+## CSS Custom Properties
+
+| Property | Description |
+|----------|-------------|
+| `--radio-color` | Base color of the selected state (default `--u-primary-color`) |
+| `--radio-color-active` | Selected-state active tone (default `--radio-color` at 85% + black) |

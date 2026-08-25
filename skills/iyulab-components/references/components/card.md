@@ -51,3 +51,10 @@ Content card with optional media, header, body, and footer sections.
 | `header` | Header slot wrapper |
 | `body` | Body (default slot) wrapper |
 | `footer` | Footer slot wrapper |
+
+## CSS Custom Properties
+
+| Property | Description |
+|----------|-------------|
+| `--card-border-width` | Border thickness (`0` when `borderless`) |
+| `--card-border-color` | Border color |

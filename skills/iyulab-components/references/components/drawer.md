@@ -62,6 +62,12 @@ Side panel that slides in from any screen edge. Extends `UOverlayElement` (focus
 | `body` | Body area |
 | `close-btn` | Close button |
 
+## CSS Custom Properties
+
+| Property | Description |
+|----------|-------------|
+| `--drawer-size` | Panel size along the slide axis — width for `placement="left"`/`"right"` (default `28rem`), height for `"top"`/`"bottom"` (default `16rem`). Auto-shrinks to `max-width`/`max-height: 100%` on narrow viewports |
+
 ---
 
 ## Edit-panel pattern
