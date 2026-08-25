@@ -1,14 +1,23 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import '../../src/components/popover/UPopover.js';
 import '../../src/components/tooltip/UTooltip.js';
+import '../../src/components/slider/USlider.js';
 import type { UPopover } from '../../src/components/popover/UPopover.js';
 import type { UTooltip } from '../../src/components/tooltip/UTooltip.js';
+import type { USlider } from '../../src/components/slider/USlider.js';
 
 /**
- * 회귀 고정 — docket #104: touch/pen은 지속되는 hover 상태가 없어 탭 시
- * pointerenter 직후 pointerleave가 뒤따른다. hover 트리거 컴포넌트가 이를
- * 구분하지 않으면 열리자마자(또는 SAFE_TIMER 뒤) 닫혀 터치 사용자가 콘텐츠를
- * 볼 수 없다.
+ * 회귀 고정 — docket #104: touch/pen은 지속되는 hover 상태가 없어 짧은 탭 시
+ * pointerenter 직후 pointerleave가 뒤따른다. `u-popover[trigger="hover"]`가 이를
+ * 구분하지 않으면 열리자마자(SAFE_TIMER 뒤) 닫혀 터치 사용자가 메뉴를 조작할 수
+ * 없었다 — `u-menu-item`의 서브메뉴도 같은 경로를 쓴다.
+ *
+ * ⚠**`u-tooltip`은 의도적으로 손대지 않았다** — pointerType 분기를 추가하려다
+ * `u-slider`의 값 툴팁(`part="thumb-tooltip"`)이 드래그 중 터치를 누르고 있는
+ * 동안 보여주고 뗄 때 닫히는 것에 의존한다는 것을 뒤늦게 확인했다(픽커/버튼과
+ * 달리 pointerenter/pointerleave가 즉시 짝을 이루지 않고 hold 기간만큼
+ * 떨어져 있다). touch에서 무조건 표시 안 함으로 바꾸면 그 기능이 깨진다 —
+ * 아래 두 테스트가 그 "누르고 있는 동안 표시" 계약을 고정한다.
  *
  * `PointerEvent.pointerType`은 컴포넌트가 값만 읽으므로 트러스티드 입력이
  * 필요 없다 — 합성 이벤트로 충분히 재현된다(네이티브 `<form>` Enter 제출처럼
@@ -108,12 +117,24 @@ describe('hover 트리거의 touch/pen pointerType 처리', () => {
       expect(tooltip.open).toBe(true);
     });
 
-    it('터치 탭은 표시되지 않는다 — 보조 정보라 touch에서 무력화', async () => {
+    it('터치를 누르고 있는 동안(pointerleave 없이)은 표시를 유지한다 — u-slider 드래그 값 표시가 의존', async () => {
       const { wrap, tooltip } = await mountTooltip();
 
       firePointer(wrap, 'pointerenter', 'touch');
-      firePointer(wrap, 'pointerleave', 'touch');
+      await settle(150); // 실제 드래그 중처럼 leave 없이 유지
+
+      expect(tooltip.open).toBe(true);
+    });
+
+    it('터치를 떼면(pointerleave) 즉시 닫힌다', async () => {
+      const { wrap, tooltip } = await mountTooltip();
+
+      firePointer(wrap, 'pointerenter', 'touch');
       await settle(100);
+      expect(tooltip.open).toBe(true);
+
+      firePointer(wrap, 'pointerleave', 'touch');
+      await settle(50);
 
       expect(tooltip.open).toBe(false);
     });
@@ -125,6 +146,30 @@ describe('hover 트리거의 touch/pen pointerType 처리', () => {
       await settle(50);
 
       expect(tooltip.open).toBe(true);
+    });
+  });
+
+  describe('u-slider[show-tooltip] 통합 — 실제 소비 경로에서도 유지되는지 확인', () => {
+    it('thumb를 터치로 누르고 있는 동안 값 툴팁이 표시된다', async () => {
+      const slider = document.createElement('u-slider') as USlider;
+      slider.showTooltip = true;
+      slider.value = 30;
+      document.body.appendChild(slider);
+      await slider.updateComplete;
+
+      const thumb = slider.shadowRoot!.querySelector('.thumb') as HTMLElement;
+      const tooltip = thumb.querySelector('u-tooltip') as UTooltip;
+      await tooltip.updateComplete;
+
+      firePointer(thumb, 'pointerenter', 'touch');
+      await settle(150); // 드래그 중처럼 leave 없이 유지
+
+      expect(tooltip.open).toBe(true);
+
+      firePointer(thumb, 'pointerleave', 'touch');
+      await settle(50);
+
+      expect(tooltip.open).toBe(false);
     });
   });
 });

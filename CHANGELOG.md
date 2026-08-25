@@ -4,16 +4,14 @@
 
 ### Fixed
 
-- **`u-popover[trigger="hover"]` and `u-tooltip` closed immediately on touch devices.**
-  Neither component distinguished pointer type in its hover handlers — a tap fires
-  `pointerenter` followed almost instantly by `pointerleave` (touch/pen have no
-  sustained "hover" state the way a mouse does), so the hover-opened element closed
-  again before a user could interact with it. `u-popover` now falls back to a
-  click-like toggle on `touch`/`pen` pointers (its content can be actionable menu
-  items, so it needs a working entry point on touch); `u-tooltip` now simply does not
-  open for `touch`/`pen` (its content is supplementary, matching the common
-  convention of disabling hover tooltips on coarse pointers). Keyboard-driven
-  `focus`/`focusin` triggers are unaffected either way.
+- **`u-popover[trigger="hover"]` closed immediately on touch devices.** Its hover
+  handlers didn't distinguish pointer type — a tap fires `pointerenter` followed
+  almost instantly by `pointerleave` (touch/pen have no sustained "hover" state the
+  way a mouse does), so the popover closed again before a user could interact with
+  it. It now falls back to a click-like toggle on `touch`/`pen` pointers, matching
+  the common convention for hover-triggered menus (this also fixes `u-menu-item`'s
+  submenu, which uses the same trigger). Mouse and `focus`/`focusin` triggers are
+  unaffected.
 
 ## [1.33.1] - 2026-08-25
 

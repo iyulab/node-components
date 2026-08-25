@@ -1,7 +1,6 @@
 import { html, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import { isCoarsePointer } from "../../utilities/elements.js";
 import { UFloatingElement } from "../UFloatingElement.js";
 import { styles } from "./UTooltip.styles.js";
 import type { VirtualElement } from '@floating-ui/dom';
@@ -105,10 +104,6 @@ export class UTooltip extends UFloatingElement {
 
   private handleAnchorTrigger = (event: PointerEvent | FocusEvent) => {
     if (this.isEmpty) return;
-    // 터치/펜은 지속되는 hover 상태가 없어 pointerenter 직후 pointerleave가 뒤따른다
-    // (docket #104) — 툴팁은 보조 정보이므로(u-popover의 클릭 폴백과 달리 대체
-    // 진입 경로가 필요 없다) coarse pointer에서는 아예 표시하지 않는다.
-    if (event instanceof PointerEvent && isCoarsePointer(event)) return;
     let target: Element | VirtualElement | null = event.currentTarget as Element | null;
     if (!target) return;
 
