@@ -27,7 +27,18 @@ export default defineConfig({
           browser: {
             enabled: true,
             provider: playwright(),
-            instances: [{ browser: 'chromium' }],
+            // ⚠`headless: true` 명시가 필요하다 — 지정하지 않으면(로컬 실행 시 UI 기본
+            // 켜짐, `browser.ui` 기본값 `!process.env.CI`) 헤드 있는(visible) Chromium
+            // 창이 뜨고, 그 창은 Windows 의 디스플레이 배율(이 머신 150%)에 실제로
+            // 종속된다 — `window.devicePixelRatio` 는 `1`을 자체 보고해도 OS 창
+            // 합성(compositing) 단계에서 얇은 테두리가 물리 픽셀에 스냅되어
+            // `getComputedStyle().borderTopWidth`가 스타일시트의 `1px` 대신
+            // `0.666667px`(=1/1.5)로 읽힌다(실측, cycle-354 — `headless: true`로
+            // 고정하자 같은 머신에서 정확히 `1px`이 나옴을 확인). CSS px 는 정의상
+            // 렌더링 배율과 무관해야 하므로 이건 소스 결함이 아니라 헤드 있는 브라우저
+            // 인스턴스가 호스트 배율의 영향을 받는 테스트 환경 결함이다 — CI 등
+            // 애초에 헤드리스로 도는 환경에서는 안 보인다.
+            instances: [{ browser: 'chromium', headless: true }],
             // ⚠고정 포트가 필요하다 — vitest 의 기본 포트 자동선택이 이 머신의
             // Windows 동적 포트 제외 범위(`netsh interface ipv4 show
             // excludedportrange protocol=tcp`, Hyper-V/WSL NAT 예약)와 충돌해

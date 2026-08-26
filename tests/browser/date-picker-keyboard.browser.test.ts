@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '../../src/components/date-picker/UDatePicker.js';
 import type { UDatePicker } from '../../src/components/date-picker/UDatePicker.js';
+import { Locale } from '../../src/utilities/Locale.js';
 
 async function settle(el: UDatePicker) {
   await el.updateComplete;
@@ -24,6 +25,13 @@ async function openWithFocus(el: UDatePicker): Promise<HTMLButtonElement> {
 describe('UDatePicker — 키보드 내비게이션', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
+    // 실브라우저는 실제 OS 로케일을 반영한다(예: 이 머신에서는 달력 제목이 "March"가
+    // 아니라 "3월"로 나온다) — 이 파일의 단언은 영문 표기를 전제하므로 명시적으로 고정한다.
+    Locale.set('en');
+  });
+
+  afterEach(() => {
+    Locale.set('en');
   });
 
   it('열리면 선택된 날짜(또는 오늘)의 셀에 포커스가 간다', async () => {

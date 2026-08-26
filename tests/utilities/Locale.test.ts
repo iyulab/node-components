@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { Locale } from '../../src/utilities/Locale.js';
 
 describe('Locale', () => {
@@ -7,11 +7,38 @@ describe('Locale', () => {
   });
 
   describe('get / set', () => {
-    it('defaults to the detected navigator/OS locale, or en as fallback', () => {
-      // Node 21+와 브라우저 모두 navigator.language를 노출하므로 호스트 로케일에 따라 값이 달라진다 —
-      // 고정값을 기대하지 않고 감지 로직 자체를 검증한다.
-      const detected = typeof navigator !== 'undefined' && navigator.language ? navigator.language : 'en';
-      expect(Locale.get()).toBe(detected);
+    it('defaults to en in Node/SSR even when the host OS locale is not English', async () => {
+      // Node 21+ exposes a global `navigator` whose `.language` reflects the host
+      // OS/ICU locale (this machine's is non-English), not a browser user's setting.
+      // Trusting it here would leak the server's locale into every SSR/test run.
+      // ⚠이전 버전의 이 테스트는 detectLocale()과 똑같은(가드 없는) 식으로 기대값을
+      // 계산해 항상 자기 자신과만 비교했다 — 이 결함(Locale.ts detectLocale())을
+      // 발견하지 못한 이유였다. 지금은 고정된 계약값 'en'과 비교한다.
+      expect(typeof navigator !== 'undefined' && navigator.language).toBeTruthy();
+      expect(typeof window).toBe('undefined');
+      vi.resetModules();
+      const { Locale: FreshLocale } = await import('../../src/utilities/Locale.js');
+      expect(FreshLocale.get()).toBe('en');
+    });
+
+    it('detects navigator.language when a real browser window is present', async () => {
+      vi.resetModules();
+      const originalWindow = (globalThis as { window?: unknown }).window;
+      const originalNavigator = globalThis.navigator;
+      (globalThis as { window?: unknown }).window = {};
+      Object.defineProperty(globalThis, 'navigator', {
+        value: { language: 'fr-FR' },
+        configurable: true,
+      });
+      try {
+        const { Locale: FreshLocale } = await import('../../src/utilities/Locale.js');
+        expect(FreshLocale.get()).toBe('fr-FR');
+      } finally {
+        if (originalWindow === undefined) delete (globalThis as { window?: unknown }).window;
+        else (globalThis as { window?: unknown }).window = originalWindow;
+        Object.defineProperty(globalThis, 'navigator', { value: originalNavigator, configurable: true });
+        vi.resetModules();
+      }
     });
 
     it('stores the active locale', () => {

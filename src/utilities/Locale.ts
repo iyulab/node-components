@@ -47,7 +47,13 @@ const overrides = new Map<string, LocaleTable>();
 
 /** 브라우저 환경이면 `navigator.language`/`document.lang`으로 초기 로케일을 추측한다. */
 function detectLocale(): LocaleTag {
-  if (typeof navigator !== 'undefined' && navigator.language) return navigator.language;
+  // `typeof window !== 'undefined'`로 실제 브라우저인지 먼저 가른다 — Node 21+는
+  // 전역 `navigator`를 자체 제공하는데(`.language`가 OS/ICU 로케일을 반영, 브라우저의
+  // "사용자 언어 설정"과 무관), 이 가드가 없으면 SSR/CLI/테스트처럼 Node에서 이 모듈을
+  // import하는 것만으로 서버 머신의 로케일이 기본 활성 로케일로 새어 들어온다.
+  if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && navigator.language) {
+    return navigator.language;
+  }
   if (typeof document !== 'undefined' && document.documentElement?.lang) return document.documentElement.lang;
   return 'en';
 }

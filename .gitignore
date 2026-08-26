@@ -26,3 +26,7 @@ dist
 plugins/*.js
 plugins/*.d.ts
 pnpm-lock.yaml
+
+# vitest browser-mode failure artifacts (screenshots, attachments)
+.vitest-attachments/
+tests/browser/__screenshots__/
