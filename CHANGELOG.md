@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.33.3] - 2026-08-26
+
+### Fixed
+
+- **`Locale`'s automatic locale detection could pick up the host machine's OS
+  locale instead of a browser user's language.** `detectLocale()` trusted any
+  global `navigator.language` it found, including the one Node.js itself now
+  provides outside a browser — that global reflects the server/CLI machine's
+  OS locale, not a real user's setting. Importing this module in a non-browser
+  context (SSR, a Node script, a test runner) could silently default to a
+  non-English locale instead of the documented `'en'` fallback. It now only
+  trusts `navigator.language` when an actual `window` is present.
+
 ## [1.33.2] - 2026-08-25
 
 ### Fixed
