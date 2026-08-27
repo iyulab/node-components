@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.33.4] - 2026-08-27
+
+### Fixed
+
+- **`u-carousel`'s previous/next buttons and pagination dots had no accessible
+  name.** All three are icon-only controls; without an explicit label a screen
+  reader announced them as unnamed buttons. They now carry a localized
+  `aria-label` (`Locale.getValue('previousSlide' | 'nextSlide' | 'goToSlide')`,
+  the pagination dots also gaining `aria-current`) — translated across all 14
+  built-in locales.
+
 ## [1.33.3] - 2026-08-26
 
 ### Fixed
