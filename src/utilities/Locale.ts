@@ -30,7 +30,10 @@ export type LocaleMessageKey =
   | 'decrement'
   | 'clear'
   | 'showPassword'
-  | 'hidePassword';
+  | 'hidePassword'
+  | 'previousSlide'
+  | 'nextSlide'
+  | 'goToSlide';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 

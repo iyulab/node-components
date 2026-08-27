@@ -12,5 +12,8 @@
   "decrement": "减少值",
   "clear": "清除值",
   "showPassword": "显示密码",
-  "hidePassword": "隐藏密码"
+  "hidePassword": "隐藏密码",
+  "previousSlide": "上一张幻灯片",
+  "nextSlide": "下一张幻灯片",
+  "goToSlide": "转到幻灯片{n}"
 }

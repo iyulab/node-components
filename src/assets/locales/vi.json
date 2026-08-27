@@ -12,5 +12,8 @@
   "decrement": "Giảm giá trị",
   "clear": "Xóa giá trị",
   "showPassword": "Hiện mật khẩu",
-  "hidePassword": "Ẩn mật khẩu"
+  "hidePassword": "Ẩn mật khẩu",
+  "previousSlide": "Slide trước",
+  "nextSlide": "Slide sau",
+  "goToSlide": "Đi đến slide {n}"
 }

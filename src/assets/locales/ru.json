@@ -12,5 +12,8 @@
   "decrement": "Уменьшить значение",
   "clear": "Очистить значение",
   "showPassword": "Показать пароль",
-  "hidePassword": "Скрыть пароль"
+  "hidePassword": "Скрыть пароль",
+  "previousSlide": "Предыдущий слайд",
+  "nextSlide": "Следующий слайд",
+  "goToSlide": "Перейти к слайду {n}"
 }

@@ -12,5 +12,8 @@
   "decrement": "Wert verringern",
   "clear": "Wert löschen",
   "showPassword": "Passwort anzeigen",
-  "hidePassword": "Passwort verbergen"
+  "hidePassword": "Passwort verbergen",
+  "previousSlide": "Vorherige Folie",
+  "nextSlide": "Nächste Folie",
+  "goToSlide": "Zu Folie {n} wechseln"
 }

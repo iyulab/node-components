@@ -12,5 +12,8 @@
   "decrement": "Decrease value",
   "clear": "Clear value",
   "showPassword": "Show password",
-  "hidePassword": "Hide password"
+  "hidePassword": "Hide password",
+  "previousSlide": "Previous slide",
+  "nextSlide": "Next slide",
+  "goToSlide": "Go to slide {n}"
 }

@@ -12,5 +12,8 @@
   "decrement": "Kurangi nilai",
   "clear": "Hapus nilai",
   "showPassword": "Tampilkan kata sandi",
-  "hidePassword": "Sembunyikan kata sandi"
+  "hidePassword": "Sembunyikan kata sandi",
+  "previousSlide": "Slide sebelumnya",
+  "nextSlide": "Slide berikutnya",
+  "goToSlide": "Buka slide {n}"
 }

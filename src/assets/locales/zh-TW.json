@@ -12,5 +12,8 @@
   "decrement": "減少值",
   "clear": "清除值",
   "showPassword": "顯示密碼",
-  "hidePassword": "隱藏密碼"
+  "hidePassword": "隱藏密碼",
+  "previousSlide": "上一張投影片",
+  "nextSlide": "下一張投影片",
+  "goToSlide": "前往投影片{n}"
 }

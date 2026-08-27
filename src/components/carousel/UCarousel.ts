@@ -4,6 +4,7 @@ import '../button/UButton.js';
 import '../icon/UIcon.js';
 
 import { UElement } from "../UElement.js";
+import { Locale } from "../../utilities/Locale.js";
 import { styles } from "./UCarousel.styles.js";
 
 /**
@@ -125,6 +126,7 @@ export class UCarousel extends UElement {
         ?hidden=${!this.navigation || (!this.loop && this.index <= 0)}
         variant="ghost"
         rounded
+        aria-label=${Locale.getValue('previousSlide')}
         @click=${this.prev}>
         <u-icon lib="internal" name="chevron-left"></u-icon>
       </u-button>
@@ -132,6 +134,7 @@ export class UCarousel extends UElement {
         ?hidden=${!this.navigation || (!this.loop && this.index >= this.maxIndex)}
         variant="ghost"
         rounded
+        aria-label=${Locale.getValue('nextSlide')}
         @click=${this.next}>
         <u-icon lib="internal" name="chevron-right"></u-icon>
       </u-button>
@@ -140,6 +143,8 @@ export class UCarousel extends UElement {
         ?hidden=${!this.pagination || this.pageCount <= 1}>
         ${Array.from({ length: this.pageCount }, (_, i) => html`
           <button part="dot" class="dot"
+            aria-label=${Locale.getValue('goToSlide', { n: i + 1 })}
+            aria-current=${i === this.currentPage ? 'true' : 'false'}
             ?active=${i === this.currentPage}
             @click=${() => this.goTo(Math.min(i * this.perMove, this.maxIndex))}>
           </button>

@@ -12,5 +12,8 @@
   "decrement": "إنقاص القيمة",
   "clear": "مسح القيمة",
   "showPassword": "إظهار كلمة المرور",
-  "hidePassword": "إخفاء كلمة المرور"
+  "hidePassword": "إخفاء كلمة المرور",
+  "previousSlide": "الشريحة السابقة",
+  "nextSlide": "الشريحة التالية",
+  "goToSlide": "الانتقال إلى الشريحة {n}"
 }

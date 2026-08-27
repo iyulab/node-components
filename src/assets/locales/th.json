@@ -12,5 +12,8 @@
   "decrement": "ลดค่า",
   "clear": "ล้างค่า",
   "showPassword": "แสดงรหัสผ่าน",
-  "hidePassword": "ซ่อนรหัสผ่าน"
+  "hidePassword": "ซ่อนรหัสผ่าน",
+  "previousSlide": "สไลด์ก่อนหน้า",
+  "nextSlide": "สไลด์ถัดไป",
+  "goToSlide": "ไปที่สไลด์ที่ {n}"
 }
