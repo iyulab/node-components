@@ -142,4 +142,14 @@ export const styles = css`
     color: var(--u-txt-color-disabled, #BDBDBD);
     cursor: not-allowed;
   }
+
+  .calendar-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding-top: 8px;
+    margin-top: 4px;
+    border-top: 1px solid var(--u-border-color-weak, #EEEEEE);
+  }
 `;

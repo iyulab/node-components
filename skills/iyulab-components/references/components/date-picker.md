@@ -10,6 +10,10 @@ Single-date selection with a popover calendar. The value follows the same conven
 
 > The calendar week always starts on Sunday, regardless of locale.
 
+The calendar popover has a footer with a "Today" quick-action button (selects today's date,
+disabled when today falls outside `min`/`max`) and, when `clearable` and a value is set, a
+"Clear" button next to it.
+
 ```html
 <u-date-picker name="start-date" label="Start date"></u-date-picker>
 
@@ -65,6 +69,7 @@ Single-date selection with a popover calendar. The value follows the same conven
 | `calendar-weekdays` | The weekday header row |
 | `calendar-grid` | The date grid |
 | `day` | A date cell button |
+| `calendar-footer` | The row holding the "Today"/"Clear" quick-action buttons |
 
 ## CSS Custom Properties
 

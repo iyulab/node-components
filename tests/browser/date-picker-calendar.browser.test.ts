@@ -141,4 +141,78 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     expect(el.value).toBeUndefined();
     expect(changeCount).toBe(1);
   });
+
+  describe('캘린더 footer 퀵액션 — "오늘"/"초기화"', () => {
+    it('"오늘" 버튼 클릭으로 오늘 날짜가 선택되고 change 가 발화하며 팝오버가 닫힌다', async () => {
+      const el = createDatePicker({ value: '2020-01-01' });
+      document.body.appendChild(el);
+      await settle(el);
+
+      let changeCount = 0;
+      el.addEventListener('change', () => changeCount++);
+
+      const container = el.shadowRoot!.querySelector('.container') as HTMLElement;
+      container.click();
+      await settle(el);
+
+      const todayBtn = el.shadowRoot!.querySelector('.calendar-footer u-button') as HTMLElement;
+      todayBtn.click();
+      await settle(el);
+
+      const iso = new Date().toISOString().slice(0, 10);
+      expect(el.value).toBe(iso);
+      expect(changeCount).toBe(1);
+      const popover = el.shadowRoot!.querySelector('u-popover')!;
+      expect(popover.hasAttribute('open')).toBe(false);
+    });
+
+    it('오늘이 min/max 범위 밖이면 "오늘" 버튼이 disabled 다', async () => {
+      const el = createDatePicker({ min: '2020-01-01', max: '2020-01-31' });
+      document.body.appendChild(el);
+      await settle(el);
+
+      const container = el.shadowRoot!.querySelector('.container') as HTMLElement;
+      container.click();
+      await settle(el);
+
+      const todayBtn = el.shadowRoot!.querySelector('.calendar-footer u-button') as HTMLElement;
+      expect(todayBtn.hasAttribute('disabled')).toBe(true);
+    });
+
+    it('clearable 이 아니거나 값이 없으면 footer에 "초기화" 버튼이 없다', async () => {
+      const el = createDatePicker();
+      document.body.appendChild(el);
+      await settle(el);
+
+      const container = el.shadowRoot!.querySelector('.container') as HTMLElement;
+      container.click();
+      await settle(el);
+
+      const buttons = el.shadowRoot!.querySelectorAll('.calendar-footer u-button');
+      expect(buttons.length).toBe(1); // "오늘"만
+    });
+
+    it('clearable + 값 있음이면 footer "초기화" 버튼 클릭으로 값이 비워지고 팝오버가 닫힌다', async () => {
+      const el = createDatePicker({ value: '2026-02-15', clearable: 'true' });
+      document.body.appendChild(el);
+      await settle(el);
+
+      let changeCount = 0;
+      el.addEventListener('change', () => changeCount++);
+
+      const container = el.shadowRoot!.querySelector('.container') as HTMLElement;
+      container.click();
+      await settle(el);
+
+      const buttons = el.shadowRoot!.querySelectorAll('.calendar-footer u-button');
+      expect(buttons.length).toBe(2); // "오늘" + "초기화"
+      (buttons[1] as HTMLElement).click();
+      await settle(el);
+
+      expect(el.value).toBeUndefined();
+      expect(changeCount).toBe(1);
+      const popover = el.shadowRoot!.querySelector('u-popover')!;
+      expect(popover.hasAttribute('open')).toBe(false);
+    });
+  });
 });

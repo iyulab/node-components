@@ -11,6 +11,7 @@
   "increment": "값 증가",
   "decrement": "값 감소",
   "clear": "값 지우기",
+  "today": "오늘",
   "showPassword": "비밀번호 표시",
   "hidePassword": "비밀번호 숨기기",
   "previousSlide": "이전 슬라이드",

@@ -1,6 +1,7 @@
 import { html, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
+import '../button/UButton.js';
 import '../field/UField.js';
 import '../icon/UIcon.js';
 import '../icon-button/UIconButton.js';
@@ -92,6 +93,7 @@ function getWeekdayLabels(locale?: LocaleTag): string[] {
  * @csspart calendar-weekdays - the weekday header row
  * @csspart calendar-grid - the date grid
  * @csspart day - a date cell button
+ * @csspart calendar-footer - the row holding the "today"/"clear" quick-action buttons
  *
  * @cssprop --date-picker-popover-width - width of the calendar popover (default: 296px, independent of trigger width — a fixed-width calendar reads more naturally)
  *
@@ -226,6 +228,19 @@ export class UDatePicker extends UFormControlElement<string> {
             </div>
           `)}
         </div>
+        ${this.renderFooter()}
+      </div>
+    `;
+  }
+
+  private renderFooter() {
+    const todayDisabled = this.isOutOfRange(new Date());
+    return html`
+      <div class="calendar-footer" part="calendar-footer">
+        <u-button variant="ghost" size="sm" ?disabled=${todayDisabled} @click=${this.handleTodayClick}>${Locale.getValue('today')}</u-button>
+        ${this.clearable && this.value ? html`
+          <u-button variant="ghost" size="sm" @click=${this.handleFooterResetClick}>${Locale.getValue('clear')}</u-button>
+        ` : ''}
       </div>
     `;
   }
@@ -347,11 +362,28 @@ export class UDatePicker extends UFormControlElement<string> {
   private handleClearClick = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    this.resetValue();
+    this.containerEl?.focus();
+  };
+
+  /** "오늘" 퀵액션 — `today` 셀이 이미 렌더에서 계산해 표시 중인 값(`renderDay`의
+   *  `isSameDay(date, new Date())`)을 실제로 선택하는 것뿐이라 `selectDay`를 그대로 탄다
+   *  (범위 밖이면 `selectDay`가 조용히 no-op — 클릭 불가 상태인 day 셀과 동일 규약). */
+  private handleTodayClick = () => this.selectDay(new Date());
+
+  /** 캘린더 팝오버 안 "초기화" 퀵액션 — 트리거의 clear 아이콘(`handleClearClick`)과 값을
+   *  비우는 로직은 같지만, 팝오버가 열린 채로 눌렸으므로 선택 완료와 동일하게 닫아 준다. */
+  private handleFooterResetClick = () => {
+    this.resetValue();
+    this.popoverEl?.hide();
+    this.containerEl?.focus();
+  };
+
+  private resetValue(): void {
     const hadValue = !!this.value;
     this.value = undefined;
     if (hadValue) this.emitChange();
-    this.containerEl?.focus();
-  };
+  }
 
   /** suffix `u-icon`은 순수 표시 요소(버튼 아님)라 네이티브 키보드 활성화가 없다 —
    *  `role="button"`+`tabindex="0"`로 포커스 가능하게 한 뒤, Enter/Space를 같은 클릭
