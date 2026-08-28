@@ -59,6 +59,7 @@ Dropdown select with single or multiple selection, search, and clear support. Fo
 | Event | Description |
 |-------|-------------|
 | `change` | Fires when selection changes |
+| `search` | Fires on every search input change when `searchable` (`detail: { query: string }`). Fires alongside the built-in local filtering — subscribe to it to drive remote/server-side search instead of (or in addition to) the local filter |
 
 ## Methods
 

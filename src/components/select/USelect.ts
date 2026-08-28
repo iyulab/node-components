@@ -36,6 +36,9 @@ export type SelectVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
  * 
  * @event change - 사용자 상호작용(옵션 클릭·칩 제거·지우기)으로 선택 값이 변경될 때 발생.
  *   네이티브 select와 동일하게 프로그램적 value 세팅·옵션 등록으로는 발화하지 않는다.
+ * @event search - `searchable`일 때 검색 입력이 바뀔 때마다 발생(`detail: { query: string }`).
+ *   로컬 필터링(이미 렌더된 `u-option`의 `hidden` 토글)과 별개로 발행되므로, 서버/원격 검색이
+ *   필요한 소비자는 이 이벤트를 구독해 자체적으로 옵션을 갱신할 수 있다.
  */
 @customElement('u-select')
 export class USelect extends UFormControlElement<string | string[]> {
@@ -378,6 +381,7 @@ export class USelect extends UFormControlElement<string | string[]> {
         option.hidden = !label.includes(query) && !value.includes(query);
       }
     }
+    this.fire<{ query: string }>('search', { detail: { query }, cancelable: false });
   };
 
   private handleSearchKeydown = (e: KeyboardEvent) => {

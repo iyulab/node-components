@@ -47,6 +47,7 @@ private handleInput(e: Event) {
 | `hide` | `unknown` | ✓ | `u-alert`, `u-dialog`, `u-drawer`, `u-popover`, `u-tooltip` |
 | `change` | `unknown` | ✗ | `u-checkbox`, `u-radio`, `u-select`, `u-slider`, `u-switch`, `u-rating`, `u-menu`, `u-tree`, `u-form` |
 | `input` | `unknown` | ✗ | `u-input`, `u-textarea` |
+| `search` | `{ query: string }` | ✗ | `u-select` (when `searchable`) |
 | `pick` | `PickEventDetail` | ✗ | `u-chip`, `u-menu-item`, `u-tree-item` |
 | `check` | `unknown` | ✗ | `u-tree-item` |
 | `remove` | `unknown` | ✓ | `u-chip`, `u-tab` |

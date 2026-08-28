@@ -21,7 +21,7 @@ import { UDialog } from '@iyulab/components/react';
 
 `detail` 열이 `unknown` 이면 `CustomEvent`(detail 타입 미지정)로 노출된다.
 
-**컴포넌트 26개 · 이벤트 40개**
+**컴포넌트 26개 · 이벤트 41개**
 
 ## `<u-alert>`
 
@@ -131,6 +131,7 @@ import { UDialog } from '@iyulab/components/react';
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
 | `onChange` | `change` | `unknown` | 사용자 상호작용(옵션 클릭·칩 제거·지우기)으로 선택 값이 변경될 때 발생. |
+| `onSearch` | `search` | `{ query: string }` | `searchable`일 때 검색 입력이 바뀔 때마다 발생(`detail: { query: string }`). |
 
 ## `<u-slider>`
 
