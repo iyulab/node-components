@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.35.0] - 2026-08-28
+
+### Added
+
+- **`USelect` fires a `search` event on every search-input change when
+  `searchable`.** The search text was already computed internally to drive
+  the built-in local option filtering, but never surfaced — a consumer
+  binding `USelect` to a large server-paginated dataset had no way to hook
+  into it and had to rebuild the search UI from scratch to do remote
+  search. `search` (`detail: { query: string }`, non-cancelable) fires
+  alongside the existing local filtering, so a consumer can subscribe and
+  drive remote search without losing the built-in search input. Mapped
+  through to the React wrapper as `onSearch`.
+
 ## [1.34.0] - 2026-08-28
 
 ### Added
