@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.34.0] - 2026-08-28
+
+### Added
+
+- **`UDatePicker` gains a `mode="datetime"` option for combined date+time
+  selection.** Previously the component had no concept of time of day at
+  all, so a date+time field had no picker UI and consumers fell back to
+  free-text input with no format guarantee. `mode="datetime"` adds a native
+  time input to the calendar popover; the resulting `value` is always a
+  complete ISO-8601 `DateTimeOffset` string — seconds and the local UTC
+  offset are filled in automatically regardless of how coarse the time
+  input was. Picking a day preserves whatever time was already set; only
+  the "today" quick action overwrites both to right now. 12/24-hour display
+  is left to the browser's native time input rather than a custom widget.
+  Adds the `time` locale key (14 locales).
+- **`UDatePicker`'s calendar popover gains visible "today"/"clear"
+  quick-action buttons.** The calendar already computed today's date (for
+  the today-cell highlight) and already exposed value clearing via the
+  trigger's clear icon — these buttons just surface both as visible,
+  keyboard-accessible controls in the popover footer. Adds the `today`
+  locale key (14 locales), reusing the existing `clear` key for the reset
+  button label.
+
 ## [1.33.4] - 2026-08-27
 
 ### Fixed
