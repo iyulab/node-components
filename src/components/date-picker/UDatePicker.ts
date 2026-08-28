@@ -49,6 +49,31 @@ function daysInMonth(date: Date): number {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 }
 
+/** `±HH:mm` for the browser's local timezone at `date` (DST-aware — recomputed per date,
+ *  not cached — `getTimezoneOffset()`'s sign is the inverse of the ISO-8601 offset sign). */
+function getLocalOffset(date: Date): string {
+  const minutes = -date.getTimezoneOffset();
+  const sign = minutes >= 0 ? '+' : '-';
+  const abs = Math.abs(minutes);
+  return `${sign}${String(Math.floor(abs / 60)).padStart(2, '0')}:${String(abs % 60).padStart(2, '0')}`;
+}
+
+/** Builds the `value` for the given mode — `datetime` always emits seconds + local offset so
+ *  the result is unconditionally a valid, unambiguous ISO-8601 `DateTimeOffset` regardless of
+ *  how coarse the UI input was (this is the guarantee the datetime mode request asked for). */
+function buildValue(date: Date, mode: DatePickerMode, time: string): string {
+  return mode === 'datetime' ? `${toISODate(date)}T${time}:00${getLocalOffset(date)}` : toISODate(date);
+}
+
+/** Splits a `value` into its date portion (as a `Date`, via the local `parseISODate` above —
+ *  date-only, no timezone conversion) and its `HH:mm` time-of-day (`'00:00'` if absent —
+ *  covers both plain date-mode values and a datetime value with no time captured yet). */
+function splitValue(value: string): { date: Date; time: string } {
+  const [datePart, rest] = value.split('T');
+  const match = rest?.match(/^(\d{2}:\d{2})/);
+  return { date: parseISODate(datePart), time: match ? match[1] : '00:00' };
+}
+
 /** Cells to render for the calendar grid — leading `null`s pad the previous month's weekday offset. */
 function buildMonthGrid(viewDate: Date): (Date | null)[] {
   const first = startOfMonth(viewDate);
@@ -74,9 +99,15 @@ function getWeekdayLabels(locale?: LocaleTag): string[] {
   return Array.from({ length: 7 }, (_, i) => formatter.format(addDays(sunday, i)));
 }
 
+export type DatePickerMode = 'date' | 'datetime';
+
 /**
- * A single-date-selection form control. The value follows the same convention as the
- * native `input[type=date]`: an ISO `YYYY-MM-DD` string.
+ * A single-date(-time)-selection form control. In `mode="date"` (default) the value follows
+ * the same convention as the native `input[type=date]`: an ISO `YYYY-MM-DD` string. In
+ * `mode="datetime"` the value is a complete ISO-8601 `DateTimeOffset` string
+ * (`YYYY-MM-DDTHH:mm:ss±HH:mm`) — the component always fills in seconds and the browser's
+ * local UTC offset, so the value is unconditionally valid regardless of how coarse the time
+ * input was.
  *
  * The calendar week always starts on Sunday, regardless of locale — harmless for the
  * locales this library currently ships (en/ko), but not correct for locales where Monday
@@ -94,19 +125,26 @@ function getWeekdayLabels(locale?: LocaleTag): string[] {
  * @csspart calendar-grid - the date grid
  * @csspart day - a date cell button
  * @csspart calendar-footer - the row holding the "today"/"clear" quick-action buttons
+ * @csspart calendar-time - the row holding the time-of-day input (datetime mode only)
  *
  * @cssprop --date-picker-popover-width - width of the calendar popover (default: 296px, independent of trigger width — a fixed-width calendar reads more naturally)
  *
- * @event change - fires when the user clicks a date cell, confirms via keyboard, or clicks the clear button.
- *   Programmatic value assignment does not fire it (same contract as native form controls).
+ * @event change - fires when the user clicks a date cell, confirms via keyboard, changes the
+ *   time input (datetime mode, once a date is set), or clicks the clear button. Programmatic
+ *   value assignment does not fire it (same contract as native form controls).
  */
 @customElement('u-date-picker')
 export class UDatePicker extends UFormControlElement<string> {
   static styles = [super.styles, styles];
 
-  /** Minimum value (ISO YYYY-MM-DD) — dates before this cannot be selected. */
+  /** `date` (default) selects a calendar day only. `datetime` also captures a time-of-day and
+   *  the value becomes a complete ISO-8601 `DateTimeOffset` string. */
+  @property({ type: String, reflect: true }) mode: DatePickerMode = 'date';
+  /** Minimum value (ISO YYYY-MM-DD) — dates before this cannot be selected. Date-only even in
+   *  `mode="datetime"`; time-of-day is never range-checked. */
   @property({ type: String }) min?: string;
-  /** Maximum value (ISO YYYY-MM-DD) — dates after this cannot be selected. */
+  /** Maximum value (ISO YYYY-MM-DD) — dates after this cannot be selected. Date-only even in
+   *  `mode="datetime"`; time-of-day is never range-checked. */
   @property({ type: String }) max?: string;
   /** Whether to show the clear button */
   @property({ type: Boolean, reflect: true }) clearable: boolean = false;
@@ -122,6 +160,9 @@ export class UDatePicker extends UFormControlElement<string> {
   @state() private open: boolean = false;
   @state() private viewDate: Date = startOfMonth(new Date());
   @state() private focusedDate: Date = new Date();
+  /** Time-of-day for the next selection while no `value` exists yet (`mode="datetime"` only) —
+   *  once `value` is set, the time input reads/writes its time portion directly instead. */
+  @state() private pendingTime: string = '00:00';
 
   // Distinguishes "focusedDate changed because the user is navigating the grid with arrow
   // keys" from "focusedDate changed because the header's prev/next-month button was clicked".
@@ -152,7 +193,9 @@ export class UDatePicker extends UFormControlElement<string> {
     // Routed through format.ts's `formatDate` directly (not this file's local `parseISODate`)
     // so a malformed `value` attribute degrades to the raw string instead of throwing and
     // blanking the whole component — `formatDate` owns that fallback.
-    const displayText = this.value ? formatDate(this.value) : '';
+    const displayText = this.value
+      ? formatDate(this.value, this.mode === 'datetime' ? { dateStyle: 'medium', timeStyle: 'short' } : undefined)
+      : '';
     return html`
       <u-field part="field"
         ?required=${this.required}
@@ -228,7 +271,22 @@ export class UDatePicker extends UFormControlElement<string> {
             </div>
           `)}
         </div>
+        ${this.renderTimeRow()}
         ${this.renderFooter()}
+      </div>
+    `;
+  }
+
+  private renderTimeRow() {
+    if (this.mode !== 'datetime') return '';
+    const time = this.value ? splitValue(this.value).time : this.pendingTime;
+    return html`
+      <div class="calendar-time" part="calendar-time">
+        <input type="time" class="time-input" part="time-input"
+          aria-label=${Locale.getValue('time')}
+          .value=${time}
+          @change=${this.handleTimeChange}
+        />
       </div>
     `;
   }
@@ -246,7 +304,7 @@ export class UDatePicker extends UFormControlElement<string> {
   }
 
   private renderDay(date: Date) {
-    const selected = this.value ? isSameDay(date, parseISODate(this.value)) : false;
+    const selected = this.value ? isSameDay(date, splitValue(this.value).date) : false;
     const focused = isSameDay(date, this.focusedDate);
     const today = isSameDay(date, new Date());
     const outOfRange = this.isOutOfRange(date);
@@ -278,15 +336,35 @@ export class UDatePicker extends UFormControlElement<string> {
     btn?.focus();
   }
 
-  private selectDay(date: Date): void {
+  /** `timeOverride` lets a caller force the time-of-day (the "today" quick action wants
+   *  "right now", overriding whatever time was previously set) — a plain day-cell click omits
+   *  it, which preserves the existing time-of-day (or `pendingTime`) so switching the date
+   *  alone doesn't clobber a time the user already picked. */
+  private selectDay(date: Date, timeOverride?: string): void {
     if (this.isOutOfRange(date)) return;
-    const iso = toISODate(date);
+    const time = timeOverride ?? (this.value ? splitValue(this.value).time : this.pendingTime);
+    const iso = buildValue(date, this.mode, time);
     const changed = iso !== this.value;
     this.value = iso;
+    if (this.mode === 'datetime') this.pendingTime = time;
     if (changed) this.emitChange();
     this.popoverEl?.hide();
     this.containerEl?.focus();
   }
+
+  /** Time input change — only commits into `value` once a date already exists (matches native
+   *  `datetime-local`: a time alone isn't a complete value). Before that, it just remembers
+   *  `pendingTime` for whenever a day gets picked. Doesn't close the popover or refocus the
+   *  trigger — unlike selecting a day, adjusting the time doesn't conclude the interaction. */
+  private handleTimeChange = (e: Event) => {
+    const time = (e.target as HTMLInputElement).value || '00:00';
+    this.pendingTime = time;
+    if (!this.value) return;
+    const iso = buildValue(splitValue(this.value).date, this.mode, time);
+    const changed = iso !== this.value;
+    this.value = iso;
+    if (changed) this.emitChange();
+  };
 
   private handlePrevMonth = () => this.navigateMonth(-1);
   private handleNextMonth = () => this.navigateMonth(1);
@@ -350,7 +428,7 @@ export class UDatePicker extends UFormControlElement<string> {
   private handlePopoverShow = () => {
     this.open = true;
     this.grabFocusOnUpdate = true;
-    const base = this.value ? parseISODate(this.value) : new Date();
+    const base = this.value ? splitValue(this.value).date : new Date();
     this.viewDate = startOfMonth(base);
     this.focusedDate = base;
   };
@@ -368,8 +446,16 @@ export class UDatePicker extends UFormControlElement<string> {
 
   /** "오늘" 퀵액션 — `today` 셀이 이미 렌더에서 계산해 표시 중인 값(`renderDay`의
    *  `isSameDay(date, new Date())`)을 실제로 선택하는 것뿐이라 `selectDay`를 그대로 탄다
-   *  (범위 밖이면 `selectDay`가 조용히 no-op — 클릭 불가 상태인 day 셀과 동일 규약). */
-  private handleTodayClick = () => this.selectDay(new Date());
+   *  (범위 밖이면 `selectDay`가 조용히 no-op — 클릭 불가 상태인 day 셀과 동일 규약).
+   *  datetime 모드에서는 "지금"을 통째로 채우는 것이 요청의 본질(§D-28 항목 2 docket 코멘트)
+   *  이라 시간까지 `now`로 덮어쓴다 — 평범한 day 셀 클릭과 달리 기존 시각을 보존하지 않는다. */
+  private handleTodayClick = () => {
+    const now = new Date();
+    const time = this.mode === 'datetime'
+      ? `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+      : undefined;
+    this.selectDay(now, time);
+  };
 
   /** 캘린더 팝오버 안 "초기화" 퀵액션 — 트리거의 clear 아이콘(`handleClearClick`)과 값을
    *  비우는 로직은 같지만, 팝오버가 열린 채로 눌렸으므로 선택 완료와 동일하게 닫아 준다. */
@@ -406,10 +492,10 @@ export class UDatePicker extends UFormControlElement<string> {
     if (this.required && !this.value) {
       flags = { valueMissing: true };
       message = Locale.getValue('valueMissing');
-    } else if (this.value && this.min && parseISODate(this.value).getTime() < parseISODate(this.min).getTime()) {
+    } else if (this.value && this.min && splitValue(this.value).date.getTime() < parseISODate(this.min).getTime()) {
       flags = { rangeUnderflow: true };
       message = Locale.getValue('rangeUnderflow', { min: this.min });
-    } else if (this.value && this.max && parseISODate(this.value).getTime() > parseISODate(this.max).getTime()) {
+    } else if (this.value && this.max && splitValue(this.value).date.getTime() > parseISODate(this.max).getTime()) {
       flags = { rangeOverflow: true };
       message = Locale.getValue('rangeOverflow', { max: this.max });
     }

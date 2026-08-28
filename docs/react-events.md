@@ -59,7 +59,7 @@ import { UDialog } from '@iyulab/components/react';
 
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
-| `onChange` | `change` | `unknown` | fires when the user clicks a date cell, confirms via keyboard, or clicks the clear button. |
+| `onChange` | `change` | `unknown` | fires when the user clicks a date cell, confirms via keyboard, changes the |
 
 ## `<u-dialog>`
 

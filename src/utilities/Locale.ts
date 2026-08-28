@@ -30,6 +30,7 @@ export type LocaleMessageKey =
   | 'decrement'
   | 'clear'
   | 'today'
+  | 'time'
   | 'showPassword'
   | 'hidePassword'
   | 'previousSlide'

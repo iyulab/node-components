@@ -6,19 +6,28 @@ import '@iyulab/components/dist/components/date-picker/UDatePicker.js';
 
 **Tag:** `u-date-picker`
 
-Single-date selection with a popover calendar. The value follows the same convention as the native `input[type=date]`: an ISO `YYYY-MM-DD` string. Form-associated.
+Single-date(-time) selection with a popover calendar. `mode="date"` (default) follows the same
+convention as the native `input[type=date]`: an ISO `YYYY-MM-DD` string. `mode="datetime"` adds
+a time-of-day input and the value becomes a complete ISO-8601 `DateTimeOffset` string
+(`YYYY-MM-DDTHH:mm:ss±HH:mm`, seconds and the browser's local UTC offset always filled in — the
+value is unconditionally valid regardless of how coarse the time input was). Form-associated.
 
 > The calendar week always starts on Sunday, regardless of locale.
 
-The calendar popover has a footer with a "Today" quick-action button (selects today's date,
-disabled when today falls outside `min`/`max`) and, when `clearable` and a value is set, a
-"Clear" button next to it.
+The calendar popover has a footer with a "Today" quick-action button (selects today's date —
+in `mode="datetime"` this also sets the time to right now — disabled when today falls outside
+`min`/`max`) and, when `clearable` and a value is set, a "Clear" button next to it. Picking a
+day preserves whatever time-of-day was already set; only the "Today" button overrides the time.
+`min`/`max` are always date-only, even in `mode="datetime"` — time-of-day is never range-checked.
 
 ```html
 <u-date-picker name="start-date" label="Start date"></u-date-picker>
 
 <!-- Clearable with a bounded range -->
 <u-date-picker name="due-date" label="Due date" clearable min="2026-01-01" max="2026-12-31"></u-date-picker>
+
+<!-- Date + time, value is a full ISO-8601 DateTimeOffset string -->
+<u-date-picker name="sent-at" label="Sent at" mode="datetime"></u-date-picker>
 ```
 
 ---
@@ -27,9 +36,10 @@ disabled when today falls outside `min`/`max`) and, when `clearable` and a value
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
-| `value` | `string` | — | — | Selected date (ISO `YYYY-MM-DD`) |
-| `min` | `string` | — | — | Minimum selectable date (ISO `YYYY-MM-DD`) |
-| `max` | `string` | — | — | Maximum selectable date (ISO `YYYY-MM-DD`) |
+| `mode` | `'date' \| 'datetime'` | `'date'` | ✓ | `datetime` adds a time input; value becomes a full ISO-8601 `DateTimeOffset` string |
+| `value` | `string` | — | — | Selected date (ISO `YYYY-MM-DD`), or full ISO-8601 datetime in `mode="datetime"` |
+| `min` | `string` | — | — | Minimum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
+| `max` | `string` | — | — | Maximum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
 | `placeholder` | `string` | — | — | Placeholder text |
 | `disabled` | `boolean` | `false` | ✓ | Disable |
@@ -45,7 +55,7 @@ disabled when today falls outside `min`/`max`) and, when `clearable` and a value
 
 | Event | Description |
 |-------|-------------|
-| `change` | Fires when the user clicks a date cell, confirms via keyboard, or clicks the clear button. Programmatic value assignment does not fire it. |
+| `change` | Fires when the user clicks a date cell, confirms via keyboard, changes the time input (`mode="datetime"`, once a date is set), or clicks the clear button. Programmatic value assignment does not fire it. |
 
 ## Methods
 
@@ -70,6 +80,7 @@ disabled when today falls outside `min`/`max`) and, when `clearable` and a value
 | `calendar-grid` | The date grid |
 | `day` | A date cell button |
 | `calendar-footer` | The row holding the "Today"/"Clear" quick-action buttons |
+| `calendar-time` | The row holding the time-of-day input (`mode="datetime"` only) |
 
 ## CSS Custom Properties
 
