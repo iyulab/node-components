@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.35.1] - 2026-08-30
+
+### Fixed
+
+- **`UCheckbox`'s checked-state checkmark icon could intercept clicks aimed at the
+  checkbox.** The icon lacked `pointer-events: none`, so once checked it became the
+  topmost element at that point — native clicks still reached the control via
+  bubbling, but anything that hit-tests the topmost element before acting (browser
+  automation, some accessibility tooling) could see it as blocked. Same fix applied
+  to `UTreeItem`'s prefix checkbox and expand/collapse toggle icons, which shared the
+  identical pattern.
+
 ## [1.35.0] - 2026-08-28
 
 ### Added
