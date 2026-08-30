@@ -71,6 +71,7 @@ export const styles = css`
   }
   .prefix-toggler u-icon {
     font-size: 12px;
+    pointer-events: none;
   }
   :host(:not([disabled])[trigger="icon"]) .prefix-toggler:hover,
   :host(:not([disabled])[trigger="icon"]:focus-visible) .prefix-toggler {
@@ -96,6 +97,7 @@ export const styles = css`
     visibility: hidden;
     font-size: 12px;
     color: #fff;
+    pointer-events: none;
   }
   .prefix-checkbox[checked],
   .prefix-checkbox[indeterminate] {
