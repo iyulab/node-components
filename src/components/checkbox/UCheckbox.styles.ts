@@ -157,11 +157,12 @@ export const styles = css`
     transition: border-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), background-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
 
-  /* 체크박스 아이콘 */
+  /* 체크박스 아이콘 — 클릭은 항상 .checkbox 박스가 받아야 한다 */
   .checkbox u-icon {
     font-size: 0.85em;
     transform: scale(0);
     transition: transform var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+    pointer-events: none;
   }
 
   .label {
