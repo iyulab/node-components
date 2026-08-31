@@ -17,5 +17,8 @@
   "hidePassword": "パスワードを隠す",
   "previousSlide": "前のスライド",
   "nextSlide": "次のスライド",
-  "goToSlide": "スライド{n}に移動"
+  "goToSlide": "スライド{n}に移動",
+  "close": "閉じる",
+  "copy": "コピー",
+  "copied": "コピーしました"
 }

@@ -17,5 +17,8 @@
   "hidePassword": "Ẩn mật khẩu",
   "previousSlide": "Slide trước",
   "nextSlide": "Slide sau",
-  "goToSlide": "Đi đến slide {n}"
+  "goToSlide": "Đi đến slide {n}",
+  "close": "Đóng",
+  "copy": "Sao chép",
+  "copied": "Đã sao chép"
 }

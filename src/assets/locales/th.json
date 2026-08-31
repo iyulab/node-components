@@ -17,5 +17,8 @@
   "hidePassword": "ซ่อนรหัสผ่าน",
   "previousSlide": "สไลด์ก่อนหน้า",
   "nextSlide": "สไลด์ถัดไป",
-  "goToSlide": "ไปที่สไลด์ที่ {n}"
+  "goToSlide": "ไปที่สไลด์ที่ {n}",
+  "close": "ปิด",
+  "copy": "คัดลอก",
+  "copied": "คัดลอกแล้ว"
 }

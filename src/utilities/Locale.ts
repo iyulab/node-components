@@ -35,7 +35,10 @@ export type LocaleMessageKey =
   | 'hidePassword'
   | 'previousSlide'
   | 'nextSlide'
-  | 'goToSlide';
+  | 'goToSlide'
+  | 'close'
+  | 'copy'
+  | 'copied';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 

@@ -7,6 +7,7 @@ import { UElement } from '../UElement.js';
 import { styles } from './UAlert.styles.js';
 import { ShowEventDetail } from '../../events/ShowEvent.js';
 import { HideEventDetail } from '../../events/HideEvent.js';
+import { Locale } from '../../utilities/Locale.js';
 
 export type AlertStatus = "error" | "warning" | "success" | "info" | "notice";
 export type AlertVariant = "solid" | "filled" | "outlined" | "glass";
@@ -85,6 +86,7 @@ export class UAlert extends UElement {
           <u-button class="close-btn" part="close-btn"
             variant="ghost"
             ?hidden=${!this.closable}
+            aria-label=${Locale.getValue('close')}
             @click=${this.hide}>
             <u-icon lib="internal" name="x"></u-icon>
           </u-button>

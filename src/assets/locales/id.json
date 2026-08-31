@@ -17,5 +17,8 @@
   "hidePassword": "Sembunyikan kata sandi",
   "previousSlide": "Slide sebelumnya",
   "nextSlide": "Slide berikutnya",
-  "goToSlide": "Buka slide {n}"
+  "goToSlide": "Buka slide {n}",
+  "close": "Tutup",
+  "copy": "Salin",
+  "copied": "Disalin"
 }

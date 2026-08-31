@@ -17,5 +17,8 @@
   "hidePassword": "隱藏密碼",
   "previousSlide": "上一張投影片",
   "nextSlide": "下一張投影片",
-  "goToSlide": "前往投影片{n}"
+  "goToSlide": "前往投影片{n}",
+  "close": "關閉",
+  "copy": "複製",
+  "copied": "已複製"
 }

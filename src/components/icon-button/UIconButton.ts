@@ -1,5 +1,6 @@
 import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 import type { Placement, OffsetOptions } from "@floating-ui/dom";
 import '../button/UButton.js';
@@ -50,9 +51,26 @@ export class UIconButton extends UElement {
   /** 툴팁 거리 */
   @property({ type: Number, attribute: 'tooltip-offset' }) tooltipOffset: OffsetOptions = 4;
 
+  /**
+   * 호스트에 세팅된 `aria-label`을 내부 `<u-button>`으로 옮긴다 — `UButton`과 같은 이유
+   * (docket #75류, 섀도우 경계 안쪽 엘리먼트가 실제 접근 가능한 이름 대상). 아이콘 전용
+   * 버튼이라 텍스트 콘텐츠로 이름이 생기지 않으므로 이 전달이 없으면 접근 가능한 이름이
+   * 아예 비게 된다 — 내장 툴팁(`<u-tooltip>`)은 ARIA를 배선하지 않아 대체 경로가 안 된다.
+   */
+  static override get observedAttributes(): string[] {
+    return [...super.observedAttributes, 'aria-label'];
+  }
+
+  override attributeChangedCallback(name: string, old: string | null, value: string | null): void {
+    super.attributeChangedCallback(name, old, value);
+    if (name === 'aria-label') this.requestUpdate();
+  }
+
   render() {
+    const ariaLabel = this.getAttribute('aria-label') ?? undefined;
     return html`
       <u-button part="button"
+        aria-label=${ifDefined(ariaLabel)}
         .disabled=${this.disabled}
         .loading=${this.loading}
         .variant=${this.variant}

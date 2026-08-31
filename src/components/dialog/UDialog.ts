@@ -5,6 +5,7 @@ import '../icon/UIcon.js';
 
 import { UOverlayElement } from '../UOverlayElement.js';
 import { styles } from './UDialog.styles.js';
+import { Locale } from '../../utilities/Locale.js';
 
 export type DialogPlacement =
   | 'top-start' | 'top' | 'top-end'
@@ -56,6 +57,7 @@ export class UDialog extends UOverlayElement {
             <u-button class="close-btn" part="close-btn"
               variant="ghost"
               ?hidden=${!this.closable}
+              aria-label=${Locale.getValue('close')}
               @click=${() => this.requestClose('button')}>
               <u-icon lib="internal" name="x"></u-icon>
             </u-button>

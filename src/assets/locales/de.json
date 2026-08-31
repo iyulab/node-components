@@ -17,5 +17,8 @@
   "hidePassword": "Passwort verbergen",
   "previousSlide": "Vorherige Folie",
   "nextSlide": "Nächste Folie",
-  "goToSlide": "Zu Folie {n} wechseln"
+  "goToSlide": "Zu Folie {n} wechseln",
+  "close": "Schließen",
+  "copy": "Kopieren",
+  "copied": "Kopiert"
 }
