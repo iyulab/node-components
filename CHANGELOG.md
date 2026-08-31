@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.35.2] - 2026-09-01
+
+### Fixed
+
+- **Several icon-only buttons had no accessible name.** `UAlert`'s close
+  button, `UCopyButton`'s icon-only mode, and `UDialog`'s and `UDrawer`'s
+  close buttons showed only an icon with no `aria-label` and no text
+  content, so screen readers announced them as plain "button". Added
+  `aria-label` via the existing `Locale` registry.
+- **`UIconButton` never forwarded a host `aria-label` to its inner
+  `UButton`.** Any consumer setting `aria-label` on `u-icon-button` (`UDatePicker`'s
+  previous/next-month buttons included) saw it silently dropped across the
+  shadow boundary — the built-in tooltip doesn't wire any ARIA attribute
+  either. Fixed the same way `UButton` already forwards its own host
+  attribute to its native button/anchor.
+
 ## [1.35.1] - 2026-08-30
 
 ### Fixed
