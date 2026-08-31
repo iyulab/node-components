@@ -47,6 +47,7 @@
     "./plugins/*": "./dist/plugins/*"
   },
   "scripts": {
+    "preversion": "node ../../scripts/preversion-check.mjs",
     "start": "vite --force",
     "test": "vitest run",
     "test:browser": "vitest run --project=browser",
