@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.35.4] - 2026-09-01
+
+### Fixed
+
+- **`UDatePicker`'s popover dialog and previous/next-month buttons had
+  hardcoded English accessible names** (`"Choose date"`, `"Previous month"`,
+  `"Next month"`), unlike every other label in the same component which
+  already goes through the `Locale` registry. A locale-switching consumer
+  saw every other label translate except these three. Added `chooseDate`,
+  `previousMonth`, and `nextMonth` to `LocaleMessageKey` and to all 14
+  built-in locale tables, and routed the three literals through
+  `Locale.getValue(...)`.
+
 ## [1.35.3] - 2026-09-01
 
 ### Fixed
