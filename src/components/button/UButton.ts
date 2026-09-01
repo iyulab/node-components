@@ -119,7 +119,7 @@ export class UButton extends UElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    if ('attachInternals' in this) {
+    if (!this.internals && 'attachInternals' in this) {
       this.internals = this.attachInternals();
     }
     this.addEventListener('click', this.handleClick);

@@ -91,7 +91,7 @@ export abstract class UFormControlElement<T> extends UElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    if ('attachInternals' in this) {
+    if (!this.internals && 'attachInternals' in this) {
       this.internals = this.attachInternals();
     }
   }
