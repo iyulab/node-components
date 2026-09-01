@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.35.5] - 2026-09-01
+
+### Fixed
+
+- **`BrowserStorage`'s `set`/`get`/`remove` all threw the same
+  `"Unsupported storage type"` with no indication of what value was
+  actually configured or what's valid.** A consumer who set `options.type`
+  to a typo or a value from an older version had nothing to go on. The
+  message now includes the actual value and the two supported options
+  (`"localStorage"` or `"cookie"`).
+
 ## [1.35.4] - 2026-09-01
 
 ### Fixed
