@@ -61,7 +61,7 @@ export class BrowserStorage {
           partitioned: this.options.partitioned,
         });
       } else {
-        throw new Error(`Unsupported storage type`);
+        throw new Error(`Unsupported storage type: "${(this.options as BrowserStorageOptions).type}" (expected "localStorage" or "cookie")`);
       }
     } catch(e) {
       console.error('[BrowserStorage Error: set]', e);
@@ -84,7 +84,7 @@ export class BrowserStorage {
         });
         return item?.value || null;
       } else {
-        throw new Error(`Unsupported storage type`);
+        throw new Error(`Unsupported storage type: "${(this.options as BrowserStorageOptions).type}" (expected "localStorage" or "cookie")`);
       }
     } catch(e) {
       console.error('[BrowserStorage Error: get]', e);
@@ -106,7 +106,7 @@ export class BrowserStorage {
           name: key
         });
       } else {
-        throw new Error(`Unsupported storage type`);
+        throw new Error(`Unsupported storage type: "${(this.options as BrowserStorageOptions).type}" (expected "localStorage" or "cookie")`);
       }
     } catch(e) {
       console.error('[BrowserStorage Error: remove]', e);
