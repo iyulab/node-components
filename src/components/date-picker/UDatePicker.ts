@@ -235,7 +235,7 @@ export class UDatePicker extends UFormControlElement<string> {
       <u-popover part="popover"
         id=${this.calendarId}
         role="dialog"
-        aria-label="Choose date"
+        aria-label=${Locale.getValue('chooseDate')}
         for=".container"
         trigger="click"
         strategy="fixed"
@@ -257,9 +257,9 @@ export class UDatePicker extends UFormControlElement<string> {
     return html`
       <div class="calendar" part="calendar">
         <div class="calendar-header" part="calendar-header">
-          <u-icon-button lib="internal" name="chevron-left" aria-label="Previous month" @click=${this.handlePrevMonth}></u-icon-button>
+          <u-icon-button lib="internal" name="chevron-left" aria-label=${Locale.getValue('previousMonth')} @click=${this.handlePrevMonth}></u-icon-button>
           <span class="calendar-title" part="calendar-title">${monthLabel}</span>
-          <u-icon-button lib="internal" name="chevron-right" aria-label="Next month" @click=${this.handleNextMonth}></u-icon-button>
+          <u-icon-button lib="internal" name="chevron-right" aria-label=${Locale.getValue('nextMonth')} @click=${this.handleNextMonth}></u-icon-button>
         </div>
         <div class="calendar-weekdays" part="calendar-weekdays" role="row">
           ${weekdayLabels.map(w => html`<span class="weekday" role="columnheader">${w}</span>`)}

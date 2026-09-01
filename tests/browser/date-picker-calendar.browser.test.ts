@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '../../src/components/date-picker/UDatePicker.js';
 import type { UDatePicker } from '../../src/components/date-picker/UDatePicker.js';
+import { Locale } from '../../src/utilities/Locale.js';
 
 async function settle(el: UDatePicker) {
   await el.updateComplete;
@@ -213,6 +214,45 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
       expect(changeCount).toBe(1);
       const popover = el.shadowRoot!.querySelector('u-popover')!;
       expect(popover.hasAttribute('open')).toBe(false);
+    });
+  });
+
+  describe('접근 가능한 이름 — 로케일 레지스트리 경유(하드코딩 리터럴 없음)', () => {
+    afterEach(() => {
+      Locale.set('en');
+    });
+
+    async function labelsOf(el: UDatePicker) {
+      const container = el.shadowRoot!.querySelector('.container') as HTMLElement;
+      container.click();
+      await settle(el);
+      const popover = el.shadowRoot!.querySelector('u-popover')!;
+      const [prevMonth, nextMonth] = el.shadowRoot!.querySelectorAll('.calendar-header u-icon-button');
+      return {
+        dialog: popover.getAttribute('aria-label'),
+        prev: prevMonth.getAttribute('aria-label'),
+        next: nextMonth.getAttribute('aria-label'),
+      };
+    }
+
+    // 별도 it()로 나누면 브라우저 프로젝트의 테스트 실행이 동일 페이지에서 module-singleton
+    // 인 Locale 상태를 공유해, Locale.set() 타이밍에 따라 서로 다른 테스트가 서로의 로케일을
+    // 관측하는 레이스가 생긴다(실측) — 하나의 it() 안에서 순차 전환·검증한다.
+    it('팝오버 다이얼로그·이전/다음 달 버튼이 로케일 전환을 따라간다(하드코딩 영어 리터럴 없음)', async () => {
+      // 실브라우저(Chromium)는 Node/SSR 과 달리 OS navigator.language 를 그대로 따르므로
+      // (이 머신은 ko) 여기서 명시적으로 'en' 을 지정한다 — 기본값을 가정하지 않는다.
+      Locale.set('en');
+      const en = createDatePicker();
+      document.body.appendChild(en);
+      await settle(en);
+      expect(await labelsOf(en)).toEqual({ dialog: 'Choose date', prev: 'Previous month', next: 'Next month' });
+      document.body.removeChild(en);
+
+      Locale.set('ko');
+      const ko = createDatePicker();
+      document.body.appendChild(ko);
+      await settle(ko);
+      expect(await labelsOf(ko)).toEqual({ dialog: '날짜 선택', prev: '이전 달', next: '다음 달' });
     });
   });
 });

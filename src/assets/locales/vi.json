@@ -18,6 +18,9 @@
   "previousSlide": "Slide trước",
   "nextSlide": "Slide sau",
   "goToSlide": "Đi đến slide {n}",
+  "chooseDate": "Chọn ngày",
+  "previousMonth": "Tháng trước",
+  "nextMonth": "Tháng sau",
   "close": "Đóng",
   "copy": "Sao chép",
   "copied": "Đã sao chép"

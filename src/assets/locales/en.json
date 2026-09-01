@@ -18,6 +18,9 @@
   "previousSlide": "Previous slide",
   "nextSlide": "Next slide",
   "goToSlide": "Go to slide {n}",
+  "chooseDate": "Choose date",
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month",
   "close": "Close",
   "copy": "Copy",
   "copied": "Copied"

@@ -36,6 +36,9 @@ export type LocaleMessageKey =
   | 'previousSlide'
   | 'nextSlide'
   | 'goToSlide'
+  | 'chooseDate'
+  | 'previousMonth'
+  | 'nextMonth'
   | 'close'
   | 'copy'
   | 'copied';

@@ -18,6 +18,9 @@
   "previousSlide": "Предыдущий слайд",
   "nextSlide": "Следующий слайд",
   "goToSlide": "Перейти к слайду {n}",
+  "chooseDate": "Выбрать дату",
+  "previousMonth": "Предыдущий месяц",
+  "nextMonth": "Следующий месяц",
   "close": "Закрыть",
   "copy": "Копировать",
   "copied": "Скопировано"

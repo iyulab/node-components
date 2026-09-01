@@ -18,6 +18,9 @@
   "previousSlide": "Slide sebelumnya",
   "nextSlide": "Slide berikutnya",
   "goToSlide": "Buka slide {n}",
+  "chooseDate": "Pilih tanggal",
+  "previousMonth": "Bulan sebelumnya",
+  "nextMonth": "Bulan berikutnya",
   "close": "Tutup",
   "copy": "Salin",
   "copied": "Disalin"

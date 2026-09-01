@@ -18,6 +18,9 @@
   "previousSlide": "Diapositiva anterior",
   "nextSlide": "Siguiente diapositiva",
   "goToSlide": "Ir a la diapositiva {n}",
+  "chooseDate": "Elegir fecha",
+  "previousMonth": "Mes anterior",
+  "nextMonth": "Mes siguiente",
   "close": "Cerrar",
   "copy": "Copiar",
   "copied": "Copiado"

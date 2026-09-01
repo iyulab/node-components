@@ -18,6 +18,9 @@
   "previousSlide": "Vorherige Folie",
   "nextSlide": "Nächste Folie",
   "goToSlide": "Zu Folie {n} wechseln",
+  "chooseDate": "Datum auswählen",
+  "previousMonth": "Vorheriger Monat",
+  "nextMonth": "Nächster Monat",
   "close": "Schließen",
   "copy": "Kopieren",
   "copied": "Kopiert"

@@ -18,6 +18,9 @@
   "previousSlide": "الشريحة السابقة",
   "nextSlide": "الشريحة التالية",
   "goToSlide": "الانتقال إلى الشريحة {n}",
+  "chooseDate": "اختر التاريخ",
+  "previousMonth": "الشهر السابق",
+  "nextMonth": "الشهر التالي",
   "close": "إغلاق",
   "copy": "نسخ",
   "copied": "تم النسخ"
