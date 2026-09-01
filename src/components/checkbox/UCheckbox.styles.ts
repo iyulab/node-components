@@ -141,7 +141,10 @@ export const styles = css`
       0 0 0 3px color-mix(in srgb, var(--u-primary-color-strong, #1565C0) 22%, transparent);
   }
 
-  /* 체크박스 외형 */
+  /* 체크박스 외형 — 클릭은 항상 .wrapper(<label>)가 받아야 한다(위임으로 이미
+     충분하다, docket #147 후속 실측) — 자신도 pointer-events:none이라야 좌표 기반
+     히트테스트(예: Playwright actionability check)가 이 박스를 투과해 label까지
+     도달한다. */
   .checkbox {
     flex-shrink: 0;
     position: relative;
@@ -155,9 +158,9 @@ export const styles = css`
     border-radius: 0.2em;
     background-color: var(--checkbox-background-color);
     transition: border-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), background-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+    pointer-events: none;
   }
 
-  /* 체크박스 아이콘 — 클릭은 항상 .checkbox 박스가 받아야 한다 */
   .checkbox u-icon {
     font-size: 0.85em;
     transform: scale(0);
