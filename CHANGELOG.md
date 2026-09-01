@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.35.3] - 2026-09-01
+
+### Fixed
+
+- **`UButton` and every form-associated control built on `UFormControlElement`
+  (`UInput`, `UCheckbox`, `UDatePicker`, `URadio`, `URating`, `USelect`,
+  `USlider`, `USwitch`, `UTextarea`) threw an uncaught `NotSupportedError`
+  when reconnected to the DOM.** Both classes called `attachInternals()`
+  unconditionally on every `connectedCallback()`, but the spec allows only
+  one call per element instance — moving an already-connected instance
+  (list reordering, a framework's DOM reconciliation, virtual scrolling)
+  reused the same instance and threw on the second attach. Both call sites
+  now guard on whether `internals` is already set.
+- **`UCheckbox`'s visual checkbox box (`.checkbox`, not just its checkmark
+  icon) could still intercept clicks aimed at the control.** `1.35.1` fixed
+  the icon but the parent box itself had no `pointer-events: none`, so it
+  remained the topmost element at that point — native clicks still reached
+  the control via the wrapping `<label>`, but anything that hit-tests the
+  topmost element first (browser automation, some accessibility tooling)
+  could still see it as blocked.
+- **`UInput`'s clear button fired `change` but not `input`.** Typing signals
+  a value change via `input`; the clear button only fired `change`, so a
+  consumer subscribed to `input` alone (a common controlled-component
+  pattern) never saw the value being cleared. The clear button now fires
+  `input` first, matching typing, then `change` as before.
+
 ## [1.35.2] - 2026-09-01
 
 ### Fixed
