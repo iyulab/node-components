@@ -16,7 +16,7 @@ await Theme.init({
   useBuiltIn: true,       // inject bundled CSS variables (default: true)
   store: {                // persist to storage (optional)
     type: 'localStorage',
-    key: 'theme'
+    prefix: 'myapp-'
   },
   debug: false
 });
