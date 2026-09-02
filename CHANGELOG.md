@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.35.6] - 2026-09-03
+
+### Fixed
+
+- **`BrowserStorage`'s skill docs never caught up to its Cookie Store API rewrite.**
+  `CookieOptions`'s documented fields (`maxAge`, `secure`) don't exist on the actual
+  type (`window.cookieStore`-based), which instead has `expires`
+  (`DOMHighResTimeStamp`) and `partitioned`; the type union also omitted
+  `BrowserStorageOptions`' `prefix` field entirely. Added a note on Chromium-only
+  support, since the class throws where `cookieStore` is unavailable.
+- **`theme.md`'s `Theme.init()` example passed a `key` property `store` has never
+  had** — the real field is `prefix`. Fixed the example to match the type.
+
 ## [1.35.5] - 2026-09-01
 
 ### Fixed
