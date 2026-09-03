@@ -17,7 +17,7 @@ const confirmed = await Dialog.confirm('Delete this item?');
 if (confirmed) deleteItem();
 
 // Prompt — returns entered string or null if cancelled
-const name = await Dialog.prompt('Enter your name:', { default: 'Alice' });
+const name = await Dialog.prompt('Enter your name:', { defaultValue: 'Alice' });
 
 // Custom dialog with action buttons
 const result = await Dialog.show({
@@ -44,26 +44,29 @@ const result = await Dialog.show({
 
 ```ts
 interface DialogOptions {
-  target?: HTMLElement;
+  target?: HTMLElement;      // shows contained instead of as an overlay when set
   title?: string;
-  closable?: boolean;
   placement?: DialogPlacement;
+  offset?: number;           // gap from the edge, px
+  modal?: boolean;           // default: true
+  buttonClose?: boolean;     // show an explicit close button — default: false
+  escapeClose?: boolean;     // close on Esc — default: true
+  backdropClose?: boolean;   // close on backdrop click — default: true
 }
 
 interface ConfirmDialogOptions extends DialogOptions {
-  confirmLabel?: string;
-  cancelLabel?: string;
+  confirmLabel?: string;     // default: 'Confirm'
+  cancelLabel?: string;      // default: 'Cancel'
 }
 
-interface PromptDialogOptions extends DialogOptions {
-  default?: string;
+interface PromptDialogOptions extends ConfirmDialogOptions {
+  type?: InputType;          // input field type — default: 'text'
+  defaultValue?: string;
   placeholder?: string;
-  confirmLabel?: string;
-  cancelLabel?: string;
 }
 
 interface CustomDialogOptions extends DialogOptions {
-  content?: string | HTMLElement | TemplateResult;
+  content: string | TemplateResult;
   actions?: DialogAction[];
 }
 
