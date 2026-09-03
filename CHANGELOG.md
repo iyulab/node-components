@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.35.7] - 2026-09-03
+
+### Fixed
+
+- **`DialogOptions`/`PromptDialogOptions` skill-doc reference had drifted substantially.**
+  `DialogOptions` listed a `closable` field that has never existed and was missing five real
+  fields (`offset`/`modal`/`buttonClose`/`escapeClose`/`backdropClose`). `PromptDialogOptions`
+  claimed `extends DialogOptions` (source: `extends ConfirmDialogOptions`) and a `default`
+  field that doesn't exist — the real field is `defaultValue` — while `type` was missing
+  entirely. Fixed the reference and the usage example. Found by a new internal tool
+  (`type-doc-check.js`) that diffs hand-copied TS interface doc snippets against source.
+
 ## [1.35.6] - 2026-09-03
 
 ### Fixed
