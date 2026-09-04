@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.36.0] - 2026-09-04
+
+### Added
+
+- **`UFileInput` (`u-file-input`), a form control wrapping a native
+  `<input type="file">`.** Trigger button, selected-file(s) status text,
+  and a clear button, styled to match the rest of the form control
+  family. `value` is `File[] | null`; native `<form>`/`u-form`
+  submission works out of the box via `ElementInternals` (single file)
+  or a `FormData` with the file repeatedly appended under the same key
+  (multiple files, matching native multi-file submission semantics).
+  `accept`/`multiple` pass through to the underlying input.
+  Drag-and-drop is out of scope for this release.
+
 ## [1.35.7] - 2026-09-03
 
 ### Fixed
