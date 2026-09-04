@@ -23,5 +23,8 @@
   "nextMonth": "เดือนถัดไป",
   "close": "ปิด",
   "copy": "คัดลอก",
-  "copied": "คัดลอกแล้ว"
+  "copied": "คัดลอกแล้ว",
+  "chooseFile": "เลือกไฟล์",
+  "noFileChosen": "ยังไม่ได้เลือกไฟล์",
+  "filesSelected": "เลือกแล้ว {count} ไฟล์"
 }

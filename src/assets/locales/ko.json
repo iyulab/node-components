@@ -23,5 +23,8 @@
   "nextMonth": "다음 달",
   "close": "닫기",
   "copy": "복사",
-  "copied": "복사됨"
+  "copied": "복사됨",
+  "chooseFile": "파일 선택",
+  "noFileChosen": "선택된 파일 없음",
+  "filesSelected": "{count}개 파일 선택됨"
 }

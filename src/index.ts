@@ -23,6 +23,7 @@ export * from './components/divider/UDivider.js';
 export * from './components/drawer/UDrawer.js';
 export * from './components/expander/UExpander.js';
 export * from './components/field/UField.js';
+export * from './components/file-input/UFileInput.js';
 export * from './components/form/UForm.js';
 export * from './components/icon/UIcon.js';
 export * from './components/icon-button/UIconButton.js';

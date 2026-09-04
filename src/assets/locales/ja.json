@@ -23,5 +23,8 @@
   "nextMonth": "翌月",
   "close": "閉じる",
   "copy": "コピー",
-  "copied": "コピーしました"
+  "copied": "コピーしました",
+  "chooseFile": "ファイルを選択",
+  "noFileChosen": "ファイルが選択されていません",
+  "filesSelected": "{count}個のファイルを選択しました"
 }

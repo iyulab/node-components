@@ -23,5 +23,8 @@
   "nextMonth": "Следующий месяц",
   "close": "Закрыть",
   "copy": "Копировать",
-  "copied": "Скопировано"
+  "copied": "Скопировано",
+  "chooseFile": "Выбрать файл",
+  "noFileChosen": "Файл не выбран",
+  "filesSelected": "Выбрано файлов: {count}"
 }

@@ -23,5 +23,8 @@
   "nextMonth": "Bulan berikutnya",
   "close": "Tutup",
   "copy": "Salin",
-  "copied": "Disalin"
+  "copied": "Disalin",
+  "chooseFile": "Pilih berkas",
+  "noFileChosen": "Tidak ada berkas dipilih",
+  "filesSelected": "{count} berkas dipilih"
 }

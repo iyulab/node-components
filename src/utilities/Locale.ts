@@ -41,7 +41,10 @@ export type LocaleMessageKey =
   | 'nextMonth'
   | 'close'
   | 'copy'
-  | 'copied';
+  | 'copied'
+  | 'chooseFile'
+  | 'noFileChosen'
+  | 'filesSelected';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 

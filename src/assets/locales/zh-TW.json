@@ -23,5 +23,8 @@
   "nextMonth": "下個月",
   "close": "關閉",
   "copy": "複製",
-  "copied": "已複製"
+  "copied": "已複製",
+  "chooseFile": "選擇檔案",
+  "noFileChosen": "未選擇檔案",
+  "filesSelected": "已選擇{count}個檔案"
 }

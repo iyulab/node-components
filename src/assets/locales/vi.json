@@ -23,5 +23,8 @@
   "nextMonth": "Tháng sau",
   "close": "Đóng",
   "copy": "Sao chép",
-  "copied": "Đã sao chép"
+  "copied": "Đã sao chép",
+  "chooseFile": "Chọn tệp",
+  "noFileChosen": "Chưa chọn tệp nào",
+  "filesSelected": "Đã chọn {count} tệp"
 }

@@ -23,5 +23,8 @@
   "nextMonth": "Mois suivant",
   "close": "Fermer",
   "copy": "Copier",
-  "copied": "Copié"
+  "copied": "Copié",
+  "chooseFile": "Choisir un fichier",
+  "noFileChosen": "Aucun fichier choisi",
+  "filesSelected": "{count} fichiers sélectionnés"
 }

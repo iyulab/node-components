@@ -23,5 +23,8 @@
   "nextMonth": "الشهر التالي",
   "close": "إغلاق",
   "copy": "نسخ",
-  "copied": "تم النسخ"
+  "copied": "تم النسخ",
+  "chooseFile": "اختر ملفًا",
+  "noFileChosen": "لم يتم اختيار أي ملف",
+  "filesSelected": "تم اختيار {count} ملفات"
 }

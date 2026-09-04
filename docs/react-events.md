@@ -21,7 +21,7 @@ import { UDialog } from '@iyulab/components/react';
 
 `detail` 열이 `unknown` 이면 `CustomEvent`(detail 타입 미지정)로 노출된다.
 
-**컴포넌트 26개 · 이벤트 41개**
+**컴포넌트 27개 · 이벤트 42개**
 
 ## `<u-alert>`
 
@@ -81,6 +81,12 @@ import { UDialog } from '@iyulab/components/react';
 |---|---|---|---|
 | `onExpand` | `expand` | `ExpandEventDetail` | 펼쳐질 때 발생 (취소 가능) |
 | `onCollapse` | `collapse` | `CollapseEventDetail` | 접힐 때 발생 (취소 가능) |
+
+## `<u-file-input>`
+
+| React prop | 이벤트 | detail | 설명 |
+|---|---|---|---|
+| `onChange` | `change` | `unknown` | 선택된 파일이 바뀔 때 발생(선택·지우기 공통) |
 
 ## `<u-form>`
 

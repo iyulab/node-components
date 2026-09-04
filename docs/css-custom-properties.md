@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 28개 · 프로퍼티 125개**
+**컴포넌트 29개 · 프로퍼티 127개**
 
 ## `<u-alert>`
 
@@ -96,6 +96,13 @@ u-button.cta { --btn-color: #0f9d58; }
 | 프로퍼티 | 설명 |
 |---|---|
 | `--drawer-size` | 드로어 패널의 슬라이드 축 방향 크기 (기본값: 좌우 28rem / 상하 16rem). 좌우(left/right) placement는 너비, 상하(top/bottom) placement는 높이로 적용된다(상하 기본 16rem). 화면이 좁으면 max-width/max-height:100%로 자동 축소된다. |
+
+## `<u-file-input>`
+
+| 프로퍼티 | 설명 |
+|---|---|
+| `--u-file-input-display` | 호스트의 display (기본값: inline-block) |
+| `--u-file-input-width` | 호스트의 width (기본값: auto) |
 
 ## `<u-input>`
 
