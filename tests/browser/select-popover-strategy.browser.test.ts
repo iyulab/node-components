@@ -25,6 +25,34 @@ describe('USelect popover positioning strategy', () => {
     expect(getComputedStyle(popover).position).toBe('fixed');
   });
 
+  it('exposes :state(open) only while the options popover is showing', async () => {
+    async function settle(el: USelect) {
+      await el.updateComplete;
+      await new Promise(r => setTimeout(r, 0));
+      await el.updateComplete;
+    }
+
+    const select = document.createElement('u-select') as USelect;
+    const option = document.createElement('u-option');
+    option.setAttribute('value', 'a');
+    option.textContent = 'Option A';
+    select.appendChild(option);
+    document.body.appendChild(select);
+    await settle(select);
+
+    expect(select.matches(':state(open)')).toBe(false);
+
+    const container = select.shadowRoot!.querySelector('.container') as HTMLElement;
+    container.click();
+    await settle(select);
+    expect(select.matches(':state(open)')).toBe(true);
+
+    const optionEl = document.querySelector('u-option') as HTMLElement;
+    optionEl.click();
+    await settle(select);
+    expect(select.matches(':state(open)')).toBe(false);
+  });
+
   it('UFloatingElement reflects the strategy property to the host attribute (not just the reverse)', async () => {
     const popover = document.createElement('u-popover') as UPopover;
     document.body.appendChild(popover);

@@ -24,6 +24,10 @@ export type SelectVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
  *   팝오버 목록에서 사라지기 때문. 리치 콘텐츠가 필요하면 이 slot에 별도 마크업을 할당하고
  *   `change` 이벤트에서 직접 갱신한다.)
  *
+ * 옵션 목록 팝오버가 열려 있는 동안 `:state(open)` 커스텀 상태를 노출한다(via
+ * `ElementInternals.states`) — `u-select:state(open)::part(container)`로 스타일링할 수
+ * 있다. 공개 속성으로 반사되지 않는다.
+ *
  * @csspart field - u-field 요소
  * @csspart container - 트리거 영역을 감싸는 요소
  * @csspart popover - 옵션 목록이 표시되는 팝오버 요소
@@ -110,6 +114,12 @@ export class USelect extends UFormControlElement<string | string[]> {
 
     if (['value','options'].some(k => changedProperties.has(k))) {
       this.onChangeValue();
+    }
+    // `open`은 `@state()`(비공개) — 공개 속성으로 반사하지 않고 `:state(open)`으로만
+    // 노출한다. 팝오버가 열려 있을 때 트리거를 다르게 그리고 싶은 소비자는
+    // `u-select:state(open)::part(container)` 형태로 훅을 건다.
+    if (changedProperties.has('open')) {
+      this.internals?.states[this.open ? 'add' : 'delete']('open');
     }
   }
 
