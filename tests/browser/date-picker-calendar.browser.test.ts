@@ -76,6 +76,24 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     expect(popover.hasAttribute('open')).toBe(false);
   });
 
+  it('팝오버가 열려 있는 동안에만 :state(open) 커스텀 상태가 선다', async () => {
+    const el = createDatePicker();
+    document.body.appendChild(el);
+    await settle(el);
+
+    expect(el.matches(':state(open)')).toBe(false);
+
+    const container = el.shadowRoot!.querySelector('.container') as HTMLElement;
+    container.click();
+    await settle(el);
+    expect(el.matches(':state(open)')).toBe(true);
+
+    const day15 = el.shadowRoot!.querySelector('button.day[data-today]') as HTMLButtonElement | null;
+    (day15 ?? el.shadowRoot!.querySelector('button.day')!).click();
+    await settle(el);
+    expect(el.matches(':state(open)')).toBe(false);
+  });
+
   it('마운트만으로는 change 를 발화하지 않는다', async () => {
     const el = createDatePicker({ value: '2026-02-01' });
     let changeCount = 0;

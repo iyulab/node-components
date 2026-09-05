@@ -115,6 +115,11 @@ export type DatePickerMode = 'date' | 'datetime';
  * first day of week from `Intl.Locale(locale).weekInfo?.firstDay`, falling back to Sunday
  * where unsupported.
  *
+ * Exposes a `:state(open)` custom state (via `ElementInternals.states`) while the calendar
+ * popover is showing — style with `u-date-picker:state(open)::part(container)`. Unlike
+ * `mode`/`clearable`, this state is never reflected as a public attribute — it exists purely
+ * as a CSS hook for consumers who want to react to the open/closed state from outside.
+ *
  * @csspart field - the u-field element
  * @csspart container - the element wrapping the trigger area
  * @csspart popover - the popover element showing the calendar
@@ -176,6 +181,12 @@ export class UDatePicker extends UFormControlElement<string> {
 
     if (changed.has('value')) {
       this.internals?.setFormValue(this.value ?? '');
+    }
+    // `open`은 `@state()`(비공개) — 공개 속성으로 반사하지 않고 `:state(open)`으로만
+    // 노출한다. 캘린더가 열려 있을 때 트리거를 다르게 그리고 싶은 소비자는
+    // `u-date-picker:state(open)::part(container)` 형태로 훅을 건다.
+    if (changed.has('open')) {
+      this.internals?.states[this.open ? 'add' : 'delete']('open');
     }
     const shouldGrabFocus =
       (changed.has('open') && this.open) ||
