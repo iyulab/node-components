@@ -62,10 +62,16 @@ export class UFloatingElement extends UElement {
    */
   @property({ type: String, reflect: true }) strategy: FloatingStrategy = 'absolute';
 
-  /** 
+  /**
    * 대상 엘리먼트로부터의 배치 위치입니다.
    * 지정하지 않으면 자동으로 가장 적절한 위치가 선택됩니다.
-   * 
+   *
+   * @remarks
+   * 지정한 변(side)에 공간이 없으면 반대 변으로 자동 전환됩니다(floating-ui의
+   * `flip` 미들웨어가 `placement`를 지정했을 때 항상 함께 적용됩니다 — 별도
+   * 옵션으로 끌 수 없습니다). `shift`는 이 전환과 별개로, 전환된(또는 지정된)
+   * 변 **안에서** 교차축 위치만 보정합니다.
+   *
    * @default undefined
    */
   @property({ type: String }) placement?: Placement;
@@ -79,8 +85,10 @@ export class UFloatingElement extends UElement {
   @property({ type: Number }) offset: OffsetOptions = 0;
 
   /**
-   * 엘리먼트가 화면 안에 머물도록 자동으로 위치를 조정할지 여부입니다.
-   * 
+   * 지정된(또는 `flip`으로 전환된) 배치 변 **안에서** 교차축 위치를 자동으로
+   * 보정할지 여부입니다 — 그 변 자체에 공간이 없어 반대 변으로 넘어가는 것은
+   * `placement` 설명의 `flip` 동작이 담당합니다.
+   *
    * @default false
    */
   @property({ type: Boolean }) shift: boolean = false;
