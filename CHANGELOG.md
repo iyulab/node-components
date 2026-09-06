@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.37.0] - 2026-09-06
+
+### Added
+
+- **`u-date-picker` and `u-select` expose a `:state(open)` custom state.**
+  Both already tracked their popover's open/closed state privately; it is now
+  surfaced through `ElementInternals.states` so consumers can style the trigger
+  while the popover is showing — `u-date-picker:state(open)::part(container)`,
+  `u-select:state(open)::part(container)`. Deliberately not a reflected
+  attribute: the state stays private to the component and exists only as a CSS
+  hook, so no new public attribute enters the API surface.
+
+### Documentation
+
+- **`UFloatingElement.placement` documents that `flip` is always applied.**
+  Whenever `placement` is set, floating-ui's `flip` middleware runs (switching
+  to the opposite side when the placed side has no room) — this has always been
+  the behavior but was undocumented, and `shift`'s description ("keeps the
+  element on screen") over-promised, since `shift` only corrects the cross axis
+  *within* a side. Both properties now describe the split, and a regression test
+  covers the flip fallback.
+
 ## [1.36.0] - 2026-09-04
 
 ### Added
