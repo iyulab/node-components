@@ -43,12 +43,18 @@ Inherits all `UFloatingElement` properties (see [floating.md](../extensions/floa
 | `open` | `boolean` | `false` | ✓ | Visibility state |
 | `placement` | `Placement` | — | — | Preferred placement |
 | `offset` | `OffsetOptions` | `0` | — | Gap from target |
-| `shift` | `boolean` | `false` | — | Auto-shift to stay in viewport |
+| `shift` | `boolean` | `false` | — | Correct the cross-axis position *within* the placed side (see note below) |
 | `arrow` | `boolean` | `false` | — | Show pointing arrow |
 | `showDelay` | `number` | `0` | — | Open delay in ms |
 | `hideDelay` | `number` | `0` | — | Close delay in ms |
 | `interactive` | `boolean` | `false` | ✓ | Keep open when mouse is over tooltip |
 | `tracking` | `boolean` | `false` | ✓ | Follow mouse cursor position |
+
+> **Placement fallback**: whenever `placement` is set, floating-ui's `flip` middleware is
+> always applied — if the placed side has no room, the element switches to the opposite side.
+> `shift` is a separate, narrower correction: it nudges the element along the cross axis
+> *within* whichever side ended up being used. Neither can be turned off independently.
+
 
 ## Events
 

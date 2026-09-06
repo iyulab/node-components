@@ -40,13 +40,19 @@ Inherits all `UFloatingElement` properties (see [floating.md](../extensions/floa
 | `disabled` | `boolean` | `false` | ✓ | Disable opening |
 | `placement` | `Placement` | — | — | Preferred placement (`top`, `bottom`, `left`, `right`, `*-start`, `*-end`) |
 | `offset` | `OffsetOptions` | `0` | — | Distance from anchor |
-| `shift` | `boolean` | `false` | — | Auto-shift to stay in viewport |
+| `shift` | `boolean` | `false` | — | Correct the cross-axis position *within* the placed side (see note below) |
 | `arrow` | `boolean` | `false` | — | Show arrow pointing to anchor |
 | `showDelay` | `number` | `0` | — | Open delay in ms |
 | `hideDelay` | `number` | `0` | — | Close delay in ms |
 | `trigger` | `'click'\|'contextmenu'\|'hover'\|'focus'\|'manual'` | `'click'` | ✓ | Open trigger |
 | `dismiss` | `string[]` | `['click','escape','scroll','resize']` | ✓ | Close triggers — see note below |
 | `autofocus` | `boolean` | `false` | ✓ | Focus first focusable element on open |
+
+> **Placement fallback**: whenever `placement` is set, floating-ui's `flip` middleware is
+> always applied — if the placed side has no room, the element switches to the opposite side.
+> `shift` is a separate, narrower correction: it nudges the element along the cross axis
+> *within* whichever side ended up being used. Neither can be turned off independently.
+
 
 ### `dismiss` semantics
 
