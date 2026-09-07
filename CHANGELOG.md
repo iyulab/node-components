@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.38.0] - 2026-09-08
+
+### Changed
+
+- **`<html lang>` now takes precedence over the browser language when the initial
+  locale is detected.** `detectLocale()` consulted `navigator.language` first, which
+  made the `document.documentElement.lang` branch unreachable in a browser: a document
+  declaring `lang="en"` still emitted accessible names in the browser's language, and a
+  screen reader then announced them under English pronunciation rules (WCAG 3.1.1 /
+  3.1.2). The `lang` attribute is the author's declaration of the document's language;
+  the browser language is the fallback for when that declaration is absent, not an
+  override for it. **Only documents that actually set `lang` change behaviour** — an
+  absent or empty `lang` falls back to the browser language exactly as before, so apps
+  that never set it are unaffected. `Locale.set()` still overrides both. The Node 21+
+  guard on the `navigator` branch is unchanged.
+
+### Documentation
+
+- `formatNumber`, `formatCurrency` and `formatDate` were public through the barrel but
+  appeared in no published document; they are now documented.
+- `isCoarsePointer` is documented alongside the other element helpers.
+- `formatDate`'s JSDoc cross-referenced a `formatCurrency` fallback that does not exist.
+  `formatCurrency` throws on an invalid currency code, and the asymmetry between the two
+  is deliberate; both are now described as they behave.
+- The `BrowserStorage` reference notes that the constructor throws outside a browser.
+
 ## [1.37.1] - 2026-09-07
 
 ### Fixed
