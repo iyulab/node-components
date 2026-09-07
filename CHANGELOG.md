@@ -15,6 +15,19 @@
   The `placement` docs described the old, narrower behavior and have been
   corrected in the JSDoc and the popover/tooltip references.
 
+- **The generated React wrappers pointed at a different copy of each element
+  class than a deep import did.** Each wrapper reached its element class by a
+  relative path, which bypasses the package's own `exports` map. In a workspace
+  that redirects `./dist/*` to source for live editing, that left the wrapper on
+  one declaration tree and every consumer deep import on another, so the same
+  component existed as two nominal types and merging both into
+  `HTMLElementTagNameMap` failed with `TS2717` — importing `@iyulab/components/react`
+  anywhere in such a program was impossible. Wrappers (and their event-detail
+  type imports) now reference the package by name, letting the `exports` map
+  resolve both axes to one tree in either setting. Published output is
+  unaffected: both forms resolve to the same built file there. The React type
+  smoke fixture no longer needs its `paths` override to compile.
+
 ## [1.37.0] - 2026-09-06
 
 ### Added

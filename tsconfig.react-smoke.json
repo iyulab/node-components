@@ -7,22 +7,16 @@
   //
   // 메인과 다른 점은 둘뿐이다 — JSX 활성화, 그리고 dist 를 exclude 하지 않는 것.
   //
-  // ⚠**패키지 자기 이름은 이 프로젝트 안에서 «산출물»로 해석한다.** `exports` 맵은 이
-  // 리포에서 `.` 이 소스형(`./src/index.d.ts`)이고 `./react` 가 산출물형인데(래퍼는 빌드
-  // 시점에 생성되므로 `src/react` 가 없다), 이 픽스처는 **둘 다** import 한다. 그대로 두면
-  // 같은 클래스가 서로 다른 선언 트리에서 와서 `RefObject<src UButton>` 이
-  // `Ref<dist UButton>` 에 대입 불가가 된다(TS2322·TS2717) — 라이브러리 결함이 아니라
-  // **소스 트리 한정의 해석 스큐**다. 게시본에서는 배포 워크플로가 `.` 도 산출물형으로
-  // 치환하므로 트리가 하나로 합쳐진다.
+  // ✅**종전에는 `paths` 로 «패키지 자기 이름 → 산출물» 을 강제해야 했다** — `exports` 의
+  // `.` 이 소스형이고 `./react` 가 산출물형인데 래퍼가 **상대 경로**로 원본 클래스를 가리켜,
+  // 같은 클래스가 서로 다른 트리에서 와 `TS2322`·`TS2717` 이 났기 때문이다.
+  // cycle-434 가 그 원인을 없앴다 — 래퍼가 이제 `@iyulab/components/dist/...` 라는
+  // **패키지 스펙**으로 원본을 가리키므로 `exports` 맵이 두 축을 같은 트리로 보낸다.
+  // ⇒ `paths` 우회가 필요 없다. 이 픽스처는 이제 **소비자가 실제로 겪는 해석 그대로** 돈다.
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "noEmit": true,
-    "baseUrl": ".",
-    "paths": {
-      "@iyulab/components": ["./dist/index.d.ts"],
-      "@iyulab/components/react": ["./dist/react/index.d.ts"]
-    }
+    "noEmit": true
   },
   "include": ["tests/types/**/*"],
   "exclude": ["node_modules"]

@@ -1,5 +1,5 @@
 import type { Plugin } from 'vite';
-import { resolve, join, relative, dirname, basename } from 'path';
+import { resolve, join, relative, dirname, basename, sep } from 'path';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { gzipSync } from 'zlib';
 import { globSync } from 'glob';
@@ -44,6 +44,8 @@ export default function reactWrapperPlugin(options: PluginOptions): Plugin {
   let rootDir: string;
   let buildOutDir: string;
   let outDir: string;
+  /** 자기 패키지 이름 — 래퍼가 원본 클래스를 «패키지 스펙»으로 가리키기 위해 필요하다. 손으로 쓰지 않고 매니페스트에서 읽는다. */
+  let pkgName: string;
 
   return {
     name: 'vite-plugin-react-wrapper',
@@ -52,6 +54,7 @@ export default function reactWrapperPlugin(options: PluginOptions): Plugin {
       rootDir = config.root;
       buildOutDir = resolve(rootDir, config.build.outDir);
       outDir = resolve(buildOutDir, options.output || 'react');
+      pkgName = JSON.parse(readFileSync(resolve(rootDir, 'package.json'), 'utf-8')).name;
     },
 
     closeBundle() {
@@ -91,7 +94,7 @@ export default function reactWrapperPlugin(options: PluginOptions): Plugin {
       // 래퍼 생성
       const generated: FileInfo[] = [];
       for (const comp of components) {
-        generated.push(...writeWrapper(comp, outDir, buildOutDir));
+        generated.push(...writeWrapper(comp, outDir, buildOutDir, pkgName));
       }
       generated.push(...writeIndex(components, outDir, buildOutDir));
 
@@ -264,13 +267,29 @@ function writeFile(filePath: string, content: string, buildOutDir: string): File
   };
 }
 
-function computeImportPath(from: string, to: string): string {
-  let rel = relative(dirname(from), to).replace(/\\/g, '/').replace(/\.ts$/, '');
-  if (!rel.startsWith('.')) rel = './' + rel;
-  return rel;
+/**
+ * 래퍼가 원본 엘리먼트 클래스를 가리키는 경로.
+ *
+ * 🔴**상대 경로가 아니라 «패키지 스펙»으로 낸다**(cycle-434). 상대 경로는 패키지
+ * `exports` 맵을 거치지 않으므로, 로컬 워크스페이스에서 래퍼는 **항상 진짜 `dist`**
+ * 의 클래스를 싣는다. 그런데 같은 워크스페이스의 소비자가 하는 deep import 는
+ * `"./dist/*": "./src/*"` 리다이렉트를 타 **`src` 의 클래스**를 싣는다 — 같은 논리적
+ * 컴포넌트가 **두 nominal 타입**으로 존재하게 되고, 둘 다 같은 태그로
+ * `HTMLElementTagNameMap` 을 병합하려 해 `TS2717` 이 난다.
+ *
+ * ⇒ 래퍼도 패키지 스펙으로 적으면 **`exports` 맵이 분기를 대신한다**: 로컬에서는
+ * 리다이렉트를 타 `src` 로, 게시본에서는 배포 워크플로가 `./src/` 를 `./dist/` 로
+ * 치환하므로 진짜 `dist` 로 간다. **두 세계 모두에서 클래스가 하나다.**
+ *
+ * ⚠**`.js` 확장자를 `.d.ts` 쪽에서도 유지한다** — `exports` 서브패스 매칭은 문자
+ * 그대로라 확장자를 떼면 `"./dist/*"` 패턴이 다른 문자열을 만든다.
+ */
+function computeImportPath(to: string, buildOutDir: string, pkgName: string): string {
+  const sub = relative(buildOutDir, to).split(sep).join('/');
+  return pkgName + '/dist/' + sub;
 }
 
-function writeWrapper(comp: ComponentInfo, outDir: string, buildOutDir: string): FileInfo[] {
+function writeWrapper(comp: ComponentInfo, outDir: string, buildOutDir: string, pkgName: string): FileInfo[] {
   const { className, tagName, events } = comp;
   const jsPath = join(outDir, `${className}.js`);
   const dtsPath = join(outDir, `${className}.d.ts`);
@@ -281,7 +300,7 @@ function writeWrapper(comp: ComponentInfo, outDir: string, buildOutDir: string):
     ? comp.filePath.substring(srcIndex + 5).replace(/\\/g, '/').replace(/\.ts$/, '')
     : basename(comp.filePath, '.ts');
   const builtModulePath = resolve(buildOutDir, relFromSrc + '.js');
-  const importPath = computeImportPath(jsPath, builtModulePath);
+  const importPath = computeImportPath(builtModulePath, buildOutDir, pkgName);
 
   // events 객체 생성
   const eventsObj = events.length > 0
@@ -302,7 +321,7 @@ export const ${className} = createComponent({
 `;
 
   // .d.ts - import 구문 생성
-  const dtsImportPath = importPath.replace(/\.js$/, '');
+  const dtsImportPath = importPath; // `.js` 유지 — exports 서브패스는 문자 그대로 매칭된다
   const dtsImports = [
     `import React from 'react';`,
     `import { ${className} as ${className}Element } from '${dtsImportPath}';`,
@@ -321,7 +340,9 @@ export const ${className} = createComponent({
       : '';
     if (!relFromSrc) continue;
     const absEventBuilt = resolve(buildOutDir, relFromSrc);
-    const eventImportPath = computeImportPath(dtsPath, absEventBuilt + '.js').replace(/\.js$/, '');
+    // 이벤트 detail 타입도 같은 이유로 «패키지 스펙»이어야 한다 — 상대 경로면 로컬에서
+    // 소비자가 보는 detail 타입과 다른 nominal 타입이 된다(위 computeImportPath 주석).
+    const eventImportPath = computeImportPath(absEventBuilt + '.js', buildOutDir, pkgName);
     const types = detailImportMap.get(eventImportPath) || [];
     if (!types.includes(e.detailType)) types.push(e.detailType);
     detailImportMap.set(eventImportPath, types);
