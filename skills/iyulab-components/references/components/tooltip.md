@@ -51,7 +51,11 @@ Inherits all `UFloatingElement` properties (see [floating.md](../extensions/floa
 | `tracking` | `boolean` | `false` | ✓ | Follow mouse cursor position |
 
 > **Placement fallback**: whenever `placement` is set, floating-ui's `flip` middleware is
-> always applied — if the placed side has no room, the element switches to the opposite side.
+> always applied — if the placed side has no room, the element switches to another side.
+> The opposite side on the same axis is tried first; only when that is also out of room does
+> it move to the perpendicular axis, so `right-end` falls back through `left-end` to
+> `top-end`/`bottom-end`. That last step is what a full-width trigger needs — with room on
+> neither the left nor the right, staying on the horizontal axis means going off-screen.
 > `shift` is a separate, narrower correction: it nudges the element along the cross axis
 > *within* whichever side ended up being used. Neither can be turned off independently.
 

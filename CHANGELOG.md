@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.37.1] - 2026-09-07
+
+### Fixed
+
+- **A popover or tooltip with a wide trigger could still end up off-screen.**
+  When `placement` is set, `flip` is always applied, but it only considered the
+  opposite side on the same axis. A trigger that spans nearly the full viewport
+  width — a full-width row or drawer item, say — leaves room on neither the left
+  nor the right, so a `right-end` popover flipped to `left-end`, found no room
+  there either, and rendered outside the viewport. `flip` now also falls back to
+  the perpendicular axis, tried strictly last: a placement that already fits is
+  never re-evaluated, so this only changes cases that were previously broken.
+  The `placement` docs described the old, narrower behavior and have been
+  corrected in the JSDoc and the popover/tooltip references.
+
 ## [1.37.0] - 2026-09-06
 
 ### Added

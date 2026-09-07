@@ -67,10 +67,14 @@ export class UFloatingElement extends UElement {
    * 지정하지 않으면 자동으로 가장 적절한 위치가 선택됩니다.
    *
    * @remarks
-   * 지정한 변(side)에 공간이 없으면 반대 변으로 자동 전환됩니다(floating-ui의
+   * 지정한 변(side)에 공간이 없으면 자동으로 다른 변으로 전환됩니다(floating-ui의
    * `flip` 미들웨어가 `placement`를 지정했을 때 항상 함께 적용됩니다 — 별도
-   * 옵션으로 끌 수 없습니다). `shift`는 이 전환과 별개로, 전환된(또는 지정된)
-   * 변 **안에서** 교차축 위치만 보정합니다.
+   * 옵션으로 끌 수 없습니다). 전환 순서는 **같은 축의 반대 변이 먼저**이고, 그쪽에도
+   * 공간이 없을 때만 **수직 축**으로 넘어갑니다 — 예를 들어 `right-end`는
+   * `left-end` → `top-end`/`bottom-end` 순으로 시도합니다. 트리거가 넓어(예:
+   * 전체 폭 사이드바 항목) 좌·우 어느 쪽에도 공간이 없는 경우가 이 마지막 단계가
+   * 필요한 자리입니다. `shift`는 이 전환과 별개로, 전환된(또는 지정된) 변
+   * **안에서** 교차축 위치만 보정합니다.
    *
    * @default undefined
    */
@@ -269,7 +273,13 @@ export class UFloatingElement extends UElement {
       middleware: [
         offset(this.offset),
         shift({ mainAxis: this.shift }),
-        this.placement ? flip() : autoPlacement(),
+        // `fallbackAxisSideDirection: 'start'` — 같은 축의 반대 변까지 실패했을 때만
+        // 수직 축(top/bottom)을 후보에 «추가»한다. floating-ui 는 현재 배치가 넘치지
+        // 않으면 다음 후보를 아예 보지 않으므로(core 1.8.0 `flip`), 이 옵션은 지금
+        // 잘 동작하는 경우를 바꾸지 않는다 — **화면 밖으로 나가던 경우에만** 작동한다.
+        // 이것이 없으면 트리거가 넓어 좌·우 어느 쪽에도 공간이 없을 때 `flip()` 이
+        // 원래 배치로 되돌아가 팝오버가 뷰포트를 벗어난다.
+        this.placement ? flip({ fallbackAxisSideDirection: 'start' }) : autoPlacement(),
         ...(this.arrowEl ? [arrow({ element: this.arrowEl })] : []),
         // hide 는 배치가 확정된 뒤 판정해야 하므로 반드시 마지막에 온다.
         hide(),
