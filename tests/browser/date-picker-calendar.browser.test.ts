@@ -3,6 +3,22 @@ import '../../src/components/date-picker/UDatePicker.js';
 import type { UDatePicker } from '../../src/components/date-picker/UDatePicker.js';
 import { Locale } from '../../src/utilities/Locale.js';
 
+/**
+ * 오늘 날짜를 **로컬 캘린더 기준**으로 만든다.
+ *
+ * `toISOString()` 을 쓰면 안 된다 — 그것은 UTC 날짜라, UTC 와 로컬의 날짜가 갈리는
+ * 시간대·시각(예: UTC+9 의 00:00~09:00)에서만 이 단언이 하루 어긋난다. 컴포넌트는
+ * `getFullYear()/getMonth()/getDate()` 로 로컬 날짜를 쓰고 그것이 옳으므로, 기대값도
+ * 같은 축이어야 한다. CI 러너가 UTC 라 이 어긋남은 로컬에서만 드러난다.
+ */
+function localToday(): string {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 async function settle(el: UDatePicker) {
   await el.updateComplete;
   await new Promise(r => setTimeout(r, 0));
@@ -178,7 +194,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
       todayBtn.click();
       await settle(el);
 
-      const iso = new Date().toISOString().slice(0, 10);
+      const iso = localToday();
       expect(el.value).toBe(iso);
       expect(changeCount).toBe(1);
       const popover = el.shadowRoot!.querySelector('u-popover')!;
