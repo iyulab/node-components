@@ -224,7 +224,7 @@ input.validate(); // 이 시점에 비로소 invalid=true + 화면에 메시지�
 검증 메시지는 하드코딩하지 않고 **`Locale`** 유틸리티(`src/utilities/Locale.ts`)를 경유한다.
 
 - `en`/`ko`/`ja`/`zh-CN`/`zh-TW`/`es`/`fr`/`de`/`pt-BR`/`vi`/`th`/`id`/`ru`/`ar` 14개 로케일은 `src/assets/locales/*.json`으로 빌드 시점에 내장된다. 새 메시지 키는 `LocaleMessageKey`에 추가하고 모든 JSON 파일에 반영한다.
-- 활성 로케일은 초기에 `navigator.language`/`document.lang`으로 자동 추측되고(브라우저 환경), 실패 시 영어로 폴백한다. `Locale.set()`으로 언제든 명시적으로 바꿀 수 있다.
+- 활성 로케일은 초기에 `document.documentElement.lang` → `navigator.language` 순으로 자동 추측되고(브라우저 환경), 둘 다 없으면 영어로 폴백한다. `<html lang>` 이 먼저인 이유는 그것이 문서 언어에 대한 저자의 선언이고 보조기술이 발음 규칙을 고르는 근거이기 때문이다(WCAG 3.1.1/3.1.2) — `navigator.language` 는 그 선언이 없을 때의 사용자 선호 폴백이다. `Locale.set()`으로 언제든 명시적으로 바꿀 수 있다.
 - 메시지 조회 순서: `Locale.getValue()`가 찾는 값(활성 로케일 → base 언어 → 영어).
 - 그 외 언어나 문구 오버라이드는 `Locale.register()`로 등록한다. 이미 있는 값(내장 포함) 위에 병합되므로 일부 키만 넘겨도 나머지 키는 그대로 유지된다.
 

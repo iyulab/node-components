@@ -59,8 +59,21 @@ const builtins = new Map<string, LocaleTable>(
 
 const overrides = new Map<string, LocaleTable>();
 
-/** 브라우저 환경이면 `navigator.language`/`document.lang`으로 초기 로케일을 추측한다. */
+/**
+ * 초기 로케일을 `document.documentElement.lang` → `navigator.language` → `'en'` 순으로 추측한다.
+ *
+ * ⚠**순서가 계약이다.** `<html lang>` 은 HTML 명세상 **문서 언어에 대한 저자의 선언**이고,
+ * 보조기술은 그것으로 발음 규칙을 고른다(WCAG 3.1.1 Language of Page / 3.1.2 Language of
+ * Parts). `navigator.language` 는 그 선언이 **없을 때**의 사용자 선호 폴백이지 저자 선언을
+ * 덮어쓸 근거가 아니다 — 덮어쓰면 `lang="en"` 문서가 다른 언어의 접근성 이름을 내보내고,
+ * 스크린리더는 그것을 영어 발음 규칙으로 읽으려 한다.
+ *
+ * 자동 감지가 맞지 않는 앱은 `Locale.set()` 으로 언제든 덮어쓸 수 있다.
+ */
 function detectLocale(): LocaleTag {
+  if (typeof document !== 'undefined' && document.documentElement?.lang) {
+    return document.documentElement.lang;
+  }
   // `typeof window !== 'undefined'`로 실제 브라우저인지 먼저 가른다 — Node 21+는
   // 전역 `navigator`를 자체 제공하는데(`.language`가 OS/ICU 로케일을 반영, 브라우저의
   // "사용자 언어 설정"과 무관), 이 가드가 없으면 SSR/CLI/테스트처럼 Node에서 이 모듈을
@@ -68,7 +81,6 @@ function detectLocale(): LocaleTag {
   if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && navigator.language) {
     return navigator.language;
   }
-  if (typeof document !== 'undefined' && document.documentElement?.lang) return document.documentElement.lang;
   return 'en';
 }
 
@@ -151,7 +163,7 @@ export class Locale {
     active = locale;
   }
 
-  /** 전역 활성 로케일을 반환합니다 (초기값은 브라우저 언어 자동 감지, 실패 시 'en'). */
+  /** 전역 활성 로케일을 반환합니다 (초기값은 `<html lang>` → 브라우저 언어 자동 감지, 실패 시 'en'). */
   public static get(): LocaleTag {
     return active;
   }

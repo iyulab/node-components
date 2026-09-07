@@ -126,6 +126,7 @@ import { UButton, UInput } from '@iyulab/components/react';
 - [`converters`](./references/utilities/converters.md) — Lit property attribute converters (array, JSON, date, url…)
 - [`Locale`](./references/utilities/locale.md) — Validation-message locale registry and lookup utility
 - [`elements`](./references/utilities/elements.md) — Shadow-DOM-aware DOM query helpers
+- [`format`](./references/utilities/format.md) — Locale-aware number, currency and date formatting
 - [`OverlayManager`](./references/utilities/overlay-manager.md) — Internal overlay stack and z-index manager
 
 ---

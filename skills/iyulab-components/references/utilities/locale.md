@@ -10,7 +10,11 @@ Locale registry utility for library-generated validation messages.
 
 Built in: `en`, `ko`, `ja`, `zh-CN`, `zh-TW`, `es`, `fr`, `de`, `pt-BR`, `vi`, `th`, `id`, `ru`, `ar`.
 
-Initial locale is auto-detected from `navigator.language` / `document.documentElement.lang`, with English fallback.
+Initial locale is auto-detected from `document.documentElement.lang` first, then
+`navigator.language`, with English fallback. `<html lang>` wins because it is the author's
+declaration of the document's language and is what assistive technology uses to pick
+pronunciation rules (WCAG 3.1.1 / 3.1.2); the browser language is the user-preference
+fallback for when no such declaration exists. Call `Locale.set()` to override either.
 
 ## API
 

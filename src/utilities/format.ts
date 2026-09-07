@@ -62,8 +62,13 @@ export function formatCurrency(
  * already-Invalid `Date`) degrades to `String(value)` rather than throwing —
  * `Intl.DateTimeFormat.format()` throws `RangeError` on an Invalid Date, and this
  * utility is called from render paths where an uncaught throw blanks the whole
- * component. Same degrade-instead-of-throw contract as `formatCurrency`'s
- * missing-`currency` fallback.
+ * component.
+ *
+ * ⚠This degrade is **deliberately not symmetric** with {@link formatCurrency}, which
+ * throws `RangeError` on an invalid currency code. A date arrives as *data* — from an
+ * API, a user, a stale cache — so a bad one is an expected runtime state. A currency
+ * code is written by the developer at the call site, so a bad one is a bug that should
+ * surface at the first render rather than be papered over with a wrong-looking amount.
  */
 export function formatDate(
   value: Date | string,

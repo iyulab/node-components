@@ -11,6 +11,11 @@ Unified key-value storage API over `localStorage` or browser cookies.
 writing. `new BrowserStorage({ type: 'cookie' })` throws `"Cookies are not supported in this
 browser."` where it's unavailable; `localStorage` has no such restriction.
 
+⚠ The constructor also throws `"BrowserStorage can only be used in a browser environment."`
+when there is no `window` at all. Construct it inside a browser-only path (an event handler,
+`connectedCallback`, an effect) rather than at module scope, or an SSR/prerender build fails
+on import alone.
+
 ## Usage
 
 ```ts

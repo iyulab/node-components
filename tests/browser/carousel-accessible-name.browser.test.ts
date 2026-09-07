@@ -12,8 +12,9 @@ import { Locale } from '../../src/utilities/Locale.js';
 describe('u-carousel accessible name', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
-    // 활성 로케일은 실브라우저의 navigator.language(호스트 OS 설정)를 따라간다 —
-    // 값 자체는 여기서 재는 대상이 아니므로 'en'으로 고정해 결정론적으로 만든다.
+    // 활성 로케일은 이제 이 문서의 `<html lang="en">` 을 따라간다(cycle-445) — 그래도
+    // 값 자체는 여기서 재는 대상이 아니므로 'en'으로 고정해 명시적으로 만든다.
+    // 감지 «순서» 자체는 locale-detection.browser.test.ts 가 잰다.
     Locale.set('en');
   });
 

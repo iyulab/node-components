@@ -41,6 +41,61 @@ describe('Locale', () => {
       }
     });
 
+    it('prefers document.documentElement.lang over navigator.language', async () => {
+      // `<html lang>` is the author's authoritative declaration of the document's
+      // language (WCAG 3.1.1 / 3.1.2); `navigator.language` is only the user-preference
+      // fallback for when that declaration is absent. Trusting the browser first made
+      // an `<html lang="en">` document emit accessible names in another language.
+      vi.resetModules();
+      const originalWindow = (globalThis as { window?: unknown }).window;
+      const originalNavigator = globalThis.navigator;
+      const originalDocument = (globalThis as { document?: unknown }).document;
+      (globalThis as { window?: unknown }).window = {};
+      Object.defineProperty(globalThis, 'navigator', {
+        value: { language: 'ko-KR' },
+        configurable: true,
+      });
+      (globalThis as { document?: unknown }).document = { documentElement: { lang: 'en' } };
+      try {
+        const { Locale: FreshLocale } = await import('../../src/utilities/Locale.js');
+        expect(FreshLocale.get()).toBe('en');
+      } finally {
+        if (originalWindow === undefined) delete (globalThis as { window?: unknown }).window;
+        else (globalThis as { window?: unknown }).window = originalWindow;
+        if (originalDocument === undefined) delete (globalThis as { document?: unknown }).document;
+        else (globalThis as { document?: unknown }).document = originalDocument;
+        Object.defineProperty(globalThis, 'navigator', { value: originalNavigator, configurable: true });
+        vi.resetModules();
+      }
+    });
+
+    it('falls back to navigator.language when <html lang> is empty', async () => {
+      // An absent or empty `lang` attribute is not a declaration — the user preference
+      // is the right source there, which is what keeps this reordering non-breaking for
+      // the many apps that never set `lang`.
+      vi.resetModules();
+      const originalWindow = (globalThis as { window?: unknown }).window;
+      const originalNavigator = globalThis.navigator;
+      const originalDocument = (globalThis as { document?: unknown }).document;
+      (globalThis as { window?: unknown }).window = {};
+      Object.defineProperty(globalThis, 'navigator', {
+        value: { language: 'fr-FR' },
+        configurable: true,
+      });
+      (globalThis as { document?: unknown }).document = { documentElement: { lang: '' } };
+      try {
+        const { Locale: FreshLocale } = await import('../../src/utilities/Locale.js');
+        expect(FreshLocale.get()).toBe('fr-FR');
+      } finally {
+        if (originalWindow === undefined) delete (globalThis as { window?: unknown }).window;
+        else (globalThis as { window?: unknown }).window = originalWindow;
+        if (originalDocument === undefined) delete (globalThis as { document?: unknown }).document;
+        else (globalThis as { document?: unknown }).document = originalDocument;
+        Object.defineProperty(globalThis, 'navigator', { value: originalNavigator, configurable: true });
+        vi.resetModules();
+      }
+    });
+
     it('stores the active locale', () => {
       Locale.set('ko');
       expect(Locale.get()).toBe('ko');
