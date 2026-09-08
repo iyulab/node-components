@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.39.0] - 2026-09-08
+
+### Fixed
+
+- **A toast raised while a modal is open is no longer hidden behind it.** `Toast` hardcoded
+  `z-index: 9999` on its container while `OverlayManager` assigned open overlays a value
+  *above* 9999, so a toast could never appear over an open `u-dialog` or `u-drawer` — the
+  most common place an application reports a failure. Stacking is now a contract owned by
+  `OverlayManager`: overlays are assigned from a bounded band, and the notification layer sits
+  above that band by construction. Read `OverlayManager.notificationZIndex` instead of
+  hardcoding a value for any surface that must stay visible over an overlay.
+
+- **`Toast` no longer returns a promise that never settles, and no longer drops toasts
+  silently.** The container cache was keyed by a string derived from the target
+  (`"<position>@<id>"`), which collided when a different element reused the same `id`, never
+  cached at all for targets without an `id` (the fallback embedded `Date.now()`), and made the
+  cleanup path recompute a key that could miss. A cached container that had left the document
+  was still handed back, and an element appended to a detached container never connects — so
+  its `updateComplete` never resolves and `await Toast.success(...)` hung forever with no error
+  and no toast. Containers are now keyed by the target element itself and validated on every
+  cache hit. Passing a target that is not in the document now warns and returns instead of
+  hanging.
+
+### Changed
+
+- **Overlay z-index is derived from how many overlays are open at once, not from how many have
+  ever been opened.** The previous counter increased monotonically and never reset, leaving the
+  overlay band unbounded. Relative stacking between simultaneously open overlays is unchanged.
+
+### Added
+
+- **`OverlayManager.notificationZIndex`** — the z-index of the notification layer, guaranteed to
+  sit above the entire overlay band.
+
 ## [1.38.0] - 2026-09-08
 
 ### Changed

@@ -1,5 +1,6 @@
 import type { AlertVariant, AlertStatus } from "../components/alert/UAlert.js";
 import { UAlert } from "../components/alert/UAlert.js";
+import { OverlayManager } from "./OverlayManager.js";
 
 /** 토스트 알림의 화면 위치 타입 */
 export type ToastPosition =
@@ -27,8 +28,20 @@ export interface ToastOptions {
  * 토스트 알림 유틸리티 클래스입니다.
  */
 export class Toast {
-  private static containers = new Map<string, HTMLDivElement>();
-  private static elements = new Set<UAlert>();
+  /**
+   * 위치별 컨테이너를 **타깃 엘리먼트 자신에 키잉**한다.
+   *
+   * 종전에는 `"<position>@<id>"` 문자열이 키였고, 그 파생이 세 가지를 동시에 깨뜨렸다:
+   * ⑴같은 `id`를 가진 «다른» 엘리먼트가 같은 키로 충돌한다(SPA 라우트 교체가 화면
+   * 엘리먼트를 같은 `id`로 다시 만드는 것은 평범한 패턴이다) ⑵`id`가 없으면 폴백이
+   * `el-${Date.now()}` 라 호출마다 키가 달라져 캐시가 성립하지 않고 컨테이너가 쌓인다
+   * ⑶그 불안정한 키를 `hide` 정리 경로가 **다시 계산**하므로 `containers.delete()` 가
+   * 빗나가 항목이 영구히 남는다.
+   *
+   * `WeakMap` 은 셋을 전부 구조적으로 없앤다 — 엘리먼트 동일성이 곧 키라 충돌이 불가능하고,
+   * `id` 유무에 의존하지 않으며, 타깃이 버려지면 그 항목도 함께 수거된다.
+   */
+  private static containers = new WeakMap<HTMLElement, Map<ToastPosition, HTMLDivElement>>();
 
   /**
    * 모든 Toast 호출에 적용될 전역 기본 옵션입니다. 개별 호출의 `options`가 우선합니다.
@@ -86,13 +99,28 @@ export class Toast {
     el.closable = merged.closable ?? true;
     // duration 0 이하는 "자동으로 안 닫힘"을 의미(UAlert 자체 계약) — 필터링하지 않고 그대로 전달.
     el.duration = merged.duration ?? 4000;
-    this.elements.add(el);
 
     // 토스트 알림을 컨테이너에 추가합니다.
     const position = merged.position || "top-right";
     const target = merged.target || document.body;
     const container = this.getOrCreateContainer(position, target);
     container.appendChild(el);
+
+    // 🔴 연결되지 않은 엘리먼트의 `updateComplete` 는 **영원히 해소되지 않는다** — Lit 은 첫
+    // 업데이트를 `connectedCallback` 에서 돌리기 때문이다. 그대로 await 하면 이 Promise 를
+    // 기다린 소비앱 코드가 예외도 로그도 없이 «멈춘다». 위 컨테이너 캐시 수정이 그 경로
+    // 대부분을 없앴지만, 호출자가 **분리된 `target`** 을 직접 넘기는 경우는 남는다 ⇒ 조용한
+    // 무한 대기 대신 소리 나는 no-op 으로 바꾼다.
+    if (!el.isConnected) {
+      container.removeChild(el);
+      console.warn(
+        '[@iyulab/components] Toast was not shown: the target element is not in the document.\n' +
+        '  A toast can only render inside a connected element — pass a target that is attached,\n' +
+        '  or omit `target` to use document.body.'
+      );
+      return;
+    }
+
     await el.updateComplete;
     el.show();
 
@@ -102,31 +130,41 @@ export class Toast {
       if (e.target !== el) return;
       await new Promise((resolve) => setTimeout(resolve, 200));
       el.remove();
-      this.elements.delete(el);
 
       // 엘리먼트가 없는 컨테이너는 제거합니다.
+      // 키가 «엘리먼트 자신»이라 정리 경로가 키를 다시 계산하지 않는다 — 종전 문자열 키는
+      // 여기서 재계산되며 빗나갈 수 있었다(위 `containers` 주석 ⑶).
       if (!container.hasChildNodes()) {
-        const containerKey = this.getContainerKey(position, target);
         container.remove();
-        this.containers.delete(containerKey);
+        this.containers.get(target)?.delete(position);
       }
     });
   }
 
-  /** 컨테이너 키를 생성합니다. */
-  private static getContainerKey(position: ToastPosition, target: HTMLElement): string {
-    const targetId = target === document.body ? 'body' : (target.id || `el-${Date.now()}`);
-    return `${position}@${targetId}`;
-  }
-
-  /** 위치에 맞는 컨테이너 엘리먼트를 가져오거나, 생성합니다. */
+  /**
+   * 위치에 맞는 컨테이너 엘리먼트를 가져오거나, 생성합니다.
+   *
+   * ⚠**캐시 적중은 그 컨테이너가 «여전히 쓸 수 있는가»를 확인한 뒤에만 유효하다.** 호스트가
+   * 갈아끼워지면(`body.innerHTML = ''`, 셸 재구축) 캐시된 컨테이너는 문서에서 떨어진 채
+   * 남는데, 거기에 append 된 엘리먼트는 **연결되지 않아 `updateComplete` 가 영원히 해소되지
+   * 않는다**. 낡은 항목은 버리고 새로 만든다.
+   */
   private static getOrCreateContainer(position: ToastPosition, target: HTMLElement) {
-    const key = this.getContainerKey(position, target);
-    let container = this.containers.get(key);
-    if (container) return container;
+    let byPosition = this.containers.get(target);
+    if (!byPosition) {
+      byPosition = new Map<ToastPosition, HTMLDivElement>();
+      this.containers.set(target, byPosition);
+    }
 
-    container = document.createElement("div");
-    container.style.zIndex = "9999";
+    const cached = byPosition.get(position);
+    if (cached && cached.isConnected && cached.parentNode === target) return cached;
+    if (cached) byPosition.delete(position);
+
+    const container = document.createElement("div");
+    // 🔴 상수를 박지 않는다 — 겹침의 소유자는 `OverlayManager` 다. 종전에는 여기가 `9999` 로
+    // 박혀 있었고 그 매니저가 오버레이에 9999 «초과» 를 주고 있어, ***모달 안에서 띄운 오류
+    // 토스트가 구조적으로 항상 가려졌다.*** 알림은 오버레이의 형제가 아니라 그 위 채널이다.
+    container.style.zIndex = String(OverlayManager.notificationZIndex);
     container.style.display = "flex";
     container.style.gap = "10px";
 
@@ -181,7 +219,7 @@ export class Toast {
     container.style.transform = transformParts.length ? transformParts.join(" ") : "";
 
     target.appendChild(container);
-    this.containers.set(key, container);
+    byPosition.set(position, container);
     return container;
   }
 }
