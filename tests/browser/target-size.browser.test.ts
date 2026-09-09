@@ -113,11 +113,11 @@ const NEEDS_FIXTURE = new Set<string>([]);
  * 여기 있는 동안 이 파일은 그것을 **미달로 단언**하므로 스위트는 초록이고, 치수를 올리면
  * 빨개진다 — 그때 이 집합에서 빼는 것이 완료 신호다(cycle-479 가 쓴 것과 같은 장치).
  *
- * - `u-slider` — thumb 이 **18×18**(`--slider-thumb-size: 18px`). 홀로 있을 때는 간격
- *   예외를 받지만, 그 예외의 성립 여부를 정하는 것은 **소비앱의 배치**라 우리가 보장할 수
- *   없다(아래 `spacingIsOurs` 참조). range 모드에서 두 thumb 이 붙으면 확정 위반이 된다.
+ * ✅**지금은 비어 있다.** `u-slider`(thumb 18×18)가 유일한 항목이었고 cycle-492 가 사람 결정
+ * (§C-A ⑷ ⑵안 — 히트 영역만 넓힌다)에 따라 해소했다. 새로 핀을 넣을 때는 **왜 자율로 고칠 수
+ * 없는지**(선택지가 둘 이상인 시각 계약 변경인지)를 여기 함께 적을 것.
  */
-const UNDERSIZED_PINS = new Set(['u-slider']);
+const UNDERSIZED_PINS = new Set<string>([]);
 
 interface Fixture {
   html: string;
@@ -325,14 +325,53 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
 
   describe('📌미달 재고 — 사람 판단 대기 (§C-A 의 「위반 확정」 자리)', () => {
     it('핀 목록이 실제 미달과 일치한다 — 낡으면 위 per-tag 단언이 먼저 빨개진다', () => {
-      expect([...UNDERSIZED_PINS].sort()).toEqual(['u-slider']);
+      expect([...UNDERSIZED_PINS].sort()).toEqual([]);
+    });
+  });
+
+  describe('u-slider — 「히트 영역만 넓힌다」가 실제로 그렇게 됐는가 (§C-A ⑷, cycle-492)', () => {
+    /* ⚠**두 축을 함께 재지 않으면 이 결정을 검증할 수 없다.** 타깃만 재면 「보이는 원까지
+       커졌다」를 통과시키고, 보이는 원만 재면 「타깃이 안 커졌다」를 통과시킨다. */
+    it('타깃은 24×24 이고, 보이는 원은 그대로 18×18 이다', async () => {
+      await mount('<u-slider style="width:200px" value="50"></u-slider>');
+      const host = document.querySelector('u-slider')!;
+      const thumbs = parts(host, 'thumb').map(measure);
+      expect(thumbs).toHaveLength(1);
+      expect(`${Math.round(thumbs[0].w)}x${Math.round(thumbs[0].h)}`).toBe('24x24');
+
+      const visible = host.shadowRoot!.querySelector('.thumb-content')!;
+      const v = measure(visible);
+      expect(`${Math.round(v.w)}x${Math.round(v.h)}`, '보이는 원이 커졌다면 시각 계약이 바뀐 것이다').toBe('18x18');
     });
 
-    it('u-slider 의 thumb 은 18×18 이다 (`--slider-thumb-size`)', async () => {
+    it('보이는 원의 중심이 값 위치에 그대로 있다 — 여백이 대칭이라 어긋나지 않는다', async () => {
       await mount('<u-slider style="width:200px" value="50"></u-slider>');
-      const thumbs = parts(document.querySelector('u-slider')!, 'thumb').map(measure);
-      expect(thumbs).toHaveLength(1);
-      expect(`${Math.round(thumbs[0].w)}x${Math.round(thumbs[0].h)}`).toBe('18x18');
+      const host = document.querySelector('u-slider')!;
+      const target = measure(parts(host, 'thumb')[0]);
+      const visible = measure(host.shadowRoot!.querySelector('.thumb-content')!);
+      expect(Math.abs(target.cx - visible.cx)).toBeLessThan(0.5);
+      expect(Math.abs(target.cy - visible.cy)).toBeLessThan(0.5);
+    });
+
+    /* 🔴**range 모드의 「겹치면 어느 thumb 을 잡는가」는 히트 영역과 무관하다** — `pointerdown`
+       은 thumb 이 아니라 `.container` 에 걸려 있고 «값이 가까운 쪽»을 고른다(`USlider.ts`
+       `handleContainerPointerDown`). 히트 영역을 넓혀도 그 선택은 바뀌지 않는다는 것을
+       고정한다 — 이 사실을 모르면 「겹침 해소 규칙을 새로 만들어야 한다」로 잘못 읽는다. */
+    it('range 모드에서 두 thumb 이 겹쳐도 값이 가까운 쪽이 잡힌다', async () => {
+      await mount('<u-slider range style="width:200px" value="[50,52]"></u-slider>');
+      const host = document.querySelector('u-slider') as HTMLElement & { value: unknown };
+      const thumbs = parts(host, 'thumb').concat(parts(host, 'thumb-end')).map(measure);
+      expect(thumbs).toHaveLength(2);
+      // 두 히트 영역이 실제로 겹치는 상황인지부터 확인한다 — 안 겹치면 이 단언은 공허하다.
+      expect(Math.abs(thumbs[0].cx - thumbs[1].cx)).toBeLessThan(24);
+
+      const track = host.shadowRoot!.querySelector('[part~="track"]')!.getBoundingClientRect();
+      const at = (pct: number) => track.left + (track.width * pct) / 100;
+      host.shadowRoot!.querySelector('[part~="container"]')!
+        .dispatchEvent(new PointerEvent('pointerdown', { clientX: at(51.9), bubbles: true }));
+      document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+      expect((host.value as number[])[1], '52 에 가까운 지점을 눌렀으니 max 가 움직여야 한다')
+        .toBeGreaterThan(51);
     });
   });
 });

@@ -31,7 +31,11 @@ export const styles = css`
 
   .container {
     position: relative;
-    height: var(--slider-thumb-size);
+    /* ⚠실제 포인터 타깃은 thumb 이 아니라 이 컨테이너다 — pointerdown 이 여기 걸려 있고
+       트랙 어디를 눌러도 값이 바뀐다. WCAG 2.2 SC 2.5.8 의 24px 하한은 그래서 여기에도 든다.
+       보이는 트랙(6px)·thumb 치수는 그대로이고, 늘어나는 것은 «잡히는 높이»뿐이다.
+       ⚠주석에 백틱을 쓰지 말 것 — 태그드 템플릿이 그 자리에서 끝난다. */
+    height: max(var(--slider-thumb-size), 24px);
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
@@ -64,6 +68,19 @@ export const styles = css`
     top: 50%;
     transform: translate(-50%, -50%);
     outline: none;
+    /* 🔴히트·포커스 영역만 24px 하한으로 넓힌다 — 보이는 원은 .thumb-content 가 그대로 그린다
+       (WCAG 2.2 SC 2.5.8). 박스가 커져도 중심은 그대로다: 콘텐츠를 가운데 놓으므로
+       left:% + translate(-50%) 가 가리키는 점이 곧 보이는 원의 중심이다.
+       ⚠**여백(padding)으로 넓히지 않는다** — 24px 은 여백 스케일의 2xl 과 같은 값이라
+       「축 B 는 스케일 리터럴을 여백에 쓰지 않는다」 규칙(space-scale)에 걸리고, 그렇다고
+       --u-space-2xl 로 배선하면 ***접근성 하한이 여백 스케일을 손볼 때 따라 움직인다.***
+       하한은 여백이 아니므로 여백이 아닌 자리에 적는다.
+       ⚠툴팁은 이 박스의 레이아웃에 참여하지 않는다(플로팅이라 흐름 밖) — 그래서 grid 로
+       바꿔도 콘텐츠와 겹치지 않는다. */
+    display: grid;
+    place-items: center;
+    min-width: 24px;
+    min-height: 24px;
   }
 
   .thumb-content {

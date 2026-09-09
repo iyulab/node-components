@@ -29,6 +29,30 @@ import '@iyulab/components/u-input';
 > 무스타일로 렌더된다. 정적 CSS 대신 런타임 `Theme.init()` 을 써도 되지만, **둘 중 하나는
 > 반드시 필요하다.** 자세한 내용은 [docs/theming.md](docs/theming.md) 참조.
 
+
+## 반드시 한 벌이어야 한다 (single instance)
+
+이 패키지는 **프로세스 전역 자원**을 소유합니다 — custom element 레지스트리
+(`customElements.define`)와 모듈 싱글턴(`Theme` · `Toast` · `OverlayManager`)입니다. 설치
+트리에 사본이 둘 이상 들어오면 **에러 없이** 다음이 일어납니다.
+
+- 같은 태그를 두 번 등록하려다 두 번째가 무시되어, **어느 사본의 구현이 뜨는지 정해지지 않는다**
+- 싱글턴 상태가 갈라져, 한 사본에 등록한 오버레이를 다른 사본의 토스트가 보지 못한다
+  (모달 위에 떠야 할 알림이 뒤로 숨는 형태로 나타난다)
+
+그래서 이 패키지에 의존하는 라이브러리는 이것을 `dependencies` 가 아니라
+**`peerDependencies`** 로 선언합니다 — 소비 앱이 설치한 한 벌을 그대로 쓰기 위해서입니다.
+직접·간접으로 이 패키지를 쓰는 라이브러리를 여럿 함께 쓴다면, 설치 후 사본이 하나인지
+확인하십시오.
+
+```bash
+npm ls @iyulab/components   # 트리 전체에서 몇 벌인지 — 하나여야 한다
+```
+
+> 번들러로 겹쳐 쓸 수도 있습니다(Vite `resolve.dedupe`, webpack `resolve.alias`). 다만 그것은
+> 증상을 덮는 것이지 원인을 없애지 않으므로, 사본이 둘로 보이면 먼저 **어느 의존이 이 패키지를
+> `dependencies` 로 선언했는지** 확인하는 편이 낫습니다.
+
 ## React
 
 React 프로젝트에서는 `@iyulab/components/react` 서브패스가 모든 컴포넌트를 `forwardRef` 래퍼로 제공합니다. Web Component를 직접 다루지 않고도 JSX props(`color`, `size`, 이벤트 `onXxx` 등)로 사용할 수 있습니다.

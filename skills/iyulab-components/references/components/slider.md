@@ -84,7 +84,7 @@ Range slider. Single-thumb or dual-thumb (range) mode. Supports marks, value dis
 | `--slider-fill-color` | Track fill color |
 | `--slider-track-height` | Track height |
 | `--slider-track-color` | Track background color |
-| `--slider-thumb-size` | Thumb diameter |
+| `--slider-thumb-size` | Thumb diameter (**visible circle only** — the pointer target keeps a 24x24 floor per WCAG 2.2 SC 2.5.8, so lowering this does not shrink it) |
 | `--slider-thumb-color` | Thumb fill color |
 | `--slider-thumb-border-color` | Thumb border color |
 | `--slider-mark-size` | Mark dot size |

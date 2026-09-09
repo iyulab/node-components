@@ -37,7 +37,9 @@ type ThumbId = 'min' | 'max';
  * @cssprop --slider-fill-color - 활성화 영역 색상
  * @cssprop --slider-track-height - 트랙 높이
  * @cssprop --slider-track-color - 트랙 배경 색상
- * @cssprop --slider-thumb-size - thumb 크기
+ * @cssprop --slider-thumb-size - thumb 크기 (**보이는 원의 지름**. 잡히는 영역은 이것과
+ *   별개로 24×24 하한을 가진다 — WCAG 2.2 SC 2.5.8. 이 값을 24px 아래로 낮춰도 포인터 타깃은
+ *   줄지 않는다.)
  * @cssprop --slider-thumb-color - thumb 색상
  * @cssprop --slider-thumb-border-color - thumb 테두리 색상
  * @cssprop --slider-mark-size - 마크 크기
