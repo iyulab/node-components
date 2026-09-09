@@ -11,6 +11,12 @@ export const styles = css`
   :host {
     display: inline-flex;
     flex-direction: column;
+    /* WCAG 2.2 SC 2.5.8 Target Size (Minimum) — 포인터 타깃은 24×24 CSS px 이상.
+       ⚠재는 것은 **포인터 타깃**이지 시각 크기가 아니다 — 체크 박스(.checkbox)의
+       치수는 그대로 두고 «클릭을 받는 영역»만 최소 높이를 갖는다. 라벨이 있으면
+       내용이 이미 이보다 크므로 아무 일도 일어나지 않는다. */
+    min-block-size: 24px;
+    justify-content: center;
     color: var(--u-txt-color, #212121);
     font-size: inherit;
     font-family: var(--u-font-base);
