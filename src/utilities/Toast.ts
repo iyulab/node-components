@@ -170,7 +170,12 @@ export class Toast {
 
     const isTargeted = target !== document.body;
 
+    // ⚠**배치보다 «먼저»** 해야 한다 — UA 의 `[popover]` 기본값을 걷는 데 `inset: auto` 가
+    // 들어가는데, 아래 배치가 설정하는 `top`/`right`/… 를 나중에 쓰면 지워 버린다.
+    const popoverReady = isTargeted ? false : this.preparePopover(container);
+
     if (isTargeted) {
+      // 아래 `preparePopover` 참조 — 타깃 기준 컨테이너는 top layer 로 올리지 않는다.
       // target 기준 포지셔닝
       container.style.position = "absolute";
 
@@ -219,7 +224,70 @@ export class Toast {
     container.style.transform = transformParts.length ? transformParts.join(" ") : "";
 
     target.appendChild(container);
+    if (popoverReady) this.showTopLayer(container);
     byPosition.set(position, container);
     return container;
+  }
+
+  /**
+   * 알림 컨테이너를 **네이티브 top layer** 로 올린다(`popover="manual"`).
+   *
+   * ## 왜 — z-index 로는 원리적으로 닿지 않는 자리가 있다
+   *
+   * `OverlayManager` 의 «이름 있는 띠» 계약은 **우리 오버레이보다 위**를 보장한다(실측:
+   * 컨테이너 `z-index: 11000`). 그러나 ***top layer 는 z-index 축 밖에 있다*** — 소비앱이
+   * 네이티브 `<dialog>.showModal()` 을 열면 그 다이얼로그는 **어떤 z-index 보다도 위**에
+   * 서고, 우리 토스트는 가려진다. 실측(cycle-477, 크로미움 `elementFromPoint`):
+   *
+   * ```
+   * containerZIndex 11000 · notificationZIndex 11000 · hitTag "DIALOG" · toastReachable false
+   * ```
+   *
+   * 알림 채널의 제1원칙이 ***«지각되지 않는 경보는 경보가 아니다»*** 이므로, 그 채널은 겹침을
+   * **다투지 않고** 전용 층을 가져야 한다. `popover="manual"` 은 dismiss 계약도 포커스 트랩도
+   * 걸지 않고 **top layer 승격만** 하므로 이 표면에 정확히 맞는다.
+   *
+   * ## ⚠ 범위 — `document.body` 컨테이너만이다
+   *
+   * `target` 이 주어진 컨테이너는 `position: absolute` 로 **그 엘리먼트 기준**으로 놓인다.
+   * top layer 원소는 조상의 배치 문맥에서 떨어져 나오므로 그 좌표계가 통째로 깨진다 ⇒
+   * 타깃 기준 컨테이너는 **종전 z-index 경로를 그대로 쓴다.** 이것이 시범 범위이고,
+   * 오버레이 전면 전환(`u-dialog`·`u-drawer` 등)은 별개 결정이다(`ROADMAP.md` §C-B).
+   *
+   * ## ⚠ z-index 를 지우지 않는다
+   *
+   * `showPopover` 가 없는 브라우저(또는 호출이 거부되는 상태)에서는 **아무 일도 일어나지
+   * 않고 종전 동작이 그대로 남아야** 한다 — 그래서 승격은 순수 «추가»이고, 실패는 조용히
+   * 삼킨다(알림을 띄우려다 예외를 던지는 것은 이 표면에서 최악의 실패다).
+   */
+  private static preparePopover(container: HTMLDivElement): boolean {
+    if (typeof container.showPopover !== 'function') return false;
+    container.setAttribute('popover', 'manual');
+    // UA 의 `[popover]` 기본 스타일을 걷어낸다 — 그대로 두면 `inset: 0` 이 컨테이너를 화면
+    // 전체로 늘리고 테두리·패딩·불투명 배경이 붙는다. ⚠**호출자가 배치보다 먼저 부른다**
+    // (`inset: auto` 가 뒤에 오면 `top`/`right` 를 지운다).
+    container.style.inset = 'auto';
+    container.style.margin = '0';
+    container.style.border = 'none';
+    container.style.padding = '0';
+    container.style.background = 'transparent';
+    container.style.color = 'inherit';
+    container.style.overflow = 'visible';
+    container.style.width = 'auto';
+    container.style.height = 'auto';
+    container.style.maxWidth = 'none';
+    container.style.maxHeight = 'none';
+    return true;
+  }
+
+  /** 연결된 뒤에만 부를 수 있다 — 실패하면 종전 동작(z-index 띠)으로 조용히 돌아간다. */
+  private static showTopLayer(container: HTMLDivElement) {
+    try {
+      container.showPopover();
+    } catch {
+      // 알림을 띄우려다 예외를 던지는 것은 이 표면에서 최악의 실패다. 속성을 걷고 넘어간다
+      // — 인라인 스타일 리셋은 남지만 전부 «기본값으로 되돌리는» 값이라 무해하다.
+      container.removeAttribute('popover');
+    }
   }
 }
