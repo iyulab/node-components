@@ -10,7 +10,10 @@ export const styles = css`
 
   :host {
     position: relative;
-    display: inline-block;
+    /* 폼/그리드 셀에서 컨테이너 폭을 채우려면 소비자가 --u-select-display: block 을 준다.
+       flex 컨테이너처럼 block 만으로 늘어나지 않는 맥락을 위해 width 경로도 함께 연다. */
+    display: var(--u-select-display, inline-block);
+    width: var(--u-select-width, auto);
     color: var(--u-txt-color, #212121);
     font-size: inherit;
     font-family: var(--u-font-base);

@@ -19,6 +19,11 @@ type TextareaResize = 'none' | 'vertical' | 'horizontal' | 'both' | 'auto';
  * @csspart container - 텍스트에어리어를 감싸는 요소
  * @csspart textarea - 실제 텍스트에어리어 요소
  * @csspart counter - 글자 수 표시 영역
+ *
+ * @cssprop --u-textarea-display - 호스트의 display (기본값: inline-block). 폼/그리드 셀에서
+ *   컨테이너 폭을 채우려면 `block`으로 지정한다.
+ * @cssprop --u-textarea-width - 호스트의 width (기본값: auto). flex 컨테이너처럼 block만으로는
+ *   늘어나지 않는 맥락에서 `100%`로 지정한다.
  * 
  * @event input - 입력값이 변경될 때 발생
  * @event change - 값이 확정됐을 때 발생

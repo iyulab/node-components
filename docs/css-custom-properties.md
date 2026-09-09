@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 29개 · 프로퍼티 127개**
+**컴포넌트 30개 · 프로퍼티 131개**
 
 ## `<u-alert>`
 
@@ -183,6 +183,8 @@ u-button.cta { --btn-color: #0f9d58; }
 
 | 프로퍼티 | 설명 |
 |---|---|
+| `--u-select-display` | 호스트의 display (기본값: inline-block). 폼/그리드 셀에서 컨테이너 폭을 채우려면 `block`으로 지정한다. |
+| `--u-select-width` | 호스트의 width (기본값: auto). flex 컨테이너처럼 block만으로는 늘어나지 않는 맥락에서 `100%`로 지정한다. |
 | `--select-popover-width` | 팝오버의 너비 (기본값: 앵커(트리거) 너비, strategy와 무관하게 동일). 옵션 텍스트가 길어도 이 값을 넘겨 넓어지지 않으며, 넘치는 텍스트는 UOption에서 ellipsis 처리된다. |
 | `--select-popover-min-height` | 팝오버의 최소 높이 (기본값: 0px) |
 | `--select-popover-max-height` | 팝오버의 최대 높이 (기본값: 50vh) |
@@ -203,7 +205,7 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--slider-fill-color` | 활성화 영역 색상 |
 | `--slider-track-height` | 트랙 높이 |
 | `--slider-track-color` | 트랙 배경 색상 |
-| `--slider-thumb-size` | thumb 크기 |
+| `--slider-thumb-size` | thumb 크기 (**보이는 원의 지름**. 잡히는 영역은 이것과 별개로 24×24 하한을 가진다 — WCAG 2.2 SC 2.5.8. 이 값을 24px 아래로 낮춰도 포인터 타깃은 줄지 않는다.) |
 | `--slider-thumb-color` | thumb 색상 |
 | `--slider-thumb-border-color` | thumb 테두리 색상 |
 | `--slider-mark-size` | 마크 크기 |
@@ -267,6 +269,13 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--tag-padding-block` | 세로 여백 |
 | `--tag-padding-inline` | 가로 여백 |
 | `--tag-gap` | prefix/본문/suffix 사이 간격 |
+
+## `<u-textarea>`
+
+| 프로퍼티 | 설명 |
+|---|---|
+| `--u-textarea-display` | 호스트의 display (기본값: inline-block). 폼/그리드 셀에서 컨테이너 폭을 채우려면 `block`으로 지정한다. |
+| `--u-textarea-width` | 호스트의 width (기본값: auto). flex 컨테이너처럼 block만으로는 늘어나지 않는 맥락에서 `100%`로 지정한다. |
 
 ## `<u-tooltip>`
 
