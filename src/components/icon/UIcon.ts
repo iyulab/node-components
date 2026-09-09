@@ -60,7 +60,7 @@ export class UIcon extends UElement {
   }
 
   private async resolve(name: string): Promise<string | undefined> {
-    let html: string | undefined = undefined;
+    let html: string | undefined;
     if (this.lib) {
       html = await IconRegistry.resolve(this.lib, name);
     } else {

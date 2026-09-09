@@ -136,7 +136,10 @@ export class UTabPanel extends UElement {
     const currentIndex = enabledTabs.indexOf(e.currentTarget as UTab);
     if (currentIndex === -1) return;
 
-    let targetIndex = -1;
+    // 초기값을 두지 않는다 — 아래 switch 의 모든 «빠져나가는» 경로가 return 하므로
+    // (`Enter`/` ` 와 `default`), 여기를 지나는 순간 targetIndex 는 반드시 대입돼 있다.
+    // TS 의 확정 대입 분석이 그것을 증명하고, 새 case 가 대입을 빠뜨리면 컴파일이 막는다.
+    let targetIndex: number;
     switch (e.key) {
       case (this.isVertical ? 'ArrowDown' : 'ArrowRight'):
         targetIndex = (currentIndex + 1) % enabledTabs.length;
