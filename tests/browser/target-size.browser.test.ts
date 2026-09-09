@@ -136,6 +136,23 @@ interface Fixture {
    *
    * ★이 구분은 네거티브 컨트롤이 찾아냈다 — `u-button` 을 14×14 로 줄였는데도 게이트가
    * 초록이었다(이웃이 없어 간격 예외를 받았다). ***조용한 미탐이었고, 넓은 예외가 그 원인이다.***
+   *
+   * 🔴**그리고 「우리가 배치를 소유하는가」만으로는 부족하다 — 「그 예외가 실제로 일하는가」를
+   * 함께 물어야 한다**(cycle-496 이 기준을 바꾸고 cycle-504 가 다섯을 전수 실측했다). 소유하되
+   * 크기만으로도 이미 통과하고 이웃까지의 거리가 늘 24 를 넘으면, 그 예외가 하는 일은
+   * ***미탐뿐***이다 — 나중에 치수가 줄어도 게이트가 초록으로 남는다. 실측(2026-09-09):
+   *
+   * ```
+   * u-tab      49x34 48x34            크기만통과=true  최소거리=48.4  예외가일함=false
+   * u-radio    103x32 ×3              크기만통과=true  최소거리=40    예외가일함=false
+   * u-option   54x32 ×2               크기만통과=true  최소거리=40    예외가일함=false
+   * u-rating   25x25 ×5               크기만통과=true  최소거리=28.5  예외가일함=false
+   * u-carousel 78x68 78x68 24x10 10x10 크기만통과=false 최소거리=25    예외가일함=true
+   * ```
+   *
+   * ⇒ 넷에서 걷어냈고 `u-carousel` 만 남겼다(페이지네이션 점이 실제로 미달이고 그 간격 25px 는
+   * 우리가 정한다). `u-rating` 은 25×25 로 하한을 **1px** 넘고 있어, 예외가 있는 동안에는
+   * cycle-484 가 어렵게 올린 그 치수를 지키는 장치가 없었다.
    */
   spacingIsOurs?: true;
 }
@@ -153,7 +170,7 @@ const FIXTURES: Record<string, Fixture> = {
   'u-file-input': { html: '<u-file-input></u-file-input>' },
   'u-date-picker': { html: '<u-date-picker></u-date-picker>' },
   'u-expander': { html: '<u-expander header="More">body</u-expander>' },
-  'u-tab': { html: '<u-tab-panel><u-tab>One</u-tab><u-tab>Two</u-tab></u-tab-panel>', spacingIsOurs: true },
+  'u-tab': { html: '<u-tab-panel><u-tab>One</u-tab><u-tab>Two</u-tab></u-tab-panel>' },
   'u-menu-item': { html: '<u-menu><u-menu-item>Item</u-menu-item></u-menu>' },
   'u-tree-item': { html: '<u-tree><u-tree-item>Node</u-tree-item></u-tree>' },
   'u-breadcrumb-item': { html: '<u-breadcrumb><u-breadcrumb-item>Home</u-breadcrumb-item></u-breadcrumb>' },
@@ -163,17 +180,14 @@ const FIXTURES: Record<string, Fixture> = {
     html: '<u-radio name="s" value="md"><u-option value="sm">Small</u-option>' +
       '<u-option value="md">Medium</u-option><u-option value="lg">Large</u-option></u-radio>',
     targets: () => Array.from(document.querySelectorAll('u-option')),
-    spacingIsOurs: true,
   },
   'u-option': {
     html: '<u-radio name="s"><u-option value="a">A</u-option><u-option value="b">B</u-option></u-radio>',
     targets: () => Array.from(document.querySelectorAll('u-option')),
-    spacingIsOurs: true,
   },
   'u-rating': {
     html: '<u-rating value="3"></u-rating>',
     targets: () => parts(document.querySelector('u-rating')!, 'symbol'),
-    spacingIsOurs: true,
   },
   'u-slider': {
     html: '<u-slider style="width:200px" value="50"></u-slider>',

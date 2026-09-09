@@ -1,5 +1,41 @@
 # Changelog
 
+## [1.40.0] - 2026-09-10
+
+### Added
+
+- **`--u-select-display` / `--u-select-width` and `--u-textarea-display` / `--u-textarea-width`
+  on the host**, matching the hooks `u-input`, `u-date-picker` and `u-file-input` already
+  expose. Defaults are unchanged, so this is additive: a consumer who sets nothing sees what
+  they saw before. A form row mixes control types, and an asymmetric hook meant some cells
+  followed their container while others overflowed it — with no way to reach the ones that did
+  not have the hook. The regression covers all five controls rather than the two that were
+  missing it, because the invariant is the symmetry itself.
+
+### Fixed
+
+- **The checkbox, the switch, the rating symbols, the chip's remove button and the slider all
+  presented a pointer target smaller than 24×24 CSS px** (WCAG 2.2 SC 2.5.8 Target Size
+  (Minimum)). The target grew, the glyph did not: the box, the track, the star, the icon and
+  the slider's 18px thumb keep their sizes, and only the area that receives the pointer grows.
+  Controls do take a few more pixels vertically — a 24px target needs 24px of room unless
+  targets are allowed to overlap. For the slider the container height had to rise as well,
+  since it is the element that receives `pointerdown`; measuring only the focusable thumb had
+  missed that axis.
+
+- **A toast raised over a page that stacks its own content above every z-index value is no
+  longer hidden by it.** The document-level toast container is promoted to the browser's native
+  top layer (`popover="manual"`), which takes the notification channel off the z-index axis
+  entirely rather than trying to win on it. The existing z-index remains as the fallback where
+  `showPopover` is unavailable, and the container anchored to a target element is deliberately
+  left alone — it needs its ancestor's positioning context, which the top layer removes. One
+  limit is pinned by test rather than left to be discovered: a native modal dialog makes
+  everything outside it inert, so no stacking strategy reaches above one.
+
+- **Two dead initialisers dropped**, and the tab panel's keyboard navigation — which had no
+  regression coverage at all — is now covered. Both assignments were overwritten on every path
+  that read them.
+
 ## [1.39.0] - 2026-09-08
 
 ### Fixed
