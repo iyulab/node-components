@@ -15,7 +15,7 @@ Resizable two-panel layout. Drag the splitter to adjust panel sizes.
 </u-split-panel>
 
 <!-- Vertical split -->
-<u-split-panel orientation="vertical" default-ratio="[30,70]">
+<u-split-panel orientation="vertical" default-ratio="30,70">
   <div>Top panel</div>
   <div>Bottom panel</div>
 </u-split-panel>
@@ -42,7 +42,7 @@ Resizable two-panel layout. Drag the splitter to adjust panel sizes.
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `orientation` | `'horizontal'\|'vertical'` | `'horizontal'` | ✓ | Split direction |
-| `defaultRatio` | `number[]` | `[]` | ✓ | Initial size ratios (e.g. `[30, 70]`) |
+| `defaultRatio` | `number[]` | `[]` | ✓ | Initial size ratios. Attribute form is comma-separated, without brackets: `default-ratio="30,70"`. Ratios are shares of the space between the handles |
 | `ratio` | `number[]` | `[]` | ✓ | Current size ratios |
 | `disabled` | `boolean` | `false` | ✓ | Prevent resizing |
 | `lazy` | `boolean` | `false` | ✓ | Show preview while dragging, commit on release |
@@ -59,7 +59,8 @@ Resizable two-panel layout. Drag the splitter to adjust panel sizes.
 
 | Property | Description |
 |----------|-------------|
-| `--splitter-size` | Splitter handle thickness |
+| `--splitter-size` | Thickness of the visible line (default `4px`) |
+| `--splitter-hit-size` | Thickness of the area that takes the pointer (default `24px`, WCAG 2.5.8). It occupies layout space between the panels, so it never covers a panel's scrollbar. The handle is the larger of the two; set it to `var(--splitter-size)` for a flush handle |
 | `--splitter-color` | Splitter default color |
 | `--splitter-color-hover` | Splitter color on hover |
 | `--splitter-color-active` | Splitter color while dragging |

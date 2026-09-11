@@ -122,13 +122,13 @@ const NEEDS_FIXTURE = new Set<string>([]);
  * 넓힌다)에 따라 해소했다. 새로 핀을 넣을 때는 **왜 자율로 고칠 수 없는지**(선택지가 둘 이상인
  * 시각 계약 변경인지)를 여기 함께 적을 것.
  *
- * 📌**`u-split-panel`**(cycle-539) — 분할 핸들 `[part=splitter]` 는 컴포넌트가 **스스로 만들고**
- * `pointerdown`·`dblclick` 을 거는 우리 소유 타깃인데, 기본 `--splitter-size` 가 4px 다. 종전에는
- * «소비자가 슬롯으로 넣는다» 는 잘못된 전제로 «대상 아님» 에 있었다(슬롯 내용은 그 안에 복제되는
- * 장식이다). **자율로 고치지 않는 이유**: 선택지가 셋인 시각 계약이다 — ⑴ 보이는 폭은 두고 포인터
- * 영역만 넓힌다(`u-slider` 선례) ⑵ 기본 폭 자체를 올린다 ⑶ 소비자에게 맡긴다(`--splitter-size`).
+ * ✅**`u-split-panel`**(cycle-539 핀 → cycle-540 해소) — 분할 핸들이 4px 라 핀으로 뒀고, 사람
+ * 결정(HD-55 ⑷)으로 **레이아웃 거터**가 됐다: 핸들 박스가 24px 공간을 차지하고 보이는 선은
+ * 4px 그대로다. `u-slider` 식(포인터 영역만 겹쳐 넓힘)을 쓰지 않은 이유 — 핸들 양옆이 패널이고
+ * 패널마다 `overflow: auto` 라 스크롤바가 핸들에 붙어 있다. 두 축은
+ * `split-panel-handle.browser.test.ts` 가 잰다.
  */
-const UNDERSIZED_PINS = new Set<string>(['u-split-panel']);
+const UNDERSIZED_PINS = new Set<string>([]);
 
 interface Fixture {
   html: string;
@@ -293,8 +293,8 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   'u-split-panel': {
     // 🔴**분할 핸들은 컴포넌트가 스스로 만든다**(`createSplitter` — `pointerdown`·`dblclick` 을 건다).
     //   `splitter` 슬롯의 내용은 그 안에 복제되는 장식일 뿐이다. 패널 둘이면 핸들 하나이고, 가로
-    //   방향(기본)이라 폭이 `--splitter-size`(4px)다. 간격 예외를 켜지 않는다 — 이웃이 없어 켜면
-    //   «혼자라서 통과» 가 된다(위 `spacingIsOurs` 주석).
+    //   방향(기본)이라 폭이 `max(--splitter-size, --splitter-hit-size)`(24px)다. 간격 예외를 켜지
+    //   않는다 — 이웃이 없어 켜면 «혼자라서 통과» 가 된다(위 `spacingIsOurs` 주석).
     html: '<u-split-panel style="width:300px;height:120px"><div>A</div><div>B</div></u-split-panel>',
     targets: () => parts(document.querySelector('u-split-panel')!, 'splitter'),
   },
@@ -421,7 +421,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
 
   describe('📌미달 재고 — 사람 판단 대기 (§C-A 의 「위반 확정」 자리)', () => {
     it('핀 목록이 실제 미달과 일치한다 — 낡으면 위 per-tag 단언이 먼저 빨개진다', () => {
-      expect([...UNDERSIZED_PINS].sort()).toEqual(['u-split-panel']);
+      expect([...UNDERSIZED_PINS].sort()).toEqual([]);
     });
   });
 

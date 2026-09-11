@@ -33,6 +33,7 @@ const INTERNAL: Record<string, string> = {
 
   // 다른 선언 토큰들에서 계산되는 파생값 — 단독으로 덮으면 트랙 기하와 어긋난다.
   '--switch-move-width': '--switch-track-width/--switch-thumb-size/--switch-thumb-offset 에서 계산',
+  '--_splitter-box': 'u-split-panel 핸들 박스 = max(--splitter-size, --splitter-hit-size) 에서 계산',
 
   // 장식 축(`color=` 속성)의 내부 슬롯. `color` 속성이 공개 API 이고 이 슬롯들은 그
   // 구현이다 — 공개하면 hue 스케일의 현재 형태(5슬롯)에 영구히 묶인다. 소비자가

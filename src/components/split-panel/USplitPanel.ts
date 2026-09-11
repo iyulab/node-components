@@ -12,7 +12,9 @@ import { type ShiftEventDetail } from "../../events/ShiftEvent.js";
  * @slot - 분할된 패널 요소들
  * @slot splitter - 핸들(스플리터) UI
  *
- * @cssprop --splitter-size - 스플리터 크기 (default: 4px)
+ * @cssprop --splitter-size - 보이는 구분선 두께 (default: 4px)
+ * @cssprop --splitter-hit-size - 포인터를 받는 핸들 영역의 두께 — 레이아웃 공간을 차지하므로 패널을
+ *   가리지 않는다. 실제 핸들 두께는 이 값과 `--splitter-size` 중 큰 쪽 (default: 24px — WCAG 2.5.8)
  * @cssprop --splitter-color - 스플리터 색상
  * @cssprop --splitter-color-hover - 스플리터 호버 색상
  * @cssprop --splitter-color-active - 스플리터 활성 색상
@@ -60,8 +62,12 @@ export class USplitPanel extends UElement {
   };
 
   private get percentages(): number[] {
-    const source = this.ratio.length === this.panels.length ? this.ratio
-      : this.defaultRatio.length === this.panels.length ? this.defaultRatio
+    // 숫자가 아닌 값(예: `default-ratio="[30,70]"` → `[NaN, 70]`)이 섞인 비율은 쓰지 않는다 —
+    // 그대로 쓰면 `calc(NaN% …)` 가 무효가 되어 패널 크기가 통째로 무너진다.
+    const usable = (r: number[]) =>
+      r.length === this.panels.length && r.every((v) => Number.isFinite(v) && v >= 0) && r.some((v) => v > 0);
+    const source = usable(this.ratio) ? this.ratio
+      : usable(this.defaultRatio) ? this.defaultRatio
       : [];
 
     if (source.length === this.panels.length) {
@@ -72,9 +78,22 @@ export class USplitPanel extends UElement {
     return this.panels.map(() => equals);
   }
 
+  /**
+   * 핸들 하나가 레이아웃에서 차지하는 두께(px). 렌더된 핸들을 재는 것이 정본이다 — CSS 가
+   * `max(--splitter-size, --splitter-hit-size)` 로 정하고 `rem` 등 어떤 단위든 올 수 있다.
+   * 아직 렌더되지 않았거나 숨겨져 0 이면 두 변수를 읽어 같은 규칙을 흉내 낸다.
+   */
   private get splitterSize(): number {
-    const sizeStr = getComputedStyle(this).getPropertyValue('--splitter-size').trim();
-    return parseFloat(sizeStr) || 4;
+    const el = this.renderRoot?.querySelector<HTMLElement>('.splitter');
+    if (el) {
+      const r = el.getBoundingClientRect();
+      const measured = this.orientation === 'horizontal' ? r.width : r.height;
+      if (measured > 0) return measured;
+    }
+    const style = getComputedStyle(this);
+    const read = (name: string, fallback: number) =>
+      parseFloat(style.getPropertyValue(name).trim()) || fallback;
+    return Math.max(read('--splitter-size', 4), read('--splitter-hit-size', 24));
   }
 
   private get splitterCount(): number {
@@ -149,10 +168,9 @@ export class USplitPanel extends UElement {
     const dim = this.orientation === 'horizontal' ? 'width' : 'height';
     const otherDim = this.orientation === 'horizontal' ? 'height' : 'width';
     const percentages = this.percentages;
-    const splitterOffset = this.splitterSize * (this.splitterCount / this.panels.length);
 
     this.panels.forEach((panel, index) => {
-      panel.style[dim] = `calc(${percentages[index]}% - ${splitterOffset}px)`;
+      panel.style[dim] = this.panelSize(percentages[index]);
       panel.style[otherDim] = '';
       panel.style.order = String(index * 2);
       panel.style.boxSizing = 'border-box';
@@ -235,9 +253,8 @@ export class USplitPanel extends UElement {
         this.dragState.percentages[bIdx] - deltaPercent,
       );
       const dim = this.orientation === 'horizontal' ? 'width' : 'height';
-      const offset = this.splitterSize * (this.splitterCount / this.panels.length);
-      this.panels[aIdx].style[dim] = `calc(${aPercent}% - ${offset}px)`;
-      this.panels[bIdx].style[dim] = `calc(${bPercent}% - ${offset}px)`;
+      this.panels[aIdx].style[dim] = this.panelSize(aPercent);
+      this.panels[bIdx].style[dim] = this.panelSize(bPercent);
       const newRatio = [...this.dragState.percentages];
       newRatio[aIdx] = aPercent;
       newRatio[bIdx] = bPercent;
@@ -287,6 +304,19 @@ export class USplitPanel extends UElement {
         ratio: [...this.percentages],
       }
     });
+  }
+
+  /**
+   * 패널 하나의 크기 — 비율은 «핸들을 뺀 나머지 공간»에 대한 몫이다.
+   *
+   * 🔴각 패널은 핸들 전체 두께 중 **자기 비율만큼**을 뺀다. 종전에는 핸들 몫을 패널 수로 똑같이
+   * 나눠 뺐는데(`p% - 핸들합/n`), 그 식은 비율이 균등할 때만 «나머지 공간의 p%» 와 같다. 드래그는
+   * 이동량을 나머지 공간 기준 비율로 바꾸므로(`availableSize`), 비율이 균등에서 멀어질수록 패널이
+   * 포인터보다 더 움직였다 — 핸들이 굵을수록 크게(24px 핸들이면 이동량의 약 9%).
+   */
+  private panelSize(percent: number): string {
+    const handles = this.splitterSize * this.splitterCount;
+    return `calc(${percent}% - ${(handles * percent) / 100}px)`;
   }
 
   private clampPair(aRaw: number, bRaw: number): [number, number] {

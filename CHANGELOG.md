@@ -21,6 +21,15 @@
   body-to-secondary ratio — so neither can regress silently. Themes that already override the
   token are unaffected.
 
+- **The split panel's handle now takes the pointer across 24px while its line stays 4px wide**
+  (WCAG 2.2 SC 2.5.8). It used to be a 4px strip to grab. The area that receives the pointer
+  occupies real layout space between the panels rather than overlapping them — every panel is a
+  scroll container, so its scrollbar sits right against the handle, and an overlapping hit area
+  would have swallowed it. The visible line is unchanged; the panels sit 20px further apart.
+  New custom property `--splitter-hit-size` (default `24px`) sets that area; the handle is the
+  larger of it and `--splitter-size`. To keep the previous flush handle, set
+  `--splitter-hit-size: var(--splitter-size)`. The `lazy` preview bar is centred on the line.
+
 ### Added
 
 - **`--u-select-display` / `--u-select-width` and `--u-textarea-display` / `--u-textarea-width`
@@ -32,6 +41,17 @@
   missing it, because the invariant is the symmetry itself.
 
 ### Fixed
+
+- **Dragging a split panel's handle moved the panels further than the pointer**, and a
+  non-even `default-ratio` did not produce that ratio. Each panel subtracted an equal share of
+  the handles' thickness, which equals "its share of the space left over" only when every panel
+  is the same size; the drag converts pointer travel against that left-over space. Each panel
+  now subtracts its proportional share, so a `[30, 70]` split is exactly 30:70 of the space
+  between the handles and the handle stays under the pointer. The error grew with handle
+  thickness (about 1% of the travel at 4px, about 9% at 24px). A ratio that does not parse —
+  the component reference showed `default-ratio="[30,70]"`, but the attribute is
+  comma-separated without brackets (`"30,70"`, the form it reflects) — now falls back to an even
+  split instead of collapsing the panels; the reference is corrected.
 
 - **The checkbox, the switch, the rating symbols, the chip's remove button and the slider all
   presented a pointer target smaller than 24×24 CSS px** (WCAG 2.2 SC 2.5.8 Target Size

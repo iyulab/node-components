@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 30개 · 프로퍼티 131개**
+**컴포넌트 30개 · 프로퍼티 132개**
 
 ## `<u-alert>`
 
@@ -225,7 +225,8 @@ u-button.cta { --btn-color: #0f9d58; }
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--splitter-size` | 스플리터 크기 (default: 4px) |
+| `--splitter-size` | 보이는 구분선 두께 (default: 4px) |
+| `--splitter-hit-size` | 포인터를 받는 핸들 영역의 두께 — 레이아웃 공간을 차지하므로 패널을 가리지 않는다. 실제 핸들 두께는 이 값과 `--splitter-size` 중 큰 쪽 (default: 24px — WCAG 2.5.8) |
 | `--splitter-color` | 스플리터 색상 |
 | `--splitter-color-hover` | 스플리터 호버 색상 |
 | `--splitter-color-active` | 스플리터 활성 색상 |
