@@ -50,6 +50,22 @@
 
 ### Fixed
 
+- **In a narrow input the clear button, the password toggle and the number steppers could be
+  pushed outside the field and clipped** — neither visible nor clickable. The text field did not
+  shrink below its intrinsic width (about 20 characters, from the native `size` default), so
+  whenever the field was narrower than that plus its trailing icons — a 200px `clearable` input
+  was enough — the icons were laid out past the field's edge and cut off by its overflow. The text
+  field now shrinks, and the icons stay inside the field at any width.
+
+- **The input's clear button and password toggle, and the select's clear button, were 16×16
+  pointer targets** (WCAG 2.2 SC 2.5.8). Each now takes the pointer across 24×24 while the glyph
+  stays 16×16 and nothing moves: the extra area comes from the gap before the icon and, for the
+  last icon in the field, from the field's own padding — the field's height and the text width
+  are unchanged. Where two icons sit side by side (a `clearable` password field, the number
+  steppers), and in the `underlined` and `borderless` variants, which have no side padding to
+  grow into, the area grows only as far as it can without overlapping its neighbour or being
+  clipped; those arrangements still fall short of 24×24.
+
 - **An input with suggestion options opened its list on page load**, with focus elsewhere and
   nothing typed — the documented markup (`u-option` children) did exactly that — and, because
   the list opens and closes on focus, it stayed over the page until the field was visited and

@@ -114,7 +114,10 @@ export const styles = css`
   /* 네이티브 input */
   input {
     all: unset;
-    flex: 1 0 auto;
+    /* 줄어들 수 있어야 한다 — 수축 0 이면 min-width: 0 이 무력해 입력이 자기 고유 폭(size 속성 기본 20자)
+       아래로 줄지 않고, 좁은 필드에서는 뒤따르는 접미 아이콘(지우기·토글·스테퍼)이 컨테이너 밖으로 밀려나
+       overflow 에 잘린다 — 보이지도 눌리지도 않는다. */
+    flex: 1 1 auto;
     min-width: 0;
     font-size: 1em;
     line-height: 1.5;
@@ -172,6 +175,30 @@ export const styles = css`
   .stepper-btn[aria-disabled="true"] {
     opacity: 0.35;
     pointer-events: none;
+  }
+
+  /* 포인터를 받는 접미 아이콘(지우기 · 비밀번호 토글 · 스테퍼) — 글리프는 1em 그대로, 받는 영역만 넓힌다
+     (WCAG 2.2 SC 2.5.8). 왼쪽은 자기 앞 간격(0.25em)을 여백 대신 패딩으로 쓴다 — 글리프가 움직이지 않고
+     앞 요소와 맞닿되 겹치지 않는다. 오른쪽은 «맨 뒤» 아이콘만 컨테이너 여백 쪽으로 0.25em 넓힌다(음수 여백이라
+     배치 불변) — 앞 아이콘이 오른쪽으로 넓히면 다음 아이콘이 받는 영역과 겹친다.
+     content-box 는 아이콘 자신의 box-sizing 과 무관하게 글리프를 1em 로 둔다. */
+  .suffix-item[role="button"] {
+    box-sizing: content-box;
+    margin-top: -0.25em;
+    margin-bottom: -0.25em;
+    margin-left: 0;
+    padding: 0.25em 0 0.25em 0.25em;
+  }
+  .suffix-item[role="button"].trailing {
+    padding-right: 0.25em;
+    margin-right: -0.25em;
+  }
+  /* 좌우 여백이 0 인 변형에는 넓힐 자리가 없다 — 넓혀도 컨테이너의 overflow 에 잘려, 재면 24 인데 눌리는 영역은
+     그보다 좁은 거짓 통과가 된다. 실제 영역을 그대로 드러낸다. */
+  :host([variant="underlined"]) .suffix-item[role="button"].trailing,
+  :host([variant="borderless"]) .suffix-item[role="button"].trailing {
+    padding-right: 0;
+    margin-right: 0;
   }
 
   u-popover {

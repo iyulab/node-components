@@ -1,5 +1,6 @@
 import { html, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
+import { classMap } from "lit/directives/class-map.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { live } from "lit/directives/live.js";
 import '../field/UField.js';
@@ -104,6 +105,13 @@ export class UInput extends UFormControlElement<string> {
   }
 
   render() {
+    const editable = !this.disabled && !this.readonly;
+    const showToggle = this.type === 'password' && editable;
+    const showClear = this.clearable && editable && !!this.value;
+    const showStepper = this.type === 'number' && editable;
+    // 맨 뒤에 보이는 접미 버튼만 컨테이너 여백 쪽으로 받는 영역을 넓힌다(스타일 `.trailing` 참조).
+    const trailing = showStepper ? 'increment' : showClear ? 'clear' : showToggle ? 'toggle' : null;
+
     return html`
       <u-field part="field"
         ?required=${this.required}
@@ -152,8 +160,8 @@ export class UInput extends UFormControlElement<string> {
 
           <slot name="suffix"></slot>
 
-          <u-icon class="suffix-item"
-            ?hidden=${this.type !== 'password' || this.disabled || this.readonly}
+          <u-icon class=${classMap({ 'suffix-item': true, trailing: trailing === 'toggle' })}
+            ?hidden=${!showToggle}
             role="button"
             tabindex="0"
             aria-label=${Locale.getValue(this.showPassword ? 'hidePassword' : 'showPassword')}
@@ -162,8 +170,8 @@ export class UInput extends UFormControlElement<string> {
             @click=${this.handlePasswordTogglerClick}
             @keydown=${this.handleSuffixIconKeydown(this.handlePasswordTogglerClick)}
           ></u-icon>
-          <u-icon class="suffix-item"
-            ?hidden=${!this.clearable || this.disabled || this.readonly || !this.value}
+          <u-icon class=${classMap({ 'suffix-item': true, trailing: trailing === 'clear' })}
+            ?hidden=${!showClear}
             role="button"
             tabindex="0"
             aria-label=${Locale.getValue('clear')}
@@ -173,7 +181,7 @@ export class UInput extends UFormControlElement<string> {
             @keydown=${this.handleSuffixIconKeydown(this.handleClearButtonClick)}
           ></u-icon>
           <u-icon class="suffix-item stepper-btn"
-            ?hidden=${this.type !== 'number' || this.disabled || this.readonly}
+            ?hidden=${!showStepper}
             role="button"
             tabindex="0"
             aria-disabled=${!this.canDecrement}
@@ -183,8 +191,8 @@ export class UInput extends UFormControlElement<string> {
             @click=${this.handleStepperClick(-1)}
             @keydown=${this.handleSuffixIconKeydown(this.handleStepperClick(-1))}
           ></u-icon>
-          <u-icon class="suffix-item stepper-btn"
-            ?hidden=${this.type !== 'number' || this.disabled || this.readonly}
+          <u-icon class=${classMap({ 'suffix-item': true, 'stepper-btn': true, trailing: trailing === 'increment' })}
+            ?hidden=${!showStepper}
             role="button"
             tabindex="0"
             aria-disabled=${!this.canIncrement}

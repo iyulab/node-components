@@ -168,6 +168,16 @@ export const styles = css`
     color: var(--u-icon-color-active, #1565C0);
   }
 
+  /* 지우기 «x» — 글리프는 1em 그대로, 받는 영역만 24px(1.5em)로 넓힌다(WCAG 2.2 SC 2.5.8). 왼쪽은 자기 앞
+     간격을 패딩으로, 오른쪽은 뒤따르는 펼침 화살표(트리거의 일부인 장식 — 별도 타깃이 아니다)의 간격으로,
+     위아래는 컨테이너 여백(0.3em) 쪽으로 넓힌다. 음수 여백이라 배치·트리거 높이는 그대로다 — 트리거의 줄은
+     1em 이라 세로 패딩만 주면 트리거가 8px 커진다. */
+  .suffix-item[role="button"] {
+    box-sizing: content-box;
+    margin: -0.25em -0.25em -0.25em 0;
+    padding: 0.25em;
+  }
+
   /* 드롭다운 패널 — 옵션 텍스트가 길어도 팝오버가 앵커보다 넓어지지 않도록 고정 너비로
      맞춘다(긴 텍스트는 UOption 자체의 ellipsis로 처리). */
   u-popover {

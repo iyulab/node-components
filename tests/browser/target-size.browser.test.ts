@@ -88,6 +88,12 @@ function parts(host: Element, part: string): Element[] {
   return root ? Array.from(root.querySelectorAll(`[part~="${part}"]`)) : [];
 }
 
+/** 폼 컨트롤의 «보이는» 접미 아이콘 버튼 — 조건부로 그려지는 것은 `hidden` 으로 DOM 에 남아 0x0 이 되므로 거른다. */
+function suffixButtons(tag: string): Element[] {
+  const root = document.querySelector(tag)!.shadowRoot!;
+  return Array.from(root.querySelectorAll<HTMLElement>('.suffix-item[role="button"]')).filter((el) => !el.hidden);
+}
+
 // ---------------------------------------------------------------------------
 // 규칙 — 손으로 쓴다 (도출할 수 없는 우리 지식)
 // ---------------------------------------------------------------------------
@@ -128,7 +134,16 @@ const NEEDS_FIXTURE = new Set<string>([]);
  * 패널마다 `overflow: auto` 라 스크롤바가 핸들에 붙어 있다. 두 축은
  * `split-panel-handle.browser.test.ts` 가 잰다.
  */
-const UNDERSIZED_PINS = new Set<string>([]);
+const UNDERSIZED_PINS = new Set<string>([
+  /* 📌`u-input` 접미 아이콘 넷(cycle-550) — 보이는 간격을 바꾸지 않고는 24 를 만들 수 없는 배치들이다(`HD-57`).
+     ⑴ 나란히 놓인 둘은 사이 간격이 0.25em 하나뿐이라, 둘 다 넓히면 서로의 영역을 먹는다(중심 간격 20px — 간격
+     예외도 서지 않는다) ⑵ 스테퍼는 글리프가 0.85em 라 더 좁다 ⑶ 좌우 여백이 0 인 변형은 맨 뒤 아이콘이 오른쪽으로
+     넓힐 자리가 없다. 셋 다 해소하려면 글리프가 움직이거나 간격이 늘어난다 ⇒ 시각 계약 변경. */
+  'u-input [비밀번호+지우기]',
+  'u-input [숫자]',
+  'u-input [지우기 · 밑줄]',
+  'u-input [지우기 · 테두리 없음]',
+]);
 
 interface Fixture {
   html: string;
@@ -213,10 +228,53 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
       },
       targets: () => Array.from(document.querySelectorAll('u-input > u-option')),
     },
+    // 접미 아이콘 버튼(`u-icon.suffix-item[role=button]`) — 지우기 · 비밀번호 토글 · 스테퍼. 전부 조건부로만 그려져
+    // 기본 픽스처에서는 `hidden` 이다(재지 않고 있었다). 한 입력 안에서 **나란히** 놓일 수 있으므로 그 간격은
+    // 우리가 정한다 ⇒ 쌍을 재는 상태는 `spacingIsOurs`.
+    {
+      state: '지우기',
+      html: '<u-input clearable value="abc" style="width:200px"></u-input>',
+      targets: () => suffixButtons('u-input'),
+    },
+    {
+      state: '비밀번호',
+      html: '<u-input type="password" value="abc" style="width:200px"></u-input>',
+      targets: () => suffixButtons('u-input'),
+    },
+    {
+      state: '비밀번호+지우기',
+      html: '<u-input type="password" clearable value="abc" style="width:200px"></u-input>',
+      targets: () => suffixButtons('u-input'),
+      spacingIsOurs: true,
+    },
+    {
+      state: '숫자',
+      html: '<u-input type="number" value="1" style="width:200px"></u-input>',
+      targets: () => suffixButtons('u-input'),
+      spacingIsOurs: true,
+    },
+    // 좌우 여백이 0 인 변형 — 맨 뒤 아이콘이 오른쪽으로 넓힐 자리가 없다(컨테이너가 `overflow: hidden` 이라 넓혀도 잘린다).
+    {
+      state: '지우기 · 밑줄',
+      html: '<u-input variant="underlined" clearable value="abc" style="width:200px"></u-input>',
+      targets: () => suffixButtons('u-input'),
+    },
+    {
+      state: '지우기 · 테두리 없음',
+      html: '<u-input variant="borderless" clearable value="abc" style="width:200px"></u-input>',
+      targets: () => suffixButtons('u-input'),
+    },
   ],
   'u-textarea': { html: '<u-textarea style="width:200px"></u-textarea>' },
   'u-select': [
     { state: '닫힘', html: '<u-select style="width:200px"><u-option value="a">A</u-option></u-select>' },
+    {
+      state: '지우기',
+      // 값이 있을 때만 그려지는 지우기 «x» — 트리거(`.container`) 안에 있지만 **다른 일**(값 지우기)을 하는
+      // 별도 타깃이다(`stopPropagation` 으로 트리거 클릭을 막는다). 트리거가 크다고 이 타깃이 커지지 않는다.
+      html: '<u-select clearable value="a" style="width:200px"><u-option value="a">A</u-option></u-select>',
+      targets: () => suffixButtons('u-select'),
+    },
     {
       state: '목록',
       // 목록 항목(`u-option`)은 라이트 DOM 자식이 팝오버 슬롯에 꽂힌 것이다.
@@ -518,7 +576,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 25(36상태) · 미판정 0() · 대상아님 21');
+      ).toBe('판정 25(43상태) · 미판정 0() · 대상아님 21');
     });
   });
 
@@ -526,8 +584,10 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
     const CASES = Object.entries(FIXTURES).flatMap(([tag, entry]) =>
       (Array.isArray(entry) ? entry : [entry]).map((fixture) => ({ tag, fixture })));
     for (const { tag, fixture } of CASES) {
-      const pinned = UNDERSIZED_PINS.has(tag);
       const name = `${tag}${fixture.state ? ` [${fixture.state}]` : ''}`;
+      // 핀은 태그 전체(`u-slider`) 또는 한 상태(`u-input [숫자]`)에 건다 — 태그로만 걸면 이미 통과하는 다른 상태가
+      // «미달이어야 한다» 단언에 걸린다.
+      const pinned = UNDERSIZED_PINS.has(tag) || UNDERSIZED_PINS.has(name);
       it(`${name}: ${pinned ? '📌미달로 «핀»돼 있다 (사람 판단 대기)' : 'SC 2.5.8 을 만족한다'}`, async () => {
         await mount(fixture.html);
         if (fixture.prepare) await fixture.prepare(document.querySelector(tag)!);
@@ -554,7 +614,9 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
 
   describe('📌미달 재고 — 사람 판단 대기 (§C-A 의 「위반 확정」 자리)', () => {
     it('핀 목록이 실제 미달과 일치한다 — 낡으면 위 per-tag 단언이 먼저 빨개진다', () => {
-      expect([...UNDERSIZED_PINS].sort()).toEqual([]);
+      expect([...UNDERSIZED_PINS].sort()).toEqual([
+        'u-input [비밀번호+지우기]', 'u-input [숫자]', 'u-input [지우기 · 밑줄]', 'u-input [지우기 · 테두리 없음]',
+      ].sort());
     });
   });
 
