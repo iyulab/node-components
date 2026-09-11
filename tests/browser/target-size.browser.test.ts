@@ -281,7 +281,40 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   // ⚠제목 속성은 `label` 이다 — `header` 는 슬롯 이름이라, 종전 `header="More"` 는 **빈 제목**을 재고 있었다.
   'u-expander': { html: '<u-expander label="More">body</u-expander>' },
   'u-tab': { html: '<u-tab-panel><u-tab>One</u-tab><u-tab>Two</u-tab></u-tab-panel>' },
-  'u-menu-item': { html: '<u-menu><u-menu-item>Item</u-menu-item></u-menu>' },
+  'u-menu-item': [
+    { state: '닫힘', html: '<u-menu><u-menu-item>Item</u-menu-item></u-menu>' },
+    {
+      state: '서브메뉴',
+      // 기본(`inline` 아님) 메뉴에서 하위 항목은 부모의 `u-popover`(`trigger="hover"` · `open` ⇐ `expanded`)에 꽂힌다.
+      // 헤더 클릭도 `expanded` 를 토글한다 — 호버 대신 클릭으로 연다(포인터 위치에 기대지 않는다).
+      // 하위 항목은 라이트 DOM 자식이라 닫혀도 DOM 에 있다 ⇒ 팝오버 `open` 을 기다리고 안 열리면 던진다.
+      html: '<u-menu><u-menu-item>Parent<u-menu-item>Child A</u-menu-item><u-menu-item>Child B</u-menu-item></u-menu-item></u-menu>',
+      prepare: async (host) => {
+        const root = host.shadowRoot!;
+        for (let i = 0; i < 50 && !root.querySelector('u-popover'); i++) await new Promise((r) => setTimeout(r, 20));
+        (root.querySelector('.header') as HTMLElement).click();
+        const popover = root.querySelector('u-popover')!;
+        for (let i = 0; i < 50 && !popover.hasAttribute('open'); i++) {
+          await new Promise((r) => setTimeout(r, 20));
+        }
+        if (!popover.hasAttribute('open')) throw new Error('서브메뉴 팝오버가 열리지 않았다 — 닫힌 항목을 재면 미탐이다');
+      },
+      targets: () => Array.from(document.querySelectorAll('u-menu-item u-menu-item')),
+    },
+    {
+      state: '인라인 하위',
+      // `u-menu inline` 은 하위 항목을 팝오버가 아니라 제자리(`.submenu[open]`)에 펼친다 — 들여쓰기가 폭을 줄인다.
+      html: '<u-menu inline><u-menu-item>Parent<u-menu-item>Child A</u-menu-item><u-menu-item>Child B</u-menu-item></u-menu-item></u-menu>',
+      prepare: async (host) => {
+        const root = host.shadowRoot!;
+        (root.querySelector('.header') as HTMLElement).click();
+        const sub = () => root.querySelector('.submenu') as HTMLElement | null;
+        for (let i = 0; i < 50 && !sub()?.hasAttribute('open'); i++) await new Promise((r) => setTimeout(r, 20));
+        if (!sub()?.hasAttribute('open')) throw new Error('인라인 하위 메뉴가 펼쳐지지 않았다');
+      },
+      targets: () => Array.from(document.querySelectorAll('u-menu-item u-menu-item')),
+    },
+  ],
   'u-tree-item': [
     { state: '닫힘', html: '<u-tree><u-tree-item>Node</u-tree-item></u-tree>' },
     {
@@ -470,7 +503,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 25(33상태) · 미판정 0() · 대상아님 21');
+      ).toBe('판정 25(35상태) · 미판정 0() · 대상아님 21');
     });
   });
 
