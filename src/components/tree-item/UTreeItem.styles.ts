@@ -66,6 +66,7 @@ export const styles = css`
      target. */
   .prefix-toggler {
     position: relative;
+    box-sizing: border-box;
     flex-shrink: 0;
     margin: -3px 1px -3px -3px;
     display: inline-flex;
@@ -92,30 +93,51 @@ export const styles = css`
   :host(:not([disabled])[trigger="icon"]:focus-visible) .prefix-toggler::before {
     background-color: var(--u-bg-color-hover, #F5F5F5);
   }
+  /* A checkable row puts the checkbox 4px after the toggle. Centred 24px areas for both would
+     overlap by 3px, so here the toggle takes its extra width entirely on the left (header
+     padding), and the padding keeps the glyph centred on its visible square. */
+  :host([checkable]) .prefix-toggler {
+    margin: -3px 4px -3px -6px;
+    padding-left: 6px;
+  }
+  :host([checkable]) .prefix-toggler::before {
+    inset: 3px 0 3px 6px;
+  }
 
-  /* ── checkbox ── */
+  /* ── checkbox ──
+     Same split as the toggle: a 24x24 box takes the pointer, the 16x16 box you see is the
+     pseudo-element, and the negative margins keep every visible edge where it was. */
   .prefix-checkbox {
+    position: relative;
+    box-sizing: border-box;
     flex-shrink: 0;
-    margin-right: 4px;
+    margin: -4px 0 -4px -4px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+  .prefix-checkbox::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    box-sizing: border-box;
     border-radius: var(--u-radius-sm, 3px);
     border: 1.5px solid var(--u-input-border-color, #E0E0E0);
     background-color: transparent;
     transition: background-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), border-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
-    cursor: pointer;
   }
   .prefix-checkbox u-icon {
+    position: relative;
     visibility: hidden;
     font-size: 12px;
     color: #fff;
     pointer-events: none;
   }
-  .prefix-checkbox[checked],
-  .prefix-checkbox[indeterminate] {
+  .prefix-checkbox[checked]::before,
+  .prefix-checkbox[indeterminate]::before {
     border-color: var(--tree-item-color);
     background-color: var(--tree-item-color);
   }

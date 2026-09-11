@@ -259,6 +259,30 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
       },
       targets: () => [document.querySelector('u-tree-item')!.shadowRoot!.querySelector('.prefix-toggler')!],
     },
+    {
+      state: '체크',
+      // `checkable` 트리의 체크박스(`.prefix-checkbox` — 자체 `@click` 으로 `check` 를 낸다. 헤더 클릭은 체크하지
+      // 않으므로 동등 타깃이 없다). 토글과 **나란히** 있는 행을 재서, 두 우리 타깃이 서로의 영역을 먹지 않는지까지
+      // 본다 — 타깃 둘을 함께 넘기고 크기로만 판정한다.
+      html: '<u-tree checkable><u-tree-item>Parent<u-tree-item>Child</u-tree-item></u-tree-item></u-tree>',
+      prepare: async (host) => {
+        const root = host.shadowRoot!;
+        const visible = (sel: string) => {
+          const el = root.querySelector(sel) as HTMLElement | null;
+          return !!el && !el.hidden;
+        };
+        for (let i = 0; i < 50 && !(visible('.prefix-toggler') && visible('.prefix-checkbox')); i++) {
+          await new Promise((r) => setTimeout(r, 20));
+        }
+        if (!(visible('.prefix-toggler') && visible('.prefix-checkbox'))) {
+          throw new Error('토글과 체크박스가 함께 나타나지 않았다');
+        }
+      },
+      targets: () => {
+        const root = document.querySelector('u-tree-item')!.shadowRoot!;
+        return [root.querySelector('.prefix-toggler')!, root.querySelector('.prefix-checkbox')!];
+      },
+    },
   ],
   'u-breadcrumb-item': { html: '<u-breadcrumb><u-breadcrumb-item>Home</u-breadcrumb-item></u-breadcrumb>' },
 
@@ -404,7 +428,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 25(28상태) · 미판정 0() · 대상아님 21');
+      ).toBe('판정 25(29상태) · 미판정 0() · 대상아님 21');
     });
   });
 

@@ -50,10 +50,13 @@
 
 ### Fixed
 
-- **The tree item's expand toggle was an 18×18 pointer target** (WCAG 2.2 SC 2.5.8) — and with
-  `trigger="icon"` it is the only pointer path to expand a node. It now takes the pointer across
-  24×24 while the visible square stays 18×18; the glyph, the label and the row height do not
-  move, because the extra area comes from the header's own padding and the gap before the label.
+- **The tree item's expand toggle (18×18) and checkbox (16×16) were undersized pointer
+  targets** (WCAG 2.2 SC 2.5.8) — with `trigger="icon"` the toggle is the only pointer path to
+  expand a node, and the header click never checks. Both now take the pointer across 24×24
+  while what you see stays 18×18 and 16×16; the glyphs, the label and the row height do not
+  move, because the extra area comes from the header's own padding and the gaps between them.
+  In a checkable row the toggle's extra width goes to its left, so the two areas meet without
+  overlapping.
 
 - **Dragging a split panel's handle moved the panels further than the pointer**, and a
   non-even `default-ratio` did not produce that ratio. Each panel subtracted an equal share of
