@@ -81,6 +81,23 @@ for a KRW amount) is the consumer's call — the library does not infer one from
 | `input` | Fires on every keystroke |
 | `change` | Fires when value is committed |
 
+## Form submission
+
+Pressing Enter in the field submits its `<form>`, as in a native text field (HTML implicit
+submission): the form's first submit button is activated — `<button type="submit">` or
+`<u-button type="submit">`; a disabled one does nothing — and with no submit button the form is
+submitted only when it has no other single-line field. Enter that confirms an IME composition,
+Enter with a modifier key, and Enter on a highlighted suggestion (`u-option`) do not submit.
+Call `preventDefault()` on the `keydown` to cancel it. Do not also submit on Enter yourself.
+
+```html
+<form @submit=${onSubmit}>
+  <u-input name="user" required></u-input>
+  <u-input name="password" type="password" required></u-input>
+  <u-button type="submit">Sign in</u-button>
+</form>
+```
+
 ## Methods
 
 | Method | Description |

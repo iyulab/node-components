@@ -50,6 +50,17 @@
 
 ### Fixed
 
+- **Pressing Enter in an input now submits its form, as it does in a native text field.** The
+  field's own `<input>` lives in the component's shadow root, so the browser never treated it as
+  part of the surrounding `<form>` and Enter did nothing. The input now follows the HTML
+  implicit-submission steps: if the form has a submit button, the first one is activated (a
+  disabled one does nothing, and a native button becomes the event's `submitter`;
+  `<u-button type="submit">` counts); if it has none, the form is submitted only when no other
+  single-line field is in it. Enter that confirms an IME composition, and Enter with a modifier
+  key, do not submit. The decision is taken one task later, so a `keydown` listener that calls
+  `preventDefault()` still cancels it. **If your code submits on Enter itself, it must call
+  `preventDefault()` or be removed** — otherwise the form is now submitted twice.
+
 - **In a narrow input the clear button, the password toggle and the number steppers could be
   pushed outside the field and clipped** — neither visible nor clickable. The text field did not
   shrink below its intrinsic width (about 20 characters, from the native `size` default), so

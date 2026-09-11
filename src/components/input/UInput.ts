@@ -360,6 +360,10 @@ export class UInput extends UFormControlElement<string> {
   }
 
   private handleInputKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      this.handleImplicitSubmission(e);
+      return;
+    }
     if (this.options.length === 0) return;
 
     switch (e.key) {
@@ -377,6 +381,33 @@ export class UInput extends UFormControlElement<string> {
       }
     }
   };
+
+  /**
+   * 네이티브 단일 행 `<input>` 의 **암묵 제출**(HTML «implicit submission»)을 흉내 낸다 — 내부 `<input>` 은 섀도
+   * 안에 있어 바깥 `<form>` 의 폼 소유자가 아니므로, 흉내 내지 않으면 Enter 가 아무것도 하지 않는다.
+   *
+   * - **한 틱(태스크) 뒤에 판정한다.** 이 리스너는 내부 입력에서 가장 먼저 돌므로, 소비자가 호스트나 폼에서
+   *   `keydown` 을 취소했는지는 디스패치가 끝난 뒤에야 안다(마이크로태스크는 다음 리스너보다 먼저 돈다).
+   *   취소됐으면 제출하지 않는다 — 네이티브와 같다.
+   * - IME 조합을 확정하는 Enter 와 수정 키가 붙은 Enter 는 제출하지 않는다.
+   * - 명세의 순서 그대로: 폼에 제출 버튼이 있으면 **첫 제출 버튼을 누른다**(비활성이면 버튼이 스스로 거른다 ·
+   *   네이티브 버튼이면 `submitter` 도 그것이 된다). 없으면 암묵 제출을 막는 필드가 둘 이상일 때 제출하지 않고,
+   *   아니면 `requestSubmit()` 한다(검증도 그 안에서 돈다).
+   */
+  private handleImplicitSubmission(e: KeyboardEvent): void {
+    if (e.isComposing || this.composing || e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return;
+    setTimeout(() => {
+      const form = this.form;
+      if (e.defaultPrevented || !form || !this.isConnected) return;
+      const elements = Array.from(form.elements);
+      const submitter = elements.find(isSubmitButton) as HTMLElement | undefined;
+      if (submitter) {
+        submitter.click();
+      } else if (elements.filter(blocksImplicitSubmission).length <= 1) {
+        form.requestSubmit();
+      }
+    });
+  }
 
   /** suffix `u-icon`은 순수 표시 요소(버튼 아님)라 네이티브 키보드 활성화가 없다 —
    *  `role="button"`+`tabindex="0"`로 포커스 가능하게 한 뒤, Enter/Space를 같은 클릭
@@ -496,6 +527,21 @@ export class UInput extends UFormControlElement<string> {
       e.preventDefault();
     }
   };
+}
+
+/** HTML 명세의 «암묵 제출을 막는 필드» — 네이티브 단일 행 입력의 이 type 들. `u-input` 의 type 은 전부 여기에 든다. */
+const BLOCKING_TYPES = new Set([
+  'text', 'search', 'email', 'url', 'tel', 'password', 'date', 'month', 'week', 'time', 'datetime-local', 'number',
+]);
+
+/** 제출 버튼 — 네이티브 `<button>`(기본 type 이 submit)·`<input type=submit|image>`, 그리고 `type` 이 submit 인 폼 연동 커스텀 버튼. */
+function isSubmitButton(el: Element): boolean {
+  const type = (el as { type?: unknown }).type;
+  return type === 'submit' || (el instanceof HTMLInputElement && type === 'image');
+}
+
+function blocksImplicitSubmission(el: Element): boolean {
+  return (el instanceof HTMLInputElement || el instanceof UInput) && BLOCKING_TYPES.has(el.type);
 }
 
 declare global {
