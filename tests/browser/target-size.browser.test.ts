@@ -88,6 +88,35 @@ function parts(host: Element, part: string): Element[] {
   return root ? Array.from(root.querySelectorAll(`[part~="${part}"]`)) : [];
 }
 
+/**
+ * 🔴**hit-test 축**(cycle-553) — 타깃의 중심과 1px 안쪽 네 가장자리를 실제로 누르면 그 타깃(또는 그 자손)이 받는가.
+ *
+ * `getBoundingClientRect` 는 조상의 `overflow` 가 자른 부분도, 닫혀서 보이지 않는 요소의 박스도 그대로 보고한다 — 크기만
+ * 재면 ***보이지도 눌리지도 않는 타깃이 통과한다.*** 실제로 그랬다: cycle-550 의 `u-input` 접미 아이콘(좁은 필드에서 밖으로
+ * 밀려나 잘렸다)과, 닫힌 채 띄운 `u-dialog`·`u-drawer` 픽스처(닫기 버튼 중심을 누르면 `body` 가 받았다).
+ * 판정은 타깃이 속한 트리(`getRootNode()`)에서 한다 — 섀도 안 타깃은 그 섀도 루트에서, 호스트 타깃은 문서에서.
+ *
+ * ⚠`elementFromPoint` 는 결과를 호출한 트리로 retarget 한다. 그래서 섀도 안의 요소(예: `a[part=link]`)를 타깃으로 잡으면,
+ * 그 안에 **슬롯으로 꽂힌 라이트 DOM 글자** 위의 점은 호스트로 돌아와 «닿지 않음» 으로 잘못 나온다 — 그런 타깃은 호스트를 잰다.
+ */
+function unreachablePoints(el: Element): string[] {
+  const r = el.getBoundingClientRect();
+  const root = el.getRootNode() as Document | ShadowRoot;
+  const points: Array<[string, number, number]> = [
+    ['중심', r.left + r.width / 2, r.top + r.height / 2],
+    ['왼', r.left + 1, r.top + r.height / 2],
+    ['오른', r.right - 1, r.top + r.height / 2],
+    ['위', r.left + r.width / 2, r.top + 1],
+    ['아래', r.left + r.width / 2, r.bottom - 1],
+  ];
+  return points
+    .filter(([, x, y]) => {
+      const hit = root.elementFromPoint(x, y);
+      return !(hit && (hit === el || el.contains(hit)));
+    })
+    .map(([name]) => name);
+}
+
 /** 폼 컨트롤의 «보이는» 접미 아이콘 버튼 — 조건부로 그려지는 것은 `hidden` 으로 DOM 에 남아 0x0 이 되므로 거른다. */
 function suffixButtons(tag: string): Element[] {
   const root = document.querySelector(tag)!.shadowRoot!;
@@ -432,7 +461,13 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
       },
     },
   ],
-  'u-breadcrumb-item': { html: '<u-breadcrumb><u-breadcrumb-item>Home</u-breadcrumb-item></u-breadcrumb>' },
+  // 항목은 `href` 가 있을 때만 링크(`a[part=link]`)를 그리는 타깃이고, **마지막 항목은 현재 페이지**라 브레드크럼이
+  // `pointer-events: none` 을 준다. 종전 픽스처(항목 하나 · `href` 없음)는 두 겹으로 타깃이 아닌 것을 재고 통과했다
+  // (cycle-553 hit-test 축 — 다섯 점 모두 부모가 받았다). ⇒ 링크 항목 + 현재 항목, 앞의 것만 잰다.
+  'u-breadcrumb-item': {
+    html: '<u-breadcrumb><u-breadcrumb-item href="#home">Home</u-breadcrumb-item><u-breadcrumb-item>Page</u-breadcrumb-item></u-breadcrumb>',
+    targets: () => [document.querySelector('u-breadcrumb-item')!],
+  },
 
   // 타깃이 호스트가 아닌 것들 — cycle-485 가 확인한 함정이다(빈 컨테이너를 재면 0x0).
   'u-radio': {
@@ -462,12 +497,14 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
     html: '<u-chip removable>tag</u-chip>',
     targets: () => parts(document.querySelector('u-chip')!, 'remove'),
   },
+  // ⚠`open` 이어야 닫기 버튼이 화면에 있다 — 종전 픽스처는 닫힌 대화상자를 띄워 **보이지 않는 버튼의 박스**를 재고 통과했다
+  //   (cycle-553 hit-test 축이 찾았다: 중심을 누르면 `body` 가 받았다).
   'u-dialog': {
-    html: '<u-dialog closable>body</u-dialog>',
+    html: '<u-dialog closable open>body</u-dialog>',
     targets: () => parts(document.querySelector('u-dialog')!, 'close-btn'),
   },
   'u-drawer': {
-    html: '<u-drawer closable>body</u-drawer>',
+    html: '<u-drawer closable open>body</u-drawer>',
     targets: () => parts(document.querySelector('u-drawer')!, 'close-btn'),
   },
   'u-carousel': {
@@ -546,6 +583,33 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
     });
   });
 
+  describe('규칙 자체 — hit-test 축', () => {
+    it('보이는 버튼은 다섯 점 모두 닿는다 — 자손(글자·아이콘)이 받아도 그 버튼이 받은 것이다', async () => {
+      await mount('<button style="width:60px;height:30px"><span style="display:block">OK</span></button>');
+      expect(unreachablePoints(document.querySelector('button')!)).toEqual([]);
+    });
+
+    it('🔴조상 overflow 에 통째로 잘린 버튼은 다섯 점 모두 닿지 않는다 — 박스는 그대로 보고되는데도', async () => {
+      await mount('<div style="width:40px;height:30px;overflow:hidden;position:relative">' +
+        '<button style="position:absolute;left:50px;width:30px;height:30px">x</button></div>');
+      const button = document.querySelector('button')!;
+      expect(Math.round(button.getBoundingClientRect().width), '크기만 보면 통과처럼 보인다').toBe(30);
+      expect(unreachablePoints(button)).toEqual(['중심', '왼', '오른', '위', '아래']);
+    });
+
+    it('🔴반쯤 잘린 버튼은 잘린 쪽 가장자리만 닿지 않는다 (중심만 재면 놓친다)', async () => {
+      await mount('<div style="width:40px;height:30px;overflow:hidden;position:relative">' +
+        '<button style="position:absolute;left:20px;width:30px;height:30px">x</button></div>');
+      expect(unreachablePoints(document.querySelector('button')!)).toEqual(['오른']);
+    });
+
+    it('🔴다른 요소에 덮인 버튼은 닿지 않는다', async () => {
+      await mount('<div style="position:relative"><button style="width:30px;height:30px">x</button>' +
+        '<div style="position:absolute;inset:0;width:30px;height:30px"></div></div>');
+      expect(unreachablePoints(document.querySelector('button')!)).toEqual(['중심', '왼', '오른', '위', '아래']);
+    });
+  });
+
   describe('🔴 대상 도출 — 등록된 태그가 규칙 표를 벗어나지 않는다', () => {
     it('배럴이 태그를 실제로 등록한다 (도출이 0건이면 아래 단언이 전부 공허해진다)', () => {
       expect(registered.length).toBeGreaterThan(30);
@@ -591,9 +655,16 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       it(`${name}: ${pinned ? '📌미달로 «핀»돼 있다 (사람 판단 대기)' : 'SC 2.5.8 을 만족한다'}`, async () => {
         await mount(fixture.html);
         if (fixture.prepare) await fixture.prepare(document.querySelector(tag)!);
-        const targets = (fixture.targets ? fixture.targets(tag) : [document.querySelector(tag)!])
-          .map(measure);
+        const els = fixture.targets ? fixture.targets(tag) : [document.querySelector(tag)!];
+        const targets = els.map(measure);
         expect(targets.length, '타깃을 하나도 못 찾으면 이 판정은 무의미하다').toBeGreaterThan(0);
+
+        // 🔴크기보다 먼저 — 그 타깃이 실제로 눌리는가. 잘렸거나 가려졌거나 닫혀 있으면 크기 판정은 의미가 없다.
+        const unreachable = els
+          .map((el) => ({ el, misses: unreachablePoints(el) }))
+          .filter(({ misses }) => misses.length > 0)
+          .map(({ el, misses }) => `${el.localName}${el.getAttribute('part') ? `[${el.getAttribute('part')}]` : ''} — ${misses.join('·')}`);
+        expect(unreachable, '누르면 다른 요소가 받는 타깃 — 잘렸거나 가려졌거나 닫혀 있다').toEqual([]);
 
         // 🔴간격 예외는 «우리가 배치를 소유할 때»만 쓴다 — `spacingIsOurs` 주석 참조.
         const verdicts = targets.map((t, i) =>
