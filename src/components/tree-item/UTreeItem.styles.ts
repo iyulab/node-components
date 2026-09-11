@@ -58,23 +58,38 @@ export const styles = css`
     white-space: nowrap;
   }
 
-  /* ── toggler ── */
+  /* ── toggler ──
+     The box that takes the pointer is 24x24 (WCAG 2.2 SC 2.5.8); the square you see is still
+     18x18, drawn by the pseudo-element. The negative margins give the extra 3px on each side
+     back, so the glyph, the label and the row height sit exactly where they did — the extra
+     area lands on the header's own padding and the gap before the label, never on another
+     target. */
   .prefix-toggler {
+    position: relative;
     flex-shrink: 0;
-    margin-right: 4px;
+    margin: -3px 1px -3px -3px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
+  }
+  .prefix-toggler::before {
+    content: "";
+    position: absolute;
+    inset: 3px;
     border-radius: var(--u-radius-sm, 3px);
+    transition: background-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+  }
+  .prefix-toggler > * {
+    position: relative;
   }
   .prefix-toggler u-icon {
     font-size: 12px;
     pointer-events: none;
   }
-  :host(:not([disabled])[trigger="icon"]) .prefix-toggler:hover,
-  :host(:not([disabled])[trigger="icon"]:focus-visible) .prefix-toggler {
+  :host(:not([disabled])[trigger="icon"]) .prefix-toggler:hover::before,
+  :host(:not([disabled])[trigger="icon"]:focus-visible) .prefix-toggler::before {
     background-color: var(--u-bg-color-hover, #F5F5F5);
   }
 

@@ -50,6 +50,11 @@
 
 ### Fixed
 
+- **The tree item's expand toggle was an 18×18 pointer target** (WCAG 2.2 SC 2.5.8) — and with
+  `trigger="icon"` it is the only pointer path to expand a node. It now takes the pointer across
+  24×24 while the visible square stays 18×18; the glyph, the label and the row height do not
+  move, because the extra area comes from the header's own padding and the gap before the label.
+
 - **Dragging a split panel's handle moved the panels further than the pointer**, and a
   non-even `default-ratio` did not produce that ratio. Each panel subtracted an equal share of
   the handles' thickness, which equals "its share of the space left over" only when every panel

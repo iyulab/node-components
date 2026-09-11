@@ -240,7 +240,26 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   'u-expander': { html: '<u-expander label="More">body</u-expander>' },
   'u-tab': { html: '<u-tab-panel><u-tab>One</u-tab><u-tab>Two</u-tab></u-tab-panel>' },
   'u-menu-item': { html: '<u-menu><u-menu-item>Item</u-menu-item></u-menu>' },
-  'u-tree-item': { html: '<u-tree><u-tree-item>Node</u-tree-item></u-tree>' },
+  'u-tree-item': [
+    { state: '닫힘', html: '<u-tree><u-tree-item>Node</u-tree-item></u-tree>' },
+    {
+      state: '펼침 토글',
+      // 자식이 있는 항목만 토글(`.prefix-toggler` — 자체 `@click`)을 그린다. 자식 슬롯의 `slotchange` 뒤에
+      // `leaf` 가 풀리므로 «토글이 보일 때까지» 기다린다 — 끝내 안 보이면 0×0 을 재지 않도록 던진다.
+      // 🔴`trigger="icon"` 에서는 토글이 **펼치는 유일한 포인터 경로**다(행 클릭은 선택만) — 행이라는 더 큰
+      // 동등 타깃이 없으므로 SC 2.5.8 의 «동등 컨트롤» 예외가 서지 않는다. 기본(`item`)이어도 선택 가능한
+      // 트리에서는 «선택하지 않고 펼치기» 가 토글만의 일이라 같은 사정이다.
+      html: '<u-tree trigger="icon"><u-tree-item>Parent<u-tree-item>Child</u-tree-item></u-tree-item></u-tree>',
+      prepare: async (host) => {
+        const toggler = () => host.shadowRoot!.querySelector('.prefix-toggler') as HTMLElement | null;
+        for (let i = 0; i < 50 && (!toggler() || toggler()!.hidden); i++) {
+          await new Promise((r) => setTimeout(r, 20));
+        }
+        if (!toggler() || toggler()!.hidden) throw new Error('자식이 있는 항목의 토글이 나타나지 않았다');
+      },
+      targets: () => [document.querySelector('u-tree-item')!.shadowRoot!.querySelector('.prefix-toggler')!],
+    },
+  ],
   'u-breadcrumb-item': { html: '<u-breadcrumb><u-breadcrumb-item>Home</u-breadcrumb-item></u-breadcrumb>' },
 
   // 타깃이 호스트가 아닌 것들 — cycle-485 가 확인한 함정이다(빈 컨테이너를 재면 0x0).
@@ -385,7 +404,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 25(27상태) · 미판정 0() · 대상아님 21');
+      ).toBe('판정 25(28상태) · 미판정 0() · 대상아님 21');
     });
   });
 
