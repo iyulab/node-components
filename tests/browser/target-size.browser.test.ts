@@ -47,6 +47,11 @@ import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
  * 둘은 애초에 **타깃이 없었고**(`u-tag` 는 제거 버튼 자체가 없다 · `u-split-panel` 의
  * splitter 는 **소비자가 슬롯으로 넣는다**) 다섯은 픽스처만 있으면 재졌다.
  *
+ * 🔴**(cycle-539 정정) `u-split-panel` 에 대한 위 판단은 틀렸다.** 컴포넌트가 분할 핸들
+ * `div.splitter[part=splitter]` 를 **스스로 만들고** `pointerdown`·`dblclick` 을 건다 — `splitter`
+ * 슬롯의 내용은 그 안에 복제되는 장식일 뿐이다. 그래서 «대상 아님» 에서 꺼내 재고, 기본 4px 라
+ * `UNDERSIZED_PINS` 에 핀으로 둔다(사람 판단 대기).
+ *
  * ⚠**커버리지 숫자는 단언으로 고정돼 있다** — 픽스처를 더하거나 분류를 바꾸면 그 줄을 함께
  * 고쳐야 하고, 그것이 이 표가 조용히 낡지 않게 하는 장치다.
  */
@@ -95,7 +100,7 @@ function parts(host: Element, part: string): Element[] {
 const NOT_A_TARGET = new Set([
   'u-avatar', 'u-badge', 'u-breadcrumb', 'u-button-group', 'u-card', 'u-divider',
   'u-field', 'u-form', 'u-icon', 'u-menu', 'u-panel', 'u-popover', 'u-progress-bar',
-  'u-progress-ring', 'u-skeleton', 'u-spinner', 'u-split-panel', 'u-tab-panel', 'u-tag',
+  'u-progress-ring', 'u-skeleton', 'u-spinner', 'u-tab-panel', 'u-tag',
   'u-text', 'u-tooltip', 'u-tree',
 ]);
 
@@ -113,11 +118,17 @@ const NEEDS_FIXTURE = new Set<string>([]);
  * 여기 있는 동안 이 파일은 그것을 **미달로 단언**하므로 스위트는 초록이고, 치수를 올리면
  * 빨개진다 — 그때 이 집합에서 빼는 것이 완료 신호다(cycle-479 가 쓴 것과 같은 장치).
  *
- * ✅**지금은 비어 있다.** `u-slider`(thumb 18×18)가 유일한 항목이었고 cycle-492 가 사람 결정
- * (§C-A ⑷ ⑵안 — 히트 영역만 넓힌다)에 따라 해소했다. 새로 핀을 넣을 때는 **왜 자율로 고칠 수
- * 없는지**(선택지가 둘 이상인 시각 계약 변경인지)를 여기 함께 적을 것.
+ * `u-slider`(thumb 18×18)가 첫 항목이었고 cycle-492 가 사람 결정(§C-A ⑷ ⑵안 — 히트 영역만
+ * 넓힌다)에 따라 해소했다. 새로 핀을 넣을 때는 **왜 자율로 고칠 수 없는지**(선택지가 둘 이상인
+ * 시각 계약 변경인지)를 여기 함께 적을 것.
+ *
+ * 📌**`u-split-panel`**(cycle-539) — 분할 핸들 `[part=splitter]` 는 컴포넌트가 **스스로 만들고**
+ * `pointerdown`·`dblclick` 을 거는 우리 소유 타깃인데, 기본 `--splitter-size` 가 4px 다. 종전에는
+ * «소비자가 슬롯으로 넣는다» 는 잘못된 전제로 «대상 아님» 에 있었다(슬롯 내용은 그 안에 복제되는
+ * 장식이다). **자율로 고치지 않는 이유**: 선택지가 셋인 시각 계약이다 — ⑴ 보이는 폭은 두고 포인터
+ * 영역만 넓힌다(`u-slider` 선례) ⑵ 기본 폭 자체를 올린다 ⑶ 소비자에게 맡긴다(`--splitter-size`).
  */
-const UNDERSIZED_PINS = new Set<string>([]);
+const UNDERSIZED_PINS = new Set<string>(['u-split-panel']);
 
 interface Fixture {
   html: string;
@@ -279,6 +290,14 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
     },
     spacingIsOurs: true,
   },
+  'u-split-panel': {
+    // 🔴**분할 핸들은 컴포넌트가 스스로 만든다**(`createSplitter` — `pointerdown`·`dblclick` 을 건다).
+    //   `splitter` 슬롯의 내용은 그 안에 복제되는 장식일 뿐이다. 패널 둘이면 핸들 하나이고, 가로
+    //   방향(기본)이라 폭이 `--splitter-size`(4px)다. 간격 예외를 켜지 않는다 — 이웃이 없어 켜면
+    //   «혼자라서 통과» 가 된다(위 `spacingIsOurs` 주석).
+    html: '<u-split-panel style="width:300px;height:120px"><div>A</div><div>B</div></u-split-panel>',
+    targets: () => parts(document.querySelector('u-split-panel')!, 'splitter'),
+  },
 };
 
 async function mount(html: string): Promise<void> {
@@ -366,7 +385,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 24(26상태) · 미판정 0() · 대상아님 22');
+      ).toBe('판정 25(27상태) · 미판정 0() · 대상아님 21');
     });
   });
 
@@ -402,7 +421,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
 
   describe('📌미달 재고 — 사람 판단 대기 (§C-A 의 「위반 확정」 자리)', () => {
     it('핀 목록이 실제 미달과 일치한다 — 낡으면 위 per-tag 단언이 먼저 빨개진다', () => {
-      expect([...UNDERSIZED_PINS].sort()).toEqual([]);
+      expect([...UNDERSIZED_PINS].sort()).toEqual(['u-split-panel']);
     });
   });
 
