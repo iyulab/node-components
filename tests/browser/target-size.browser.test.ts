@@ -89,32 +89,121 @@ function parts(host: Element, part: string): Element[] {
 }
 
 /**
- * 🔴**hit-test 축**(cycle-553) — 타깃의 중심과 1px 안쪽 네 가장자리를 실제로 누르면 그 타깃(또는 그 자손)이 받는가.
+ * 🔴**hit-test 축**(cycle-553 · 세 게이트 공통) — 타깃의 중심과 1px 안쪽 네 가장자리를 실제로 누르면 그 타깃이 받는가.
  *
  * `getBoundingClientRect` 는 조상의 `overflow` 가 자른 부분도, 닫혀서 보이지 않는 요소의 박스도 그대로 보고한다 — 크기만
- * 재면 ***보이지도 눌리지도 않는 타깃이 통과한다.*** 실제로 그랬다: cycle-550 의 `u-input` 접미 아이콘(좁은 필드에서 밖으로
- * 밀려나 잘렸다)과, 닫힌 채 띄운 `u-dialog`·`u-drawer` 픽스처(닫기 버튼 중심을 누르면 `body` 가 받았다).
- * 판정은 타깃이 속한 트리(`getRootNode()`)에서 한다 — 섀도 안 타깃은 그 섀도 루트에서, 호스트 타깃은 문서에서.
+ * 재면 ***보이지도 눌리지도 않는 타깃이 통과한다.*** 실제로 그랬다: components 게이트의 `u-input` 접미 아이콘(좁은 필드에서
+ * 밖으로 밀려나 잘렸다)과, 닫힌 채 띄운 대화상자 픽스처(닫기 버튼 중심을 누르면 `body` 가 받았다).
  *
- * ⚠`elementFromPoint` 는 결과를 호출한 트리로 retarget 한다. 그래서 섀도 안의 요소(예: `a[part=link]`)를 타깃으로 잡으면,
- * 그 안에 **슬롯으로 꽂힌 라이트 DOM 글자** 위의 점은 호스트로 돌아와 «닿지 않음» 으로 잘못 나온다 — 그런 타깃은 호스트를 잰다.
+ * - **사용자가 스크롤로 닿을 수 있으면 닿는 것이다** — 점마다, 그 점이 보이도록 `overflow: auto|scroll` 조상과 창만 스크롤한
+ *   뒤 잰다(cycle-554: 표·시트·블록이 러너의 좁은 뷰포트를 넘어 `elementFromPoint` 가 `null` 을 돌려줬고, 뷰포트보다 넓은
+ *   타깃은 양 끝을 한 화면에 담을 수 없다). `overflow: hidden|clip` 조상은 사용자가 움직일 수 없으므로 **건드리지 않는다** —
+ *   `scrollIntoView` 는 그것까지 스크롤해 잘린 타깃을 통과시킨다. 움직인 스크롤은 점마다 돌려놓는다.
+ * - 판정은 타깃이 속한 트리(`getRootNode()`)에서 한다. 그 트리로 retarget 되어 **호스트**가 돌아오면, 그 점이 타깃 안
+ *   `<slot>` 에 꽂힌 라이트 DOM 내용 위일 때 타깃이 받은 것으로 센다(링크 안에 꽂힌 글자 등).
+ * - ⚠**이웃 타깃이 받은 것은 봐주지 않는다.** 붙어 있는 격자 셀의 경계선 때문에 가장자리를 이웃에 양보하는 면제를
+ *   시험해 봤지만(cycle-554), 네거티브 컨트롤로 끄자 **어떤 픽스처도 빨개지지 않았다** — 셀 가장자리의 불일치는 경계선이
+ *   아니라 뷰포트 밖이었다. 쓰이지 않는 면제는 조용한 미탐이라 걷어냈다. 필요해지면 그 픽스처가 빨강으로 알린다.
+ *
+ * ⚠이 헬퍼는 세 게이트(components · chat-components · data-components)에 **같은 코드로** 한 벌씩 있다 — 고치면 셋 다.
  */
-function unreachablePoints(el: Element): string[] {
-  const r = el.getBoundingClientRect();
+type HitPoint = readonly [name: string, fx: number, fy: number, ox: number, oy: number];
+
+const HIT_POINTS: HitPoint[] = [
+  ['중심', 0.5, 0.5, 0, 0],
+  ['왼', 0, 0.5, 1, 0],
+  ['오른', 1, 0.5, -1, 0],
+  ['위', 0.5, 0, 0, 1],
+  ['아래', 0.5, 1, 0, -1],
+];
+
+function describeEl(el: Element | null): string {
+  if (!el) return 'null';
+  const cls = el.getAttribute('class');
+  return `${el.localName}${cls ? `.${cls.split(' ')[0]}` : ''}`;
+}
+
+function unreachablePoints(el: Element): Array<{ point: string; hit: string }> {
   const root = el.getRootNode() as Document | ShadowRoot;
-  const points: Array<[string, number, number]> = [
-    ['중심', r.left + r.width / 2, r.top + r.height / 2],
-    ['왼', r.left + 1, r.top + r.height / 2],
-    ['오른', r.right - 1, r.top + r.height / 2],
-    ['위', r.left + r.width / 2, r.top + 1],
-    ['아래', r.left + r.width / 2, r.bottom - 1],
-  ];
-  return points
-    .filter(([, x, y]) => {
+  const host = root instanceof ShadowRoot ? root.host : null;
+  const at = (p: HitPoint): [number, number] => {
+    const r = el.getBoundingClientRect();
+    return [r.left + r.width * p[1] + p[3], r.top + r.height * p[2] + p[4]];
+  };
+  const misses: Array<{ point: string; hit: string }> = [];
+  for (const p of HIT_POINTS) {
+    const restore = revealPoint(el, () => at(p));
+    try {
+      const [x, y] = at(p);
       const hit = root.elementFromPoint(x, y);
-      return !(hit && (hit === el || el.contains(hit)));
-    })
-    .map(([name]) => name);
+      const ok = !!hit && (hit === el || el.contains(hit) || (hit === host && slottedContentAt(el, x, y)));
+      if (!ok) misses.push({ point: p[0], hit: describeEl(hit) });
+    } finally {
+      restore();
+    }
+  }
+  return misses;
+}
+
+/** 평탄 트리의 부모 — 슬롯에 꽂혔으면 그 슬롯, 섀도 루트면 그 호스트. */
+function flatParent(node: Node): Element | null {
+  const slot = (node as Element).assignedSlot;
+  if (slot) return slot;
+  const parent = node.parentNode;
+  if (parent instanceof ShadowRoot) return parent.host;
+  return parent instanceof Element ? parent : null;
+}
+
+/** 그 점이 보이도록 사용자가 스크롤할 수 있는 조상과 창을 움직인다. 돌려놓는 함수를 돌려준다. */
+function revealPoint(el: Element, point: () => [number, number]): () => void {
+  const moved: Array<[Element, number, number]> = [];
+  for (let a = flatParent(el); a && a !== document.documentElement && a !== document.body; a = flatParent(a)) {
+    const cs = getComputedStyle(a);
+    const canX = /auto|scroll/.test(cs.overflowX) && a.scrollWidth > a.clientWidth;
+    const canY = /auto|scroll/.test(cs.overflowY) && a.scrollHeight > a.clientHeight;
+    if (!canX && !canY) continue;
+    const [x, y] = point();
+    const box = a.getBoundingClientRect();
+    const left = box.left + a.clientLeft;
+    const top = box.top + a.clientTop;
+    const before: [Element, number, number] = [a, a.scrollLeft, a.scrollTop];
+    if (canX && (x < left || x >= left + a.clientWidth)) a.scrollLeft += x - (left + a.clientWidth / 2);
+    if (canY && (y < top || y >= top + a.clientHeight)) a.scrollTop += y - (top + a.clientHeight / 2);
+    if (a.scrollLeft !== before[1] || a.scrollTop !== before[2]) moved.push(before);
+  }
+  const wx = window.scrollX;
+  const wy = window.scrollY;
+  const [x, y] = point();
+  const vw = document.documentElement.clientWidth;
+  const vh = document.documentElement.clientHeight;
+  const dx = x < 0 || x >= vw ? x - vw / 2 : 0;
+  const dy = y < 0 || y >= vh ? y - vh / 2 : 0;
+  if (dx || dy) window.scrollBy(dx, dy);
+  return () => {
+    window.scrollTo(wx, wy);
+    for (const [a, l, t] of moved.reverse()) {
+      a.scrollLeft = l;
+      a.scrollTop = t;
+    }
+  };
+}
+
+/** 타깃 안 `<slot>` 에 꽂힌 라이트 DOM 내용 중 그 점을 덮는 것이 있는가. */
+function slottedContentAt(el: Element, x: number, y: number): boolean {
+  for (const slot of Array.from(el.querySelectorAll('slot'))) {
+    for (const n of slot.assignedNodes({ flatten: true })) {
+      let rects: DOMRect[];
+      if (n instanceof Element) {
+        rects = [n.getBoundingClientRect()];
+      } else {
+        const range = document.createRange();
+        range.selectNodeContents(n);
+        rects = Array.from(range.getClientRects());
+      }
+      if (rects.some((q) => x >= q.left && x <= q.right && y >= q.top && y <= q.bottom)) return true;
+    }
+  }
+  return false;
 }
 
 /** 폼 컨트롤의 «보이는» 접미 아이콘 버튼 — 조건부로 그려지는 것은 `hidden` 으로 DOM 에 남아 0x0 이 되므로 거른다. */
@@ -584,9 +673,12 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
   });
 
   describe('규칙 자체 — hit-test 축', () => {
+    const pointsOf = (el: Element) => unreachablePoints(el).map((m) => m.point);
+    const ALL = ['중심', '왼', '오른', '위', '아래'];
+
     it('보이는 버튼은 다섯 점 모두 닿는다 — 자손(글자·아이콘)이 받아도 그 버튼이 받은 것이다', async () => {
       await mount('<button style="width:60px;height:30px"><span style="display:block">OK</span></button>');
-      expect(unreachablePoints(document.querySelector('button')!)).toEqual([]);
+      expect(pointsOf(document.querySelector('button')!)).toEqual([]);
     });
 
     it('🔴조상 overflow 에 통째로 잘린 버튼은 다섯 점 모두 닿지 않는다 — 박스는 그대로 보고되는데도', async () => {
@@ -594,19 +686,65 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
         '<button style="position:absolute;left:50px;width:30px;height:30px">x</button></div>');
       const button = document.querySelector('button')!;
       expect(Math.round(button.getBoundingClientRect().width), '크기만 보면 통과처럼 보인다').toBe(30);
-      expect(unreachablePoints(button)).toEqual(['중심', '왼', '오른', '위', '아래']);
+      expect(pointsOf(button)).toEqual(ALL);
     });
 
     it('🔴반쯤 잘린 버튼은 잘린 쪽 가장자리만 닿지 않는다 (중심만 재면 놓친다)', async () => {
       await mount('<div style="width:40px;height:30px;overflow:hidden;position:relative">' +
         '<button style="position:absolute;left:20px;width:30px;height:30px">x</button></div>');
-      expect(unreachablePoints(document.querySelector('button')!)).toEqual(['오른']);
+      expect(pointsOf(document.querySelector('button')!)).toEqual(['오른']);
     });
 
     it('🔴다른 요소에 덮인 버튼은 닿지 않는다', async () => {
       await mount('<div style="position:relative"><button style="width:30px;height:30px">x</button>' +
         '<div style="position:absolute;inset:0;width:30px;height:30px"></div></div>');
-      expect(unreachablePoints(document.querySelector('button')!)).toEqual(['중심', '왼', '오른', '위', '아래']);
+      expect(pointsOf(document.querySelector('button')!)).toEqual(ALL);
+    });
+
+    it('뷰포트 밖이어도 창을 스크롤해 닿으면 닿는다 — 그리고 스크롤은 돌려놓는다', async () => {
+      await mount('<div style="width:3000px"><button style="margin-left:2600px;width:30px;height:30px">x</button></div>');
+      expect(pointsOf(document.querySelector('button')!)).toEqual([]);
+      expect(window.scrollX).toBe(0);
+    });
+
+    it('🔴뷰포트보다 넓은 타깃도 양 끝이 닿는다 — 점마다 드러낸다', async () => {
+      await mount('<button style="width:2500px;height:30px">wide</button>');
+      expect(pointsOf(document.querySelector('button')!)).toEqual([]);
+    });
+
+    it('사용자 스크롤 컨테이너(overflow:auto) 밖에 있는 타깃은 그 컨테이너를 스크롤해 닿는다', async () => {
+      // ⚠높이는 가로 스크롤바가 생겨도 버튼(30)이 들어갈 만큼 — 40 이면 스크롤바가 위아래 끝을 가려 픽스처가 틀린다.
+      await mount('<div id="sc" style="width:100px;height:60px;overflow:auto"><div style="width:600px">' +
+        '<button style="margin-left:500px;width:30px;height:30px">x</button></div></div>');
+      expect(pointsOf(document.querySelector('button')!)).toEqual([]);
+      expect(document.getElementById('sc')!.scrollLeft).toBe(0);
+    });
+
+    it('🔴overflow:hidden 컨테이너는 스크롤하지 않는다 — 잘린 타깃은 잘린 채로 남는다(scrollIntoView 는 이것을 드러낸다)', async () => {
+      await mount('<div style="width:100px;height:40px;overflow:hidden"><div style="width:600px">' +
+        '<button style="margin-left:500px;width:30px;height:30px">x</button></div></div>');
+      expect(pointsOf(document.querySelector('button')!)).toEqual(ALL);
+    });
+
+    it('섀도 안 링크에 슬롯으로 꽂힌 글자 위의 점도 그 링크가 받은 것으로 센다(retarget 보정)', async () => {
+      const name = 'zz-hit-slot-link';
+      if (!customElements.get(name)) {
+        customElements.define(name, class extends HTMLElement {
+          constructor() {
+            super();
+            this.attachShadow({ mode: 'open' }).innerHTML =
+              '<a href="#x" style="display:inline-block;padding:4px"><slot></slot></a>';
+          }
+        });
+      }
+      await mount(`<${name}>Linked text</${name}>`);
+      expect(pointsOf(document.querySelector(name)!.shadowRoot!.querySelector('a')!)).toEqual([]);
+    });
+
+    it('⚪NEGATIVE — 이웃 타깃이 가장자리를 덮어도 봐주지 않는다 (이웃에 양보하는 면제는 없다)', async () => {
+      await mount('<div style="display:flex"><button id="a" style="width:40px;height:30px;margin-right:-3px">a</button>' +
+        '<button id="b" style="width:40px;height:30px;position:relative">b</button></div>');
+      expect(pointsOf(document.getElementById('a')!)).toEqual(['오른']);
     });
   });
 
@@ -660,10 +798,11 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
         expect(targets.length, '타깃을 하나도 못 찾으면 이 판정은 무의미하다').toBeGreaterThan(0);
 
         // 🔴크기보다 먼저 — 그 타깃이 실제로 눌리는가. 잘렸거나 가려졌거나 닫혀 있으면 크기 판정은 의미가 없다.
+        //   (세 게이트 공통 · 인라인 예외도 «눌린다» 는 전제는 면제하지 않는다.)
         const unreachable = els
           .map((el) => ({ el, misses: unreachablePoints(el) }))
           .filter(({ misses }) => misses.length > 0)
-          .map(({ el, misses }) => `${el.localName}${el.getAttribute('part') ? `[${el.getAttribute('part')}]` : ''} — ${misses.join('·')}`);
+          .map(({ el, misses }) => `${describeEl(el)} — ${misses.map((m) => `${m.point}→${m.hit}`).join(' · ')}`);
         expect(unreachable, '누르면 다른 요소가 받는 타깃 — 잘렸거나 가려졌거나 닫혀 있다').toEqual([]);
 
         // 🔴간격 예외는 «우리가 배치를 소유할 때»만 쓴다 — `spacingIsOurs` 주석 참조.
