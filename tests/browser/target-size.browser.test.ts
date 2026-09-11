@@ -178,7 +178,29 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   'u-switch': { html: '<u-switch></u-switch>' },
   'u-input': { html: '<u-input style="width:200px"></u-input>' },
   'u-textarea': { html: '<u-textarea style="width:200px"></u-textarea>' },
-  'u-select': { html: '<u-select style="width:200px"><u-option value="a">A</u-option></u-select>' },
+  'u-select': [
+    { state: '닫힘', html: '<u-select style="width:200px"><u-option value="a">A</u-option></u-select>' },
+    {
+      state: '목록',
+      // 목록 항목(`u-option`)은 라이트 DOM 자식이 팝오버 슬롯에 꽂힌 것이다.
+      // 🔴**달력과 달리 항목은 닫힌 상태에서도 DOM 에 있다** — 팝오버는 `[open]` 전까지
+      //   `visibility: hidden` 이고 그래도 레이아웃은 잡힌다. 그래서 «타깃이 나타날 때까지» 는
+      //   열림의 신호가 되지 못한다: 열기에 실패해도 숨은 항목을 재고 초록이 된다. ⇒ 팝오버의
+      //   `open` 을 기다리고, 끝내 열리지 않으면 **던진다**.
+      html: '<u-select style="width:200px"><u-option value="a">A</u-option>' +
+        '<u-option value="b">B</u-option><u-option value="c">C</u-option></u-select>',
+      prepare: async (host) => {
+        const root = host.shadowRoot!;
+        (root.querySelector('.container') as HTMLElement).click();
+        const popover = root.querySelector('u-popover')!;
+        for (let i = 0; i < 50 && !popover.hasAttribute('open'); i++) {
+          await new Promise((r) => setTimeout(r, 20));
+        }
+        if (!popover.hasAttribute('open')) throw new Error('목록 팝오버가 열리지 않았다 — 닫힌 항목을 재면 미탐이다');
+      },
+      targets: () => Array.from(document.querySelectorAll('u-select > u-option')),
+    },
+  ],
   'u-file-input': { html: '<u-file-input></u-file-input>' },
   'u-date-picker': [
     { state: '닫힘', html: '<u-date-picker></u-date-picker>' },
@@ -344,7 +366,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 24(25상태) · 미판정 0() · 대상아님 22');
+      ).toBe('판정 24(26상태) · 미판정 0() · 대상아님 22');
     });
   });
 
