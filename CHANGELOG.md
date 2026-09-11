@@ -4,6 +4,18 @@
 
 ### Changed
 
+- **A searchable select's dropdown is now a dialog, and opening it puts focus in the search
+  field.** The dropdown used to carry `role="listbox"` while also holding the search field — a
+  listbox may contain only options, so assistive technology met a text field where it expected
+  a list. The options now sit in their own `role="listbox"` inside the dropdown, and with
+  `searchable` the dropdown is a named `role="dialog"` containing the search field and that list
+  (the WAI-ARIA *combobox with dialog popup* pattern); the trigger reports
+  `aria-haspopup="dialog"`. Opening it focuses the search field, so you can type to filter at
+  once; `ArrowDown` still moves to the first option and `Escape` still closes. The dialog is
+  named by the select's `label`, or "Search" without one. Without `searchable` nothing changes
+  for users — the trigger still reports a listbox and opening still focuses the first option. A
+  `multiple` select's list now reports `aria-multiselectable`.
+
 - **Secondary text (`--u-txt-color-weak`) now meets WCAG AA 4.5:1 on every surface it is
   placed on, not only on the page background.** It moves one step along the neutral ramp —
   `neutral-600` → `neutral-700` in the light theme, `neutral-700` → `neutral-800` in the dark
@@ -49,6 +61,13 @@
   missing it, because the invariant is the symmetry itself.
 
 ### Fixed
+
+- **`u-popover`'s `autofocus`, and `focusTo()`, now reach controls inside wrapped content.**
+  They are documented to focus the first focusable element *inside* the popover, but only looked
+  at the popover's direct children, so content wrapped in an element — a form in a `<div>`, a
+  field in a `<label>` — was skipped and focus stayed where it was. They now search descendants
+  in document order, including elements slotted through an inner `<slot>`, and skip disabled and
+  `hidden` subtrees.
 
 - **Pressing Enter in an input now submits its form, as it does in a native text field.** The
   field's own `<input>` lives in the component's shadow root, so the browser never treated it as

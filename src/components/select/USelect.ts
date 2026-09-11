@@ -88,8 +88,10 @@ export class USelect extends UFormControlElement<string | string[]> {
   @state() private options: UOption[] = [];
   /** aria-expanded 배선용 팝오버 열림 상태 */
   @state() private open: boolean = false;
-  /** combobox → listbox 연결용 고유 id (aria-controls) */
-  private readonly listboxId = `u-select-listbox-${Math.random().toString(36).slice(2, 8)}`;
+  /** combobox → 팝업 연결용 고유 id (aria-controls). 검색 가능이면 팝업은 dialog 이고 그 안에 listbox 가 있다. */
+  private readonly idBase = `u-select-${Math.random().toString(36).slice(2, 8)}`;
+  private readonly listboxId = `${this.idBase}-listbox`;
+  private readonly popupId = `${this.idBase}-popup`;
 
   protected shouldValidate(changed: PropertyValues): boolean {
     return super.shouldValidate(changed)
@@ -145,9 +147,9 @@ export class USelect extends UFormControlElement<string | string[]> {
           role="combobox"
           aria-label=${ifDefined(this.label)}
           aria-description=${ifDefined(this.description)}
-          aria-haspopup="listbox"
+          aria-haspopup=${this.searchable ? 'dialog' : 'listbox'}
           aria-expanded=${this.open}
-          aria-controls=${this.listboxId}>
+          aria-controls=${this.searchable ? this.popupId : this.listboxId}>
           <slot name="prefix"></slot>
           <slot name="display">${this.renderContent()}</slot>
           <slot name="suffix"></slot>
@@ -173,9 +175,13 @@ export class USelect extends UFormControlElement<string | string[]> {
         </div>
       </u-field>
 
+      <!-- listbox 는 option(과 group)만 담는다 — 검색 입력은 그 밖에 둔다. 검색 가능이면 입력과 목록을 함께 담는
+           팝업이 dialog 가 된다(WAI-ARIA APG «combobox with dialog popup» — 포커스가 팝업 안으로 들어가는 지금의
+           키보드 모델 그대로다). 검색 불가면 팝업은 역할 없는 컨테이너이고 목록만 담는다. -->
       <u-popover part="popover"
-        id=${this.listboxId}
-        role="listbox"
+        id=${this.popupId}
+        role=${ifDefined(this.searchable ? 'dialog' : undefined)}
+        aria-label=${ifDefined(this.searchable ? (this.label || Locale.getValue('search')) : undefined)}
         scrollable
         autofocus
         for=".container"
@@ -192,11 +198,15 @@ export class USelect extends UFormControlElement<string | string[]> {
           <input
             type="text"
             aria-label=${Locale.getValue('search')}
+            aria-controls=${this.listboxId}
             @input=${this.handleSearchInput}
             @keydown=${this.handleSearchKeydown}
           />
         </div>
-        <slot @slotchange=${this.handleSlotChange}></slot>
+        <div class="listbox" role="listbox" id=${this.listboxId}
+          aria-multiselectable=${ifDefined(this.multiple ? 'true' : undefined)}>
+          <slot @slotchange=${this.handleSlotChange}></slot>
+        </div>
       </u-popover>
     `;
   }

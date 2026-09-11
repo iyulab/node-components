@@ -70,6 +70,15 @@ Dropdown select with single or multiple selection, search, and clear support. Fo
 | `focus(options?)` | Focus the trigger |
 | `blur()` | Blur the trigger |
 
+## Keyboard & accessibility
+
+The trigger is a `role="combobox"`. Without `searchable` the dropdown holds a `role="listbox"`
+and opening it focuses the first option. With `searchable` the dropdown is a `role="dialog"`
+(named by `label`, or "Search") that holds the search field and the listbox; opening it focuses
+the search field, so typing filters at once. From the search field `ArrowDown`/`ArrowUp` move to
+the first/last visible option; on an option, arrows, `Home`/`End`, `Enter`/`Space` (select) and
+`Escape` (close) work as usual.
+
 ## CSS Parts
 
 | Part | Description |

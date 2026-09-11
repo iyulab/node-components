@@ -6,6 +6,26 @@ import { isCoarsePointer } from "../../utilities/elements.js";
 import { UFloatingElement } from "../UFloatingElement.js";
 import { styles } from "./UPopover.styles.js";
 
+const FOCUSABLE = 'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+/**
+ * 슬롯에 꽂힌 요소와 **그 자손**(안쪽 `<slot>` 에 다시 꽂힌 요소까지)에서 포커스 가능한 것을 문서 순서로 모은다 —
+ * `autofocus`·`focusTo()` 가 약속하는 «내부의» 포커스 가능한 요소. 종전에는 꽂힌 요소 자신만 봐서, 감싼 요소
+ * (`<div>`) 안의 입력은 찾지 못하고 팝오버 자신에 포커스했다. `disabled`·`hidden` 인 요소는 하위 전체를 건너뛴다.
+ */
+function collectFocusables(elements: Element[], out: HTMLElement[]): void {
+  for (const el of elements) {
+    if (!(el instanceof HTMLElement)) continue;
+    if (el.hasAttribute('disabled') || el.hasAttribute('hidden')) continue;
+    if (el instanceof HTMLSlotElement) {
+      collectFocusables(el.assignedElements({ flatten: true }), out);
+      continue;
+    }
+    if (el.matches(FOCUSABLE)) out.push(el);
+    collectFocusables(Array.from(el.children), out);
+  }
+}
+
 export type PopoverTrigger = 'click' | 'contextmenu' | 'hover' | 'focus' | 'manual';
 export type PopoverDismiss = 'click' | 'escape' | 'scroll' | 'resize';
 
@@ -102,11 +122,8 @@ export class UPopover extends UFloatingElement {
 
   public focusTo(index: number): void {
     const slot = this.renderRoot.querySelector('slot') as HTMLSlotElement | null;
-    const focusables = slot?.assignedElements({ flatten: true }).filter(el => {
-      if (!(el instanceof HTMLElement)) return false;
-      if (el.hasAttribute('disabled') || el.hasAttribute('hidden')) return false;
-      return el.matches('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
-    }) as HTMLElement[] | undefined;
+    const focusables: HTMLElement[] = [];
+    if (slot) collectFocusables(slot.assignedElements({ flatten: true }), focusables);
 
     if (!focusables || focusables.length === 0) {
       this.focus();
