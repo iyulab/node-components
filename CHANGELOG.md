@@ -2,6 +2,25 @@
 
 ## [1.40.0] - 2026-09-10
 
+### Changed
+
+- **Secondary text (`--u-txt-color-weak`) now meets WCAG AA 4.5:1 on every surface it is
+  placed on, not only on the page background.** It moves one step along the neutral ramp —
+  `neutral-600` → `neutral-700` in the light theme, `neutral-700` → `neutral-800` in the dark
+  theme. Before, it passed on the base surface only; on a raised surface (table headers, cards)
+  and on the active surface it fell below the threshold:
+
+  | | base | raised | active |
+  |---|---|---|---|
+  | light, before → after | 4.61 → 6.19 | 4.41 → 5.93 | 3.97 → 5.34 |
+  | dark, before → after | 5.43 → 8.64 | 4.16 → 6.62 | 3.15 → 5.01 |
+
+  Secondary text reads slightly darker in the light theme and slightly lighter in the dark
+  theme. It stays distinct from body text (contrast between the two: 2.60 light, 1.46 dark), and
+  the contrast contract now asserts both properties — all three surfaces, and a floor on the
+  body-to-secondary ratio — so neither can regress silently. Themes that already override the
+  token are unaffected.
+
 ### Added
 
 - **`--u-select-display` / `--u-select-width` and `--u-textarea-display` / `--u-textarea-width`

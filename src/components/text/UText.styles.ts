@@ -84,7 +84,7 @@ export const styles = css`
    * 콜아웃 박스라 u-text 의 문제가 아니었다.
    */
   :host([tone="weak"]) {
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
   }
 
   :host([tone="strong"]) {

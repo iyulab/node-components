@@ -120,7 +120,7 @@ export const styles = css`
     word-wrap: break-word;
   }
   textarea::placeholder {
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
   }
   textarea:disabled {
     cursor: not-allowed;
@@ -158,7 +158,7 @@ export const styles = css`
   .counter {
     margin-top: 0.25em;
     text-align: right;
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
     font-size: 0.75em;
     line-height: 1.2;
   }

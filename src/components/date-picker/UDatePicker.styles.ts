@@ -53,7 +53,7 @@ export const styles = css`
     white-space: nowrap;
   }
   .text-content.placeholder {
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
   }
 
   .suffix-item {
@@ -104,7 +104,7 @@ export const styles = css`
     align-items: center;
     justify-content: center;
     font-size: var(--u-text-caption-size, 12px);
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
   }
 
   .day,

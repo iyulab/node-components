@@ -142,7 +142,7 @@ export const styles = css`
     position: absolute;
     transform: translateX(-50%);
     font-size: 0.75em;
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
     white-space: nowrap;
   }
 `;

@@ -40,7 +40,7 @@ export const styles = css`
       0 0 0 3px color-mix(in srgb, var(--u-primary-color-strong, #1565C0) 22%, transparent);
   }
   .trigger:disabled {
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
     background-color: var(--u-bg-color-disabled, #FAFAFA);
     border-color: var(--u-border-color-weak, #EEEEEE);
     cursor: not-allowed;
@@ -55,7 +55,7 @@ export const styles = css`
     font-size: 0.9em;
   }
   .status[data-empty] {
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
   }
 
   .clear-btn {

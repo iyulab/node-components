@@ -45,7 +45,7 @@ export const styles = css`
 
   .icon {
     flex: none;
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
     transition: transform var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   :host([open]) .icon {

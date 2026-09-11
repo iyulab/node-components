@@ -186,7 +186,7 @@ export const styles = css`
 
   .description {
     margin-top: 0.5em;
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
     font-size: 0.75em;
     line-height: 1.2;
   }

@@ -242,7 +242,10 @@
   --u-txt-color-hover:       var(--u-primary-color-strong);
   --u-txt-color-active:      var(--u-primary-color-strong);
   --u-txt-color-disabled:    var(--u-neutral-500);
-  --u-txt-color-weak:        var(--u-neutral-700);
+  /* 라이트와 같은 기준 — 놓이는 모든 면에서 AA. neutral-700(#8A8A8A)은 바탕 5.43 ·
+     올림면(neutral-300) 4.16 · active 면(neutral-400) 3.15 로 미달이었다.
+     neutral-800(#B0B0B0) = 8.64 · 6.62 · 5.01. 본문(neutral-900)과의 대비비 1.46. */
+  --u-txt-color-weak:        var(--u-neutral-800);
   --u-txt-color-strong:      var(--u-neutral-1000);
 
   --u-link-txt-color:        var(--u-primary-color-strong);

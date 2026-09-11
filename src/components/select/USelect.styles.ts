@@ -121,7 +121,7 @@ export const styles = css`
   }
 
   .count {
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
     line-height: 1.25;
     /* n / m 은 제자리에서 n 이 바뀐다 — 비례폭이면 선택할 때마다 라벨 줄이 흔들린다 */
     font-variant-numeric: tabular-nums;
@@ -136,7 +136,7 @@ export const styles = css`
     text-overflow: ellipsis;
   }
   .text-content.placeholder {
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
   }
 
   .chips-content {
@@ -188,7 +188,7 @@ export const styles = css`
     align-items: center;
     gap: 0.4em;
     padding: 0.3em 0.6em;
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
     border-bottom: 1px solid var(--u-border-color, #E0E0E0);
   }
   .search-input input {
@@ -198,6 +198,6 @@ export const styles = css`
     line-height: 1.5;
   }
   .search-input input::placeholder {
-    color: var(--u-txt-color-weak, #757575);
+    color: var(--u-txt-color-weak, #616161);
   }
 `;

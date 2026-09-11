@@ -128,27 +128,33 @@ describe('역할 토큰 대비 계약', () => {
         expect(fails).toEqual([]);
       });
 
-      it('중립 텍스트 토큰이 **표면 3종** 위에서 AA 를 받친다 (weak 는 아래 참조)', () => {
+      it('중립 텍스트 토큰이 **표면 3종** 위에서 AA 를 받친다 (보조 텍스트 포함)', () => {
         // ★1.20.0 이전에는 기준면이 `--u-bg-color` 하나였다. 그 사이 면 축이 늘었는데
         //   (`-raised` 는 1.18.0 신설) **검사의 곱집합은 늘리지 않았다** — 축을 추가하면서
         //   그 축과 기존 축의 교차를 재지 않은 것이다. 소비앱이 카드 위 보조 텍스트에서
         //   그것을 먼저 밟았다(라이트 4.41 · 다크 4.16).
         //
-        //   `-weak` 는 base 만 단언한다. raised·active 는 현재 미달이며 값을 고치는 것이
-        //   **게시된 전 컴포넌트의 보조 텍스트를 움직이는** 사람 판단이라, 아래 핀 블록 ⑷ 에
-        //   측정값으로 고정해 두고 감시한다.
+        //   ★1.40.0 에서 `-weak` 도 세 면 전부로 승격했다. 그전까지는 base 만 단언하고
+        //   raised·active 를 측정값 핀으로 감시했다 — 두 번째 소비앱의 런타임 감사(표 머리)가
+        //   같은 4.41 을 다시 밟은 뒤 램프 한 단(라이트 600→700 · 다크 700→800)으로 옮겼다.
         const SURFACES = ['--u-bg-color', '--u-bg-color-raised', '--u-bg-color-active'];
         const fails: string[] = [];
-        for (const token of ['--u-txt-color', '--u-txt-color-strong']) {
+        for (const token of ['--u-txt-color', '--u-txt-color-strong', '--u-txt-color-weak']) {
           for (const surface of SURFACES) {
             const c = contrast(t[token], t[surface]);
             if (c < AA_TEXT) fails.push(`${token} ${t[token]} on ${surface} ${t[surface]} = ${show(c)}`);
           }
         }
-        const weak = contrast(t['--u-txt-color-weak'], t['--u-bg-color']);
-        if (weak < AA_TEXT)
-          fails.push(`--u-txt-color-weak ${t['--u-txt-color-weak']} on --u-bg-color = ${show(weak)}`);
         expect(fails).toEqual([]);
+      });
+
+      it('보조 텍스트가 본문과 **구별된다** — 대비를 올리면서 위계를 없애지 않았다', () => {
+        // 위 단언만 있으면 `-weak` 를 본문과 같은 값으로 옮겨도 초록이다(«읽히거나, 위계가
+        // 있거나» 중 앞의 것만 잰다). 하한 1.3 은 보조 텍스트를 모든 면에서 읽히게 보장하는
+        // 흔한 디자인 시스템의 본문↔보조 대비비(약 1.3~1.8)의 아래 끝이다.
+        // 1.40.0 실측: 라이트 2.60 · 다크 1.46.
+        const ratio = contrast(t['--u-txt-color'], t['--u-txt-color-weak']);
+        expect(ratio, `--u-txt-color ↔ --u-txt-color-weak = ${show(ratio)}`).toBeGreaterThanOrEqual(1.3);
       });
 
       it('유채색 표면 토큰 위에서 본문이 읽힌다 (AA 4.5)', () => {
@@ -269,43 +275,17 @@ describe('역할 토큰 대비 계약', () => {
     //    요구하므로 장식 구분선은 애초에 대상이 아니다.
     //    ⚠그리고 *"`-strong` 단으로 올리면 통과한다"* 는 **틀렸다** — 아래 값이 보여주듯
     //    `-strong` 자체가 미달이다. 통과하려면 `neutral-600`(라이트 4.61 · 다크 3.27 =
-    //    보조 텍스트와 같은 진하기)까지 가야 하고, 그것은 큰 시각 변경이다.
+    //    1.39.0 까지의 보조 텍스트와 같은 진하기)까지 가야 하고, 그것은 큰 시각 변경이다.
     const borders = {
       light: Number(contrast(light['--u-border-color-strong'], light['--u-bg-color']).toFixed(2)),
       dark: Number(contrast(dark['--u-border-color-strong'], dark['--u-bg-color']).toFixed(2)),
     };
     expect(borders, '--u-border-color-strong on bg (기준 3.0)').toEqual({ light: 1.88, dark: 2.40 });
 
-    // ⑷ ★**보조 텍스트가 올림면 위에서 미달** — 두 테마 **같은 형태**다: 바탕에서는
-    //    아슬하게 통과하고(라이트 4.61 = 여유 0.11) 면이 한 단 올라가면 떨어진다.
-    //    `--u-bg-color-raised` 는 1.18.0 신설이므로 이 조합은 *"깨진 것"* 이 아니라
-    //    **교차 검증된 적이 없는 새 조합**이다.
-    //
-    //    ⚠소비자에게 선택지가 없다: 위 단은 `--u-txt-color`(본문)뿐이라 그것을 쓰면
-    //    보조 텍스트와 본문의 **위계가 사라진다**. ***읽히거나, 위계가 있거나*** 둘 중 하나다.
-    //
-    //    해소하려면 `--u-txt-color-weak` 를 양 테마에서 한 단씩 옮기면 된다(실측:
-    //    라이트 neutral-700 → 세 면 6.19/5.93/5.34 · 다크 neutral-800 → 8.64/6.62/5.01,
-    //    **6/6 통과**). 그런데 대가가 있다 — 보조↔본문 대비비가 **다크 2.33 → 1.46**,
-    //    라이트 3.49 → 2.60 으로 줄어 위계가 약해진다. 그리고 이 토큰은 **1.15.0 에서
-    //    이미 한 번 옮겼다**(neutral-500 → 600, 5패키지 50곳). 세 릴리스 만의 두 번째
-    //    이동이므로 사람 판단으로 남긴다.
-    //
-    //    ⇒ 같은 리포의 `u-widgets` 는 이미 *"보조 텍스트는 표면 위에서 잰다"* 로 판정했다
-    //    (`DL-146-2`). components 만 바탕 기준이라는 **비대칭이 이 핀의 실체**다.
-    const weakOnSurfaces = {
-      light: {
-        raised: Number(contrast(light['--u-txt-color-weak'], light['--u-bg-color-raised']).toFixed(2)),
-        active: Number(contrast(light['--u-txt-color-weak'], light['--u-bg-color-active']).toFixed(2)),
-      },
-      dark: {
-        raised: Number(contrast(dark['--u-txt-color-weak'], dark['--u-bg-color-raised']).toFixed(2)),
-        active: Number(contrast(dark['--u-txt-color-weak'], dark['--u-bg-color-active']).toFixed(2)),
-      },
-    };
-    expect(weakOnSurfaces, '--u-txt-color-weak 를 올림면 위에 썼을 때 (기준 4.5)').toEqual({
-      light: { raised: 4.41, active: 3.97 },
-      dark: { raised: 4.16, active: 3.15 },
-    });
+    // ⑷ **해소됨** (1.40.0) — 보조 텍스트가 올림면·active 면에서 미달이던 4칸. 램프 한 단
+    //    이동으로 6/6 통과하며 위 `중립 텍스트 토큰이 표면 3종 위에서` 로 승격됐다.
+    //    보류 사유였던 «위계 약화»(보조↔본문 라이트 3.49→2.60 · 다크 2.33→1.46)는
+    //    보조 텍스트를 모든 표면에서 읽히게 보장하는 디자인 시스템의 통상 대비비
+    //    (약 1.3~1.8)보다 넓어, 위 `구별된다` 단언이 그 하한을 지킨다.
   });
 });
