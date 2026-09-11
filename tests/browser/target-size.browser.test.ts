@@ -277,6 +277,21 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
           .querySelectorAll('button.day, .calendar-header u-icon-button'),
       ),
     },
+    {
+      state: '시간',
+      // `mode="datetime"` 이면 달력 아래에 시간 입력(`input.time-input[type=time]` · `calendar-time` 파트)이 붙는다.
+      // 달력과 함께 열린 뒤에만 그려지므로 «시간 입력이 나타날 때까지» 가 곧 열림 신호다 — 안 나타나면 던진다.
+      html: '<u-date-picker mode="datetime"></u-date-picker>',
+      prepare: async (host) => {
+        const root = host.shadowRoot!;
+        (root.querySelector('.container') as HTMLElement).click();
+        for (let i = 0; i < 50 && !root.querySelector('.time-input'); i++) {
+          await new Promise((r) => setTimeout(r, 20));
+        }
+        if (!root.querySelector('.time-input')) throw new Error('datetime 달력의 시간 입력이 나타나지 않았다');
+      },
+      targets: () => [document.querySelector('u-date-picker')!.shadowRoot!.querySelector('.time-input')!],
+    },
   ],
   // ⚠제목 속성은 `label` 이다 — `header` 는 슬롯 이름이라, 종전 `header="More"` 는 **빈 제목**을 재고 있었다.
   'u-expander': { html: '<u-expander label="More">body</u-expander>' },
@@ -503,7 +518,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 25(35상태) · 미판정 0() · 대상아님 21');
+      ).toBe('판정 25(36상태) · 미판정 0() · 대상아님 21');
     });
   });
 
