@@ -27,5 +27,6 @@
   "chooseFile": "파일 선택",
   "noFileChosen": "선택된 파일 없음",
   "filesSelected": "{count}개 파일 선택됨",
-  "resizePanels": "패널 크기 조절"
+  "resizePanels": "패널 크기 조절",
+  "search": "검색"
 }

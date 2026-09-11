@@ -50,6 +50,11 @@
 
 ### Fixed
 
+- **The select's search field (`searchable`) had no accessible name** — no label, no
+  placeholder, no `aria-label` — so assistive technology announced an unnamed text field with
+  no hint of what it filters (WCAG 4.1.2). It is now named by the new locale message `search`
+  ("Search"), present in all fourteen built-in locales.
+
 - **The tree item's expand toggle (18×18) and checkbox (16×16) were undersized pointer
   targets** (WCAG 2.2 SC 2.5.8) — with `trigger="icon"` the toggle is the only pointer path to
   expand a node, and the header click never checks. Both now take the pointer across 24×24

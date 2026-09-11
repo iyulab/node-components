@@ -27,5 +27,6 @@
   "chooseFile": "Pilih berkas",
   "noFileChosen": "Tidak ada berkas dipilih",
   "filesSelected": "{count} berkas dipilih",
-  "resizePanels": "Ubah ukuran panel"
+  "resizePanels": "Ubah ukuran panel",
+  "search": "Cari"
 }

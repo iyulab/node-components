@@ -27,5 +27,6 @@
   "chooseFile": "Выбрать файл",
   "noFileChosen": "Файл не выбран",
   "filesSelected": "Выбрано файлов: {count}",
-  "resizePanels": "Изменить размер панелей"
+  "resizePanels": "Изменить размер панелей",
+  "search": "Поиск"
 }

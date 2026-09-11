@@ -27,5 +27,6 @@
   "chooseFile": "เลือกไฟล์",
   "noFileChosen": "ยังไม่ได้เลือกไฟล์",
   "filesSelected": "เลือกแล้ว {count} ไฟล์",
-  "resizePanels": "ปรับขนาดแผง"
+  "resizePanels": "ปรับขนาดแผง",
+  "search": "ค้นหา"
 }

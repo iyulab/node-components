@@ -27,5 +27,6 @@
   "chooseFile": "Elegir archivo",
   "noFileChosen": "Ningún archivo elegido",
   "filesSelected": "{count} archivos seleccionados",
-  "resizePanels": "Cambiar el tamaño de los paneles"
+  "resizePanels": "Cambiar el tamaño de los paneles",
+  "search": "Buscar"
 }

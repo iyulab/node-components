@@ -191,6 +191,7 @@ export class USelect extends UFormControlElement<string | string[]> {
           <u-icon lib="internal" name="search"></u-icon>
           <input
             type="text"
+            aria-label=${Locale.getValue('search')}
             @input=${this.handleSearchInput}
             @keydown=${this.handleSearchKeydown}
           />

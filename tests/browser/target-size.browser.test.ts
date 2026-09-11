@@ -182,7 +182,14 @@ interface Fixture {
 
 /** 실제로 재는 것 — 대표 픽스처와 그 안의 타깃. 한 태그에 상태가 여럿이면 배열로 둔다. */
 const FIXTURES: Record<string, Fixture | Fixture[]> = {
-  'u-button': { html: '<u-button>OK</u-button>' },
+  'u-button': [
+    { state: '기본', html: '<u-button>OK</u-button>' },
+    // `sm` 은 크기 축(font-size 12px — 여백·최소 높이가 em 이라 비례한다)이다. 달력의 «Today» 가 정확히 이
+    // 조합(`variant="ghost" size="sm"`)으로 그려진다 — 거기서 재지 않고 여기서 재는 이유는 `DL-536-1`.
+    { state: 'sm', html: '<u-button variant="ghost" size="sm">Today</u-button>' },
+    // 가장 좁은 `sm` — 아이콘만 든 버튼(글자 폭에 기대지 못한다).
+    { state: 'sm 아이콘', html: '<u-button size="sm" aria-label="Close"><u-icon name="close"></u-icon></u-button>' },
+  ],
   'u-icon-button': { html: '<u-icon-button name="close"></u-icon-button>' },
   'u-copy-button': { html: '<u-copy-button value="x"></u-copy-button>' },
   'u-checkbox': { html: '<u-checkbox></u-checkbox>' },
@@ -210,6 +217,22 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
         if (!popover.hasAttribute('open')) throw new Error('목록 팝오버가 열리지 않았다 — 닫힌 항목을 재면 미탐이다');
       },
       targets: () => Array.from(document.querySelectorAll('u-select > u-option')),
+    },
+    {
+      state: '검색',
+      // `searchable` 은 목록 팝오버 맨 위에 검색 입력을 그린다(섀도 안 `.search-input input`). 포인터를 받는 것은
+      // 감싼 `div` 가 아니라 `<input>` 이다 — div 의 여백을 눌러도 입력에 포커스가 가지 않는다. 열림 신호는 목록과 같다.
+      html: '<u-select searchable style="width:200px"><u-option value="a">A</u-option><u-option value="b">B</u-option></u-select>',
+      prepare: async (host) => {
+        const root = host.shadowRoot!;
+        (root.querySelector('.container') as HTMLElement).click();
+        const popover = root.querySelector('u-popover')!;
+        for (let i = 0; i < 50 && !popover.hasAttribute('open'); i++) {
+          await new Promise((r) => setTimeout(r, 20));
+        }
+        if (!popover.hasAttribute('open')) throw new Error('목록 팝오버가 열리지 않았다 — 닫힌 입력을 재면 미탐이다');
+      },
+      targets: () => [document.querySelector('u-select')!.shadowRoot!.querySelector('.search-input input')!],
     },
   ],
   'u-file-input': { html: '<u-file-input></u-file-input>' },
@@ -428,7 +451,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 25(29상태) · 미판정 0() · 대상아님 21');
+      ).toBe('판정 25(32상태) · 미판정 0() · 대상아님 21');
     });
   });
 
