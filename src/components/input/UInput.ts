@@ -206,7 +206,6 @@ export class UInput extends UFormControlElement<string> {
         placement="bottom-start"
         offset="1"
         @show=${this.handlePopoverShow}
-        @hide=${this.handlePopoverHide}
       >
         <slot @slotchange=${this.handleSlotChange}></slot>
       </u-popover>
@@ -298,10 +297,14 @@ export class UInput extends UFormControlElement<string> {
       (el): el is UOption => el instanceof UOption
     );
     this.setup(this.options);
-    if (this.options.length > 0) {
-      this.popoverEl?.show(this.containerEl!);
-    } else {
+    // 옵션이 도착했다고 목록을 여는 것은 **사용자가 이 입력에 있을 때**뿐이다 — 자동완성 결과가
+    // 타이핑 중에 들어오는 경우. 정적 옵션(마크업에 적힌 것)으로 처음 그려질 때 열면 사용자가
+    // 아무것도 하지 않았는데 목록이 페이지 위에 떠 있고, `trigger="focus"` 라 입력에 들렀다
+    // 나가기 전까지 닫히지도 않는다. 옵션이 비면 언제든 닫는다.
+    if (this.options.length === 0) {
       this.popoverEl?.hide();
+    } else if (this.matches(':focus-within')) {
+      this.popoverEl?.show(this.containerEl!);
     }
   };
 
@@ -478,13 +481,9 @@ export class UInput extends UFormControlElement<string> {
     }
   };
 
+  /** 옵션이 없으면 열지 않는다. ⚠닫힘은 막지 않는다 — 종전에는 같은 조건으로 `hide` 도 취소해,
+   *  열린 채 옵션이 모두 사라지면 **빈 팝오버가 닫히지 못하고** 페이지 위에 남았다. */
   private handlePopoverShow = (e: Event) => {
-    if (this.options.length === 0) {
-      e.preventDefault();
-    }
-  };
-
-  private handlePopoverHide = (e: Event) => {
     if (this.options.length === 0) {
       e.preventDefault();
     }

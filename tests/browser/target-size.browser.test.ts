@@ -194,7 +194,26 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   'u-copy-button': { html: '<u-copy-button value="x"></u-copy-button>' },
   'u-checkbox': { html: '<u-checkbox></u-checkbox>' },
   'u-switch': { html: '<u-switch></u-switch>' },
-  'u-input': { html: '<u-input style="width:200px"></u-input>' },
+  'u-input': [
+    { state: '기본', html: '<u-input style="width:200px"></u-input>' },
+    {
+      state: '목록',
+      // 기본 슬롯에 `u-option` 을 넣으면 콤보박스가 된다. 팝오버는 `trigger="focus"` 라 **포커스**가 연다(클릭이 아니다).
+      // 항목은 라이트 DOM 자식이라 닫혀도 DOM 에 있다 — `u-select [목록]` 과 같은 규칙: 팝오버 `open` 을 기다리고 안 열리면 던진다.
+      html: '<u-input style="width:200px"><u-option value="apple">Apple</u-option>' +
+        '<u-option value="banana">Banana</u-option><u-option value="cherry">Cherry</u-option></u-input>',
+      prepare: async (host) => {
+        const root = host.shadowRoot!;
+        (root.querySelector('input') as HTMLInputElement).focus();
+        const popover = root.querySelector('u-popover')!;
+        for (let i = 0; i < 50 && !popover.hasAttribute('open'); i++) {
+          await new Promise((r) => setTimeout(r, 20));
+        }
+        if (!popover.hasAttribute('open')) throw new Error('콤보박스 목록이 열리지 않았다 — 닫힌 항목을 재면 미탐이다');
+      },
+      targets: () => Array.from(document.querySelectorAll('u-input > u-option')),
+    },
+  ],
   'u-textarea': { html: '<u-textarea style="width:200px"></u-textarea>' },
   'u-select': [
     { state: '닫힘', html: '<u-select style="width:200px"><u-option value="a">A</u-option></u-select>' },
@@ -451,7 +470,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 25(32상태) · 미판정 0() · 대상아님 21');
+      ).toBe('판정 25(33상태) · 미판정 0() · 대상아님 21');
     });
   });
 

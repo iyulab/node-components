@@ -50,6 +50,14 @@
 
 ### Fixed
 
+- **An input with suggestion options opened its list on page load**, with focus elsewhere and
+  nothing typed — the documented markup (`u-option` children) did exactly that — and, because
+  the list opens and closes on focus, it stayed over the page until the field was visited and
+  left. The list now opens when options arrive only while the field has focus, which keeps
+  autocomplete (results that arrive while typing) working. And when every option went away
+  while the list was open, the empty list could not close — the component cancelled its own
+  `hide` whenever there were no options — and an empty box stayed over the page; it now closes.
+
 - **The select's search field (`searchable`) had no accessible name** — no label, no
   placeholder, no `aria-label` — so assistive technology announced an unnamed text field with
   no hint of what it filters (WCAG 4.1.2). It is now named by the new locale message `search`
