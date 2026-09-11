@@ -26,5 +26,6 @@
   "copied": "Đã sao chép",
   "chooseFile": "Chọn tệp",
   "noFileChosen": "Chưa chọn tệp nào",
-  "filesSelected": "Đã chọn {count} tệp"
+  "filesSelected": "Đã chọn {count} tệp",
+  "resizePanels": "Thay đổi kích thước bảng"
 }

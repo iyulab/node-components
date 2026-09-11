@@ -55,6 +55,22 @@ Resizable two-panel layout. Drag the splitter to adjust panel sizes.
 | `shift` | Dragging in progress |
 | `shift-end` | Drag ends |
 
+## Keyboard & Accessibility
+
+Each handle is a focusable `role="separator"` following the WAI-ARIA APG *Window Splitter*
+pattern. Its value is the share of the panel **before** it (`aria-valuenow`, `0` to the combined
+share of the two panels it sits between — `100` with two panels), and it is named by the
+`resizePanels` locale message.
+
+| Key | Effect |
+|-----|--------|
+| `←` / `→` (horizontal) · `↑` / `↓` (vertical) | Shrink / grow the panel before the handle by 5% |
+| `Home` / `End` | Give the panel before the handle its smallest / largest size |
+| `Enter` | Collapse the panel before the handle; press again to restore its previous size |
+
+In a right-to-left layout `←` still moves the handle left. A keyboard change fires `shift-start`,
+`shift` and `shift-end` in turn, so listening to `shift-end` alone covers both pointer and keyboard.
+
 ## CSS Custom Properties
 
 | Property | Description |

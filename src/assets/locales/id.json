@@ -26,5 +26,6 @@
   "copied": "Disalin",
   "chooseFile": "Pilih berkas",
   "noFileChosen": "Tidak ada berkas dipilih",
-  "filesSelected": "{count} berkas dipilih"
+  "filesSelected": "{count} berkas dipilih",
+  "resizePanels": "Ubah ukuran panel"
 }

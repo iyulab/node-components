@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import '../../src/components/split-panel/USplitPanel.js';
+import { Locale } from '../../src/utilities/Locale.js';
 
 /**
  * `u-split-panel` 분할 핸들 — **포인터 영역(24px)과 보이는 선(4px)을 가른다** (HD-55 ⑷).
@@ -167,5 +169,160 @@ describe('u-split-panel — 분할 핸들: 24px 포인터 영역 · 4px 보이�
     expect(Math.round(g.width)).toBe(4);
     expect(Math.abs(g.left + g.width / 2 - l.center), '막대가 선에서 어긋났다').toBeLessThan(0.5);
     up();
+  });
+});
+
+/**
+ * 키보드 경로 — WAI-ARIA APG «Window Splitter» (§D-59).
+ *
+ * 분할 크기를 바꾸는 경로가 포인터 드래그뿐이면 키보드 사용자는 레이아웃을 바꿀 수 없다
+ * (SC 2.1.1 · 드래그의 대체 수단 SC 2.5.7). 핸들은 명령형으로 만들어 Lit 템플릿 밖에 있으므로
+ * «비율이 바뀐 뒤에도 값이 따라오는가» 를 매번 함께 잰다.
+ */
+describe('u-split-panel — 키보드 경로 (APG Window Splitter, §D-59)', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    // ⚠브라우저 프로젝트의 기본 로케일은 OS 를 따른다(이 머신은 ko) — 이름 단언은 명시한다.
+    Locale.set('en');
+  });
+
+  const attrs = (el: HTMLElement) => ({
+    now: el.getAttribute('aria-valuenow'),
+    min: el.getAttribute('aria-valuemin'),
+    max: el.getAttribute('aria-valuemax'),
+  });
+
+  it('핸들은 이름·값·방향을 가진 포커스 가능한 separator 다', async () => {
+    const host = await mount('<u-split-panel style="width:300px;height:120px"><div>A</div><div>B</div></u-split-panel>');
+    const h = handle(host);
+    expect(h.getAttribute('role')).toBe('separator');
+    expect(h.tabIndex).toBe(0);
+    expect(h.getAttribute('aria-label')).toBe('Resize panels');
+    // 나란히 놓인 패널 사이의 선은 세로다.
+    expect(h.getAttribute('aria-orientation')).toBe('vertical');
+    expect(attrs(h)).toEqual({ now: '50', min: '0', max: '100' });
+    const reflect = h as HTMLElement & { ariaControlsElements?: Element[] | null };
+    if ('ariaControlsElements' in reflect) {
+      expect(reflect.ariaControlsElements?.[0]).toBe(panels(host)[0]);
+    }
+  });
+
+  it('세로 배치의 선은 가로다', async () => {
+    const host = await mount('<u-split-panel orientation="vertical" style="width:300px;height:300px"><div>A</div><div>B</div></u-split-panel>');
+    expect(handle(host).getAttribute('aria-orientation')).toBe('horizontal');
+  });
+
+  it('Tab 으로 도달하고 포커스 표시가 보인다', async () => {
+    // 탭 시작점을 고정한다 — 러너 문서의 포커스 위치에 기대지 않는다.
+    const host = await mount('<button id="before">before</button><u-split-panel style="width:300px;height:120px"><div>A</div><div>B</div></u-split-panel>');
+    (document.getElementById('before') as HTMLButtonElement).focus();
+    await userEvent.tab();
+    const h = handle(host);
+    expect(host.shadowRoot!.activeElement).toBe(h);
+    expect(getComputedStyle(h).outlineStyle, '키보드 포커스가 보이지 않는다').not.toBe('none');
+  });
+
+  it('←/→ 가 앞 패널을 줄이고 늘리며, 값과 레이아웃이 함께 따라온다', async () => {
+    const host = await mount('<u-split-panel style="width:300px;height:120px"><div>A</div><div>B</div></u-split-panel>');
+    const h = handle(host);
+    h.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(attrs(h).now).toBe('55');
+    expect(Math.abs(panels(host)[0].getBoundingClientRect().width - 276 * 0.55)).toBeLessThan(0.5);
+    await userEvent.keyboard('{ArrowLeft}{ArrowLeft}');
+    expect(attrs(h).now).toBe('45');
+    expect(host.getAttribute('ratio')).toBe('45,55');
+  });
+
+  it('세로 배치는 ↑/↓ 이고, 가로 방향키에는 반응하지 않는다', async () => {
+    const host = await mount('<u-split-panel orientation="vertical" style="width:300px;height:300px"><div>A</div><div>B</div></u-split-panel>');
+    const h = handle(host);
+    h.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(attrs(h).now).toBe('50');
+    await userEvent.keyboard('{ArrowDown}');
+    expect(attrs(h).now).toBe('55');
+    await userEvent.keyboard('{ArrowUp}{ArrowUp}');
+    expect(attrs(h).now).toBe('45');
+  });
+
+  it('Home/End 는 앞 패널을 최소/최대로 — 경계 밖으로 넘지 않는다', async () => {
+    const host = await mount('<u-split-panel style="width:300px;height:120px"><div>A</div><div>B</div></u-split-panel>');
+    const h = handle(host);
+    h.focus();
+    await userEvent.keyboard('{Home}');
+    expect(attrs(h).now).toBe('0');
+    expect(Math.round(panels(host)[0].getBoundingClientRect().width)).toBe(0);
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(attrs(h).now).toBe('0');
+    await userEvent.keyboard('{End}');
+    expect(attrs(h).now).toBe('100');
+    expect(Math.round(panels(host)[1].getBoundingClientRect().width)).toBe(0);
+  });
+
+  it('Enter 는 앞 패널을 접고, 다시 Enter 는 접기 전 크기로 되돌린다', async () => {
+    const host = await mount('<u-split-panel style="width:300px;height:120px"><div>A</div><div>B</div></u-split-panel>');
+    const h = handle(host);
+    h.focus();
+    await userEvent.keyboard('{ArrowRight}{ArrowRight}');
+    expect(attrs(h).now).toBe('60');
+    await userEvent.keyboard('{Enter}');
+    expect(attrs(h).now).toBe('0');
+    await userEvent.keyboard('{Enter}');
+    expect(attrs(h).now).toBe('60');
+  });
+
+  it('키 한 번이 shift-start · shift · shift-end 를 한 번씩 낸다 — 저장하는 소비자는 shift-end 만 들으면 된다', async () => {
+    const host = await mount('<u-split-panel style="width:300px;height:120px"><div>A</div><div>B</div></u-split-panel>');
+    const seen: string[] = [];
+    let last: number[] = [];
+    for (const name of ['shift-start', 'shift', 'shift-end']) {
+      host.addEventListener(name, (e) => {
+        seen.push(name);
+        if (name === 'shift-end') last = (e as CustomEvent<{ ratio: number[] }>).detail.ratio;
+      });
+    }
+    handle(host).focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(seen).toEqual(['shift-start', 'shift', 'shift-end']);
+    expect(last).toEqual([55, 45]);
+  });
+
+  it('패널이 셋이면 가운데 핸들의 최대값은 이웃한 두 패널의 몫의 합이다', async () => {
+    const host = await mount('<u-split-panel default-ratio="20,30,50" style="width:600px;height:120px"><div>A</div><div>B</div><div>C</div></u-split-panel>');
+    const hs = Array.from(host.shadowRoot!.querySelectorAll<HTMLElement>('[part~="splitter"]'));
+    expect(hs.map(attrs)).toEqual([
+      { now: '20', min: '0', max: '50' },
+      { now: '30', min: '0', max: '80' },
+    ]);
+    hs[1].focus();
+    await userEvent.keyboard('{End}');
+    // 가운데 핸들은 B·C 사이만 옮긴다 — A 는 그대로다.
+    expect(host.getAttribute('ratio')).toBe('20,80,0');
+    expect(attrs(hs[0])).toEqual({ now: '20', min: '0', max: '100' });
+  });
+
+  it('RTL 가로 배치에서도 «←» 는 선을 왼쪽으로 옮긴다 — 오른쪽에 있는 앞 패널이 커진다', async () => {
+    const host = await mount('<div dir="rtl"><u-split-panel style="width:300px;height:120px"><div>A</div><div>B</div></u-split-panel></div>');
+    const h = handle(host);
+    const before = h.getBoundingClientRect().left;
+    h.focus();
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(attrs(h).now).toBe('55');
+    expect(h.getBoundingClientRect().left).toBeLessThan(before);
+  });
+
+  it('disabled 면 포커스 순서에서 빠지고 키에 반응하지 않는다', async () => {
+    const host = await mount('<u-split-panel disabled style="width:300px;height:120px"><div>A</div><div>B</div></u-split-panel>');
+    const h = handle(host);
+    expect(h.tabIndex).toBe(-1);
+    expect(h.getAttribute('aria-disabled')).toBe('true');
+    h.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(attrs(h).now).toBe('50');
+    host.removeAttribute('disabled');
+    await (host as HTMLElement & { updateComplete: Promise<boolean> }).updateComplete;
+    expect(h.tabIndex).toBe(0);
+    expect(h.hasAttribute('aria-disabled')).toBe(false);
   });
 });

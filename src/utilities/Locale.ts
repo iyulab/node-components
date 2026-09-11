@@ -44,7 +44,8 @@ export type LocaleMessageKey =
   | 'copied'
   | 'chooseFile'
   | 'noFileChosen'
-  | 'filesSelected';
+  | 'filesSelected'
+  | 'resizePanels';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 

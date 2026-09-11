@@ -2,6 +2,7 @@ import { html, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
 import { arrayAttrConverter } from "../../utilities/converters.js";
+import { Locale } from "../../utilities/Locale.js";
 import { UElement } from "../UElement.js";
 import { styles } from "./USplitPanel.styles.js";
 import { type ShiftEventDetail } from "../../events/ShiftEvent.js";
@@ -21,7 +22,13 @@ import { type ShiftEventDetail } from "../../events/ShiftEvent.js";
  *
  * @event shift-start - 구분선 이동 시작 시 발생
  * @event shift - 구분선 이동 중 발생
- * @event shift-end - 구분선 이동 완료 시 발생
+ * @event shift-end - 구분선 이동 완료 시 발생 (포인터·키보드 공통)
+ *
+ * 키보드(WAI-ARIA APG «Window Splitter»): 분할 핸들은 `role="separator"` 로 포커스를 받는다.
+ * 방향키(가로 배치는 ←/→, 세로 배치는 ↑/↓)로 앞 패널을 줄이거나 늘리고, Home/End 는 앞 패널을
+ * 최소/최대로, Enter 는 앞 패널을 접거나 접기 전 크기로 되돌린다. 키 입력 한 번은 하나의 완결된
+ * 이동이라 `shift-start`·`shift`·`shift-end` 를 연달아 낸다 — 비율을 저장하는 소비자는 포인터든
+ * 키보드든 `shift-end` 하나만 들으면 된다.
  */
 @customElement('u-split-panel')
 export class USplitPanel extends UElement {
@@ -53,6 +60,8 @@ export class USplitPanel extends UElement {
 
   private panels: HTMLElement[] = [];
   private splitter?: Node;
+  /** Enter 로 접은 핸들별 «접기 전 앞 패널 비율» — 다시 Enter 를 누르면 여기로 돌아간다. */
+  private collapsedFrom = new Map<number, number>();
   private dragState = {
     index: -1,
     startPoint: 0,
@@ -105,6 +114,8 @@ export class USplitPanel extends UElement {
 
     if (['orientation','defaultRatio','ratio'].some(k => changedProperties.has(k))) {
       this.updatePanelLayout();
+    } else if (changedProperties.has('disabled')) {
+      this.syncSplitterAria();
     }
   }
 
@@ -144,6 +155,7 @@ export class USplitPanel extends UElement {
       const splitter = this.createSplitter(i);
       root.insertBefore(splitter, ref);
     }
+    this.syncSplitterAria();
   }
 
   private createSplitter(index: number) {
@@ -157,10 +169,92 @@ export class USplitPanel extends UElement {
       el.appendChild(this.splitter.cloneNode(true));
     }
 
+    el.setAttribute('role', 'separator');
     el.addEventListener('pointerdown', this.handlePointerDown);
     el.addEventListener('dblclick', this.handleDblClick);
+    el.addEventListener('keydown', this.handleKeyDown);
 
     return el;
+  }
+
+  /**
+   * 분할 핸들의 접근성 상태 — APG «Window Splitter». 핸들은 명령형으로 만들어 Lit 템플릿 밖에
+   * 있으므로, 비율·방향·비활성이 바뀔 때마다 여기서 다시 쓴다.
+   *
+   * 값은 **앞 패널(primary pane)의 몫**이다. 패널이 셋 이상이면 한 핸들은 이웃한 두 패널 사이만
+   * 옮기므로 최대값은 100 이 아니라 그 두 패널의 몫의 합이다.
+   */
+  private syncSplitterAria() {
+    const root = this.renderRoot;
+    if (!root) return;
+    const p = this.percentages;
+    const round = (v: number) => String(Math.round(v * 10) / 10);
+    const label = Locale.getValue('resizePanels');
+    root.querySelectorAll<HTMLElement>('.splitter').forEach((el) => {
+      const i = Number(el.dataset.index);
+      el.setAttribute('aria-valuenow', round(p[i] ?? 0));
+      el.setAttribute('aria-valuemin', '0');
+      el.setAttribute('aria-valuemax', round((p[i] ?? 0) + (p[i + 1] ?? 0)));
+      // 분할선은 패널 배치와 수직이다 — 나란히(horizontal) 놓인 패널 사이의 선은 세로다.
+      el.setAttribute('aria-orientation', this.orientation === 'horizontal' ? 'vertical' : 'horizontal');
+      el.setAttribute('aria-label', label);
+      el.tabIndex = this.disabled ? -1 : 0;
+      if (this.disabled) el.setAttribute('aria-disabled', 'true');
+      else el.removeAttribute('aria-disabled');
+      // `aria-controls` 의 IDREF 는 섀도 경계를 넘지 못한다 — 요소 참조 반사로 앞 패널을 가리킨다.
+      const reflect = el as HTMLElement & { ariaControlsElements?: Element[] | null };
+      if ('ariaControlsElements' in reflect && this.panels[i]) reflect.ariaControlsElements = [this.panels[i]];
+    });
+  }
+
+  /** 방향키 한 번이 옮기는 앞 패널의 몫(나머지 공간 기준 %). */
+  private static readonly KEY_STEP = 5;
+
+  private handleKeyDown = (e: KeyboardEvent) => {
+    if (this.disabled) return;
+    const i = Number((e.currentTarget as HTMLElement).dataset.index);
+    const p = this.percentages;
+    if (p[i] === undefined || p[i + 1] === undefined) return;
+    const pair = p[i] + p[i + 1];
+    const horizontal = this.orientation === 'horizontal';
+    // RTL 가로 배치에서는 앞 패널이 오른쪽에 있다 — «←» 는 여전히 «선을 왼쪽으로» 다(APG).
+    const rtl = horizontal && getComputedStyle(this).direction === 'rtl';
+    const shrink = horizontal ? (rtl ? 'ArrowRight' : 'ArrowLeft') : 'ArrowUp';
+    const grow = horizontal ? (rtl ? 'ArrowLeft' : 'ArrowRight') : 'ArrowDown';
+
+    let a: number;
+    if (e.key === shrink) a = p[i] - USplitPanel.KEY_STEP;
+    else if (e.key === grow) a = p[i] + USplitPanel.KEY_STEP;
+    else if (e.key === 'Home') a = 0;
+    else if (e.key === 'End') a = pair;
+    else if (e.key === 'Enter') {
+      const restore = this.collapsedFrom.get(i);
+      if (p[i] > 0) {
+        this.collapsedFrom.set(i, p[i]);
+        a = 0;
+      } else {
+        a = restore ?? pair / 2;
+        this.collapsedFrom.delete(i);
+      }
+    } else return;
+
+    e.preventDefault();
+    // 키 입력은 깨끗한 값에 떨어져야 한다 — 5 씩 오르내리면 부동소수 오차가 쌓여 `ratio` 에
+    // `45.000000000000014` 같은 값이 반영(reflect)된다.
+    a = Math.round(Math.min(pair, Math.max(0, a)) * 1e6) / 1e6;
+    if (Math.abs(a - p[i]) < 1e-6) return;
+    if (e.key !== 'Enter') this.collapsedFrom.delete(i);
+
+    const next = [...p];
+    next[i] = a;
+    next[i + 1] = pair - a;
+    // 이벤트명은 리터럴로 둔다 — React 래퍼의 이벤트 수집이 소스를 정적으로 읽는다.
+    const init = (ratio: number[]) => ({ bubbles: false, composed: false, detail: { index: i, ratio: [...ratio] } });
+    this.fire<ShiftEventDetail>('shift-start', init(p));
+    this.ratio = next;
+    this.updatePanelLayout();
+    this.fire<ShiftEventDetail>('shift', init(next));
+    this.fire<ShiftEventDetail>('shift-end', init(next));
   }
 
   private updatePanelLayout() {
@@ -177,6 +271,7 @@ export class USplitPanel extends UElement {
       panel.style.flexShrink = '0';
       panel.style.overflow = 'auto';
     });
+    this.syncSplitterAria();
   }
 
   private handleDblClick = () => {

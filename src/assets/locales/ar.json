@@ -26,5 +26,6 @@
   "copied": "تم النسخ",
   "chooseFile": "اختر ملفًا",
   "noFileChosen": "لم يتم اختيار أي ملف",
-  "filesSelected": "تم اختيار {count} ملفات"
+  "filesSelected": "تم اختيار {count} ملفات",
+  "resizePanels": "تغيير حجم اللوحات"
 }

@@ -54,8 +54,14 @@ export const styles = css`
   .splitter:hover::before {
     background-color: var(--splitter-color-hover);
   }
-  .splitter:active::before {
+  .splitter:active::before,
+  .splitter:focus-visible::before {
     background-color: var(--splitter-color-active);
+  }
+  /* The handle spans the host's full cross axis and the host clips overflow, so the base
+     focus ring (drawn 2px outside) would lose two of its sides. Draw it inside the box. */
+  .splitter:focus-visible {
+    outline-offset: -2px;
   }
   :host([orientation="horizontal"]) .splitter {
     width: var(--_splitter-box);

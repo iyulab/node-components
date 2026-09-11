@@ -32,6 +32,14 @@
 
 ### Added
 
+- **The split panel can be resized from the keyboard.** Each handle is now a focusable
+  `role="separator"` (WAI-ARIA APG *Window Splitter*) with a name, an orientation and a value —
+  the share of the panel before it. The arrow keys along the split axis move it by 5%, `Home` and
+  `End` take that panel to its smallest and largest size, and `Enter` collapses it or restores it.
+  Before, dragging was the only way to change the layout (WCAG 2.1.1, 2.5.7). A keyboard change
+  fires `shift-start`, `shift` and `shift-end`, so code that saves the ratio on `shift-end`
+  picks it up unchanged. New locale message `resizePanels` in all fourteen built-in locales.
+
 - **`--u-select-display` / `--u-select-width` and `--u-textarea-display` / `--u-textarea-width`
   on the host**, matching the hooks `u-input`, `u-date-picker` and `u-file-input` already
   expose. Defaults are unchanged, so this is additive: a consumer who sets nothing sees what

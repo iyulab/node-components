@@ -26,5 +26,6 @@
   "copied": "Copiado",
   "chooseFile": "Escolher arquivo",
   "noFileChosen": "Nenhum arquivo escolhido",
-  "filesSelected": "{count} arquivos selecionados"
+  "filesSelected": "{count} arquivos selecionados",
+  "resizePanels": "Redimensionar painéis"
 }

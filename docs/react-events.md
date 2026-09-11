@@ -151,7 +151,7 @@ import { UDialog } from '@iyulab/components/react';
 |---|---|---|---|
 | `onShiftStart` | `shift-start` | `ShiftEventDetail` | 구분선 이동 시작 시 발생 |
 | `onShift` | `shift` | `ShiftEventDetail` | 구분선 이동 중 발생 |
-| `onShiftEnd` | `shift-end` | `ShiftEventDetail` | 구분선 이동 완료 시 발생 |
+| `onShiftEnd` | `shift-end` | `ShiftEventDetail` | 구분선 이동 완료 시 발생 (포인터·키보드 공통) |
 
 ## `<u-switch>`
 
