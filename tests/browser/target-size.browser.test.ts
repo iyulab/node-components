@@ -155,10 +155,22 @@ interface Fixture {
    * cycle-484 가 어렵게 올린 그 치수를 지키는 장치가 없었다.
    */
   spacingIsOurs?: true;
+  /**
+   * 🔴**타깃이 «열린 상태»에서만 렌더되면 재기 전에 그 상태를 만든다**(`HD-46` — `chat-components`
+   * 게이트가 먼저 들였다). 사용자와 같은 경로(클릭·키)로 연다 — 내부 상태를 직접 세우면 «그 경로로
+   * 열리는가»가 빠진다. 열리지 않으면 «타깃 0개» 단언이 빨강을 낸다(조용히 통과하지 않는다).
+   */
+  prepare?: (host: Element) => Promise<void>;
+  /**
+   * 한 태그를 여러 상태로 잴 때 그 상태의 이름(테스트 이름에 붙는다).
+   * 🔴**커버리지는 태그 수와 상태 수를 함께 센다** — 태그만 세면 닫힌 상태 하나만 재도 «판정» 이
+   * 되어, 열린 상태의 타깃이 빠진 것을 아무것도 말하지 않는다.
+   */
+  state?: string;
 }
 
-/** 실제로 재는 것 — 대표 픽스처와 그 안의 타깃. */
-const FIXTURES: Record<string, Fixture> = {
+/** 실제로 재는 것 — 대표 픽스처와 그 안의 타깃. 한 태그에 상태가 여럿이면 배열로 둔다. */
+const FIXTURES: Record<string, Fixture | Fixture[]> = {
   'u-button': { html: '<u-button>OK</u-button>' },
   'u-icon-button': { html: '<u-icon-button name="close"></u-icon-button>' },
   'u-copy-button': { html: '<u-copy-button value="x"></u-copy-button>' },
@@ -168,8 +180,31 @@ const FIXTURES: Record<string, Fixture> = {
   'u-textarea': { html: '<u-textarea style="width:200px"></u-textarea>' },
   'u-select': { html: '<u-select style="width:200px"><u-option value="a">A</u-option></u-select>' },
   'u-file-input': { html: '<u-file-input></u-file-input>' },
-  'u-date-picker': { html: '<u-date-picker></u-date-picker>' },
-  'u-expander': { html: '<u-expander header="More">body</u-expander>' },
+  'u-date-picker': [
+    { state: '닫힘', html: '<u-date-picker></u-date-picker>' },
+    {
+      state: '달력',
+      // 달력(날짜 버튼 · 이전/다음 달)은 `.container` 를 눌러 팝오버가 `show` 를 낸 뒤에만 렌더된다.
+      // 팝오버의 열림은 비동기일 수 있어(지연 타이머) 고정 대기가 아니라 «날짜 버튼이 나타날 때까지»
+      // 짧게 기다린다 — 끝내 안 나타나면 «타깃 0개» 단언이 빨강을 낸다.
+      // ⚠바닥의 «Today»(`u-button size="sm"`)는 재지 않는다 — 그 치수는 `u-button` 의 `sm` 계약이라
+      //   그쪽 픽스처의 상태로 재야 한다. 여기서 재면 `u-button` 한 곳의 미달이 달력 전체를 핀에 묶는다.
+      html: '<u-date-picker></u-date-picker>',
+      prepare: async (host) => {
+        const root = host.shadowRoot!;
+        (root.querySelector('.container') as HTMLElement).click();
+        for (let i = 0; i < 50 && !root.querySelector('button.day'); i++) {
+          await new Promise((r) => setTimeout(r, 20));
+        }
+      },
+      targets: () => Array.from(
+        document.querySelector('u-date-picker')!.shadowRoot!
+          .querySelectorAll('button.day, .calendar-header u-icon-button'),
+      ),
+    },
+  ],
+  // ⚠제목 속성은 `label` 이다 — `header` 는 슬롯 이름이라, 종전 `header="More"` 는 **빈 제목**을 재고 있었다.
+  'u-expander': { html: '<u-expander label="More">body</u-expander>' },
   'u-tab': { html: '<u-tab-panel><u-tab>One</u-tab><u-tab>Two</u-tab></u-tab-panel>' },
   'u-menu-item': { html: '<u-menu><u-menu-item>Item</u-menu-item></u-menu>' },
   'u-tree-item': { html: '<u-tree><u-tree-item>Node</u-tree-item></u-tree>' },
@@ -302,20 +337,26 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
 
     it('📌커버리지를 보고한다 — 「미판정」은 통과가 아니다', () => {
       const judged = Object.keys(FIXTURES).length;
+      // 🔴상태 수를 함께 센다 — 태그만 세면 한 태그의 열린 상태를 빠뜨려도 이 줄이 변하지 않는다.
+      const states = Object.values(FIXTURES).flat().length;
       const unjudged = [...NEEDS_FIXTURE].sort();
       // ⚠이 단언은 «미판정이 늘지 않았는가»를 지킨다. 픽스처를 쓰면 이 수가 줄고
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
-        `판정 ${judged} · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 24 · 미판정 0() · 대상아님 22');
+        `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
+      ).toBe('판정 24(25상태) · 미판정 0() · 대상아님 22');
     });
   });
 
   describe('실측 — 픽스처를 가진 모든 타깃', () => {
-    for (const [tag, fixture] of Object.entries(FIXTURES)) {
+    const CASES = Object.entries(FIXTURES).flatMap(([tag, entry]) =>
+      (Array.isArray(entry) ? entry : [entry]).map((fixture) => ({ tag, fixture })));
+    for (const { tag, fixture } of CASES) {
       const pinned = UNDERSIZED_PINS.has(tag);
-      it(`${tag}: ${pinned ? '📌미달로 «핀»돼 있다 (사람 판단 대기)' : 'SC 2.5.8 을 만족한다'}`, async () => {
+      const name = `${tag}${fixture.state ? ` [${fixture.state}]` : ''}`;
+      it(`${name}: ${pinned ? '📌미달로 «핀»돼 있다 (사람 판단 대기)' : 'SC 2.5.8 을 만족한다'}`, async () => {
         await mount(fixture.html);
+        if (fixture.prepare) await fixture.prepare(document.querySelector(tag)!);
         const targets = (fixture.targets ? fixture.targets(tag) : [document.querySelector(tag)!])
           .map(measure);
         expect(targets.length, '타깃을 하나도 못 찾으면 이 판정은 무의미하다').toBeGreaterThan(0);
