@@ -3,6 +3,7 @@ import { customElement, property, query } from "lit/decorators.js";
 
 import { arrayAttrConverter } from "../../utilities/converters.js";
 import { Locale } from "../../utilities/Locale.js";
+import { devWarnOnce } from "../../utilities/devWarning.js";
 import { UElement } from "../UElement.js";
 import { styles } from "./USplitPanel.styles.js";
 import { type ShiftEventDetail } from "../../events/ShiftEvent.js";
@@ -136,6 +137,29 @@ export class USplitPanel extends UElement {
       .filter((el): el is HTMLElement => el instanceof HTMLElement);
     this.appendSplitters();
     this.updatePanelLayout();
+    this.warnIfCollapsed();
+  }
+
+  /**
+   * 호스트에 높이(또는 세로 분할이면 폭) 제약이 없으면 이 컴포넌트는 손잡이 두께로 붕괴한다 —
+   * 실측 18px(cycle-565). 호스트가 `overflow: hidden` 이라 패널 내용에 닿을 방법이 없고,
+   * 오류도 없다. 첫 배치 뒤 한 번 재서 개발 모드에서 알린다(HD-61 ⒝).
+   */
+  private warnIfCollapsed() {
+    if (!import.meta.env?.DEV || this.panels.length === 0 || !this.isConnected) return;
+    // slotchange 는 렌더 뒤에 오므로 여기서 재면 배치가 서 있다(getBoundingClientRect 가 레이아웃을 강제한다).
+    {
+      // 호스트에 높이가 없으면 패널의 높이 선언은 지워지고(updatePanelLayout) 호스트는 패널 «내용의
+      // 한 줄» 높이로 내려앉는다 — 실측 18px(cycle-565). 그 상태에서는 패널 안의 height:100% 가
+      // 전부 0 이 되고 호스트가 overflow 를 자른다. «분할 패널이 한 줄보다 낮다» 를 신호로 삼는다 —
+      // 임계값은 규칙이라 손으로 쓴다(한 줄 ≈ 18px · 여유를 둬 40px).
+      const height = this.getBoundingClientRect().height;
+      if (height >= 40) return;
+      devWarnOnce(`split-panel:${this.id || 'height'}`,
+        `u-split-panel is only ${Math.round(height)}px tall — it has no height of its own (its height: 100% found no sized parent), ` +
+        'so its panels take one line of content and anything sized 100% inside them collapses to nothing. ' +
+        'Give the host or its parent a height (e.g. height: 400px, or flex: 1 1 auto inside a sized parent).');
+    }
   }
 
   private handleSplitterSlotChange = (e: Event) => {

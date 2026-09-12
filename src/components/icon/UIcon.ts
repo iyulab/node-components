@@ -5,6 +5,7 @@ import { until } from "lit/directives/until.js";
 
 import { UElement } from "../UElement.js";
 import { getDefaultBaseUrl, IconRegistry } from "../../utilities/icons.js";
+import { devWarnOnce } from "../../utilities/devWarning.js";
 import { styles } from "./UIcon.styles.js";
 
 export type IconLibrary = (string & {})
@@ -61,15 +62,27 @@ export class UIcon extends UElement {
 
   private async resolve(name: string): Promise<string | undefined> {
     let html: string | undefined;
+    let where: string;
     if (this.lib) {
       html = await IconRegistry.resolve(this.lib, name);
+      where = IconRegistry.has(this.lib) ? `lib "${this.lib}"` : `lib "${this.lib}" (not registered)`;
     } else {
       const baseUrl = getDefaultBaseUrl();
       const url = `${baseUrl.replace(/\/$/, '')}/${name}.svg`;
       html = await IconRegistry.resolveUrl(url);
+      where = `${url} (no lib given — the default base URL)`;
     }
 
-    return this.sanitize(html);
+    const svg = this.sanitize(html);
+    // 해석 실패는 오류가 아니라 «조용한 폴백» 이다 — 30개 메뉴가 한꺼번에 같은 큐브로 그려져도
+    // 신호가 0 이었다(docket #265 R3). 이름당 한 번, 개발 모드에서만 알린다.
+    if (svg === undefined) {
+      devWarnOnce(`icon:${this.lib ?? ''}:${name}`,
+        `u-icon "${name}" did not resolve from ${where} — ${this.fallback ? 'drawing the fallback instead' : 'drawing nothing'}. ` +
+        'Check the name, set lib="…" to the library that has it, or register one with IconRegistry.register(). ' +
+        'Pick one icon set and name it on every icon; sets do not mix.');
+    }
+    return svg;
   }
 
   private sanitize(html?: string): string | undefined {

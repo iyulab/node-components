@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.40.1] - 2026-09-13
+
+### Added
+
+- **Development-mode warnings for two states that were silently wrong.** Both are one-shot,
+  namespaced `[@iyulab/components]`, and compiled out of production builds (`import.meta.env.DEV`).
+  - `u-icon`: when a `name` does not resolve (404, unknown `lib`, unparsable SVG) the icon still
+    draws its `fallback` — that is intended — but now says so once per name, with what to check.
+    Thirty menu items rendering the same cube with no signal is how this was found.
+  - `u-split-panel`: when the host has no height of its own it sits at one line of content (18px
+    measured) and anything sized 100% inside its panels collapses; it now says so once and tells
+    you to size the host or its parent.
+
 ## [1.40.0] - 2026-09-10
 
 ### Changed
