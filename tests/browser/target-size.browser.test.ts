@@ -252,16 +252,9 @@ const NEEDS_FIXTURE = new Set<string>([]);
  * 패널마다 `overflow: auto` 라 스크롤바가 핸들에 붙어 있다. 두 축은
  * `split-panel-handle.browser.test.ts` 가 잰다.
  */
-const UNDERSIZED_PINS = new Set<string>([
-  /* 📌`u-input` 접미 아이콘 넷(cycle-550) — 보이는 간격을 바꾸지 않고는 24 를 만들 수 없는 배치들이다(`HD-57`).
-     ⑴ 나란히 놓인 둘은 사이 간격이 0.25em 하나뿐이라, 둘 다 넓히면 서로의 영역을 먹는다(중심 간격 20px — 간격
-     예외도 서지 않는다) ⑵ 스테퍼는 글리프가 0.85em 라 더 좁다 ⑶ 좌우 여백이 0 인 변형은 맨 뒤 아이콘이 오른쪽으로
-     넓힐 자리가 없다. 셋 다 해소하려면 글리프가 움직이거나 간격이 늘어난다 ⇒ 시각 계약 변경. */
-  'u-input [비밀번호+지우기]',
-  'u-input [숫자]',
-  'u-input [지우기 · 밑줄]',
-  'u-input [지우기 · 테두리 없음]',
-]);
+/* ✅**`u-input` 접미 아이콘 넷의 핀은 `HD-57` ⒜ 채택으로 해소됐다**(2026-09-12) — 아이콘 사이 간격 0.25→0.5em ·
+   스테퍼 글리프 0.85→1em · 좌우 여백 0 인 변형의 컨테이너에 오른쪽 0.25em. 이제 모든 접미 아이콘이 24×24 다. */
+const UNDERSIZED_PINS = new Set<string>([]);
 
 interface Fixture {
   html: string;
@@ -824,9 +817,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
 
   describe('📌미달 재고 — 사람 판단 대기 (§C-A 의 「위반 확정」 자리)', () => {
     it('핀 목록이 실제 미달과 일치한다 — 낡으면 위 per-tag 단언이 먼저 빨개진다', () => {
-      expect([...UNDERSIZED_PINS].sort()).toEqual([
-        'u-input [비밀번호+지우기]', 'u-input [숫자]', 'u-input [지우기 · 밑줄]', 'u-input [지우기 · 테두리 없음]',
-      ].sort());
+      expect([...UNDERSIZED_PINS].sort()).toEqual([]);
     });
   });
 

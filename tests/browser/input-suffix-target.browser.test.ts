@@ -12,7 +12,10 @@ import '../../src/components/option/UOption.js';
  * 실제로 눌리는지는 **hit-test** 로 따로 잰다.
  */
 
-const GAP = 4; // 0.25em @ 16px — 접미 아이콘 사이·입력과의 간격
+const GAP = 4; // 0.25em @ 16px — `u-select` 의 접미 아이콘 간격(지우기 ↔ 펼침 화살표)
+/** 0.5em @ 16px — `u-input` 의 접미 아이콘 간격. 나란히 놓인 둘이 **둘 다** 24 를 받으려면 사이 간격이 0.5em 이어야
+ *  한다(각자 절반씩 가져간다 — 사람 결정 `HD-57` ⒜). 입력과 첫 아이콘 사이도 같은 간격이다. */
+const INPUT_GAP = 8;
 
 function rect(el: Element) {
   return el.getBoundingClientRect();
@@ -65,7 +68,7 @@ function edgesHit(host: Element, el: Element): boolean[] {
   ];
 }
 
-describe('u-input 접미 아이콘 — 받는 영역만 넓히고 보이는 것은 그대로', () => {
+describe('u-input 접미 아이콘 — 모두 24×24 · 글리프는 1em', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });
@@ -81,14 +84,14 @@ describe('u-input 접미 아이콘 — 받는 영역만 넓히고 보이는 것�
     expect(edgesHit(host, clear), '좌·우·위·아래').toEqual([true, true, true, true]);
   });
 
-  it('지우기: 글리프 위치 불변 — 입력과 0.25em 떨어져 컨테이너 안쪽 끝에 붙고, 영역은 입력과 겹치지 않는다', async () => {
+  it('지우기: 글리프가 입력과 0.5em 떨어져 컨테이너 안쪽 끝에 붙고, 영역은 입력과 겹치지 않는다', async () => {
     await mount('<u-input clearable value="abc" style="width:200px"></u-input>');
     const host = document.querySelector('u-input')!;
     const [clear] = buttons(host);
     const input = rect(shadow(host).querySelector('input')!);
     const container = shadow(host).querySelector('.container')!;
     const g = glyph(clear);
-    expect(Math.abs(g.left - input.right - GAP)).toBeLessThan(0.5);
+    expect(Math.abs(g.left - input.right - INPUT_GAP)).toBeLessThan(0.5);
     expect(Math.abs(g.right - contentRight(container))).toBeLessThan(0.5);
     expect(rect(clear).left).toBeGreaterThanOrEqual(input.right - 0.5);
   });
@@ -120,7 +123,7 @@ describe('u-input 접미 아이콘 — 받는 영역만 넓히고 보이는 것�
     expect(ha).toBe(hb);
   });
 
-  it('비밀번호 토글 혼자면 맨 뒤라 24×24 이고 네 가장자리가 눌린다', async () => {
+  it('비밀번호 토글 혼자면 24×24 이고 네 가장자리가 눌린다', async () => {
     await mount('<u-input type="password" value="abc" style="width:200px"></u-input>');
     const host = document.querySelector('u-input')!;
     const [toggle] = buttons(host);
@@ -129,34 +132,38 @@ describe('u-input 접미 아이콘 — 받는 영역만 넓히고 보이는 것�
     expect(edgesHit(host, toggle)).toEqual([true, true, true, true]);
   });
 
-  it('🔴나란히 놓인 둘(토글 + 지우기)은 서로의 영역을 먹지 않고, 글리프 간격도 그대로다', async () => {
+  it('🔴나란히 놓인 둘(토글 + 지우기)은 **둘 다** 24 이고 서로의 영역을 먹지 않는다', async () => {
     await mount('<u-input type="password" clearable value="abc" style="width:200px"></u-input>');
     const host = document.querySelector('u-input')!;
     const [toggle, clear] = buttons(host);
     expect(rect(toggle).right).toBeLessThanOrEqual(rect(clear).left + 0.5);
-    expect(Math.abs(glyph(clear).left - glyph(toggle).right - GAP)).toBeLessThan(0.5);
-    // 맨 뒤(지우기)만 오른쪽으로 넓어진다.
+    expect(Math.abs(glyph(clear).left - glyph(toggle).right - INPUT_GAP)).toBeLessThan(0.5);
     expect(Math.round(rect(clear).width)).toBe(24);
-    expect(Math.round(rect(toggle).width)).toBe(20);
+    expect(Math.round(rect(toggle).width)).toBe(24);
+    expect(edgesHit(host, toggle), '토글 좌·우·위·아래').toEqual([true, true, true, true]);
   });
 
-  it('🔴스테퍼 둘도 서로 겹치지 않고, 글리프(0.85em)와 간격은 그대로다', async () => {
+  it('🔴스테퍼 둘도 24 이고 서로 겹치지 않는다 — 글리프는 다른 아이콘과 같은 1em 이다', async () => {
     await mount('<u-input type="number" value="1" style="width:200px"></u-input>');
     const host = document.querySelector('u-input')!;
     const [minus, plus] = buttons(host);
     expect(rect(minus).right).toBeLessThanOrEqual(rect(plus).left + 0.5);
-    expect(Math.round(glyph(minus).width * 10) / 10).toBe(13.6);
-    expect(Math.abs(glyph(plus).left - glyph(minus).right - GAP * 0.85)).toBeLessThan(0.5);
+    expect(Math.round(rect(minus).width)).toBe(24);
+    expect(Math.round(rect(plus).width)).toBe(24);
+    expect(Math.round(glyph(minus).width)).toBe(16);
+    expect(Math.abs(glyph(plus).left - glyph(minus).right - INPUT_GAP)).toBeLessThan(0.5);
   });
 
-  it('⚪NEGATIVE — 좌우 여백이 0 인 변형은 오른쪽으로 넓히지 않는다(넓히면 잘려 «거짓 24» 가 된다)', async () => {
+  it('🔴좌우 여백이 0 인 변형도 24 다 — 컨테이너가 오른쪽에 0.25em 을 내준다', async () => {
     for (const variant of ['underlined', 'borderless']) {
       await mount(`<u-input variant="${variant}" clearable value="abc" style="width:200px"></u-input>`);
       const host = document.querySelector('u-input')!;
       const [clear] = buttons(host);
       const container = shadow(host).querySelector('.container')!;
-      expect(rect(clear).right, variant).toBeLessThanOrEqual(contentRight(container) + 0.5);
+      expect(`${Math.round(rect(clear).width)}x${Math.round(rect(clear).height)}`, variant).toBe('24x24');
       expect(Math.round(glyph(clear).width), variant).toBe(16);
+      // 넓힌 영역이 컨테이너(테두리 상자) 밖으로 나가면 overflow 에 잘려 «거짓 24» 가 된다.
+      expect(rect(clear).right, variant).toBeLessThanOrEqual(rect(container).right + 0.5);
       expect(edgesHit(host, clear), variant).toEqual([true, true, true, true]);
     }
   });

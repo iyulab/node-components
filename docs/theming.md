@@ -461,6 +461,24 @@ look different depending on the language. Apply `text-transform` at the site tha
 
 ---
 
+## Density — `--u-density`
+
+`--u-density` is the **base font size of form controls**, not a scale factor. It defaults to `14px`
+and is read by `u-button` (at its default size), `u-button-group`, and `u-form` — and because
+`u-form` sets it as its own `font-size`, every control inside the form inherits it. Set it on an
+ancestor to make a screen denser or roomier:
+
+```css
+.app-shell { --u-density: 15px; }   /* roomier */
+```
+
+> ⚠ **Values below `14px` are not supported.** Control paddings and icon hit areas are sized in `em`,
+> so they shrink with this token: at `13px` ten targets in this package fall under the 24×24 CSS px
+> required by WCAG 2.2 SC 2.5.8 (checkbox, select trigger, the select's search field, rating stars,
+> …), and at `12px` twelve do. The 24px guarantee this package makes holds at `14px` and above. If
+> you need a denser grid, scale the data surface instead — `@iyulab/data-components` has its own
+> `--dc-font-size` for table text, which leaves the controls alone.
+
 ## Styling Internals with `::part()`
 
 Tokens cover color and typography globally. For per-component presentation that is **an application design decision rather than a library default**, style the exposed CSS parts directly.

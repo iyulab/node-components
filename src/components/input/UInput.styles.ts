@@ -155,7 +155,8 @@ export const styles = css`
     margin-left: 0.25em;
   }
 
-  /* 아이콘 영역 (clear, password toggle 등) */
+  /* 아이콘 영역 (clear, password toggle 등). ⚠포인터를 받는 아이콘(role=button)의 간격은 이 값이 아니라 아래
+     [role="button"] 규칙이 정한다 — 그 규칙의 margin 단축 선언이 이 margin-left 를 덮는다. */
   .suffix-item {
     margin-left: 0.25em;
     color: var(--u-icon-color, #616161);
@@ -169,36 +170,27 @@ export const styles = css`
   .suffix-item:active {
     color: var(--u-icon-color-active, #1565C0);
   }
-  .stepper-btn {
-    font-size: 0.85em;
-  }
   .stepper-btn[aria-disabled="true"] {
     opacity: 0.35;
     pointer-events: none;
   }
 
-  /* 포인터를 받는 접미 아이콘(지우기 · 비밀번호 토글 · 스테퍼) — 글리프는 1em 그대로, 받는 영역만 넓힌다
-     (WCAG 2.2 SC 2.5.8). 왼쪽은 자기 앞 간격(0.25em)을 여백 대신 패딩으로 쓴다 — 글리프가 움직이지 않고
-     앞 요소와 맞닿되 겹치지 않는다. 오른쪽은 «맨 뒤» 아이콘만 컨테이너 여백 쪽으로 0.25em 넓힌다(음수 여백이라
-     배치 불변) — 앞 아이콘이 오른쪽으로 넓히면 다음 아이콘이 받는 영역과 겹친다.
+  /* 포인터를 받는 접미 아이콘(지우기 · 비밀번호 토글 · 스테퍼) — 글리프는 1em 그대로, 받는 영역은 **모두** 24px(1.5em)다
+     (WCAG 2.2 SC 2.5.8 · 사람 결정 HD-57 ⒜). 기전: 좌우 0.25em 패딩으로 1em 글리프를 1.5em(24px) 상자로 감싸고,
+     왼쪽 여백 0.25em · 오른쪽 여백 -0.25em 으로 이웃과 **맞닿되 겹치지 않게** 놓는다 — 그 결과 글리프 사이가 0.5em(8px)이 된다.
+     세로는 음수 여백으로 컨테이너 높이를 그대로 둔다.
+     ⚠종전에는 간격이 0.25em 이라 «맨 뒤 아이콘만» 24 였고 나란히 놓인 쌍·스테퍼는 24 에 못 미쳤다 — 그것을 고치는 대가가
+     아이콘 사이가 4px 벌어지는 것이다(스테퍼 글리프도 0.85em → 1em).
      content-box 는 아이콘 자신의 box-sizing 과 무관하게 글리프를 1em 로 둔다. */
   .suffix-item[role="button"] {
     box-sizing: content-box;
-    margin-top: -0.25em;
-    margin-bottom: -0.25em;
-    margin-left: 0;
-    padding: 0.25em 0 0.25em 0.25em;
+    margin: -0.25em -0.25em -0.25em 0.25em;
+    padding: 0.25em;
   }
-  .suffix-item[role="button"].trailing {
+  /* 좌우 여백이 0 인 변형(underlined · borderless)은 맨 뒤 아이콘이 오른쪽으로 넓힐 자리가 없다 — 컨테이너에 0.25em 을 준다(그만큼만). */
+  :host([variant="underlined"]) .container,
+  :host([variant="borderless"]) .container {
     padding-right: 0.25em;
-    margin-right: -0.25em;
-  }
-  /* 좌우 여백이 0 인 변형에는 넓힐 자리가 없다 — 넓혀도 컨테이너의 overflow 에 잘려, 재면 24 인데 눌리는 영역은
-     그보다 좁은 거짓 통과가 된다. 실제 영역을 그대로 드러낸다. */
-  :host([variant="underlined"]) .suffix-item[role="button"].trailing,
-  :host([variant="borderless"]) .suffix-item[role="button"].trailing {
-    padding-right: 0;
-    margin-right: 0;
   }
 
   u-popover {

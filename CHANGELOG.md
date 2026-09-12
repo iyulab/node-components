@@ -4,6 +4,16 @@
 
 ### Changed
 
+- **Every icon button inside an input — clear, the password toggle, the number steppers — now takes
+  the pointer across 24×24** (WCAG 2.2 SC 2.5.8), not just the last one. Fitting two of them side by
+  side needs room, so the gap between icons grows from `0.25em` to `0.5em` (4px → 8px at the default
+  size), the stepper glyphs render at `1em` like every other icon instead of `0.85em`, and the
+  `underlined` and `borderless` variants — which have no side padding — get `0.25em` of it back on
+  the right. A field with a single icon is unchanged apart from that icon sitting 4px further from
+  the text; fields with a toggle *and* a clear button, or with steppers, are 4px wider in their icon
+  area. Supported density is documented with it: these sizes hold at `--u-density: 14px` and above
+  (see *Density* in `docs/theming.md`).
+
 - **A searchable select's dropdown is now a dialog, and opening it puts focus in the search
   field.** The dropdown used to carry `role="listbox"` while also holding the search field — a
   listbox may contain only options, so assistive technology met a text field where it expected
