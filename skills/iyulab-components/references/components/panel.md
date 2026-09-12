@@ -26,6 +26,18 @@ General-purpose content panel. Matches a tab or tree node when using `value`.
 
 ---
 
+## Sizing
+
+`u-panel` has `overflow: auto` and no height of its own, so it behaves two ways — both intended:
+
+- **No height** — it grows with its content. Nothing is clipped and no scrollbar appears.
+- **A height (or a height-bearing parent)** — it becomes the scroll container for its content.
+
+```html
+<u-panel style="height: 240px">…</u-panel>   <!-- scrolls its content -->
+<u-panel>…</u-panel>                          <!-- grows with its content -->
+```
+
 ## Slots
 
 | Name | Description |

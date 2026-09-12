@@ -15,7 +15,7 @@ Resizable two-panel layout. Drag the splitter to adjust panel sizes.
 </u-split-panel>
 
 <!-- Vertical split -->
-<u-split-panel orientation="vertical" default-ratio="30,70">
+<u-split-panel orientation="vertical" default-ratio="30,70" style="height: 400px;">
   <div>Top panel</div>
   <div>Bottom panel</div>
 </u-split-panel>
@@ -29,6 +29,27 @@ Resizable two-panel layout. Drag the splitter to adjust panel sizes.
 ```
 
 ---
+
+## Sizing
+
+**Give the host a height.** This is a shell: `:host` is `height: 100%` with `overflow: hidden`,
+so the panels divide whatever height the host has — and an unconstrained host has none to divide.
+
+```html
+<u-split-panel style="height: 400px">…</u-split-panel>
+```
+
+⚠ Leave the height off — or nest the component in a container that has no height of its own — and
+it collapses to a thin strip (measured: 18px, with 900px-tall panel content), the content is
+clipped by `overflow: hidden`, and there is no scrollbar to reach it. No error, nothing in the
+console. Every example below assumes a height on the host for this reason.
+
+A height-bearing ancestor works the same way (measured):
+
+```css
+.page             { height: 100%; display: flex; flex-direction: column; }
+.page u-split-panel { flex: 1 1 auto; min-height: 0; }
+```
 
 ## Slots
 
