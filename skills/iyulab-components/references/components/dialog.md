@@ -25,6 +25,25 @@ For programmatic usage (`Dialog.alert`, `Dialog.confirm`, `Dialog.prompt`), see 
 
 ---
 
+## Sizing
+
+The panel is **content-sized, capped at 90%** of the dialog's own box — 90% of the height and of
+the width. Measured in an 896px-tall viewport: a short dialog renders a 235px panel, and the same
+dialog carrying 3,000px of body content stops at 806px.
+
+Past that cap the **body is the only scroll region**. The `header` and `footer` slots are
+`flex-shrink: 0`, so the title and the actions stay visible however long the content grows.
+
+There is no size property. To make the dialog smaller than 90% of the viewport, give the **host** a
+height — that is what the 90% is measured against:
+
+```css
+u-dialog { height: 400px; }   /* the panel then caps at 360px */
+```
+
+⚠ That lever only shrinks: a height on the host lowers the panel's maximum, it does not reserve a
+panel of that size. A short dialog stays short.
+
 ## Slots
 
 | Name | Description |
