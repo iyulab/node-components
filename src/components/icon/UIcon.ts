@@ -75,7 +75,7 @@ export class UIcon extends UElement {
 
     const svg = this.sanitize(html);
     // 해석 실패는 오류가 아니라 «조용한 폴백» 이다 — 30개 메뉴가 한꺼번에 같은 큐브로 그려져도
-    // 신호가 0 이었다(docket #265 R3). 이름당 한 번, 개발 모드에서만 알린다.
+    // 신호가 0 이었다(소비자 실측). 이름당 한 번, 개발 모드에서만 알린다.
     if (svg === undefined) {
       devWarnOnce(`icon:${this.lib ?? ''}:${name}`,
         `u-icon "${name}" did not resolve from ${where} — ${this.fallback ? 'drawing the fallback instead' : 'drawing nothing'}. ` +

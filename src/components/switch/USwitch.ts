@@ -49,7 +49,7 @@ export class USwitch extends UFormControlElement<string> {
 
   /** `checked`(또는 그 값을 함께 결정하는 `value`)가 바뀌는 모든 경로(초기 속성 설정 ·
    *  프로그램적 대입 · 사용자 클릭)에서 폼 제출값을 동기화한다 — `UInput`/`UTextarea`/
-   *  `UCheckbox`와 같은 경계(`DL-289-1`). */
+   *  `UCheckbox`와 같은 경계. */
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (changedProperties.has('checked') || changedProperties.has('value')) {

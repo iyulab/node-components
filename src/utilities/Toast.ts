@@ -237,7 +237,7 @@ export class Toast {
    * `OverlayManager` 의 «이름 있는 띠» 계약은 **우리 오버레이보다 위**를 보장한다(실측:
    * 컨테이너 `z-index: 11000`). 그러나 ***top layer 는 z-index 축 밖에 있다*** — 소비앱이
    * 네이티브 `<dialog>.showModal()` 을 열면 그 다이얼로그는 **어떤 z-index 보다도 위**에
-   * 서고, 우리 토스트는 가려진다. 실측(cycle-477, 크로미움 `elementFromPoint`):
+   * 서고, 우리 토스트는 가려진다. 실측(크로미움 `elementFromPoint`):
    *
    * ```
    * containerZIndex 11000 · notificationZIndex 11000 · hitTag "DIALOG" · toastReachable false

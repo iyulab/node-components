@@ -148,7 +148,7 @@ export const styles = css`
   }
 
   /* 체크박스 외형 — 클릭은 항상 .wrapper(<label>)가 받아야 한다(위임으로 이미
-     충분하다, docket #147 후속 실측) — 자신도 pointer-events:none이라야 좌표 기반
+     충분하다 — 실측) — 자신도 pointer-events:none이라야 좌표 기반
      히트테스트(예: Playwright actionability check)가 이 박스를 투과해 label까지
      도달한다. */
   .checkbox {

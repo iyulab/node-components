@@ -425,7 +425,7 @@ export class UInput extends UFormControlElement<string> {
     e.stopImmediatePropagation();
     this.reset();
     // 타이핑 경로(handleInputInput)와 같은 "값이 바뀌었다" 신호를 여기서도 내야
-    // input 이벤트 하나만 구독하는 소비자도 클리어를 감지한다(docket #163) —
+    // input 이벤트 하나만 구독하는 소비자도 클리어를 감지한다 —
     // change는 그 위에 "상호작용이 끝났다"는 신호로 겸용 유지.
     this.dispatchEvent(new InputEvent('input', {
       bubbles: true,

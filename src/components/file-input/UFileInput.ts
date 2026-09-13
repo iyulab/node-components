@@ -44,7 +44,7 @@ export class UFileInput extends UFormControlElement<File[] | null> {
   @query('input[type="file"]', true) inputEl?: HTMLInputElement;
 
   /** `value`가 바뀌는 모든 경로(선택·지우기)에서 폼 제출값을 동기화한다 —
-   *  `UInput`/`UCheckbox`와 같은 경계(`DL-289-1`). 파일은 문자열로 표현할 수
+   *  `UInput`/`UCheckbox`와 같은 경계. 파일은 문자열로 표현할 수
    *  없으므로 1개면 `File`을, 여러 개면 같은 키로 반복 append한 `FormData`를
    *  넘긴다 — 네이티브 `<input type="file" multiple>`의 제출 형태와 동일하다. */
   protected updated(changedProperties: PropertyValues): void {
@@ -164,7 +164,7 @@ export class UFileInput extends UFormControlElement<File[] | null> {
     e.stopImmediatePropagation();
     this.reset();
     // 선택 경로(handleInputChange)와 같은 "값이 바뀌었다" 신호를 여기서도 낸다 —
-    // input 이벤트 하나만 구독하는 소비자도 클리어를 감지한다(UInput의 docket #163과
+    // input 이벤트 하나만 구독하는 소비자도 클리어를 감지한다(UInput 의 clearable 과
     // 같은 경계). change는 그 위에 "상호작용이 끝났다"는 신호로 겸용 유지.
     this.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true }));
     this.dispatchEvent(new Event('change', { bubbles: true, composed: true }));

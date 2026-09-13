@@ -133,7 +133,7 @@ export class UButton extends UElement {
   /**
    * 호스트에 세팅된 `aria-label`은 실제 접근 가능한(포커스 대상) 엘리먼트가 아니라 —
    * 그 안쪽 shadow DOM 의 네이티브 `<a>`/`<button>`이다. 섀도우 경계를 넘지 않으므로
-   * 접근성 트리에 자동 반영되지 않는다(docket #75 실측 — 속성은 붙어 있는데
+   * 접근성 트리에 자동 반영되지 않는다(실측 — 속성은 붙어 있는데
    * 접근성 이름이 비어 있음). `render()`가 이 값을 읽어 내부 엘리먼트에 직접 옮긴다.
    *
    * `aria-label`은 Lit 리액티브 프로퍼티로 선언돼 있지 않아 `observedAttributes`에

@@ -142,15 +142,15 @@ export class USplitPanel extends UElement {
 
   /**
    * 호스트에 높이(또는 세로 분할이면 폭) 제약이 없으면 이 컴포넌트는 손잡이 두께로 붕괴한다 —
-   * 실측 18px(cycle-565). 호스트가 `overflow: hidden` 이라 패널 내용에 닿을 방법이 없고,
-   * 오류도 없다. 첫 배치 뒤 한 번 재서 개발 모드에서 알린다(HD-61 ⒝).
+   * 실측 18px. 호스트가 `overflow: hidden` 이라 패널 내용에 닿을 방법이 없고,
+   * 오류도 없다. 첫 배치 뒤 한 번 재서 개발 모드에서 알린다.
    */
   private warnIfCollapsed() {
     if (!import.meta.env?.DEV || this.panels.length === 0 || !this.isConnected) return;
     // slotchange 는 렌더 뒤에 오므로 여기서 재면 배치가 서 있다(getBoundingClientRect 가 레이아웃을 강제한다).
     {
       // 호스트에 높이가 없으면 패널의 높이 선언은 지워지고(updatePanelLayout) 호스트는 패널 «내용의
-      // 한 줄» 높이로 내려앉는다 — 실측 18px(cycle-565). 그 상태에서는 패널 안의 height:100% 가
+      // 한 줄» 높이로 내려앉는다 — 실측 18px. 그 상태에서는 패널 안의 height:100% 가
       // 전부 0 이 되고 호스트가 overflow 를 자른다. «분할 패널이 한 줄보다 낮다» 를 신호로 삼는다 —
       // 임계값은 규칙이라 손으로 쓴다(한 줄 ≈ 18px · 여유를 둬 40px).
       const height = this.getBoundingClientRect().height;

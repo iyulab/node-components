@@ -24,7 +24,7 @@ export const styles = css`
 
      ⚠소비자가 인라인 style 로 폭을 주면 그쪽이 이긴다(인라인 > ::slotted).
      ⚠이 주석에 백틱을 쓰지 말 것 — css 태그드 템플릿을 그 자리에서 끝낸다(이 파일이 실제로
-     그렇게 깨졌고, cycle-217 이 만든 타입 게이트가 잡았다). */
+     그렇게 깨졌고, 타입 게이트가 잡았다). */
   ::slotted(*) {
     width: 100%;
     box-sizing: border-box;

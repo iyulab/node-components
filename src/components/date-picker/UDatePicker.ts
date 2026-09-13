@@ -458,7 +458,7 @@ export class UDatePicker extends UFormControlElement<string> {
   /** "오늘" 퀵액션 — `today` 셀이 이미 렌더에서 계산해 표시 중인 값(`renderDay`의
    *  `isSameDay(date, new Date())`)을 실제로 선택하는 것뿐이라 `selectDay`를 그대로 탄다
    *  (범위 밖이면 `selectDay`가 조용히 no-op — 클릭 불가 상태인 day 셀과 동일 규약).
-   *  datetime 모드에서는 "지금"을 통째로 채우는 것이 요청의 본질(§D-28 항목 2 docket 코멘트)
+   *  datetime 모드에서는 "지금"을 통째로 채우는 것이 소비자 요청의 본질
    *  이라 시간까지 `now`로 덮어쓴다 — 평범한 day 셀 클릭과 달리 기존 시각을 보존하지 않는다. */
   private handleTodayClick = () => {
     const now = new Date();
