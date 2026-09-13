@@ -146,7 +146,7 @@ export class USplitPanel extends UElement {
    * 오류도 없다. 첫 배치 뒤 한 번 재서 개발 모드에서 알린다.
    */
   private warnIfCollapsed() {
-    if (!import.meta.env?.DEV || this.panels.length === 0 || !this.isConnected) return;
+    if (process.env.NODE_ENV === 'production' || this.panels.length === 0 || !this.isConnected) return;
     // slotchange 는 렌더 뒤에 오므로 여기서 재면 배치가 서 있다(getBoundingClientRect 가 레이아웃을 강제한다).
     {
       // 호스트에 높이가 없으면 패널의 높이 선언은 지워지고(updatePanelLayout) 호스트는 패널 «내용의

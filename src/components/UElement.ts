@@ -41,7 +41,7 @@ export class UElement extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    if (import.meta.env?.DEV) warnIfTokensMissing();
+    if (process.env.NODE_ENV !== 'production') warnIfTokensMissing();
   }
 
   /**

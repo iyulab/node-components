@@ -50,8 +50,12 @@ describe('디자인 토큰 정적 진입점', () => {
   });
 
   it('토큰 부재를 개발 빌드에서 경고한다', () => {
+    // `import.meta.env.DEV`가 아니라 `process.env.NODE_ENV`다 — 전자는 이 라이브러리
+    // 자신의 vite build 시점에 정적으로 false 로 굳어 Rollup DCE 가 지운다(2026-09-13
+    // 실측, tests/build/dev-warning-dist.test.ts 가 게시본에 대해 이 계약을 지킨다).
     const el = read('src/components/UElement.ts');
-    expect(el).toMatch(/import\.meta\.env\?\.DEV/);
+    expect(el).not.toMatch(/import\.meta\.env/);
+    expect(el).toMatch(/process\.env\.NODE_ENV/);
     expect(el).toMatch(/getPropertyValue\('--u-blue-600'\)/);
   });
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.40.3] - 2026-09-13
+
+### Fixed
+
+- **`createDevWarner`/`devWarnOnce`, and the `u-icon`/`u-split-panel` warnings built on them, were
+  a complete no-op in every published release since 1.40.1** — the guard used
+  `import.meta.env.DEV`, which Vite resolves statically at this library's own build time (not the
+  consumer's), so the published dist always shipped with `false` baked in and Rollup's dead-code
+  elimination removed the warning body entirely. No published dev-mode warning from this package
+  has ever actually fired for a consumer. Replaced with `process.env.NODE_ENV !== 'production'`,
+  which this library's own build leaves untouched and each consumer's own bundler resolves against
+  its own dev/production build (the same convention used by other libraries in this ecosystem for
+  the same reason). A new test asserts the built dist directly, not just the source.
+
 ## [1.40.2] - 2026-09-13
 
 ### Added

@@ -11,8 +11,11 @@ import { resetDevWarnings } from '../../src/utilities/devWarning.js';
  *    30개가 같은 큐브로 그려졌다(docket #265 R3). 폴백은 의도된 것이라 유지하고 경고만 더한다.
  * ⑵ `u-split-panel`: 높이 제약이 없으면 18px 로 붕괴하고 `overflow: hidden` 이라 패널에 닿을 수 없다(cycle-565).
  *
- * 계약은 셋이다: 정확히 **한 번**(같은 키) · 정상이면 **0회** · 개발 모드에서만. 이 스위트는 vitest
- * 브라우저 모드라 `import.meta.env.DEV` 가 참이다.
+ * 계약은 셋이다: 정확히 **한 번**(같은 키) · 정상이면 **0회** · 개발 모드에서만(`process.env.NODE_ENV
+ * !== 'production'` — vitest 는 이 스위트에서 `NODE_ENV='test'` 를 준다). ⚠**소스를 직접 import
+ * 하므로 이 스위트만으로는 게시본(dist)이 같은 계약을 지키는지 증명하지 않는다** —
+ * `tests/build/dev-warning-dist.test.ts` 가 dist 축을 덮는다(2026-09-13, `import.meta.env.DEV`
+ * 를 썼을 때 라이브러리 자기 빌드가 그 분기를 통째로 지웠던 것을 이 축이 없어서 놓쳤었다).
  * ★NEGATIVE 가 절반 — 해석되는 이름 · 높이를 준 분할 패널은 침묵해야 한다. 여기 발화하면 경고는 무시당한다.
  */
 describe('개발 모드 사용 안내 경고', () => {
