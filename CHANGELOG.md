@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.40.2] - 2026-09-13
+
+### Added
+
+- **`createDevWarner(scope)` / `devWarnOnce` / `resetDevWarnings` are public** (barrel and
+  `@iyulab/components/dist/utilities/devWarning.js`). The one-shot, development-only warning
+  helper that `u-icon` and `u-split-panel` use since 1.40.1 is now the shared primitive for the
+  sibling packages' warnings of the same kind — each package gets its own `[scope]` prefix and
+  its own key space, and `resetDevWarnings()` clears every scope for tests. No behavior change
+  for existing warnings.
+
 ## [1.40.1] - 2026-09-13
 
 ### Added
