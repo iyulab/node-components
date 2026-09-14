@@ -39,16 +39,18 @@ export default defineConfig({
             // 인스턴스가 호스트 배율의 영향을 받는 테스트 환경 결함이다 — CI 등
             // 애초에 헤드리스로 도는 환경에서는 안 보인다.
             instances: [{ browser: 'chromium', headless: true }],
-            // ⚠고정 포트가 필요하다 — vitest 의 기본 포트 자동선택이 이 머신의
-            // Windows 동적 포트 제외 범위(`netsh interface ipv4 show
-            // excludedportrange protocol=tcp`, Hyper-V/WSL NAT 예약)와 충돌해
-            // `EACCES: listen 127.0.0.1:63315`(그리고 IPv6 `::1` 도 동일)로
-            // 실패하던 것을 실측으로 확인했다 — 이 리포가 오래 "선존 미해결
-            // 환경 제약"으로 이월해 온 그 결함이다. 이 포트는 이 머신의 현재
-            // 제외 범위 밖으로 확인됐으나, Windows 가 범위를 재할당하면(재부팅
-            // 등) 다시 막힐 수 있다 — 그때는 위 명령으로 새 빈 포트를 고른다.
-            api: { host: '127.0.0.1', port: 41501 },
           },
+          // ⚠고정 포트가 필요하다 — vitest 의 기본 포트 자동선택이 이 머신의
+          // Windows 동적 포트 제외 범위(`netsh interface ipv4 show
+          // excludedportrange protocol=tcp`, Hyper-V/WSL NAT 예약)와 충돌해
+          // `EACCES: listen 127.0.0.1:63315`(그리고 IPv6 `::1` 도 동일)로
+          // 실패하던 것을 실측으로 확인했다 — 이 리포가 오래 "선존 미해결
+          // 환경 제약"으로 이월해 온 그 결함이다. 이 포트는 이 머신의 현재
+          // 제외 범위 밖으로 확인됐으나, Windows 가 범위를 재할당하면(재부팅
+          // 등) 다시 막힐 수 있다 — 그때는 위 명령으로 새 빈 포트를 고른다.
+          // ⚠vitest 5 부터 브라우저 서버 포트는 `test.browser.api` 가 아니라 **프로젝트의 `test.api`** 에서
+          //   읽힌다 — `browser.api` 는 deprecated 경고만 내고 포트 해석에 쓰이지 않는다.
+          api: { host: '127.0.0.1', port: 41501 },
           // 파일마다 새 컨텍스트를 강제한다(기본값이지만 명시한다).
           // ⚠`browser` 하위가 아니라 **여기**다 — `test.isolate` 가 정식 위치이고,
           //   `browser.isolate` 로 두면 조용히 무시된다(실측 확인).
