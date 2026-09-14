@@ -68,7 +68,7 @@ export function luminance(color: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/** WCAG 2.1 명암비. */
+/** WCAG 2.x 명암비(상대 휘도 공식 — 2.2 에서 바뀌지 않았다). */
 export function contrast(a: string, b: string): number {
   const [x, y] = [luminance(a), luminance(b)];
   return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);

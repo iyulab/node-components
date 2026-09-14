@@ -128,6 +128,19 @@ Theme.set('system');
 
 자세한 내용은 [docs/theming.md](./docs/theming.md)를 참고하세요.
 
+## Accessibility
+
+기준판은 **WCAG 2.2** 입니다. 아래는 이 패키지가 **테스트로 재서 보장하는 것**이고, 그 밖의
+성공 기준까지 포함한 전체 준수 선언이 아닙니다.
+
+| 성공 기준 | 보장 | 어디서 재는가 |
+|---|---|---|
+| SC 1.4.3 · 1.4.11 명암비 | 역할 토큰의 `-color`·`-color-strong`·`-bg-color` 단계가 텍스트 4.5 / 비텍스트 3.0 을 라이트·다크 양쪽에서 충족 | `tests/build/token-contrast.test.ts` |
+| SC 2.5.8 타깃 크기(최소) | 등록된 모든 컴포넌트의 포인터 타깃이 24×24 CSS px 이상이거나 간격 예외(중심 간 24px)를 충족하고, 그 좌표에서 실제로 눌린다 | `tests/browser/target-size.browser.test.ts`(실제 크로미움) |
+
+⚠ 타깃 크기 보장은 `--u-density` **`14px` 이상**에서 성립합니다 — 컨트롤 패딩이 `em` 이라 그보다
+낮추면 타깃이 함께 줄어듭니다([docs/theming.md](./docs/theming.md)의 밀도 절 참고).
+
 ## Localization
 
 라이브러리가 **스스로 생성하는 문자열**(검증 메시지)은 내장 로케일 14종을 갖고 있으며,

@@ -145,7 +145,7 @@ Each role has five steps on a single **intensity** axis:
 The axis is intensity, but **the two darkest steps carry a contrast guarantee** and are therefore
 bound to a usage:
 
-| Step | Guarantee (WCAG 2.1) |
+| Step | Guarantee (WCAG 2.2 — SC 1.4.3 text · SC 1.4.11 non-text) |
 |---|---|
 | `--u-{role}-color` | `--u-{role}-txt-color` on it ≥ 4.5 |
 | `--u-{role}-color-strong` | ≥ 4.5 against `--u-bg-color` |
