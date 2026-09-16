@@ -124,8 +124,8 @@ export class UInput extends UFormControlElement<string> {
 
           <input part="input"
             type=${this.type === 'password' && this.showPassword ? 'text' : this.type}
-            aria-label=${ifDefined(this.label)}
-            aria-description=${ifDefined(this.description)}
+            aria-label=${ifDefined(this.resolvedAriaLabel)}
+            aria-description=${ifDefined(this.resolvedAriaDescription)}
             name=${ifDefined(this.name)}
             ?required=${this.required}
             ?disabled=${this.disabled}

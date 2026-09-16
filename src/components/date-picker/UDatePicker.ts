@@ -221,8 +221,8 @@ export class UDatePicker extends UFormControlElement<string> {
           role="combobox"
           aria-haspopup="dialog"
           aria-expanded=${this.open}
-          aria-label=${ifDefined(this.label)}
-          aria-description=${ifDefined(this.description)}
+          aria-label=${ifDefined(this.resolvedAriaLabel)}
+          aria-description=${ifDefined(this.resolvedAriaDescription)}
           aria-controls=${this.calendarId}
         >
           <span class="text-content ${!displayText ? 'placeholder' : ''}">${displayText || this.placeholder || ''}</span>

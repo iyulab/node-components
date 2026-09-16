@@ -70,8 +70,8 @@ export class URadio extends UFormControlElement<string> {
       >
         <div class="container" part="container"
           role="radiogroup"
-          aria-label=${ifDefined(this.label)}
-          aria-description=${ifDefined(this.description)}>
+          aria-label=${ifDefined(this.resolvedAriaLabel)}
+          aria-description=${ifDefined(this.resolvedAriaDescription)}>
           <slot @slotchange=${this.handleSlotChange}></slot>
         </div>
       </u-field>

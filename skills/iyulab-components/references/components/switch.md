@@ -25,7 +25,7 @@ Toggle switch (on/off). Supports custom track and thumb content via slots. Form-
 
 | Name | Description |
 |------|-------------|
-| *(default)* | Label text |
+| *(default)* | Label text (falls back to the `label` property) |
 | `track-checked` | Content inside the track when checked |
 | `track-unchecked` | Content inside the track when unchecked |
 | `thumb-checked` | Thumb content when checked |
@@ -35,6 +35,7 @@ Toggle switch (on/off). Supports custom track and thumb content via slots. Form-
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
+| `label` | `string` | — | — | Label text — fallback for the default slot |
 | `checked` | `boolean` | `false` | ✓ | On/off state |
 | `disabled` | `boolean` | `false` | ✓ | Disable |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |

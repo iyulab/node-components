@@ -23,6 +23,34 @@ Layout wrapper for form controls. Renders label, required marker, description te
 
 ---
 
+## Accessible name
+
+`u-field` does more than draw the label — it **names the control you slot into it**. The label text
+is copied onto the slotted element as `aria-label` (and `description` as `aria-description`), and
+`u-*` form controls pass that through to the native control inside their shadow root.
+`aria-labelledby` is not used: it does not cross shadow boundaries.
+
+**Set the label in one place only.** If the slotted control already carries its own `label`,
+`aria-label`, or `aria-labelledby`, the field leaves it alone — overriding it would make the visible
+label and the accessible name disagree (WCAG SC 2.5.3 Label in Name). Setting `label` on *both*
+renders the label twice; a development-mode console warning points at that spot.
+
+```html
+<!-- label on the field -->
+<u-field label="Email"><u-input type="email" name="email"></u-input></u-field>
+
+<!-- or on the control — not both -->
+<u-input label="Email" type="email" name="email"></u-input>
+
+<!-- native elements work the same way -->
+<u-field label="Notes"><textarea name="notes"></textarea></u-field>
+```
+
+A `u-field` that has a `label` but nothing focusable in its default slot also warns: that label
+names nothing.
+
+---
+
 ## Slots
 
 | Name | Description |

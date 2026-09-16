@@ -87,7 +87,13 @@ export class USwitch extends UFormControlElement<string> {
           </span>
         </span>
         <span class="label" part="label">
-          <slot></slot>
+          <!-- 형제 u-checkbox 는 슬롯 폴백으로 label 을 그리는데 여기만 없었다 — 상속받은
+               공개 프로퍼티(UFormControlElement.label)를 이 컴포넌트만 한 번도 읽지 않아
+               u-switch 에 label 속성을 주면 눈에 보이는 라벨도 접근성 이름도 생기지 않았다
+               문서는 기본 슬롯만 가르쳐 왔으므로 문서 위반이
+               아니라 «선언은 있는데 동작이 없는» 자리다.
+               주의: 이 주석에 백틱을 쓰지 말 것 — html 태그드 템플릿을 그 자리에서 끝낸다. -->
+          <slot>${this.label}</slot>
           <span class="required" ?hidden=${!this.required}>*</span>
         </span>
       </label>

@@ -257,7 +257,7 @@ export class USlider extends UFormControlElement<number | number[]> {
     return html`
       <div class="thumb" part=${isEnd ? 'thumb-end' : 'thumb'}
         role="slider"
-        aria-label=${ifDefined(this.label)}
+        aria-label=${ifDefined(this.resolvedAriaLabel)}
         aria-valuenow=${val}
         aria-valuemin=${this.min}
         aria-valuemax=${this.max}

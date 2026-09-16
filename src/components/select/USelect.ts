@@ -145,8 +145,8 @@ export class USelect extends UFormControlElement<string | string[]> {
 
         <div class="container" part="container" tabindex=${this.disabled ? "-1" : "0"}
           role="combobox"
-          aria-label=${ifDefined(this.label)}
-          aria-description=${ifDefined(this.description)}
+          aria-label=${ifDefined(this.resolvedAriaLabel)}
+          aria-description=${ifDefined(this.resolvedAriaDescription)}
           aria-haspopup=${this.searchable ? 'dialog' : 'listbox'}
           aria-expanded=${this.open}
           aria-controls=${this.searchable ? this.popupId : this.listboxId}>
@@ -181,7 +181,7 @@ export class USelect extends UFormControlElement<string | string[]> {
       <u-popover part="popover"
         id=${this.popupId}
         role=${ifDefined(this.searchable ? 'dialog' : undefined)}
-        aria-label=${ifDefined(this.searchable ? (this.label || Locale.getValue('search')) : undefined)}
+        aria-label=${ifDefined(this.searchable ? (this.resolvedAriaLabel || Locale.getValue('search')) : undefined)}
         scrollable
         autofocus
         for=".container"

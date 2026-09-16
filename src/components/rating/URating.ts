@@ -73,8 +73,8 @@ export class URating extends UFormControlElement<number> {
         .validationMessage=${this.validationMessage}
       >
         <div class="symbols" part="container" role="radiogroup"
-          aria-label=${ifDefined(this.label)}
-          aria-description=${ifDefined(this.description)}>
+          aria-label=${ifDefined(this.resolvedAriaLabel)}
+          aria-description=${ifDefined(this.resolvedAriaDescription)}>
           ${Array.from({ length: this.max }, (_, i) => {
             const score = i + 1;
             const fill = Math.max(0, Math.min(1, value - score + 1));

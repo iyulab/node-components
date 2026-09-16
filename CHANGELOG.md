@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.41.0] - 2026-09-16
+
+### Fixed
+
+- **`u-field` drew its label but never connected it to the control it wraps** — the shadow `label`
+  had no `for`, and the slotted control's `id`, `aria-label` and `aria-labelledby` were all empty.
+  Every control in a labelled form was therefore unnamed in the accessibility tree while looking
+  completely normal on screen, with no console signal. This is the exact shape this package's own
+  reference documentation teaches (`<u-field label="Email"><u-input></u-input></u-field>`), so
+  following the docs produced the defect. `u-field` now copies its `label` onto the slotted element
+  as `aria-label` (and `description` as `aria-description`); `aria-labelledby` is not usable here
+  because it does not cross shadow boundaries.
+- **`u-field.focus()` and clicking its label did nothing when a custom-element control was
+  slotted** — the target search used a focusability test that does not look inside shadow roots, so
+  it only ever matched native elements. It now also recognizes form-associated custom elements, and
+  falls back to searching inside a slotted wrapper.
+- **`u-switch` ignored its inherited `label` property** — unlike its sibling `u-checkbox`, the
+  default slot had no fallback, so `<u-switch label="…">` rendered neither a visible label nor an
+  accessible name.
+
+### Added
+
+- **Form controls now forward a host `aria-label` / `aria-description` to the native control inside
+  their shadow root.** Previously only `u-button` did this, so setting `aria-label` directly on
+  `u-input`, `u-select`, `u-textarea`, `u-date-picker`, `u-radio`, `u-rating` or `u-slider` had no
+  effect on the accessible name. A control's own `label` still wins over the host attribute.
+- **Two development-mode warnings on `u-field`**: a label with nothing focusable in the default
+  slot (the label names nothing), and a label set on both the field and the slotted control (the
+  label renders twice).
+
+### Notes
+
+- A control that already carries its own `label`, `aria-label` or `aria-labelledby` is left
+  untouched — overriding it would make the visible label and the accessible name disagree
+  (WCAG SC 2.5.3 Label in Name).
+- Not covered by this change: `u-file-input`'s trigger button keeps its own "choose file" name
+  inside a labelled field. Composing a field label into an action button's name is a separate
+  wording decision, not a mechanical one.
+
 ## [1.40.3] - 2026-09-13
 
 ### Fixed

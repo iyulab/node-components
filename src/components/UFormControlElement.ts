@@ -96,6 +96,42 @@ export abstract class UFormControlElement<T> extends UElement {
     }
   }
 
+  /**
+   * 호스트에 세팅된 `aria-label`/`aria-description` 은 접근성 트리에 노출되는 노드가 아니다 —
+   * 그것은 shadow DOM 안쪽의 네이티브 컨트롤이고, 섀도우 경계를 넘지 않으므로 자동으로
+   * 반영되지 않는다(속성은 붙어 있는데 접근 가능한 이름이 빈 채로 남는다).
+   *
+   * ⚠**이 처방은 오랫동안 `u-button` 한 곳에만 있었다.** 폼 컨트롤 열 종이 같은 구조인데
+   * 같은 경로가 없어서, 바깥에서 라벨을 소유하는 래퍼(`u-field`)가 슬롯된 컨트롤에 이름을
+   * 줄 수단 자체가 없었다 — 라벨은 그려지는데 컨트롤은 이름이 없는 «조용한 결함» 이다.
+   * ⇒ 사본을 열 벌 만드는 대신 **공통 기반에 한 번** 둔다.
+   *
+   * ⚠`aria-label` 은 Lit 리액티브 프로퍼티가 아니라 `observedAttributes` 에 없다 — 그 목록에
+   * 없는 속성은 `attributeChangedCallback` 자체가 호출되지 않아(커스텀 엘리먼트 표준 동작)
+   * 초기 렌더만 되고 연결 후 변경이 반영되지 않는다. 명시적으로 추가해야 한다.
+   */
+  static override get observedAttributes(): string[] {
+    return [...super.observedAttributes, 'aria-label', 'aria-description'];
+  }
+
+  override attributeChangedCallback(name: string, old: string | null, value: string | null): void {
+    super.attributeChangedCallback(name, old, value);
+    if (name === 'aria-label' || name === 'aria-description') this.requestUpdate();
+  }
+
+  /**
+   * 내부 네이티브 컨트롤에 실을 접근성 이름. 자기 `label` 이 우선이고, 없으면 호스트의
+   * `aria-label` 을 쓴다 — 후자는 `u-field` 같은 «바깥 라벨 소유자» 가 채우는 경로다.
+   */
+  protected get resolvedAriaLabel(): string | undefined {
+    return this.label ?? this.getAttribute('aria-label') ?? undefined;
+  }
+
+  /** `resolvedAriaLabel` 과 같은 규칙의 설명 축. */
+  protected get resolvedAriaDescription(): string | undefined {
+    return this.description ?? this.getAttribute('aria-description') ?? undefined;
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 

@@ -138,6 +138,23 @@ Theme.set('system');
 | SC 1.4.3 · 1.4.11 명암비 | 역할 토큰의 `-color`·`-color-strong`·`-bg-color` 단계가 텍스트 4.5 / 비텍스트 3.0 을 라이트·다크 양쪽에서 충족 | `tests/build/token-contrast.test.ts` |
 | SC 2.5.8 타깃 크기(최소) | 등록된 모든 컴포넌트의 포인터 타깃이 24×24 CSS px 이상이거나 간격 예외(중심 간 24px)를 충족하고, 그 좌표에서 실제로 눌린다 | `tests/browser/target-size.browser.test.ts`(실제 크로미움) |
 | SC 2.1.1 키보드(포인터 커서 검사) | 픽스처가 그리는 어떤 요소도 포인터 커서를 보이면서 상호작용 요소가 아닌 채로 있지 않다 — 클릭만 받는 `div` 가 들어오지 못한다(키 처리 자체는 컴포넌트 테스트가 잰다) | 같은 파일 |
+| SC 1.3.1 정보와 관계 · SC 4.1.2 이름·역할·값 | `u-field` 의 `label`/`description` 이 슬롯된 컨트롤의 접근성 이름·설명으로 실제로 도달한다(네이티브 엘리먼트 · `u-*` 폼 컨트롤 양쪽) | `tests/browser/field-label-association.browser.test.ts` |
+
+🔴**폼 컨트롤의 접근성 이름은 «한 곳에서만» 준다.** `u-field` 는 자기 `label` 을 슬롯된 컨트롤에
+`aria-label` 로 얹고(섀도우 경계를 넘지 못하는 `aria-labelledby` 대신 문자열 복사다), 폼 컨트롤은
+호스트의 `aria-label` 을 내부 네이티브 컨트롤로 내려보낸다. **컨트롤이 자기 `label`·`aria-label`·
+`aria-labelledby` 를 이미 가지면 `u-field` 는 덮지 않는다** — 덮으면 눈에 보이는 라벨과 접근성
+이름이 어긋난다(SC 2.5.3 Label in Name). 양쪽에 `label` 을 주면 라벨이 **두 번 그려지고**, 개발
+모드 콘솔이 그 자리를 지목한다.
+
+```html
+<!-- ✅ 라벨은 한 곳 -->
+<u-field label="Keyword"><u-input></u-input></u-field>
+<u-input label="Keyword"></u-input>
+
+<!-- ❌ 두 번 그려진다 -->
+<u-field label="Keyword"><u-input label="Keyword"></u-input></u-field>
+```
 
 ⚠ 타깃 크기 보장은 `--u-density` **`14px` 이상**에서 성립합니다 — 컨트롤 패딩이 `em` 이라 그보다
 낮추면 타깃이 함께 줄어듭니다([docs/theming.md](./docs/theming.md)의 밀도 절 참고).
