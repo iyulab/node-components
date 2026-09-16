@@ -46,8 +46,13 @@ renders the label twice; a development-mode console warning points at that spot.
 <u-field label="Notes"><textarea name="notes"></textarea></u-field>
 ```
 
-A `u-field` that has a `label` but nothing focusable in its default slot also warns: that label
-names nothing.
+A `u-field` that has a `label` but no form control in its default slot also warns: that label names
+nothing. "Form control" here is a question about **structure**, not about what is on screen — a
+form-associated custom element, a native form or focusable tag, `tabindex`, or `contenteditable`.
+A field that is `disabled`, or rendered inside a container that is currently hidden (a closed
+drawer, an inactive tab panel, a wizard step that is not current), is still correctly built and does
+not warn. The control may sit inside a wrapper element; it does not have to be the slot's direct
+child.
 
 All ten form controls take the field's label this way. Three of them get it slightly differently,
 because their name normally comes from their own content:
