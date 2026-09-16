@@ -34,5 +34,7 @@
   "alertSuccess": "成功",
   "alertInfo": "資訊",
   "alertNotice": "提示",
-  "alertMessage": "訊息"
+  "alertMessage": "訊息",
+  "remove": "移除",
+  "closeTab": "關閉分頁"
 }

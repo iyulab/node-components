@@ -34,5 +34,7 @@
   "alertSuccess": "สำเร็จ",
   "alertInfo": "ข้อมูล",
   "alertNotice": "ประกาศ",
-  "alertMessage": "ข้อความ"
+  "alertMessage": "ข้อความ",
+  "remove": "ลบ",
+  "closeTab": "ปิดแท็บ"
 }

@@ -34,5 +34,7 @@
   "alertSuccess": "Thành công",
   "alertInfo": "Thông tin",
   "alertNotice": "Lưu ý",
-  "alertMessage": "Thông báo"
+  "alertMessage": "Thông báo",
+  "remove": "Xóa",
+  "closeTab": "Đóng tab"
 }

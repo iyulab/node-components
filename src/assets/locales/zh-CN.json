@@ -34,5 +34,7 @@
   "alertSuccess": "成功",
   "alertInfo": "信息",
   "alertNotice": "提示",
-  "alertMessage": "消息"
+  "alertMessage": "消息",
+  "remove": "移除",
+  "closeTab": "关闭标签页"
 }

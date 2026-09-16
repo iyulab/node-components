@@ -54,7 +54,11 @@ export type LocaleMessageKey =
   | 'alertSuccess'
   | 'alertInfo'
   | 'alertNotice'
-  | 'alertMessage';
+  | 'alertMessage'
+  // 접근성 이름 — 아이콘만 있는 컨트롤이라 화면에 글자가 없다. 로케일을 타지 않으면
+  // 스크린리더 사용자만 영어를 듣는다(눈으로 보는 검수에서 드러나지 않는다).
+  | 'remove'
+  | 'closeTab';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 

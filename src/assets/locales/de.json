@@ -34,5 +34,7 @@
   "alertSuccess": "Erfolg",
   "alertInfo": "Information",
   "alertNotice": "Hinweis",
-  "alertMessage": "Nachricht"
+  "alertMessage": "Nachricht",
+  "remove": "Entfernen",
+  "closeTab": "Tab schließen"
 }

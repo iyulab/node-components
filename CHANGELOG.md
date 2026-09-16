@@ -4,6 +4,12 @@
 
 ### Fixed
 
+- **Two icon-only controls named themselves in English regardless of the locale.** `u-chip`'s remove
+  button and `u-tab`'s close button carried a hard-coded `aria-label`, so on a Korean app a
+  screen-reader user heard "Remove" and "Close tab" while everything around them was translated.
+  These controls have no visible text, so the gap could not show up in a visual review — only
+  someone using assistive technology would meet it. Both names now come from the locale table, with
+  `remove` and `closeTab` added for all fourteen built-in locales.
 - **`u-alert` fell back to the raw status value as its title, which is not a word in any locale.**
   An alert written without a `title` showed `ERROR` or `DANGER` in the title row regardless of the
   locale in effect, so a Korean screen carried uppercase English — one such screen reached a

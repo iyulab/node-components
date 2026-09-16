@@ -34,5 +34,7 @@
   "alertSuccess": "Succès",
   "alertInfo": "Information",
   "alertNotice": "Avis",
-  "alertMessage": "Message"
+  "alertMessage": "Message",
+  "remove": "Supprimer",
+  "closeTab": "Fermer l'onglet"
 }

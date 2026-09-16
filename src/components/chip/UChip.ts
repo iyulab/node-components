@@ -10,6 +10,7 @@ import { type TagVariant, type TagColor } from "../tag/UTag.js";
 import { styles } from "./UChip.styles.js";
 import { type PickEventDetail } from "../../events/PickEvent.js";
 import { type RemoveEventDetail } from "../../events/RemoveEvent.js";
+import { Locale } from '../../utilities/Locale.js';
 
 /**
  * 태그 상태 표시 또는 선택 UI와 인터랙션(선택, 삭제)을 지원하는 칩 컴포넌트입니다.
@@ -68,7 +69,7 @@ export class UChip extends UElement {
           ?hidden=${!this.removable}
           rounded
           variant="ghost"
-          aria-label="Remove"
+          aria-label=${Locale.getValue('remove')}
           @click=${this.handleRemoveClick}>
           <u-icon lib="internal" name="x"></u-icon>
         </u-button>

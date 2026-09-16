@@ -34,5 +34,7 @@
   "alertSuccess": "완료",
   "alertInfo": "안내",
   "alertNotice": "알림",
-  "alertMessage": "메시지"
+  "alertMessage": "메시지",
+  "remove": "제거",
+  "closeTab": "탭 닫기"
 }

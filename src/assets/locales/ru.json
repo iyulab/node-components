@@ -34,5 +34,7 @@
   "alertSuccess": "Успешно",
   "alertInfo": "Информация",
   "alertNotice": "Уведомление",
-  "alertMessage": "Сообщение"
+  "alertMessage": "Сообщение",
+  "remove": "Удалить",
+  "closeTab": "Закрыть вкладку"
 }

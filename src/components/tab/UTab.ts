@@ -6,6 +6,7 @@ import '../icon/UIcon.js';
 import { UElement } from "../UElement.js";
 import { styles } from "./UTab.styles.js";
 import { type RemoveEventDetail } from "../../events/RemoveEvent.js";
+import { Locale } from '../../utilities/Locale.js';
 
 /**
  * 탭 패널에서 사용하는 탭 아이템(탭 버튼) 컴포넌트입니다.
@@ -52,7 +53,7 @@ export class UTab extends UElement {
         <u-button class="remove-btn" part="remove-btn"
         ?hidden=${!this.removable}
         variant="ghost"
-        aria-label="Close tab"
+        aria-label=${Locale.getValue('closeTab')}
         @click=${this.handleRemoveClick}
       >
         <u-icon lib="internal" name="x"></u-icon>

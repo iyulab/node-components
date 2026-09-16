@@ -34,5 +34,7 @@
   "alertSuccess": "نجاح",
   "alertInfo": "معلومات",
   "alertNotice": "إشعار",
-  "alertMessage": "رسالة"
+  "alertMessage": "رسالة",
+  "remove": "إزالة",
+  "closeTab": "إغلاق علامة التبويب"
 }

@@ -34,5 +34,7 @@
   "alertSuccess": "Berhasil",
   "alertInfo": "Informasi",
   "alertNotice": "Pemberitahuan",
-  "alertMessage": "Pesan"
+  "alertMessage": "Pesan",
+  "remove": "Hapus",
+  "closeTab": "Tutup tab"
 }

@@ -34,5 +34,7 @@
   "alertSuccess": "完了",
   "alertInfo": "お知らせ",
   "alertNotice": "通知",
-  "alertMessage": "メッセージ"
+  "alertMessage": "メッセージ",
+  "remove": "削除",
+  "closeTab": "タブを閉じる"
 }

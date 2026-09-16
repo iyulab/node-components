@@ -34,5 +34,7 @@
   "alertSuccess": "Success",
   "alertInfo": "Information",
   "alertNotice": "Notice",
-  "alertMessage": "Message"
+  "alertMessage": "Message",
+  "remove": "Remove",
+  "closeTab": "Close tab"
 }
