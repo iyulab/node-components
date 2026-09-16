@@ -35,6 +35,20 @@ interface PluginOptions {
   output?: string;
   /** 래퍼 생성에서 제외할 glob 패턴 목록 (cwd: 프로젝트 루트) */
   exclude?: string[];
+  /**
+   * 생성 배럴(`<output>/index`)이 함께 재수출할 **추가 모듈 지정자** 목록.
+   *
+   * ★왜 필요한가: 어떤 패키지는 **손으로 쓴 래퍼**를 함께 갖는다(제네릭 프로퍼티·커스텀
+   *   이벤트 매핑처럼 생성기가 도출할 수 없는 것). 그것이 별도 서브패스에만 살면 소비자는
+   *   «배럴에서 얻는 것»과 «딥 경로에서 얻는 것»이 달라지고, 배럴이 딥의 상위집합이라는
+   *   관례가 깨진다. ⇒ 배럴이 그 손 래퍼까지 재수출해 한 갈래로 만든다.
+   *
+   * ⚠**반드시 «패키지 지정자»를 준다 — 상대 경로를 주지 말 것.** 상대 경로는 `exports`
+   *   맵을 거치지 않으므로 워크스페이스에서 배럴만 `dist` 트리를 싣고 나머지는 `src` 를
+   *   실어 **같은 태그를 두 클래스가 등록**한다(이 리포가 `TS2717` 로 한 번 겪은 형태).
+   *   예: `'@iyulab/modern-app/dist/react.js'`.
+   */
+  reexport?: string[];
 }
 
 /**
@@ -96,7 +110,7 @@ export default function reactWrapperPlugin(options: PluginOptions): Plugin {
       for (const comp of components) {
         generated.push(...writeWrapper(comp, outDir, buildOutDir, pkgName));
       }
-      generated.push(...writeIndex(components, outDir, buildOutDir));
+      generated.push(...writeIndex(components, outDir, buildOutDir, options.reexport ?? []));
 
       // 결과 출력
       generated.sort((a, b) => a.size - b.size);
@@ -392,12 +406,23 @@ export type ${className}Props = React.ComponentProps<typeof ${className}>;
   ];
 }
 
-function writeIndex(components: ComponentInfo[], outDir: string, buildOutDir: string): FileInfo[] {
-  const jsExports = components
+function writeIndex(
+  components: ComponentInfo[],
+  outDir: string,
+  buildOutDir: string,
+  reexport: string[],
+): FileInfo[] {
+  // 손 래퍼 재수출을 **먼저** 둔다 — 소비자가 읽는 순서를 「손으로 쓴 것 → 생성된 것」으로
+  // 맞춘다. ⚠이름이 겹치면 `export *` 는 그 이름을 **조용히 내보내지 않으므로**, 순서가
+  //   충돌을 해소해 주지는 않는다(겹치지 않게 `exclude` 로 가르는 것이 호출부의 책임).
+  const reexports = reexport.map(spec => `export * from '${spec}';`).join('\n');
+  const prefix = reexports ? reexports + '\n' : '';
+
+  const jsExports = prefix + components
     .map(c => `export { ${c.className} } from './${c.className}.js';`)
     .join('\n');
 
-  const dtsExports = components
+  const dtsExports = prefix + components
     .map(c => `export { ${c.className}, ${c.className}Props } from './${c.className}';`)
     .join('\n');
 

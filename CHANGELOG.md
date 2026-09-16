@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.42.0] - 2026-09-17
+
+### Added
+
+- **`reactWrapper({ reexport })`** — the generated React barrel can now re-export additional module
+  specifiers alongside the wrappers it generates. A package that keeps a few hand-written wrappers
+  (for a generic property or a custom event mapping the generator cannot derive) previously had to
+  publish them on a separate subpath, which left consumers with a barrel that was *not* a superset
+  of the per-component subpaths: what you got depended on which specifier you reached for. Passing
+  the hand-written module here folds it into the same barrel, so one specifier carries everything.
+  Give a package specifier rather than a relative path — a relative path bypasses the `exports` map,
+  which in a workspace makes the barrel load a different copy of the elements than the rest of the
+  package and registers the same tag twice.
+
 ## [1.41.1] - 2026-09-16
 
 ### Fixed
