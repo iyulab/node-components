@@ -69,6 +69,21 @@ export class UFileInput extends UFormControlElement<File[] | null> {
     }
   }
 
+  /**
+   * 이 컨트롤의 포커스 대상은 값을 담는 입력이 아니라 **파일 선택 버튼**이다. 그래서 바깥
+   * 라벨을 그대로 `aria-label` 로 얹으면 버튼의 보이는 글자("파일 선택")가 접근성 이름에서
+   * 사라진다 — WCAG SC 2.5.3 Label in Name 위반이고, 음성 조작 사용자가 보이는 글자로
+   * 그 버튼을 부를 수 없게 된다. ⇒ **덮지 않고 합성한다**: 보이는 글자를 **앞에** 두고
+   * 라벨을 맥락으로 덧붙인다(이름이 보이는 글자를 담으므로 2.5.3 을 만족하고, 같은 화면에
+   * 파일 선택 버튼이 여럿일 때 서로 구분된다).
+   *
+   * 라벨이 없으면 아무것도 얹지 않는다 — 버튼의 보이는 글자가 곧 이름이다.
+   */
+  private get triggerAriaLabel(): string | undefined {
+    const label = this.resolvedAriaLabel;
+    return label ? `${Locale.getValue('chooseFile')}, ${label}` : undefined;
+  }
+
   render() {
     const files = this.value ?? [];
     const hasFiles = files.length > 0;
@@ -90,6 +105,7 @@ export class UFileInput extends UFormControlElement<File[] | null> {
         <div class="container" part="container">
           <button class="trigger" part="trigger"
             type="button"
+            aria-label=${ifDefined(this.triggerAriaLabel)}
             ?disabled=${this.disabled || this.readonly}
             @click=${this.handleTriggerClick}
           >${Locale.getValue('chooseFile')}</button>

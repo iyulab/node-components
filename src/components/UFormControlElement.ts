@@ -1,5 +1,5 @@
 import { CSSResultGroup, PropertyValues } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 
 import { UElement } from './UElement.js';
 import { styles } from './UFormControlElement.styles.js';
@@ -126,6 +126,29 @@ export abstract class UFormControlElement<T> extends UElement {
   protected get resolvedAriaLabel(): string | undefined {
     return this.label ?? this.getAttribute('aria-label') ?? undefined;
   }
+
+  /**
+   * 이름을 **자기 내용에서** 얻는 컨트롤(`u-checkbox`·`u-switch`)용 축.
+   *
+   * 그 둘은 네이티브 `<label>` 이 컨트롤을 감싸는 구조라, 감싸개 안의 텍스트가 곧 접근성
+   * 이름이다 — 그래서 위 `resolvedAriaLabel` 처럼 **무조건** 얹으면 눈에 보이는 라벨을
+   * 덮어쓴다(WCAG SC 2.5.3 Label in Name). ⇒ 자기 `label` 도 슬롯 내용도 없어서 감싸개가
+   * **비어 있을 때만** 호스트의 `aria-label` 을 쓴다. 전수 실측에서 라벨을 단 `u-field`
+   * 안에 빈 체크박스/스위치를 넣으면 이름이 «별표 하나» 뿐이었다.
+   */
+  protected get contentAriaLabel(): string | undefined {
+    if (this.label || this.hasSlottedLabel) return undefined;
+    return this.getAttribute('aria-label') ?? undefined;
+  }
+
+  @state() protected hasSlottedLabel = false;
+
+  /** 기본 슬롯에 실제 내용이 들어왔는지 — 공백만 있는 텍스트 노드는 내용이 아니다. */
+  protected handleLabelSlotChange = (e: Event): void => {
+    const slot = e.target as HTMLSlotElement;
+    this.hasSlottedLabel = slot.assignedNodes({ flatten: true })
+      .some((n) => (n.nodeType === Node.ELEMENT_NODE) || !!n.textContent?.trim());
+  };
 
   /** `resolvedAriaLabel` 과 같은 규칙의 설명 축. */
   protected get resolvedAriaDescription(): string | undefined {

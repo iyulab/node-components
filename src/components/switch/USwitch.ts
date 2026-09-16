@@ -1,6 +1,7 @@
 import { html, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { live } from "lit/directives/live.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
@@ -65,6 +66,7 @@ export class USwitch extends UFormControlElement<string> {
       <label class="wrapper" part="wrapper">
         <input
           type="checkbox"
+          aria-label=${ifDefined(this.contentAriaLabel)}
           ?disabled=${this.disabled || this.readonly}
           ?required=${this.required}
           .checked=${live(this.checked)}
@@ -93,7 +95,7 @@ export class USwitch extends UFormControlElement<string> {
                문서는 기본 슬롯만 가르쳐 왔으므로 문서 위반이
                아니라 «선언은 있는데 동작이 없는» 자리다.
                주의: 이 주석에 백틱을 쓰지 말 것 — html 태그드 템플릿을 그 자리에서 끝낸다. -->
-          <slot>${this.label}</slot>
+          <slot @slotchange=${this.handleLabelSlotChange}>${this.label}</slot>
           <span class="required" ?hidden=${!this.required}>*</span>
         </span>
       </label>

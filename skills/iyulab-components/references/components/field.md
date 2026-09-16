@@ -49,6 +49,15 @@ renders the label twice; a development-mode console warning points at that spot.
 A `u-field` that has a `label` but nothing focusable in its default slot also warns: that label
 names nothing.
 
+All ten form controls take the field's label this way. Three of them get it slightly differently,
+because their name normally comes from their own content:
+
+| Control | How the field label reaches it |
+|---------|-------------------------------|
+| `u-checkbox`, `u-switch` | Only when they have no label text of their own (own `label`, or content in the default slot). Their own text always wins. |
+| `u-file-input` | Composed into the trigger button's name as `"<button text>, <field label>"`, so the visible text stays part of the accessible name. |
+| everything else | Directly, on the native control inside the shadow root. |
+
 ---
 
 ## Slots

@@ -19,6 +19,12 @@
 - **`u-switch` ignored its inherited `label` property** — unlike its sibling `u-checkbox`, the
   default slot had no fallback, so `<u-switch label="…">` rendered neither a visible label nor an
   accessible name.
+- **A field label did not reach `u-checkbox`, `u-switch` or `u-file-input`.** Those three take
+  their accessible name from their own content — the first two wrap the native control in a
+  `<label>`, and the third's focusable element is a "choose file" button — so the mechanism that
+  works for the other seven controls did nothing for them. An empty checkbox or switch inside a
+  labelled field was named by nothing but its required marker. They now take the field's label
+  when, and only when, they have no name of their own.
 
 ### Added
 
@@ -35,9 +41,12 @@
 - A control that already carries its own `label`, `aria-label` or `aria-labelledby` is left
   untouched — overriding it would make the visible label and the accessible name disagree
   (WCAG SC 2.5.3 Label in Name).
-- Not covered by this change: `u-file-input`'s trigger button keeps its own "choose file" name
-  inside a labelled field. Composing a field label into an action button's name is a separate
-  wording decision, not a mechanical one.
+- `u-file-input` **composes** rather than overrides: its trigger is named "<visible text>,
+  <field label>", so the visible text stays part of the accessible name (SC 2.5.3) while several
+  file pickers on one screen remain distinguishable.
+- All ten form controls are covered by a reach gate that drives each one in a real browser
+  (`tests/browser/field-name-reach-census.browser.test.ts`). A new form control has to be added to
+  that table or it sits outside the gate.
 
 ## [1.40.3] - 2026-09-13
 

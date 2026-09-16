@@ -1,6 +1,7 @@
 import { html, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { live } from "lit/directives/live.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 import '../icon/UIcon.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
@@ -70,6 +71,7 @@ export class UCheckbox extends UFormControlElement<string> {
       <label class="wrapper" part="wrapper">
         <input part="input"
           type="checkbox"
+          aria-label=${ifDefined(this.contentAriaLabel)}
           ?disabled=${this.disabled || this.readonly}
           ?required=${this.required}
           .checked=${live(this.checked)}
@@ -82,7 +84,7 @@ export class UCheckbox extends UFormControlElement<string> {
           ></u-icon>
         </span>
         <span class="label" part="label">
-          <slot>${this.label}</slot>
+          <slot @slotchange=${this.handleLabelSlotChange}>${this.label}</slot>
           <span class="required" ?hidden=${!this.required}>*</span>
         </span>
       </label>
