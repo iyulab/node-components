@@ -36,7 +36,7 @@ Closable message banner with status icons, auto-dismiss timer, and open/hide tra
 | `closable` | `boolean` | `false` | ✓ | Show close button |
 | `variant` | `'solid'\|'filled'\|'outlined'\|'glass'` | `'solid'` | ✓ | Visual style |
 | `status` | `'error'\|'warning'\|'success'\|'info'\|'notice'` | — | ✓ | Status type; controls icon and color |
-| `title` | `string` | `''` | — | Title label (falls back to status name) |
+| `title` | `string` | `''` | — | Title label. Left empty, the status name in the current locale is shown (`Locale.set('ko')` → 「오류」), not the raw status value |
 | `duration` | `number` | `0` | — | Auto-dismiss delay in ms; `0` disables |
 
 ## Events

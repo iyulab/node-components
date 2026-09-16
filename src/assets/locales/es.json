@@ -28,5 +28,11 @@
   "noFileChosen": "Ningún archivo elegido",
   "filesSelected": "{count} archivos seleccionados",
   "resizePanels": "Cambiar el tamaño de los paneles",
-  "search": "Buscar"
+  "search": "Buscar",
+  "alertError": "Error",
+  "alertWarning": "Advertencia",
+  "alertSuccess": "Éxito",
+  "alertInfo": "Información",
+  "alertNotice": "Aviso",
+  "alertMessage": "Mensaje"
 }

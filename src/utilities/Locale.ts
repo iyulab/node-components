@@ -46,7 +46,15 @@ export type LocaleMessageKey =
   | 'noFileChosen'
   | 'filesSelected'
   | 'resizePanels'
-  | 'search';
+  | 'search'
+  // 알림 제목 기본값 — `title` 을 주지 않은 `u-alert` 가 쓰는 상태 이름.
+  // 종전에는 `status` 를 대문자로 올려 썼는데(`ERROR`), 그것은 어느 로케일의 낱말도 아니다.
+  | 'alertError'
+  | 'alertWarning'
+  | 'alertSuccess'
+  | 'alertInfo'
+  | 'alertNotice'
+  | 'alertMessage';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 

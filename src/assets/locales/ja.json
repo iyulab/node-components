@@ -28,5 +28,11 @@
   "noFileChosen": "ファイルが選択されていません",
   "filesSelected": "{count}個のファイルを選択しました",
   "resizePanels": "パネルのサイズ変更",
-  "search": "検索"
+  "search": "検索",
+  "alertError": "エラー",
+  "alertWarning": "警告",
+  "alertSuccess": "完了",
+  "alertInfo": "お知らせ",
+  "alertNotice": "通知",
+  "alertMessage": "メッセージ"
 }

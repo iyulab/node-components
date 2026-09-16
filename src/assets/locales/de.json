@@ -28,5 +28,11 @@
   "noFileChosen": "Keine Datei ausgewählt",
   "filesSelected": "{count} Dateien ausgewählt",
   "resizePanels": "Bereichsgröße ändern",
-  "search": "Suchen"
+  "search": "Suchen",
+  "alertError": "Fehler",
+  "alertWarning": "Warnung",
+  "alertSuccess": "Erfolg",
+  "alertInfo": "Information",
+  "alertNotice": "Hinweis",
+  "alertMessage": "Nachricht"
 }

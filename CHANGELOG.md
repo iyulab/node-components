@@ -2,7 +2,23 @@
 
 ## [1.42.0] - 2026-09-17
 
+### Fixed
+
+- **`u-alert` fell back to the raw status value as its title, which is not a word in any locale.**
+  An alert written without a `title` showed `ERROR` or `DANGER` in the title row regardless of the
+  locale in effect, so a Korean screen carried uppercase English — one such screen reached a
+  customer in a printed manual. The same component's close button has always gone through `Locale`,
+  so the locale layer was not missing, only unused in this one place. The default title now comes
+  from the locale table (`오류` / `Error` / `エラー` …), with entries added for all fourteen built-in
+  locales, and a consumer-supplied `title` still wins.
+
 ### Added
+
+- **`u-alert` warns once in development when `status` is not one of the five known values.** An
+  unknown value renders as a neutral notice with the bell icon and `role="status"` — so an alert
+  meant to report an error looks like an ordinary message and nothing says otherwise. Types cannot
+  catch this, because attributes set in HTML or produced by a server carry no type. `ALERT_STATUSES`
+  is now exported so the runtime check and the type read the same list.
 
 - **`reactWrapper({ reexport })`** — the generated React barrel can now re-export additional module
   specifiers alongside the wrappers it generates. A package that keeps a few hand-written wrappers

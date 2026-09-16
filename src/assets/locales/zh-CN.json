@@ -28,5 +28,11 @@
   "noFileChosen": "未选择文件",
   "filesSelected": "已选择{count}个文件",
   "resizePanels": "调整面板大小",
-  "search": "搜索"
+  "search": "搜索",
+  "alertError": "错误",
+  "alertWarning": "警告",
+  "alertSuccess": "成功",
+  "alertInfo": "信息",
+  "alertNotice": "提示",
+  "alertMessage": "消息"
 }

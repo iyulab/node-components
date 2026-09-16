@@ -28,5 +28,11 @@
   "noFileChosen": "لم يتم اختيار أي ملف",
   "filesSelected": "تم اختيار {count} ملفات",
   "resizePanels": "تغيير حجم اللوحات",
-  "search": "بحث"
+  "search": "بحث",
+  "alertError": "خطأ",
+  "alertWarning": "تحذير",
+  "alertSuccess": "نجاح",
+  "alertInfo": "معلومات",
+  "alertNotice": "إشعار",
+  "alertMessage": "رسالة"
 }

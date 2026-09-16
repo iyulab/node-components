@@ -8,8 +8,11 @@ import { styles } from './UAlert.styles.js';
 import { ShowEventDetail } from '../../events/ShowEvent.js';
 import { HideEventDetail } from '../../events/HideEvent.js';
 import { Locale } from '../../utilities/Locale.js';
+import { devWarnOnce } from '../../utilities/devWarning.js';
 
-export type AlertStatus = "error" | "warning" | "success" | "info" | "notice";
+/** 유효한 `u-alert` 상태 — 런타임 검증과 타입이 **같은 목록**을 보게 둔다. */
+export const ALERT_STATUSES = ["error", "warning", "success", "info", "notice"] as const;
+export type AlertStatus = (typeof ALERT_STATUSES)[number];
 export type AlertVariant = "solid" | "filled" | "outlined" | "glass";
 
 /**
@@ -23,7 +26,7 @@ export type AlertVariant = "solid" | "filled" | "outlined" | "glass";
  * @csspart container - 전체 Alert 컨테이너 (flex column)
  * @csspart header - 아이콘·타이틀·닫기 버튼을 포함하는 상단 행
  * @csspart icon - 상태 아이콘 (status 없으면 hidden)
- * @csspart title - 타이틀 텍스트 (title 미지정 시 status 대문자 또는 'MESSAGE')
+ * @csspart title - 타이틀 텍스트 (title 미지정 시 현재 로케일의 상태 이름)
  * @csspart close-btn - 닫기 버튼 (closable=true 일 때만 표시)
  * @csspart content - 스크롤 가능한 본문 영역
  * @csspart footer - 하단 슬롯 영역
@@ -69,6 +72,8 @@ export class UAlert extends UElement {
     // 부착할 것이 아니라 컴포넌트가 스스로 안다 — WAI-ARIA Alert/Status 패턴.
     this.setAttribute('role', this.mapRole(this.status));
     this.setAttribute('aria-atomic', 'true');
+
+    if (changedProperties.has('status')) this.warnUnknownStatus();
   }
 
   render() {
@@ -81,7 +86,7 @@ export class UAlert extends UElement {
             name=${this.mapIcon(this.status)}
           ></u-icon>
           <div class="title" part="title">
-            ${this.title || this.status?.toUpperCase() || 'MESSAGE'}
+            ${this.title || this.defaultTitle()}
           </div>
           <u-button class="close-btn" part="close-btn"
             variant="ghost"
@@ -125,6 +130,46 @@ export class UAlert extends UElement {
       return true;
     }
     return false;
+  }
+
+  /**
+   * `title` 을 주지 않았을 때 쓰는 제목 — **현재 로케일의 상태 이름**.
+   *
+   * 종전에는 `status` 를 대문자로 올려 썼다(`ERROR`·`WARNING` …). 그것은 **어느 로케일의
+   * 낱말도 아니어서**, 한국어 화면에 영문 대문자가 그대로 찍혔다(소비자 실측 — 이미 고객에게
+   * 전달된 매뉴얼 캡처 한 장에 그 상태로 실렸다). 같은 컴포넌트의 닫기 버튼은 처음부터
+   * `Locale` 을 탔으므로, 빠져 있던 것은 인프라가 아니라 **이 한 자리**였다.
+   *
+   * ⚠알 수 없는 `status` 는 여기서 조용히 «메시지» 로 떨어진다 — 그 사실 자체는
+   * `warnUnknownStatus` 가 개발 모드에서 알린다.
+   */
+  private defaultTitle(): string {
+    switch (this.status) {
+      case 'error': return Locale.getValue('alertError');
+      case 'warning': return Locale.getValue('alertWarning');
+      case 'success': return Locale.getValue('alertSuccess');
+      case 'info': return Locale.getValue('alertInfo');
+      case 'notice': return Locale.getValue('alertNotice');
+      default: return Locale.getValue('alertMessage');
+    }
+  }
+
+  /**
+   * 유효하지 않은 `status` 를 개발 모드에서 한 번 알린다.
+   *
+   * ★왜 필요한가: 이 컴포넌트는 알 수 없는 값을 **에러 없이** 받아 중립 알림(종 아이콘 ·
+   * `role="status"`)으로 그린다. 즉 `status="danger"` 는 *오류처럼 보이지 않는 오류 알림*이
+   * 되고 아무 신호도 나지 않는다 — 소비자가 실제로 화면 셋을 그 상태로 내보냈다.
+   * 타입은 이것을 막지 못한다(HTML 속성·서버가 만든 마크업에는 타입이 없다).
+   */
+  private warnUnknownStatus(): void {
+    const status = this.status as string | undefined;
+    if (!status || ALERT_STATUSES.includes(status as AlertStatus)) return;
+    devWarnOnce(
+      `u-alert:status:${status}`,
+      `<u-alert status="${status}"> is not a known status, so it renders as a neutral notice. ` +
+      `Use one of: ${ALERT_STATUSES.join(', ')}.`,
+    );
   }
 
   /** Alert 상태에 따른 아이콘 이름을 반환합니다. */
