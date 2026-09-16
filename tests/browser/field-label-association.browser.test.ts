@@ -3,6 +3,7 @@ import '../../src/components/field/UField.js';
 import '../../src/components/input/UInput.js';
 import '../../src/components/select/USelect.js';
 import '../../src/components/switch/USwitch.js';
+import '../../src/components/textarea/UTextarea.js';
 import { resetDevWarnings } from '../../src/utilities/devWarning.js';
 
 /**
@@ -147,5 +148,62 @@ describe('u-field 개발 모드 경고', () => {
   it('NEGATIVE: 라벨 없는 필드는 컨트롤이 없어도 침묵한다', async () => {
     await mount('<u-field><span>text</span></u-field>');
     expect(ours().length).toBe(0);
+  });
+
+  /**
+   * 🔴**cycle-639 — 위 넷은 전부 «보이는» 상태로 마운트한다. 그 시야 밖에 결함이 살아 있었다.**
+   *
+   * 판정이 `isFocusable()`(tabbable)로 후보를 골랐고 그 기본 `displayCheck` 는 **렌더 여부를
+   * 본다** ⇒ `display:none` 하위에서 처음 렌더되면 **정상 컨트롤이 «없는 것» 이 됐다.** 발견은
+   * 우리 자신의 레퍼런스 앱(`house-style`)에서다 — 로그인 폼이 700ms 뒤 열리는 `u-drawer`
+   * 안에 있어 첫 렌더가 숨겨진 상태였고, 열린 뒤 접근성 트리는 `textbox "Username"` 으로
+   * **정상**이었다. 닫힌 드로어·접힌 아코디언·비활성 탭 패널·마법사의 다음 단계는
+   * 이 스택이 겨냥한 LOB 화면형 그 자체다.
+   *
+   * ⚠**그리고 오탐 자체보다 그 다음이 나쁘다** — 키가 평평해 오탐이 «한 번뿐인 예산» 을 먼저
+   * 쓰면 같은 페이지의 **진짜 위반이 조용히 억제된다.** 마지막 두 케이스가 그 축을 고정한다.
+   */
+  describe('가시성 축 — 숨겨진 컨테이너 (cycle-639)', () => {
+    async function mountHidden(markup: string): Promise<void> {
+      await mount(`<div id="hidden-host" style="display:none">${markup}</div>`);
+    }
+
+    // 이 패키지가 내부적으로 u-field 를 쓰는 여덟 중, 슬롯 안쪽이 서로 다른 형태인 것들.
+    // (네이티브 input/textarea · tabindex 트리거 · tabindex thumb — 구조 술어의 세 갈래를 덮는다)
+    it.each([
+      ['u-input', '<u-input label="HiddenInput"></u-input>'],
+      ['u-textarea', '<u-textarea label="HiddenTextarea"></u-textarea>'],
+      ['u-select', '<u-select label="HiddenSelect"></u-select>'],
+    ])('NEGATIVE: %s 가 숨겨진 컨테이너에서 처음 렌더돼도 침묵한다', async (_name, markup) => {
+      await mountHidden(markup);
+      expect(ours(), `숨김 상태는 구조를 바꾸지 않는다 — 발화하면 정상 폼을 고발하는 것이다`).toHaveLength(0);
+    });
+
+    it('NEGATIVE: 숨겨진 u-field + u-input 조합도 침묵한다', async () => {
+      await mountHidden('<u-field label="HiddenWrapped"><u-input></u-input></u-field>');
+      expect(ours()).toHaveLength(0);
+    });
+
+    it('숨겨진 채로만 존재하는 «진짜» 위반은 여전히 발화한다', async () => {
+      await mountHidden('<u-field label="HiddenOrphan"><span>not a control</span></u-field>');
+      expect(ours(), '숨김을 통째로 면제하면 이 자리를 영구히 놓친다').toHaveLength(1);
+    });
+
+    it('비활성 컨트롤은 위반이 아니다 — 라벨이 가리킬 대상은 그대로다', async () => {
+      await mount('<u-field label="DisabledOne"><input disabled></u-field>');
+      expect(ours()).toHaveLength(0);
+    });
+
+    it('예산 축: 라벨이 다른 위반은 각각 한 번씩 발화한다', async () => {
+      await mount('<u-field label="OrphanA"><span>x</span></u-field><u-field label="OrphanB"><span>y</span></u-field>');
+      expect(ours(), '키가 평평하면 첫 하나만 보이고 나머지는 사라진다').toHaveLength(2);
+    });
+
+    it('예산 축: 오탐이 있었더라도 뒤따르는 진짜 위반을 삼키지 않는다', async () => {
+      await mountHidden('<u-input label="CorrectButHidden"></u-input>');
+      document.body.insertAdjacentHTML('beforeend', '<u-field label="RealViolation"><span>x</span></u-field>');
+      await new Promise((r) => setTimeout(r, 60));
+      expect(ours().map(String).join(' ')).toContain('RealViolation');
+    });
   });
 });

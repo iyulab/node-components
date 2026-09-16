@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.41.1] - 2026-09-16
+
+### Fixed
+
+- **The development-mode warning that reports an unnamed field fired on correctly built forms**
+  whenever the field was first rendered inside a hidden container — a closed drawer, a collapsed
+  accordion, an inactive tab panel, a wizard step that is not current. The check asked whether the
+  slotted subtree held anything *focusable*, and the focusability test it used considers an element
+  that is not rendered to be unfocusable. Whether a label has a control to name is a question about
+  structure, not about what is on screen right now, so the check now answers it structurally
+  (form-associated custom element, native form/focusable tag, `tabindex`, `contenteditable`) and no
+  longer consults visibility or `disabled`. Focus delegation still uses the focusability test, which
+  is the right question there. Consequently the warning text now reads "has no form control" rather
+  than "has no focusable control".
+- **A false warning silenced the real ones.** These warnings de-duplicate per key, and both field
+  warnings used one flat key each, so the first occurrence on a page consumed the budget for every
+  later field — a spurious warning permanently suppressed genuine ones, and even without any false
+  positive only the first of several real violations was ever reported. Both keys now include the
+  label, matching `u-icon` and `u-split-panel`, which already key by what distinguishes the case.
+
 ## [1.41.0] - 2026-09-16
 
 ### Fixed

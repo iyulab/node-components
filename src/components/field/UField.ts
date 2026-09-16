@@ -6,6 +6,23 @@ import { UElement } from "../UElement.js";
 import { devWarnOnce } from "../../utilities/devWarning.js";
 import { styles } from "./UField.styles.js";
 
+/** 네이티브로 «폼 컨트롤이거나 포커스를 받도록 저작된» 태그 — 가시성과 무관한 구조 사실이다. */
+const NATIVE_CONTROL_TAGS = new Set(['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON']);
+
+/**
+ * **구조상** 폼 컨트롤인가 — `UField.hasControlInSubtree` 가 쓰는 술어.
+ * `isFocusable()`(tabbable)과 달리 **렌더 여부도 `disabled` 도 보지 않는다**: 숨겨진 폼도,
+ * 비활성 입력도 «라벨이 가리킬 대상» 이라는 사실은 같다. 근거는 `hasControlInSubtree` 주석.
+ */
+function isFormControlByStructure(node: Element): boolean {
+  if ((node.constructor as { formAssociated?: boolean }).formAssociated === true) return true;
+  if (NATIVE_CONTROL_TAGS.has(node.tagName)) return true;
+  if (node.tagName === 'A' && node.hasAttribute('href')) return true;
+  if (node.hasAttribute('tabindex')) return true;                 // u-select 트리거 · u-slider thumb · u-rating 심볼
+  if (node.hasAttribute('contenteditable')) return true;
+  return false;
+}
+
 /**
  * 폼 컨트롤의 공통 레이아웃을 제공하는 필드 컴포넌트입니다.
  * 라벨, 필수 표시, 설명 텍스트, 유효성 검사 메시지를 포함합니다.
@@ -112,6 +129,34 @@ export class UField extends UElement {
     return null;
   }
 
+  /**
+   * 🔴**«이 필드가 이름 줄 컨트롤을 가졌는가» 는 «지금 포커스 가능한가» 와 다른 질문이다 —
+   * 그 둘을 한 술어로 답한 것이 결함이었다.**
+   *
+   * 종전 경고는 `focusTarget`(위)의 부재로 판정했는데, 그 게터는 후보를 `isFocusable()` 로
+   * 고르고 **`tabbable` 의 기본 `displayCheck` 는 렌더 여부를 본다.** ⇒ 닫힌 `u-drawer`·
+   * 접힌 아코디언·비활성 탭 패널·마법사의 다음 단계처럼 **`display:none` 하위에서 처음
+   * 렌더되면 정상 컨트롤이 «없는 것» 이 된다**(실측: `<u-input label="X">` 가 숨겨져 있기만
+   * 하면 발화 · 같은 마크업이 보이면 침묵). 그 셋은 이 스택이 겨냥한 LOB 화면형 그 자체다.
+   *
+   * ⚠**그리고 오탐보다 그 다음이 나쁘다** — `devWarnOnce` 는 키당 한 번이라 오탐이 먼저 나면
+   * 뒤이은 **진짜 위반이 조용히 억제된다.** 이 리포가 반복 기록한 *«초록으로 틀린 말»* 이
+   * 여기서는 «침묵으로 틀린 말» 이 된다. (키 세분화는 아래 `nameSlottedControl` 참조.)
+   *
+   * ⇒ 판정은 **구조로만** 한다: form-associated 커스텀 엘리먼트 · 네이티브 폼/포커스 태그 ·
+   * `tabindex` · `contenteditable`. **가시성도 `disabled` 도 보지 않는다** — 비활성 입력도
+   * 라벨이 가리키는 대상이고, 숨겨진 폼도 구조는 같다.
+   * ⚠`focusTarget` 은 **그대로 `isFocusable` 을 쓴다** — `focus()` 위임에서는 «지금 포커스
+   * 가능한가» 가 맞는 질문이다. 두 게터가 같은 술어를 공유한 것이 원인이었다.
+   */
+  private get hasControlInSubtree(): boolean {
+    for (const root of this.assignedRoots) {
+      if (isFormControlByStructure(root)) return true;
+      if (Array.from(root.querySelectorAll('*')).some(isFormControlByStructure)) return true;
+    }
+    return false;
+  }
+
   protected firstUpdated(changed: PropertyValues): void {
     super.firstUpdated(changed);
     const slot = this.shadowRoot?.querySelector('slot:not([name])') as HTMLSlotElement | null;
@@ -138,14 +183,21 @@ export class UField extends UElement {
    *
    * ⚠**자기 이름을 이미 가진 컨트롤은 건드리지 않는다** — 그쪽이 더 구체적이고,
    * 덮으면 눈에 보이는 라벨과 접근성 이름이 어긋난다(WCAG 2.5.3 Label in Name).
+   *
+   * ⚠**경고 키에 라벨을 넣는다 — 형제 경고들이 이미 그렇게 한다.** 종전 키는 평평한
+   * `field-no-control` 하나여서 **페이지당 한 번**만 발화했고, 그래서 위반이 여럿이면
+   * 첫 하나만 보인다. `u-icon` 은 `icon:${lib}:${name}`, `u-split-panel` 은
+   * `split-panel:${id}` 로 이미 구분된 키를 쓴다 — 그리고 `u-icon` 의 경고가 태어난 계기가
+   * 정확히 *"메뉴 30개가 한꺼번에 틀렸는데 신호가 0"* 이었다. 같은 부류에 같은 처방을 한다.
+   * (메시지 문안은 그대로다 — 키는 중복 제거 단위일 뿐 공개 표면이 아니다.)
    */
   private nameSlottedControl(): void {
     const control = this.controlToName;
     if (!control) {
       // ⚠경고는 «이름을 못 줬다» 가 아니라 «가리킬 것이 아예 없다» 일 때만 낸다 —
-      //   감싸개 안쪽에 포커스 대상이 있으면 정상 구성이다(위 focusTarget 주석 참조).
-      if (this.label && !this.focusTarget) {
-        devWarnOnce('field-no-control', `u-field label="${this.label}" has no focusable control in its default slot — the label names nothing. Slot a form control, or drop the label.`);
+      //   감싸개 안쪽에 컨트롤이 있으면 정상 구성이다(위 hasControlInSubtree 주석 참조).
+      if (this.label && !this.hasControlInSubtree) {
+        devWarnOnce(`field-no-control:${this.label}`, `u-field label="${this.label}" has no form control in its default slot — the label names nothing. Slot a form control, or drop the label.`);
       }
       return;
     }
@@ -156,7 +208,7 @@ export class UField extends UElement {
 
     if (ownsItsName) {
       if (this.label && (control as { label?: string }).label) {
-        devWarnOnce('field-double-label', `u-field label="${this.label}" wraps a control that also sets label="${(control as { label?: string }).label}" — the label renders twice. Set it on one of them.`);
+        devWarnOnce(`field-double-label:${this.label}`, `u-field label="${this.label}" wraps a control that also sets label="${(control as { label?: string }).label}" — the label renders twice. Set it on one of them.`);
       }
       return;
     }
