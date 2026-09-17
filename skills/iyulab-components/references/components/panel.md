@@ -38,6 +38,11 @@ General-purpose content panel. Matches a tab or tree node when using `value`.
 <u-panel>…</u-panel>                          <!-- grows with its content -->
 ```
 
+In print media the panel is not a scroll container (`overflow: visible`) — paper does not
+scroll, and a scroll container keeps the bottom margin of its last block inside itself, which
+can push a page that holds only that margin. A height you give the panel is yours to scope to
+screen media (`@media screen { … }`); in print, a fixed height would let content overflow it.
+
 ## Slots
 
 | Name | Description |

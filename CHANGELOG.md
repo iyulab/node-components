@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.42.1] - 2026-09-17
+
+### Fixed
+
+- **`u-panel` no longer adds a trailing blank page when printed.** Its `overflow: auto` makes it a
+  scroll container, which keeps the bottom margin of its last block inside the panel, so the panel
+  grew by that margin; content ending just short of a page boundary then spilled onto a page
+  holding only the margin. In print media the panel now uses `overflow: visible`, letting the
+  margin collapse past it and be truncated at the page break. Screen behavior is unchanged.
+
 ## [1.42.0] - 2026-09-17
 
 ### Fixed
