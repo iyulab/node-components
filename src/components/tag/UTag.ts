@@ -25,6 +25,7 @@ export type TagColor =
  * @slot prefix - 태그 앞에 표시할 콘텐츠
  * @slot suffix - 태그 뒤에 표시할 콘텐츠
  *
+ * @csspart base - 태그 바깥 상자
  * @csspart content - 콘텐츠 영역
  * @csspart icon - 상태 아이콘 (`icon` + 역할 색일 때만 렌더된다)
  *

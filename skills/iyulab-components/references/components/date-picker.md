@@ -81,6 +81,8 @@ day preserves whatever time-of-day was already set; only the "Today" button over
 | `day` | A date cell button |
 | `calendar-footer` | The row holding the "Today"/"Clear" quick-action buttons |
 | `calendar-time` | The row holding the time-of-day input (`mode="datetime"` only) |
+| `calendar-week` | One week row inside the date grid |
+| `time-input` | Time-of-day input (datetime mode only) |
 
 ## CSS Custom Properties
 

@@ -46,6 +46,7 @@ Content card with optional media, header, body, and footer sections.
 
 | Part | Description |
 |------|-------------|
+| `base` | Outer card box |
 | `media` | Media area wrapper |
 | `content` | Full content wrapper (header + body + footer) |
 | `header` | Header slot wrapper |

@@ -12,6 +12,7 @@ export type DividerAlign = 'start' | 'center' | 'end';
  *
  * @slot - 구분선 위에 오버레이하는 콘텐츠 (텍스트, 아이콘)
  *
+ * @csspart base - 구분선 바깥 상자
  * @csspart line-start - 구분선의 시작 부분
  * @csspart label - 슬롯 콘텐츠 부분
  * @csspart line-end - 구분선의 끝 부분

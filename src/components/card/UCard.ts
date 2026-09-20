@@ -14,6 +14,7 @@ export type CardOrientation = 'vertical' | 'horizontal';
  * @slot footer - 카드 하단 푸터 영역
  * @slot media - 카드의 미디어 영역 (이미지, 동영상 등)
  * 
+ * @csspart base - 카드 바깥 상자
  * @csspart media - 미디어 영역 컨테이너
  * @csspart content - 콘텐츠 영역 컨테이너
  * @csspart header - 헤더 영역 컨테이너

@@ -128,6 +128,8 @@ export type DatePickerMode = 'date' | 'datetime';
  * @csspart calendar-title - the "Month Year" title
  * @csspart calendar-weekdays - the weekday header row
  * @csspart calendar-grid - the date grid
+ * @csspart calendar-week - one week row inside the date grid
+ * @csspart time-input - the time-of-day input (datetime mode only)
  * @csspart day - a date cell button
  * @csspart calendar-footer - the row holding the "today"/"clear" quick-action buttons
  * @csspart calendar-time - the row holding the time-of-day input (datetime mode only)

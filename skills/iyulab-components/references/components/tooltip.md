@@ -60,6 +60,12 @@ Inherits all `UFloatingElement` properties (see [floating.md](../extensions/floa
 > *within* whichever side ended up being used. Neither can be turned off independently.
 
 
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | Outer tooltip box |
+
 ## Events
 
 | Event | Cancelable | Description |

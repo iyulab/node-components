@@ -15,6 +15,7 @@ import { Locale } from '../../utilities/Locale.js';
  * @slot prefix - 탭 레이블 앞에 표시되는 콘텐츠
  * @slot suffix - 탭 레이블 뒤에 표시되는 콘텐츠
  *
+ * @csspart base - 탭 바깥 상자
  * @csspart remove-btn - 탭 닫기 버튼
  * 
  * @event remove - 탭이 닫힐 때 발생. 이벤트 리스너에서 preventDefault()를 호출하면 탭이 닫히지 않습니다.

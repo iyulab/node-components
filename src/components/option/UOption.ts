@@ -15,7 +15,10 @@ export type OptionMarker = 'radio' | 'check';
  * @slot prefix - 라벨 앞에 표시되는 아이콘 등
  * @slot suffix - 라벨 뒤에 표시되는 추가 콘텐츠
  *
+ * @csspart base - 옵션 항목 바깥 상자
  * @csspart content - 콘텐츠 영역
+ * @csspart radio-marker - 단일 선택 모드의 라디오 표식
+ * @csspart check-marker - 다중 선택 모드의 체크 표식
  * 
  * @cssprop --option-color-interactive - 호버/포커스 시 텍스트 색상
  * @cssprop --option-border-color-interactive - 호버/포커스 시 테두리 색상

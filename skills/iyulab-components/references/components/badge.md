@@ -29,6 +29,13 @@ Status badge for numbers, labels, or dot indicators. Use `anchor` to position it
 | *(default)* | Badge label (text or icon) |
 | `suffix` | Content after the main label |
 
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | Outer badge box |
+| `icon` | Status icon (rendered only with `icon` + a semantic `color`) |
+
 ## Properties
 
 | Property | Type | Default | Reflect | Description |

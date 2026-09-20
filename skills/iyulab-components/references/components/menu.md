@@ -100,6 +100,7 @@ Keyboard-navigable menu. Supports single/multiple selection, highlight or checkm
 
 | Part | Description |
 |------|-------------|
+| `base` | Outer menu box (on `u-menu` itself; the rows below are `u-menu-item` parts) |
 | `header` | Item header row |
 | `content` | Label content area |
 | `submenu` | Inline sub-menu wrapper |

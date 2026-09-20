@@ -45,6 +45,7 @@ For interactive chips (selectable/removable), use [`u-chip`](./chip.md) instead.
 
 | Part | Description |
 |------|-------------|
+| `base` | Outer tag box |
 | `content` | Inner content wrapper |
 | `icon` | Status icon (rendered only with `icon` + a semantic `color`) |
 

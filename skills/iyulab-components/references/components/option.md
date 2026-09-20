@@ -57,6 +57,9 @@ Selectable option item. Used inside `u-select`, `u-radio`, and `u-input` (combob
 
 | Part | Description |
 |------|-------------|
+| `base` | Outer option box |
+| `radio-marker` | Single-select marker |
+| `check-marker` | Multi-select marker |
 | `content` | Main content wrapper |
 
 ## CSS Custom Properties

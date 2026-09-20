@@ -56,6 +56,10 @@ For registering custom libraries, see [icons.md](../utilities/icons.md).
 
 ## CSS Parts
 
-| Part | Description |
-|------|-------------|
-| `svg` | The rendered `<svg>` element |
+None. Style `u-icon` itself — it inherits `font-size` and `color`, which is what sizes
+and colors the glyph.
+
+⚠ A `svg` part was documented here for a long time and **never existed**: the markup comes
+from the registry or a URL and is injected as-is, so there is no element the component owns to
+put a `part` on. `::part(svg)` matched nothing and raised no error, which is exactly how that
+claim survived.

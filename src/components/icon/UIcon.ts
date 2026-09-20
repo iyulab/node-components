@@ -13,8 +13,13 @@ export type IconLibrary = (string & {})
 
 /**
  * SVG 아이콘을 이름으로 불러와 표시하는 아이콘 컴포넌트입니다.
- * 
- * @csspart svg - 아이콘의 SVG 요소에 적용됩니다.
+ *
+ * ⚠**이 컴포넌트는 part 를 내보내지 않는다 — 호스트(u-icon) 자체가 스타일 대상이다.**
+ * svg part 선언이 오래 있었으나 **구현된 적이 없었다**. SVG 마크업은 레지스트리/URL 에서 받아 unsafeHTML 로 그대로 주입하므로, 그 안의 루트 요소에
+ * part 를 붙이려면 받아 온 문자열을 고쳐 쓰거나 래퍼 요소를 하나 더 끼워야 한다 — 둘 다 기존
+ * 선택자를 깨뜨린다. 없는 part 를 겨눈 선택자는 **아무것도 맞히지 못하고 오류도 내지 않으므로**,
+ * 지키지 못할 약속을 지우는 쪽이 소비자에게 정직하다.
+ * 크기·색은 u-icon 자신에 걸면 된다(font-size·color 를 상속한다).
  */
 @customElement('u-icon')
 export class UIcon extends UElement {

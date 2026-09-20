@@ -40,6 +40,7 @@ Hierarchical location indicator. Compose `u-breadcrumb-item` elements inside `u-
 | Part | Description |
 |------|-------------|
 | `nav` | `<nav>` wrapper element |
+| `link` | Each `u-breadcrumb-item`'s link element |
 
 ---
 

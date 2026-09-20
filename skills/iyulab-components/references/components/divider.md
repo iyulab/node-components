@@ -43,6 +43,7 @@ Horizontal or vertical separator line. Slot content is overlaid as an inline lab
 
 | Part | Description |
 |------|-------------|
+| `base` | Outer divider box |
 | `line-start` | Line segment before the label |
 | `label` | Label wrapper |
 | `line-end` | Line segment after the label |
