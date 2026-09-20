@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.42.2] - 2026-09-20
+
+### Fixed
+
+- **Weak borders were invisible in the dark theme.** `--u-border-color-weak` and
+  `--u-bg-color-raised` both resolved to the same ramp step in the dark sheet, so any hairline drawn
+  with the weak token on a raised surface — sidebar header and footer rules, group separators, table
+  row rules, split-pane dividers — had a contrast ratio of 1.00 against its own background and
+  disappeared entirely. The dark weak border now sits one ramp step above the raised surface. In the
+  dark theme this makes the weak and default border tokens resolve to the same value; that is
+  intentional, since the previous weak value was not distinguishable on the surfaces it is used on.
+  The light theme is unchanged, as are the default and strong border tokens in both themes.
+
 ## [1.42.1] - 2026-09-17
 
 ### Fixed
