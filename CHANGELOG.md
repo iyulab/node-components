@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.42.4] - 2026-09-21
+
+### Changed
+
+- **`u-icon` no longer documents an `svg` CSS part.** It was declared and published but
+  **never implemented** — the SVG markup comes from the icon registry or a URL and is injected
+  as-is, so there is no element the component owns to carry a part. If you have a rule like
+  `u-icon::part(svg) { … }`, it has been matching nothing and raising no error the whole time;
+  that is why the claim survived. Style `u-icon` itself instead — it inherits `font-size` and
+  `color`, which is what sizes and colors the glyph. This removes a documented name, but
+  nothing can have depended on behavior that never existed.
+
+### Documentation
+
+- **Every CSS part a component emits is now declared and listed.** Nine parts were emitted
+  without a `@csspart` declaration (`base` on card, divider, tag and tab; `base`,
+  `radio-marker` and `check-marker` on option; `calendar-week` and `time-input` on the date
+  picker), and seven were emitted without appearing in their reference page. The badge and
+  tooltip pages had no `CSS Parts` section at all, and the breadcrumb page was missing the
+  `link` part its items expose.
+- Aiming `::part()` at a name no element carries matches nothing and raises no error, so this
+  class of drift is invisible from the outside — which is why it is now checked rather than
+  maintained by hand.
+
 ## [1.42.3] - 2026-09-20
 
 ### Fixed
