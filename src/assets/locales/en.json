@@ -36,5 +36,6 @@
   "alertNotice": "Notice",
   "alertMessage": "Message",
   "remove": "Remove",
-  "closeTab": "Close tab"
+  "closeTab": "Close tab",
+  "breadcrumb": "Breadcrumb"
 }

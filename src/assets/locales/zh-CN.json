@@ -36,5 +36,6 @@
   "alertNotice": "提示",
   "alertMessage": "消息",
   "remove": "移除",
-  "closeTab": "关闭标签页"
+  "closeTab": "关闭标签页",
+  "breadcrumb": "面包屑导航"
 }

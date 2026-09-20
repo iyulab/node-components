@@ -4,6 +4,7 @@ import '../icon/UIcon.js';
 
 import { UElement } from "../UElement.js";
 import { styles } from "./UBreadcrumb.styles.js";
+import { Locale } from '../../utilities/Locale.js';
 
 /**
  * 현재 페이지 위치를 계층 구조로 표시하는 브레드크럼 컴포넌트입니다.
@@ -22,7 +23,7 @@ export class UBreadcrumb extends UElement {
 
   render() {
     return html`
-      <nav aria-label="breadcrumb" part="nav">
+      <nav aria-label=${Locale.getValue('breadcrumb')} part="nav">
         <slot @slotchange=${this.handleSlotChange}></slot>
       </nav>
       <div hidden aria-hidden="true">

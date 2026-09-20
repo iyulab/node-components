@@ -36,5 +36,6 @@
   "alertNotice": "通知",
   "alertMessage": "メッセージ",
   "remove": "削除",
-  "closeTab": "タブを閉じる"
+  "closeTab": "タブを閉じる",
+  "breadcrumb": "パンくずリスト"
 }

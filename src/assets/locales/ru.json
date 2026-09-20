@@ -36,5 +36,6 @@
   "alertNotice": "Уведомление",
   "alertMessage": "Сообщение",
   "remove": "Удалить",
-  "closeTab": "Закрыть вкладку"
+  "closeTab": "Закрыть вкладку",
+  "breadcrumb": "Навигационная цепочка"
 }

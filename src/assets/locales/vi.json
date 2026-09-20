@@ -36,5 +36,6 @@
   "alertNotice": "Lưu ý",
   "alertMessage": "Thông báo",
   "remove": "Xóa",
-  "closeTab": "Đóng tab"
+  "closeTab": "Đóng tab",
+  "breadcrumb": "Đường dẫn điều hướng"
 }

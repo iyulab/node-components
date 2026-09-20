@@ -32,7 +32,7 @@ export class UAvatar extends UElement {
       return html`
         <img part="image"
           src=${this.image}
-          alt=${this.label || "Avatar"}
+          alt=${this.label || ''}
         />`;
     }
 

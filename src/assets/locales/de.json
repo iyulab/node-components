@@ -36,5 +36,6 @@
   "alertNotice": "Hinweis",
   "alertMessage": "Nachricht",
   "remove": "Entfernen",
-  "closeTab": "Tab schließen"
+  "closeTab": "Tab schließen",
+  "breadcrumb": "Navigationspfad"
 }

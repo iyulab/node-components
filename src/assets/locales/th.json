@@ -36,5 +36,6 @@
   "alertNotice": "ประกาศ",
   "alertMessage": "ข้อความ",
   "remove": "ลบ",
-  "closeTab": "ปิดแท็บ"
+  "closeTab": "ปิดแท็บ",
+  "breadcrumb": "เส้นทางการนำทาง"
 }

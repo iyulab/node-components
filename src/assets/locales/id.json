@@ -36,5 +36,6 @@
   "alertNotice": "Pemberitahuan",
   "alertMessage": "Pesan",
   "remove": "Hapus",
-  "closeTab": "Tutup tab"
+  "closeTab": "Tutup tab",
+  "breadcrumb": "Navigasi remah roti"
 }

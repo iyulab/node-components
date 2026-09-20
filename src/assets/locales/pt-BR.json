@@ -36,5 +36,6 @@
   "alertNotice": "Nota",
   "alertMessage": "Mensagem",
   "remove": "Remover",
-  "closeTab": "Fechar aba"
+  "closeTab": "Fechar aba",
+  "breadcrumb": "Trilha de navegação"
 }

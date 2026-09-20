@@ -36,5 +36,6 @@
   "alertNotice": "提示",
   "alertMessage": "訊息",
   "remove": "移除",
-  "closeTab": "關閉分頁"
+  "closeTab": "關閉分頁",
+  "breadcrumb": "麵包屑導覽"
 }

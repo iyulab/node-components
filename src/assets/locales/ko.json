@@ -36,5 +36,6 @@
   "alertNotice": "알림",
   "alertMessage": "메시지",
   "remove": "제거",
-  "closeTab": "탭 닫기"
+  "closeTab": "탭 닫기",
+  "breadcrumb": "탐색 경로"
 }

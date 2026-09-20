@@ -36,5 +36,6 @@
   "alertNotice": "Avis",
   "alertMessage": "Message",
   "remove": "Supprimer",
-  "closeTab": "Fermer l'onglet"
+  "closeTab": "Fermer l'onglet",
+  "breadcrumb": "Fil d'Ariane"
 }

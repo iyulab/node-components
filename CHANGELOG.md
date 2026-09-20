@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **Two accessible names were English regardless of the locale.** The breadcrumb landmark was
+  labelled `breadcrumb` inline, so a screen-reader user on a translated page heard an English
+  landmark name; it now resolves through the locale table, which gains a `breadcrumb` key in every
+  bundled language. `u-avatar` fell back to the literal `Avatar` as its image `alt` when no label
+  was given — an avatar with nothing to name is decorative, so it now carries an empty `alt` and is
+  skipped rather than announced with an English word.
+
 ## [1.42.2] - 2026-09-20
 
 ### Fixed

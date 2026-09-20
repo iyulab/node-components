@@ -36,5 +36,6 @@
   "alertNotice": "إشعار",
   "alertMessage": "رسالة",
   "remove": "إزالة",
-  "closeTab": "إغلاق علامة التبويب"
+  "closeTab": "إغلاق علامة التبويب",
+  "breadcrumb": "مسار التنقل"
 }
