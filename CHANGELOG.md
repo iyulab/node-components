@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.43.0] - 2026-09-22
+
+### Added
+
+- **`menu-2` and `layout-sidebar` join the built-in icon set.** An app shell draws its own
+  chrome — a mobile menu toggle, a sidebar toggle, an overlay close button — and two of those
+  three names existed only in a CDN-backed library. A deployment without internet access
+  rendered them blank no matter how thoroughly the app had baked its own icons into the bundle,
+  because the shell was not resolving them through that registration at all. The names now
+  exist here, so a shell can resolve all of its chrome from the bundled set.
+- Both glyphs follow what the set already contains: the same 24px grid, the same stroke weight
+  and the same caps.
+
+### Documentation
+
+- **`docs/icons.md` now says which built-in names are load-bearing outside this package.**
+  Removing one of them blanks a control in every app built on a shell that draws itself from
+  the bundle, and nothing in the type system would say so before the screen went empty.
+
 ## [1.42.4] - 2026-09-21
 
 ### Changed
