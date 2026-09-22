@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.44.0] - 2026-09-22
+
+### Fixed
+
+- 🔴 **`Theme.init()` no longer overrides styles the document already has.** The built-in token
+  sheets were appended to the end of `<head>`. A consumer stylesheet declaring the same `--u-*`
+  tokens on `:root` is placed by the bundler while the document parses, so the runtime append
+  always came *after* it — and at equal specificity the later rule wins. The result was that the
+  built-in defaults silently overrode whatever the consumer had set, with no error and no
+  warning. Where the two sheets agreed on some values and differed on others, it read as
+  *partially applied* rather than as ignored, which is harder to notice than an outright failure.
+- **The sheets are a defaults layer, so they now go in front of the document's other styles.**
+  They are inserted ahead of the first `<style>`/`<link rel=stylesheet>` — not pushed past
+  `<meta>` and friends — and their order relative to each other is preserved rather than
+  reversed. If a document has no stylesheets at all, they are appended as before; anything added
+  later still comes after them, which is the point.
+
+⚠ **If you relied on the old behavior** — that is, on the built-in values winning over a sheet
+you loaded yourself — you no longer need to; load order now works the way `:root` at equal
+specificity implies. Nothing changes for consumers who never override these tokens.
+
+### Notes
+
+- The regression measures computed values in a real browser. Asserting where a node was inserted
+  would describe placement, not the cascade, and the contract here is the cascade.
+
 ## [1.43.0] - 2026-09-22
 
 ### Added
