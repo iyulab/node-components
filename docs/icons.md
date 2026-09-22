@@ -30,6 +30,12 @@ const internalIconBundle = new Map<string, string>(
 
 To add a new built-in icon: place the `.svg` file in `src/assets/icons/` and rebuild.
 
+> **Some of these names are load-bearing outside this package.** `@iyulab/modern-app` draws its
+> shell chrome — the mobile menu toggle, the sidebar toggle, the overlay close — from this bundle
+> precisely so the shell needs no network. Removing `menu-2`, `layout-sidebar` or `x` blanks those
+> controls in every app built on that shell. A test in `modern-app` resolves each of them against
+> this bundle, so the breakage surfaces there rather than in a consumer's browser.
+
 ### Base URL
 
 If you serve static assets from a custom path (e.g. CDN), update the base URL at startup:
