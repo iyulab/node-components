@@ -104,8 +104,12 @@ export class Theme {
           this.log('style already present, skipping', name);
           continue;
         }
-        document.head.appendChild(style);
-        this.log('appended style to head', name);
+        // 🔴이 시트들은 «기본값» 층이므로 문서의 다른 스타일보다 **앞**에 들어가야 합니다.
+        //   앞서는 `appendChild` 였고, 그래서 정적으로 import 된 소비자·프리셋 시트가
+        //   («나중 로드가 이긴다»는 계약대로 썼는데도) 런타임에 뒤따라 붙는 이 시트에
+        //   **조용히 덮였습니다** — 오류도 경고도 없이 중립 값이 그려집니다.
+        document.head.insertBefore(style, this.builtInAnchor());
+        this.log('inserted style at the base layer', name);
       }
     } else {
       const styleHead = document.head.querySelectorAll('style[data-name]');
@@ -277,6 +281,32 @@ export class Theme {
     for (const [name, value] of Object.entries(accentCustomProperties(ramp)))
       root.style.setProperty(name, value);
     this.log('accent applied', this.accentSeed, '→', ramp);
+  }
+
+  /**
+   * 내장 시트를 넣을 자리 — **다른 모든 스타일 «앞», 우리가 이미 넣은 것 «뒤»**.
+   *
+   * 🔴**왜 맨 앞인가.** 이 시트들은 이름 그대로 «기본값» 층이다. 소비자(또는 하우스 프리셋)가
+   * 같은 `--u-*` 토큰을 `:root` 로 덮으면 **특이도가 대등**하므로 승부는 문서 순서가 가른다 —
+   * 그런데 이 시트는 **런타임에** 붙고 소비자 시트는 번들러가 **파싱 시점에** 올리므로,
+   * 종전(`appendChild`)에는 ***언제나 기본값이 이겼다.*** 소비자 입장에서는 덮어쓰기가
+   * **오류도 경고도 없이 무효**가 되고, 값이 일부만 다르면 「적용된 것처럼」 보이기까지 한다.
+   *
+   * ⚠**`<meta charset>` 류를 넘어 맨 앞으로 밀지 않는다** — 첫 «스타일» 앞에만 선다.
+   * 스타일이 하나도 없으면 붙일 곳이 없으므로 그대로 끝에 넣는다(뒤에 오는 것이 이긴다는
+   * 성질은 그대로다).
+   *
+   * ⚠**우리 시트끼리의 순서는 유지한다** — 매번 `firstChild` 앞에 넣으면 번들 순서가 뒤집힌다.
+   * 실제로는 `light`/`dark` 의 상대 순서가 결과를 바꾸지 않지만(`dark.css` 는
+   * `:root[theme="dark"]` 로 **특이도가 이긴다**), 순서가 뒤집히는 자료구조를 남기지 않는다.
+   */
+  private static builtInAnchor(): Node | null {
+    const ours = document.head.querySelectorAll('style[data-name]');
+    const last = ours[ours.length - 1];
+    if (last) return last.nextSibling;
+
+    const sheets = document.head.querySelectorAll('style, link[rel~="stylesheet"]');
+    return sheets[0] ?? null;
   }
 
   /** 디버그 모드시 로그 출력 함수 (인스턴스 스코프) */
