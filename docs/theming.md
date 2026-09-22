@@ -100,7 +100,7 @@ Example:
 
 1. `Theme.init()` reads the stored preference (if `store` is configured) or uses `options.default`.
 2. For `'system'`, a `prefers-color-scheme` media query listener is set up.
-3. The matching stylesheet (`light.css` or `dark.css`) is injected into `document.head` as a `<style>` tag (or `adoptedStyleSheets`).
+3. The matching stylesheet (`light.css` or `dark.css`) is injected into `document.head` as a `<style>` tag (or `adoptedStyleSheets`) — **in front of the document's other styles**, because these are the *defaults* layer (see [Custom Themes](#custom-themes)).
 4. Switching via `Theme.set('dark')` replaces the injected sheet.
 
 Components use the tokens internally, so all components automatically respond to theme changes.
@@ -306,13 +306,27 @@ reason: no yellow shade carries white text at 4.5).
 
 ## Custom Themes
 
-You can override any token after `Theme.init()` — palette primitives included:
+You can override any token — palette primitives included:
 
 ```css
 :root {
   --u-neutral-50: #1A1A2E; /* dark surface */
 }
 ```
+
+**Load your sheet however you like: a plain static `import` is enough.** The built-in sheets are
+inserted *ahead of* the document's other styles, so anything you load wins at equal specificity
+no matter when it arrives. You do not need to sequence your override after `Theme.init()`.
+
+> ⚠ **Before 1.44.0 you did**, and it failed quietly if you didn't. The built-in sheets were
+> appended to the end of `<head>`, while a static import is placed by the bundler while the
+> document parses — so the defaults landed *last* and won, and an override sheet did nothing at
+> all. There was no error and no warning, and if your sheet happened to agree with the defaults
+> on some tokens it read as *partially applied* rather than as ignored. If you are on an older
+> version, either upgrade or keep loading your sheet after `await Theme.init(...)`.
+
+⚠ **Specificity still decides.** These are all `:root` rules, so a `:where(:root)` wrapper — or
+anything else that drops specificity to 0 — loses to the built-in sheet regardless of order.
 
 Or override per-component via CSS custom properties:
 

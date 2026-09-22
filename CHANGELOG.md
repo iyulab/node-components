@@ -21,6 +21,16 @@
 you loaded yourself — you no longer need to; load order now works the way `:root` at equal
 specificity implies. Nothing changes for consumers who never override these tokens.
 
+### Documentation
+
+- **`docs/theming.md` no longer tells you to sequence your override after `Theme.init()`.** That
+  instruction existed because of the behavior above, and it outlived it by exactly one release
+  otherwise. The Custom Themes section now says a plain static `import` is enough, states what
+  changed for anyone still on an older version, and keeps the one rule that *does* still decide
+  the outcome: specificity. `How Theme Switching Works` says where the sheets are inserted, not
+  just that they are.
+- The same note is in the skill reference for `Theme`, which is where an assistant reads it.
+
 ### Notes
 
 - The regression measures computed values in a real browser. Asserting where a node was inserted
