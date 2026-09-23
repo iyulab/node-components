@@ -1,5 +1,42 @@
 # Changelog
 
+## [1.44.1] - 2026-09-23
+
+### Fixed
+
+- 🔴 **A closed popover no longer consumes `Escape`.** A popover with `escape` in its `dismiss`
+  list listens on the document from the moment it connects, and it called `preventDefault()`
+  whether or not it was open. Every form control carries a popover, so on any real screen a
+  document-level `Escape` always arrived already `defaultPrevented` — and `defaultPrevented` is
+  exactly the signal you need to tell whether an inner layer handled the key. Now only an open
+  popover consumes it. A popover waiting on `showDelay` still has its pending show cancelled, but
+  the key is not consumed because nothing was visible yet. A closed popover also ignores document
+  clicks instead of running `hide()` on every click.
+- **`u-input` no longer consumes `Escape` while its suggestion list is closed.**
+- **`u-select` returns focus to the combobox when its list closes with focus inside it.** Closing
+  the list with `Escape` or choosing an option with the keyboard left focus inside the hidden
+  list, where keyboard users lost their place and the next `Escape` was swallowed again. Closing
+  by clicking elsewhere does not move focus.
+- **Dialogs and drawers ignore an `Escape` that something inside them already consumed.** With an
+  open list inside a dialog, one press used to close both. Now the first press closes the list and
+  the second closes the dialog — one press, one layer.
+- 🔴 **`disabled` is now exposed to assistive technology on controls whose role sits on a
+  non-native node.** These controls blocked interaction but never said so: screen readers
+  announced nothing, and test tools that check actionability treated the control as enabled,
+  clicked it, and had the click silently swallowed. `aria-disabled="true"` is now set on the
+  `combobox` of `u-select` and `u-date-picker`, the `radiogroup` of `u-radio` and `u-rating`,
+  the host of `u-menu-item`, `u-tab` and `u-tree-item`, and the link of `u-breadcrumb-item`.
+
+⚠ **If you close your own panel on `Escape`**, you can now guard it with `event.defaultPrevented`
+the way the platform intends; you no longer need to inspect which popovers are open. **If a test
+locates a control by tag and expects a click on a disabled one to be attempted**, it will now
+wait instead — locate by role.
+
+### Documentation
+
+- The popover and overlay references state the `Escape` contract, with the guard a consumer
+  panel should use. The skill index states where `disabled` is exposed for each control.
+
 ## [1.44.0] - 2026-09-22
 
 ### Fixed
