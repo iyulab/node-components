@@ -539,6 +539,9 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
           await new Promise((r) => setTimeout(r, 20));
         }
         if (!popover.hasAttribute('open')) throw new Error('서브메뉴 팝오버가 열리지 않았다 — 닫힌 항목을 재면 미탐이다');
+        // 배치는 비동기로 확정되고 열림 전환도 있다 — 전환 중의 기하를 재면 러너 속도에 따라 판정이 흔들린다.
+        for (let i = 0; i < 50 && !(popover as HTMLElement).style.left; i++) await new Promise((r) => setTimeout(r, 20));
+        await Promise.all(popover.getAnimations({ subtree: true }).map((a) => a.finished));
       },
       targets: () => Array.from(document.querySelectorAll('u-menu-item u-menu-item')),
     },

@@ -133,6 +133,8 @@ export class UFloatingElement extends UElement {
 
   // 자동 위치 업데이트 정리 함수
   private cleanup: (() => void) | null = null;
+  // 진행 중인 track() 을 무효화하기 위한 세대 번호
+  private trackSeq = 0;
   // 딜레이 타이머
   private showTimer?: number;
   private hideTimer?: number;
@@ -147,8 +149,7 @@ export class UFloatingElement extends UElement {
   }
 
   disconnectedCallback(): void {
-    if (this.cleanup !== null) this.cleanup();
-    this.cleanup = null;
+    this.untrack();
     clearTimeout(this.showTimer);
     clearTimeout(this.hideTimer);
     this.showTimer = undefined;
@@ -169,6 +170,45 @@ export class UFloatingElement extends UElement {
     }
   }
 
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+
+    // `open` 을 `show()`/`hide()` 를 거치지 않고 직접 바꾼 경우(선언적 `open` 속성, 부모가
+    // 상태로 바인딩한 `?open=`, 키보드로 하위 메뉴 펼치기) — 그때도 배치와 추적은 있어야 한다.
+    // `show()` 는 `open` 을 켜기 전에 추적을 시작하므로 그 경로에서는 여는 분기가 돌지 않는다.
+    // 닫는 분기는 조건 없이 끊는다 — 계산이 아직 끝나지 않은(추적이 걸리기 전) 채 닫혀도 무효화해야 한다.
+    if (!changedProperties.has('open')) return;
+    if (this.open && this.cleanup === null) {
+      const target = this.targetEl ?? this.anchors?.[0];
+      if (target) void this.track(target);
+    } else if (!this.open) {
+      this.untrack();
+      this.targetEl = undefined;
+    }
+  }
+
+  /** 자동 위치 추적을 끊고, 계산 중인 track() 이 뒤늦게 추적을 걸지 못하게 한다. */
+  private untrack() {
+    this.trackSeq++;
+    if (this.cleanup !== null) {
+      this.cleanup();
+      this.cleanup = null;
+    }
+  }
+
+  /** 타겟 기준으로 위치를 계산하고, 스크롤·리사이즈를 따라 재배치하도록 추적을 건다. */
+  private async track(target: Element | VirtualElement) {
+    this.untrack();
+    const seq = this.trackSeq;
+    await this.reposition(target);
+    // 계산을 기다리는 사이 닫혔거나(untrack) 다른 타겟으로 다시 불렸다면 추적을 걸지 않는다.
+    if (seq !== this.trackSeq) return;
+    this.cleanup = autoUpdate(target, this, () => {
+      this.reposition(target);
+    });
+    this.targetEl = target;
+  }
+
   /** 
    * 현재 엘리먼트를 표시합니다.
    * 
@@ -185,18 +225,8 @@ export class UFloatingElement extends UElement {
     }
     // 이미 대기 중이면 무시
     if (this.showTimer) return true;
-    // 자동 위치 업데이트 정리 
-    if (this.cleanup !== null) {
-      this.cleanup();
-      this.cleanup = null;
-    }
 
-    // 위치 계산 및 스타일 적용
-    await this.reposition(target);
-    this.cleanup = autoUpdate(target, this, () => {
-      this.reposition(target);
-    });
-    this.targetEl = target;
+    await this.track(target);
     if (this.open) return true;
 
     if (this.fire<ShowEventDetail>('show', { bubbles: false, composed: false })) {
@@ -229,11 +259,7 @@ export class UFloatingElement extends UElement {
     }
     // 이미 대기 중이면 무시
     if (this.hideTimer) return true;
-    // 자동 위치 업데이트 정리 
-    if (this.cleanup !== null) {
-      this.cleanup();
-      this.cleanup = null;
-    }
+    this.untrack();
 
     // 타겟 엘리먼트 초기화
     await this.updateComplete;
