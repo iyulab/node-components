@@ -39,6 +39,26 @@ same chain.
 | `Locale.get()` | Get active locale |
 | `Locale.register(locale, table)` | Register/override locale messages (partial merge supported) |
 | `Locale.getValue(key, params?)` | Resolve a localized message for current locale |
+| `Locale.namespace(name)` | A string table for a package or app area, keyed by its own union — returns a handle (below) |
+
+### Namespaces
+
+`Locale.getValue` covers the library's own message keys. A package built on top keeps its own
+strings in a namespace and follows the same active locale and chain:
+
+```ts
+const t = Locale.namespace<'empty' | 'greet'>('my-package');
+t.register('en', { empty: 'No data', greet: 'Hello, {who}' });
+t.register('ko', { empty: '데이터가 없습니다' });   // partial tables merge
+
+t.text('empty');                       // active locale
+t.text('greet', { who: 'Ann' });       // {name} substitution
+t.textIn(el.locale, 'empty');          // a given locale (e.g. an element's own `locale`);
+                                       // empty → active locale. Does not change the active one.
+```
+
+A key missing from every table in the chain returns the key itself, so a gap shows on screen
+instead of rendering as an empty string.
 
 ## Example
 

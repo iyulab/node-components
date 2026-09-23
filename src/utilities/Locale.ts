@@ -192,6 +192,12 @@ export interface LocaleNamespace<K extends string = string> {
    * 되는 것보다 화면에 드러나는 편이 낫다.
    */
   text(key: K, params?: Record<string, string | number>): string;
+  /**
+   * `text()` 와 같되 **주어진 로케일**로 찾는다 — 활성 로케일은 바꾸지 않는다.
+   * 요소 하나가 문서와 다른 언어를 쓰는 자리(인스턴스별 `locale` 속성)를 위한 것이다.
+   * 사슬은 `text()` 와 같고, `locale` 이 비어 있으면(`undefined`·`''`) 활성 로케일을 쓴다.
+   */
+  textIn(locale: LocaleTag | undefined, key: K, params?: Record<string, string | number>): string;
 }
 
 /**
@@ -238,6 +244,15 @@ export class Locale {
    * @param name 네임스페이스 이름. 패키지·컴포넌트 단위를 권장합니다(예: `'u-data-view'`).
    */
   public static namespace<K extends string = string>(name: string): LocaleNamespace<K> {
+    // 메서드를 클로저로 둔다 — `this` 에 기대면 `const { text } = ns` 처럼 떼어 쓰는 순간 깨진다.
+    const textIn = (locale: LocaleTag | undefined, key: K, params?: Record<string, string | number>): string => {
+      const byLocale = namespaces.get(name);
+      for (const tag of chainOf(locale || active)) {
+        const value = byLocale?.get(tag)?.[key];
+        if (value) return interpolate(value, params);
+      }
+      return key;
+    };
     return {
       name,
       register(locale: LocaleTag, table: Partial<Record<K, string>>): void {
@@ -246,14 +261,8 @@ export class Locale {
         byLocale.set(norm, { ...byLocale.get(norm), ...(table as Record<string, string>) });
         namespaces.set(name, byLocale);
       },
-      text(key: K, params?: Record<string, string | number>): string {
-        const byLocale = namespaces.get(name);
-        for (const tag of chainOf(active)) {
-          const value = byLocale?.get(tag)?.[key];
-          if (value) return interpolate(value, params);
-        }
-        return key;
-      },
+      text: (key: K, params?: Record<string, string | number>) => textIn(undefined, key, params),
+      textIn,
     };
   }
 }

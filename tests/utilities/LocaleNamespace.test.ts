@@ -54,6 +54,27 @@ describe('Locale.namespace', () => {
     expect(t.text('k'), '미등록 로케일 → en').toBe('english');
   });
 
+  it('⑸ textIn — 주어진 로케일로 같은 사슬을 탄다(인스턴스별 locale 속성의 자리)', () => {
+    const t = Locale.namespace<'k' | 'step'>('text-in');
+    t.register('en', { k: 'english', step: 'Step {n}' });
+    t.register('ko', { k: '한국어', step: '{n}단계' });
+    t.register('zh-TW', { k: '繁體' });
+    Locale.set('en');
+
+    expect(t.textIn('ko-KR', 'k'), '주어진 로케일 → 접두').toBe('한국어');
+    expect(t.textIn('zh-HK', 'k'), '기본 지역형까지 같은 사슬').toBe('繁體');
+    expect(t.textIn('ko', 'step', { n: 2 }), '치환').toBe('2단계');
+    expect(Locale.get(), '활성 로케일을 바꾸지 않는다').toBe('en');
+
+    Locale.set('ko');
+    expect(t.textIn(undefined, 'k'), 'undefined → 활성 로케일').toBe('한국어');
+    expect(t.textIn('', 'k'), '빈 문자열 → 활성 로케일').toBe('한국어');
+    expect(t.textIn('nl', 'k'), '미등록 → en').toBe('english');
+    const { text, textIn } = t;
+    expect(text('k'), '떼어 써도 동작한다').toBe('한국어');
+    expect(textIn('en', 'k')).toBe('english');
+  });
+
   it('⑶-a 지역 없는 태그가 지역형 테이블로 내려간다 — getValue 와 같은 규칙', () => {
     const t = Locale.namespace<'k'>('chain-regional');
     t.register('en', { k: 'english' });
