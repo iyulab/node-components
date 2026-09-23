@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.45.0] - 2026-09-23
+
+### Added
+
+- **`LocaleNamespace.textIn(locale, key, params?)` — look a string up in a given locale without
+  changing the active one.** A namespace resolved only against the active locale, and the lookup
+  chain is internal, so a package whose elements take their own `locale` attribute (one element in
+  a different language from the document) had to re-implement the chain to honor it. `textIn`
+  walks the same chain as `text()`; an empty `locale` means the active one. `text` and `textIn`
+  also keep working when taken off the handle (`const { text } = ns`).
+
+### Fixed
+
+- **A region-less language tag now reaches the shipped regional table.** Chinese and Portuguese
+  ship only as `zh-CN`, `zh-TW` and `pt-BR`, and the lookup chain only shortened a tag (`ko-KR` →
+  `ko`) — so a page with `<html lang="zh">` or `lang="pt"`, a common and valid choice, rendered
+  every built-in string (clear buttons, steppers, validation messages) in English. The chain now
+  shortens a tag one subtag at a time and then falls to the language's default regional table:
+  `zh` → `zh-CN`, `pt` → `pt-BR`, and Traditional Chinese tags (`zh-Hant`, `zh-HK`, `zh-MO`) →
+  `zh-TW` rather than the Simplified default. A table you register for the region-less tag still
+  comes first. `Locale.namespace()` shares the chain, so packages that register their own strings
+  get the same resolution.
+
 ## [1.44.1] - 2026-09-23
 
 ### Fixed
