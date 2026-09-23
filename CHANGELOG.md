@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.45.1] - 2026-09-24
+
+### Fixed
+
+- 🔴 **A floating element opened by setting `open` is now positioned.** Positioning and scroll/resize
+  tracking ran only inside `show()`, so every path that sets `open` directly left the element at
+  its static position with no coordinates at all. The visible case is a `u-menu-item` submenu
+  opened with the keyboard (`ArrowRight`) or by clicking its header: the submenu drew on top of
+  its parent item instead of beside it — mouse users never saw it, because hovering goes through
+  `show()`. A declarative `<u-popover open>` was affected the same way. Opening by `open` now
+  positions against the anchor and tracks it; closing by `open` stops tracking.
+
 ## [1.45.0] - 2026-09-23
 
 ### Added
