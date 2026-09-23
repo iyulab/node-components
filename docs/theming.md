@@ -328,6 +328,22 @@ no matter when it arrives. You do not need to sequence your override after `Them
 ⚠ **Specificity still decides.** These are all `:root` rules, so a `:where(:root)` wrapper — or
 anything else that drops specificity to 0 — loses to the built-in sheet regardless of order.
 
+**In dark mode the same holds for the scale tokens** — radius, spacing, the type scale, motion
+and fonts. `dark.css` declares those at the same specificity as `:root`, so one `:root` override
+applies in both modes. **Colors are different on purpose:** the dark palette and the colors derived
+from it are scoped to `:root[theme="dark"]` and win over a plain `:root` rule, so a light-tuned
+color override does not leak into dark. To override a color in dark mode too, declare it there:
+
+```css
+:root { --u-primary-color: #0B5FFF; }
+:root[theme="dark"] { --u-primary-color: #5B9BFF; }
+```
+
+> ⚠ **Before 1.44.1 the scale tokens were scoped like the colors**, so a `:root` override of
+> radius or the type scale — including `@iyulab/enterprise`'s preset — silently lost in dark
+> mode, and `prefers-reduced-motion` was ignored there because the durations were redeclared at
+> the higher specificity.
+
 Or override per-component via CSS custom properties:
 
 ```css

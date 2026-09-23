@@ -27,6 +27,19 @@
   `combobox` of `u-select` and `u-date-picker`, the `radiogroup` of `u-radio` and `u-rating`,
   the host of `u-menu-item`, `u-tab` and `u-tree-item`, and the link of `u-breadcrumb-item`.
 
+- 🔴 **In dark mode, a `:root` override of the scale tokens now wins, as it does in light.**
+  `dark.css` redeclared radius, spacing, the type scale, motion and fonts — with the same values as
+  `light.css` — under `:root[theme="dark"]`, which outranks `:root`. So every layer that sets those
+  tokens on `:root` (the `@iyulab/enterprise` preset, a brand sheet) lost in dark mode regardless
+  of load order. Colors still switched, so dark mode *looked* fine while the type scale and radius
+  quietly fell back to neutral. Those tokens now sit in a `:root:where([theme="dark"])` block, at
+  the same specificity as `:root`. `dark.css` still defines every token, so a fixed-dark screen
+  that loads only that sheet is unaffected. **No visual change** for anyone not overriding them.
+- 🔴 **`prefers-reduced-motion` is honoured in dark mode.** The durations were among the tokens
+  redeclared at the higher specificity, so `light.css`'s reduced-motion rule lost to them and
+  animations kept running for users who asked for less motion. `dark.css` now carries the same
+  rule for itself.
+
 ⚠ **If you close your own panel on `Escape`**, you can now guard it with `event.defaultPrevented`
 the way the platform intends; you no longer need to inspect which popovers are open. **If a test
 locates a control by tag and expects a click on a disabled one to be attempted**, it will now
@@ -36,6 +49,8 @@ wait instead — locate by role.
 
 - The popover and overlay references state the `Escape` contract, with the guard a consumer
   panel should use. The skill index states where `disabled` is exposed for each control.
+- `docs/theming.md` says which tokens a `:root` override reaches in dark mode, and how to
+  override a color there too.
 
 ## [1.44.0] - 2026-09-22
 

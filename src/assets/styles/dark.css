@@ -185,47 +185,6 @@
   --u-danger-color-weak:         var(--u-red-500);
   --u-danger-color:              var(--u-red-600);  /* 면: 흰 글자 6.83 ✓ */
   --u-danger-color-strong:       var(--u-red-800);  /* 글자: 바탕 4.87 ✓ (700 은 3.67 ✗) */
-  /* ==========================================================================
-     Radius Scale — 모서리 반경
-     리터럴을 흩뿌리면 값이 갈린다(실제로 pill 이 999px/9999px 두 표기로 나뉘어 있었다).
-     ========================================================================== */
-  --u-radius-none:   0;
-  --u-radius-sm:     3px;
-  --u-radius-md:     4px;
-  --u-radius-lg:     6px;
-  --u-radius-xl:     8px;
-  /* ★상단 2단은 **면(surface)용**이다 — 카드·패널·대화상자처럼 큰 사각형은 컨트롤과
-     같은 반경을 쓰면 각져 보인다. 기존 5단은 **컨트롤용**이고 값을 바꾸지 않는다
-     (바꾸면 모든 소비자의 버튼·입력이 동시에 움직인다). */
-  --u-radius-2xl:   12px;
-  --u-radius-3xl:   16px;
-  --u-radius-pill:   9999px;
-  --u-radius-circle: 50%;
-
-  /* ==========================================================================
-     Space Scale — 컨테이너·오버레이의 절대 여백
-     ⚠**여백은 하나의 축이 아니다.** 이 스케일은 컨테이너/오버레이의 **레이아웃 여백**만
-     담당한다. 폼·인라인 요소의 `em` 여백은 상속된 `font-size` 에 비례하는 것이 의도이므로
-     **여기로 흡수하지 않는다.** 반경과 마찬가지로 테마와 무관하므로 두 시트가 같다.
-     축 구분과 근거는 docs/design-tokens.md 참조.
-     ========================================================================== */
-  --u-space-3xs:  2px;
-  --u-space-2xs:  4px;
-  --u-space-xs:   6px;
-  --u-space-sm:   8px;
-  --u-space-md:  12px;
-  --u-space-lg:  16px;
-  /* ★상단 4단은 **화면 리듬**이다 — 카드 안쪽 여백(20~24)·섹션 간격(24~32)·페이지 여백
-     (32~40). 종전에는 이 구간이 통째로 비어 있어 소비자가 전부 리터럴로 적었고,
-     그래서 앱마다 화면 밀도가 달라졌다. `lg`(16px) 이하는 **요소 사이**, `xl` 이상은
-     **영역 사이**로 나눠 쓴다.
-     ⚠`xs: 6px` 는 4px 격자에서 벗어나 있으나 **바꾸지 않는다** — 이미 배선된 컨트롤
-     여백이 전부 움직인다. 신규 단은 전부 4의 배수로 둔다. */
-  --u-space-xl:  20px;
-  --u-space-2xl: 24px;
-  --u-space-3xl: 32px;
-  --u-space-4xl: 40px;
-
   /* Text Colors */
   --u-txt-color:             var(--u-neutral-900);
   --u-txt-color-inverse:     var(--u-neutral-100);
@@ -336,6 +295,64 @@
   --u-shadow-xl: 0 6px 18px rgba(0, 0, 0, 0.60), 0 2px 6px rgba(0, 0, 0, 0.30);   /* = shadow-color-stronger */
 
 
+  /* Scrollbar Colors */
+  --u-scrollbar-color:       var(--u-neutral-500);
+  --u-scrollbar-color-hover: var(--u-neutral-600);
+  --u-scrollbar-track-color: transparent;
+}
+
+/* ==========================================================================
+   ★모드와 무관한 스케일 — 반경·여백·글자 스케일·모션·글꼴.
+   값이 light.css 와 **같다.** 그런데 위 블록(`:root[theme="dark"]`, 특이도 0,1,1)에 두면
+   `:root`(0,1,0)로 이 토큰을 덮는 **모든 층**(하우스 프리셋·소비자 브랜드 시트)이 다크
+   모드에서만 **로드 순서와 무관하게** 진다 — 에러도 경고도 없이, 색은 정상으로 바뀌므로
+   «다크가 잘 된다» 로 보인다. `:where()` 로 특이도를 `:root` 와 같게 두면 층 모델이 라이트와
+   똑같이 로드 순서로 선다.
+   ⚠이 블록을 지우지 말 것 — 이 시트만 쓰는 «고정 다크 디자인» 소비자(docs/theming.md)는
+   이 토큰들을 여기서 받는다. 두 시트를 함께 쓸 때는 값이 같으므로 어느 쪽이 이겨도 같다.
+   ========================================================================== */
+:root:where([theme="dark"]) {
+  /* ==========================================================================
+     Radius Scale — 모서리 반경
+     리터럴을 흩뿌리면 값이 갈린다(실제로 pill 이 999px/9999px 두 표기로 나뉘어 있었다).
+     ========================================================================== */
+  --u-radius-none:   0;
+  --u-radius-sm:     3px;
+  --u-radius-md:     4px;
+  --u-radius-lg:     6px;
+  --u-radius-xl:     8px;
+  /* ★상단 2단은 **면(surface)용**이다 — 카드·패널·대화상자처럼 큰 사각형은 컨트롤과
+     같은 반경을 쓰면 각져 보인다. 기존 5단은 **컨트롤용**이고 값을 바꾸지 않는다
+     (바꾸면 모든 소비자의 버튼·입력이 동시에 움직인다). */
+  --u-radius-2xl:   12px;
+  --u-radius-3xl:   16px;
+  --u-radius-pill:   9999px;
+  --u-radius-circle: 50%;
+
+  /* ==========================================================================
+     Space Scale — 컨테이너·오버레이의 절대 여백
+     ⚠**여백은 하나의 축이 아니다.** 이 스케일은 컨테이너/오버레이의 **레이아웃 여백**만
+     담당한다. 폼·인라인 요소의 `em` 여백은 상속된 `font-size` 에 비례하는 것이 의도이므로
+     **여기로 흡수하지 않는다.** 반경과 마찬가지로 테마와 무관하므로 두 시트가 같다.
+     축 구분과 근거는 docs/design-tokens.md 참조.
+     ========================================================================== */
+  --u-space-3xs:  2px;
+  --u-space-2xs:  4px;
+  --u-space-xs:   6px;
+  --u-space-sm:   8px;
+  --u-space-md:  12px;
+  --u-space-lg:  16px;
+  /* ★상단 4단은 **화면 리듬**이다 — 카드 안쪽 여백(20~24)·섹션 간격(24~32)·페이지 여백
+     (32~40). 종전에는 이 구간이 통째로 비어 있어 소비자가 전부 리터럴로 적었고,
+     그래서 앱마다 화면 밀도가 달라졌다. `lg`(16px) 이하는 **요소 사이**, `xl` 이상은
+     **영역 사이**로 나눠 쓴다.
+     ⚠`xs: 6px` 는 4px 격자에서 벗어나 있으나 **바꾸지 않는다** — 이미 배선된 컨트롤
+     여백이 전부 움직인다. 신규 단은 전부 4의 배수로 둔다. */
+  --u-space-xl:  20px;
+  --u-space-2xl: 24px;
+  --u-space-3xl: 32px;
+  --u-space-4xl: 40px;
+
   /* ==========================================================================
      Type Scale — 글자 크기·굵기·행간·자간의 **한 벌**
      ★**크기만 주면 스케일이 되지 않는다.** 소비자가 크기만 받고 굵기·행간을 각자 정하면
@@ -403,11 +420,6 @@
   --u-ease-decelerate: cubic-bezier(0, 0, 0, 1);
   --u-ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
 
-  /* Scrollbar Colors */
-  --u-scrollbar-color:       var(--u-neutral-500);
-  --u-scrollbar-color-hover: var(--u-neutral-600);
-  --u-scrollbar-track-color: transparent;
-
   /* ==========================================================================
      Font Styles
      ★**CJK 폴백을 스택에 포함한다 — 국제화이지 취향이 아니다.**
@@ -425,4 +437,17 @@
   --u-font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
   --u-font-modern:  'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --u-font-rounded: 'Nunito', 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ★`prefers-reduced-motion` — light.css 와 같은 규칙을 이 시트도 진다. 이 시트만 쓰는
+   소비자가 있고, 두 시트를 함께 쓸 때는 어느 시트가 뒤에 오든 **마지막 선언이 이 0ms**
+   가 되도록 각 시트가 자기 블록 뒤에 둔다. 종전에는 지속시간이 위 (0,1,1) 블록에 있어
+   다크 모드에서 «동작 줄이기» 설정이 **무시됐다.** */
+@media (prefers-reduced-motion: reduce) {
+  :root:where([theme="dark"]) {
+    --u-duration-instant: 0ms;
+    --u-duration-fast:    0ms;
+    --u-duration-normal:  0ms;
+    --u-duration-slow:    0ms;
+  }
 }

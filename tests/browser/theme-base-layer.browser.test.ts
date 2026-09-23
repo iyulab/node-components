@@ -91,3 +91,51 @@ describe('Theme.init() — 내장 시트는 바닥 층이다', () => {
     expect(document.head.querySelectorAll('style[data-name]').length).toBe(first);
   });
 });
+
+/**
+ * 같은 계약의 **다크 모드** — 층 모델이 테마 하나에서만 서면 계약의 절반이다.
+ *
+ * ★**결함**(docket `#413`): `dark.css` 는 `:root[theme="dark"]`(특이도 0,1,1) 한 블록에
+ * 반경·여백·글자 스케일·모션·글꼴까지 **라이트와 같은 값으로** 다시 적고 있었다. 그러면
+ * `:root`(0,1,0)로 이 토큰을 덮는 모든 층이 다크 모드에서만 **로드 순서와 무관하게** 진다.
+ * 색은 정상으로 바뀌므로 «다크가 잘 된다» 로 보이고 스케일만 조용히 중립으로 돌아간다 —
+ * 위 결함과 같은 형태이고 기전만 다르다(로드 순서 → 특이도). `Theme.init()` 기본값이
+ * `'system'` 이라 OS 가 다크인 사용자는 앱이 아무것도 하지 않아도 이 경로를 탄다.
+ */
+describe('Theme.init() — 다크 모드에서도 `:root` 층이 선다', () => {
+  const CONSUMER_SHEET_ID = 'probe-consumer-sheet-dark';
+  const read = (token: string) => getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+
+  beforeEach(() => {
+    for (const el of document.head.querySelectorAll('style[data-name]')) el.remove();
+    document.getElementById(CONSUMER_SHEET_ID)?.remove();
+  });
+
+  afterEach(async () => {
+    document.getElementById(CONSUMER_SHEET_ID)?.remove();
+    await Theme.init({ default: 'light' });
+  });
+
+  it('🔴모드와 무관한 토큰은 다크에서도 소비자 `:root` 가 이긴다', async () => {
+    const consumer = document.createElement('style');
+    consumer.id = CONSUMER_SHEET_ID;
+    consumer.textContent = ':root { --u-text-title-size: 99px; --u-radius-md: 99px; --u-space-md: 99px; }';
+    document.head.appendChild(consumer);
+
+    await Theme.init({ default: 'dark' });
+    expect(document.documentElement.getAttribute('theme')).toBe('dark');
+
+    // 네거티브 컨트롤의 자리: 이 토큰들을 (0,1,1) 블록으로 되돌리면 중립 값(20px·4px·12px)이 된다.
+    expect(read('--u-text-title-size')).toBe('99px');
+    expect(read('--u-radius-md')).toBe('99px');
+    expect(read('--u-space-md')).toBe('99px');
+  });
+
+  it('NEGATIVE: 색은 여전히 다크 시트가 정한다 — 스케일만 내려갔고 모드는 그대로다', async () => {
+    await Theme.init({ default: 'light' });
+    const lightInk = read('--u-neutral-900');
+    await Theme.init({ default: 'dark' });
+    expect(read('--u-neutral-900')).not.toBe(lightInk);
+  });
+});
+
