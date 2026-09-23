@@ -37,5 +37,7 @@
   "alertMessage": "Thông báo",
   "remove": "Xóa",
   "closeTab": "Đóng tab",
-  "breadcrumb": "Đường dẫn điều hướng"
+  "breadcrumb": "Đường dẫn điều hướng",
+  "confirm": "Xác nhận",
+  "cancel": "Hủy"
 }

@@ -40,6 +40,12 @@
   animations kept running for users who asked for less motion. `dark.css` now carries the same
   rule for itself.
 
+- **`Dialog.confirm` and `Dialog.prompt` label their buttons in the active locale.** The defaults
+  were the English literals `Cancel` and `Confirm`, so an app that had switched `Locale` got
+  English buttons under a translated message, while every other built-in label in this package
+  already followed the locale. `confirm` and `cancel` are now in all fourteen built-in tables;
+  labels you pass explicitly still win, and English is unchanged.
+
 ⚠ **If you close your own panel on `Escape`**, you can now guard it with `event.defaultPrevented`
 the way the platform intends; you no longer need to inspect which popovers are open. **If a test
 locates a control by tag and expects a click on a disabled one to be attempted**, it will now

@@ -37,5 +37,7 @@
   "alertMessage": "消息",
   "remove": "移除",
   "closeTab": "关闭标签页",
-  "breadcrumb": "面包屑导航"
+  "breadcrumb": "面包屑导航",
+  "confirm": "确定",
+  "cancel": "取消"
 }

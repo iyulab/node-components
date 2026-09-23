@@ -37,5 +37,7 @@
   "alertMessage": "رسالة",
   "remove": "إزالة",
   "closeTab": "إغلاق علامة التبويب",
-  "breadcrumb": "مسار التنقل"
+  "breadcrumb": "مسار التنقل",
+  "confirm": "تأكيد",
+  "cancel": "إلغاء"
 }

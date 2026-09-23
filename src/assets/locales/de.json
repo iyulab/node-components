@@ -37,5 +37,7 @@
   "alertMessage": "Nachricht",
   "remove": "Entfernen",
   "closeTab": "Tab schließen",
-  "breadcrumb": "Navigationspfad"
+  "breadcrumb": "Navigationspfad",
+  "confirm": "Bestätigen",
+  "cancel": "Abbrechen"
 }

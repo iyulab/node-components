@@ -55,8 +55,8 @@ interface DialogOptions {
 }
 
 interface ConfirmDialogOptions extends DialogOptions {
-  confirmLabel?: string;     // default: 'Confirm'
-  cancelLabel?: string;      // default: 'Cancel'
+  confirmLabel?: string;     // default: the active locale's `confirm` (en: 'Confirm')
+  cancelLabel?: string;      // default: the active locale's `cancel` (en: 'Cancel')
 }
 
 interface PromptDialogOptions extends ConfirmDialogOptions {

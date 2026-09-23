@@ -37,5 +37,7 @@
   "alertMessage": "메시지",
   "remove": "제거",
   "closeTab": "탭 닫기",
-  "breadcrumb": "탐색 경로"
+  "breadcrumb": "탐색 경로",
+  "confirm": "확인",
+  "cancel": "취소"
 }

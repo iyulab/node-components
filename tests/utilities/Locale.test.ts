@@ -1,5 +1,9 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
+import { readdirSync, readFileSync } from 'fs';
+import { join } from 'path';
 import { Locale } from '../../src/utilities/Locale.js';
+
+const LOCALES_DIR = join(__dirname, '../../src/assets/locales');
 
 describe('Locale', () => {
   afterEach(() => {
@@ -151,6 +155,28 @@ describe('Locale', () => {
     it('keeps unresolved placeholders as-is', () => {
       expect(Locale.getValue('rangeUnderflow', {})).toBe('Value must be at least {min}');
     });
+  });
+
+  /**
+   * 내장 표 전부가 영어 표의 모든 키를 갖는다.
+   * 한 언어에서 키가 빠지면 그 언어만 조용히 영어로 떨어진다 — 영어 폴백은 오류를 내지 않으므로
+   * 눈으로 보는 검수에서만 드러난다. 새 키를 더할 때 열네 표를 함께 고치게 하는 자리다.
+   */
+  it('every shipped locale defines every key the English table defines', () => {
+    const read = (f: string) => JSON.parse(readFileSync(join(LOCALES_DIR, f), 'utf-8')) as Record<string, string>;
+    const enKeys = Object.keys(read('en.json')).sort();
+    const missing: string[] = [];
+    for (const f of readdirSync(LOCALES_DIR).filter(n => n.endsWith('.json'))) {
+      const keys = new Set(Object.keys(read(f)));
+      for (const k of enKeys) if (!keys.has(k)) missing.push(`${f}: ${k}`);
+    }
+    expect(missing).toEqual([]);
+  });
+
+  it('dialog button labels follow the active locale', () => {
+    expect([Locale.getValue('confirm'), Locale.getValue('cancel')]).toEqual(['Confirm', 'Cancel']);
+    Locale.set('ko');
+    expect([Locale.getValue('confirm'), Locale.getValue('cancel')]).toEqual(['확인', '취소']);
   });
 
   describe('register', () => {

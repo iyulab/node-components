@@ -37,5 +37,7 @@
   "alertMessage": "Mensaje",
   "remove": "Quitar",
   "closeTab": "Cerrar pestaña",
-  "breadcrumb": "Ruta de navegación"
+  "breadcrumb": "Ruta de navegación",
+  "confirm": "Confirmar",
+  "cancel": "Cancelar"
 }

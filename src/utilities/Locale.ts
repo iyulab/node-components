@@ -59,7 +59,11 @@ export type LocaleMessageKey =
   // 접근성 이름 — 아이콘만 있는 컨트롤이라 화면에 글자가 없다. 로케일을 타지 않으면
   // 스크린리더 사용자만 영어를 듣는다(눈으로 보는 검수에서 드러나지 않는다).
   | 'remove'
-  | 'closeTab';
+  | 'closeTab'
+  // `Dialog.confirm`/`prompt` 의 기본 버튼 문구. 종전에는 영어 리터럴이라 로케일을 바꾼 앱의
+  // 한국어 본문 아래에 `Cancel`/`Confirm` 이 섰다.
+  | 'confirm'
+  | 'cancel';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 

@@ -37,5 +37,7 @@
   "alertMessage": "ข้อความ",
   "remove": "ลบ",
   "closeTab": "ปิดแท็บ",
-  "breadcrumb": "เส้นทางการนำทาง"
+  "breadcrumb": "เส้นทางการนำทาง",
+  "confirm": "ยืนยัน",
+  "cancel": "ยกเลิก"
 }

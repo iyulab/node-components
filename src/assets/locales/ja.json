@@ -37,5 +37,7 @@
   "alertMessage": "メッセージ",
   "remove": "削除",
   "closeTab": "タブを閉じる",
-  "breadcrumb": "パンくずリスト"
+  "breadcrumb": "パンくずリスト",
+  "confirm": "OK",
+  "cancel": "キャンセル"
 }

@@ -37,5 +37,7 @@
   "alertMessage": "Message",
   "remove": "Remove",
   "closeTab": "Close tab",
-  "breadcrumb": "Breadcrumb"
+  "breadcrumb": "Breadcrumb",
+  "confirm": "Confirm",
+  "cancel": "Cancel"
 }

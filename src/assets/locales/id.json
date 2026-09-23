@@ -37,5 +37,7 @@
   "alertMessage": "Pesan",
   "remove": "Hapus",
   "closeTab": "Tutup tab",
-  "breadcrumb": "Navigasi remah roti"
+  "breadcrumb": "Navigasi remah roti",
+  "confirm": "Konfirmasi",
+  "cancel": "Batal"
 }

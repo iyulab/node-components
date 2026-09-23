@@ -8,6 +8,7 @@ import type { ButtonVariant } from '../components/button/UButton.js';
 import type { CloseOnPolicy } from '../components/UOverlayElement.js';
 import type { UInput, InputType } from '../components/input/UInput.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { Locale } from './Locale.js';
 
 /** 공통 Dialog 옵션 */
 export interface DialogOptions {
@@ -31,9 +32,9 @@ export interface DialogOptions {
 
 /** Confirm Dialog 옵션 */
 export interface ConfirmDialogOptions extends DialogOptions {
-  /** 확인 버튼 텍스트 (기본: 'Confirm') */
+  /** 확인 버튼 텍스트 (기본: 현재 로케일의 `confirm` — 영어는 'Confirm') */
   confirmLabel?: string;
-  /** 취소 버튼 텍스트 (기본: 'Cancel') */
+  /** 취소 버튼 텍스트 (기본: 현재 로케일의 `cancel` — 영어는 'Cancel') */
   cancelLabel?: string;
 }
 
@@ -92,8 +93,8 @@ export class Dialog {
       ...options,
       content: message,
       actions: [
-        { label: options?.cancelLabel || 'Cancel', value: 'cancel', variant: 'outlined' },
-        { label: options?.confirmLabel || 'Confirm', value: 'confirm' },
+        { label: options?.cancelLabel || Locale.getValue('cancel'), value: 'cancel', variant: 'outlined' },
+        { label: options?.confirmLabel || Locale.getValue('confirm'), value: 'confirm' },
       ],
     });
     return result === 'confirm';
@@ -132,8 +133,8 @@ export class Dialog {
         </div>
       `,
       actions: [
-        { label: options?.cancelLabel || 'Cancel', value: 'cancel', variant: 'outlined' },
-        { label: options?.confirmLabel || 'Confirm', value: 'confirm' },
+        { label: options?.cancelLabel || Locale.getValue('cancel'), value: 'cancel', variant: 'outlined' },
+        { label: options?.confirmLabel || Locale.getValue('confirm'), value: 'confirm' },
       ],
     });
     return result === 'confirm' ? inputValue : null;

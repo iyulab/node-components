@@ -37,5 +37,7 @@
   "alertMessage": "Message",
   "remove": "Supprimer",
   "closeTab": "Fermer l'onglet",
-  "breadcrumb": "Fil d'Ariane"
+  "breadcrumb": "Fil d'Ariane",
+  "confirm": "Confirmer",
+  "cancel": "Annuler"
 }
