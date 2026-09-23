@@ -143,6 +143,40 @@ describe('Locale', () => {
       expect(Locale.getValue('valueMissing')).toBe('필수 항목입니다');
     });
 
+    // 지역 없는 태그(`lang="zh"`·`"pt"`)는 흔하고 정당하다(BCP 47). 내장 표가 지역형뿐이면
+    // 그 지역형으로 내려가야 한다 — 영어로 떨어지면 안 된다.
+    it('resolves a region-less tag to the shipped regional table (zh → zh-CN · pt → pt-BR)', () => {
+      Locale.set('zh');
+      expect(Locale.getValue('valueMissing')).toBe('此项为必填项');
+      Locale.set('pt');
+      expect(Locale.getValue('valueMissing')).toBe('Este campo é obrigatório');
+    });
+
+    it('resolves Traditional Chinese tags to zh-TW, not the Simplified default', () => {
+      for (const tag of ['zh-Hant', 'zh-Hant-HK', 'zh-HK', 'zh-MO']) {
+        Locale.set(tag);
+        expect(Locale.getValue('valueMissing'), tag).toBe('此欄位為必填');
+      }
+    });
+
+    it('resolves Simplified and other regional Chinese tags to zh-CN', () => {
+      for (const tag of ['zh-Hans', 'zh-Hans-CN', 'zh-SG']) {
+        Locale.set(tag);
+        expect(Locale.getValue('valueMissing'), tag).toBe('此项为必填项');
+      }
+    });
+
+    it('resolves another Portuguese region to the shipped pt-BR rather than English', () => {
+      Locale.set('pt-PT');
+      expect(Locale.getValue('valueMissing')).toBe('Este campo é obrigatório');
+    });
+
+    it('prefers a table the app registered for the region-less tag over the regional default', () => {
+      Locale.register('pt', { valueMissing: 'Campo obrigatório' });
+      Locale.set('pt');
+      expect(Locale.getValue('valueMissing')).toBe('Campo obrigatório');
+    });
+
     it('is case-insensitive', () => {
       Locale.set('KO');
       expect(Locale.getValue('valueMissing')).toBe('필수 항목입니다');

@@ -4,7 +4,7 @@
  * 범위: 라이브러리가 스스로 생성하는 chrome 문자열(검증 메시지 등)만 대상.
  * 일반 i18n 프레임워크가 아니다. 앱 콘텐츠 번역은 consumer 의 i18n 계층이 담당한다.
  *
- * en/ko/ja/zh-CN/es/fr 은 빌드 시점에 내장된다 (src/assets/locales/*.json).
+ * `SupportedLocale` 의 14개 언어가 빌드 시점에 내장된다 (src/assets/locales/*.json).
  * 그 외 언어는 register()로 테이블 단위 등록/오버라이드한다.
  */
 
@@ -105,11 +105,35 @@ function detectLocale(): LocaleTag {
 
 let active: LocaleTag = detectLocale();
 
-/** 정확 일치 → base 언어(ko-KR → ko) → en 순의 조회 사슬. */
+/**
+ * 내장 표가 **지역형으로만** 있는 언어의 기본 지역형 — 키는 태그의 접두(소문자).
+ *
+ * ⚠`lang="zh"`·`"pt"` 처럼 지역 없는 태그는 흔하고 정당하다(BCP 47). 사슬이 접두를 줄여 가기만
+ *   하면 그 태그는 `zh-CN`·`pt-BR` 표에 **닿지 못하고** 영어로 떨어진다.
+ * ⚠«같은 base 의 첫 번째 표» 로 고르지 않고 **명시한다** — 중국어는 표기 체계가 둘이라 고르는
+ *   순서에 따라 번체 사용자가 간체를 받는다. 번체 쪽 태그(`zh-Hant`·`zh-HK`·`zh-MO`)는 `zh-TW` 로,
+ *   나머지 중국어는 `zh-CN` 으로. 사슬은 **가장 구체적인 접두부터** 이 표를 찾는다.
+ */
+const REGIONAL_DEFAULTS: Readonly<Record<string, string>> = {
+  'zh-hant': 'zh-tw',
+  'zh-hk': 'zh-tw',
+  'zh-mo': 'zh-tw',
+  zh: 'zh-cn',
+  pt: 'pt-br',
+};
+
+/**
+ * 조회 사슬 — 정확 일치 → 접두를 줄여 가며(RFC 4647 lookup: `zh-hant-hk → zh-hant → zh`) →
+ * 그 언어의 기본 지역형(`REGIONAL_DEFAULTS`) → `en`.
+ *
+ * 앱이 `register('pt', …)` 로 지역 없는 표를 직접 등록하면 그것이 기본 지역형보다 먼저 온다.
+ */
 function chainOf(locale: string): string[] {
-  const norm = locale.toLowerCase();
-  const base = norm.split('-')[0];
-  return base === norm ? [norm, 'en'] : [norm, base, 'en'];
+  const subtags = locale.toLowerCase().split('-');
+  const prefixes = subtags.map((_, i) => subtags.slice(0, subtags.length - i).join('-'));
+  const regional = prefixes.find(p => p in REGIONAL_DEFAULTS);
+  const chain = regional ? [...prefixes, REGIONAL_DEFAULTS[regional], 'en'] : [...prefixes, 'en'];
+  return [...new Set(chain)];
 }
 
 /** 템플릿의 `{name}` 자리를 치환한다. 값이 없는 자리는 그대로 남긴다(디버깅 단서). */
@@ -164,7 +188,7 @@ export interface LocaleNamespace<K extends string = string> {
   register(locale: LocaleTag, table: Partial<Record<K, string>>): void;
   /**
    * 활성 로케일 기준으로 문자열을 찾는다.
-   * 사슬(정확 일치 → base → en)에 없으면 **키 자체를 돌려준다** — 조용히 빈 문자열이
+   * 사슬(정확 일치 → 접두 → 기본 지역형 → en)에 없으면 **키 자체를 돌려준다** — 조용히 빈 문자열이
    * 되는 것보다 화면에 드러나는 편이 낫다.
    */
   text(key: K, params?: Record<string, string | number>): string;

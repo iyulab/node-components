@@ -16,6 +16,21 @@ declaration of the document's language and is what assistive technology uses to 
 pronunciation rules (WCAG 3.1.1 / 3.1.2); the browser language is the user-preference
 fallback for when no such declaration exists. Call `Locale.set()` to override either.
 
+## Resolution
+
+A message is looked up along a chain, first match wins:
+
+1. the exact tag (case-insensitive);
+2. the tag with trailing subtags removed, one at a time (`zh-Hant-HK` → `zh-Hant` → `zh`);
+3. the language's default regional table, for languages shipped only in regional form —
+   `zh` → `zh-CN`, `zh-Hant` / `zh-HK` / `zh-MO` → `zh-TW`, `pt` → `pt-BR`;
+4. `en`.
+
+So `<html lang="zh">` or `lang="pt"` gets the shipped Chinese or Portuguese strings, and a
+Traditional Chinese tag gets `zh-TW` rather than the Simplified default. A table you register for
+the region-less tag (`Locale.register('pt', …)`) comes before step 3. `Locale.namespace()` uses the
+same chain.
+
 ## API
 
 | Method | Description |

@@ -54,6 +54,18 @@ describe('Locale.namespace', () => {
     expect(t.text('k'), '미등록 로케일 → en').toBe('english');
   });
 
+  it('⑶-a 지역 없는 태그가 지역형 테이블로 내려간다 — getValue 와 같은 규칙', () => {
+    const t = Locale.namespace<'k'>('chain-regional');
+    t.register('en', { k: 'english' });
+    t.register('zh-CN', { k: '简体' });
+    t.register('zh-TW', { k: '繁體' });
+
+    Locale.set('zh');
+    expect(t.text('k'), 'zh → zh-CN').toBe('简体');
+    Locale.set('zh-HK');
+    expect(t.text('k'), 'zh-HK → zh-TW').toBe('繁體');
+  });
+
   it('⑶-b 반복 등록은 병합된다 — 일부 키만 넘겨도 나머지가 남는다', () => {
     const t = Locale.namespace<'a' | 'b'>('merge');
     t.register('en', { a: 'A' });
