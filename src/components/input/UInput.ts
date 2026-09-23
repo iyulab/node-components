@@ -372,8 +372,10 @@ export class UInput extends UFormControlElement<string> {
         break;
       }
       case 'Escape': {
+        // 목록이 닫혀 있으면 이 키로 할 일이 없다 — 소비하지 않아야 바깥(오버레이·소비자)이 받는다.
+        if (!this.popoverEl?.open) break;
         e.preventDefault();
-        this.popoverEl?.hide();
+        this.popoverEl.hide();
         break;
       }
     }

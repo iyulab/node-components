@@ -187,7 +187,7 @@ export class USelect extends UFormControlElement<string | string[]> {
         for=".container"
         trigger="click"
         @show=${() => (this.open = true)}
-        @hide=${() => (this.open = false)}
+        @hide=${this.handlePopoverHide}
         strategy="fixed"
         placement="bottom-start"
         offset="1"
@@ -332,6 +332,20 @@ export class USelect extends UFormControlElement<string | string[]> {
       (el): el is UOption => el instanceof UOption
     );
     this.setup(this.options);
+  };
+
+  /**
+   * 목록이 닫힐 때 포커스가 그 «안»(옵션·검색 입력)에 있었으면 콤보박스로 되돌린다.
+   *
+   * 되돌리지 않으면 포커스가 숨은 목록 안에 남는다 — 키보드 사용자는 자기 위치를 잃고,
+   * 그 옵션은 다음 Escape 까지 받아 소비해 바깥 층(오버레이·소비자 패널)이 닫히지 않는다.
+   * 바깥 클릭으로 닫힐 때는 포커스가 이미 다른 곳에 있으므로 건드리지 않는다.
+   */
+  private handlePopoverHide = () => {
+    this.open = false;
+    if (this.popoverEl?.matches(':focus-within')) {
+      this.containerEl?.focus();
+    }
   };
 
   private handleOptionClick = (e: PointerEvent) => {

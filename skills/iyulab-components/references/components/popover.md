@@ -62,6 +62,18 @@ Inherits all `UFloatingElement` properties (see [floating.md](../extensions/floa
 
 `click` and `escape` express user intent and always close the popover.
 
+**Only an open popover consumes `Escape`.** When it closes on `Escape` it calls `preventDefault()`;
+a closed popover leaves the event alone. So `event.defaultPrevented` at the document or window
+level reliably means *something above already handled this key* — use it to decide whether your
+own panel should close:
+
+```ts
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || e.defaultPrevented) return; // an open list or popover took it
+  closeMyPanel();
+});
+```
+
 `scroll` and `resize` are viewport-geometry changes and **only close the popover when it is
 anchored to a coordinate** — i.e. the virtual anchor created by `trigger="contextmenu"`, whose
 `clientX`/`clientY` stop matching whatever they pointed at once the page reflows.

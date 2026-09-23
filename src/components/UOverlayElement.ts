@@ -194,9 +194,15 @@ export abstract class UOverlayElement extends UElement {
     }
   }
 
-  /** ESC 키 입력 시 닫기 요청 (최상위 오버레이에 대해서만) */
+  /**
+   * ESC 키 입력 시 닫기 요청 (최상위 오버레이에 대해서만).
+   *
+   * 이미 소비된 Escape(`defaultPrevented`)는 받지 않는다 — 오버레이 안에서 열린 목록·팝오버가
+   * 자기 층을 닫으며 먹은 키다. 한 번의 Escape 는 한 층만 닫는다. 이 리스너는 window 버블에
+   * 있으므로 안쪽 컨트롤과 document 리스너가 모두 돈 «뒤» 에 판단한다.
+   */
   private handleWindowKeydown = (e: KeyboardEvent) => {
-    if (!this.open || e.key !== 'Escape') return;
+    if (!this.open || e.key !== 'Escape' || e.defaultPrevented) return;
     if (!OverlayManager.isTopmost(this)) return;
     e.preventDefault();
     this.requestClose('escape');

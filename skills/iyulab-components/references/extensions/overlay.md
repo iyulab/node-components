@@ -8,7 +8,9 @@ Abstract base class for full-screen or contained overlays (dialogs, drawers, sid
 
 - **Focus-trap** via `focus-trap` library
 - **Body scroll lock** while open
-- **ESC key** and **backdrop click** close
+- **ESC key** and **backdrop click** close — an `Escape` that something inside the overlay
+  already consumed (`defaultPrevented`, e.g. an open select list closing itself) does not close
+  the overlay, so one press closes one layer
 - **OverlayManager** z-index stacking
 
 ## When to extend

@@ -306,6 +306,8 @@ export class UPopover extends UFloatingElement {
   }
 
   private handleDocumentClick = (e: PointerEvent) => {
+    // 닫힌(표시 대기도 아닌) 인스턴스는 닫을 것이 없다 — 클릭마다 인스턴스 수만큼 hide() 를 돌리지 않는다.
+    if (!this.open && !this.targetEl) return;
     if (this.trigger === 'contextmenu') {
       this.hide();
       return;
@@ -317,9 +319,20 @@ export class UPopover extends UFloatingElement {
     this.hide();
   };
 
+  /**
+   * 이 리스너는 `dismiss` 에 `escape` 가 있으면 **연결 시점에** document 에 붙으므로, 닫힌
+   * 인스턴스도 모든 Escape 를 받는다. 닫힌 팝오버는 Escape 로 할 일이 없다 — 여기서
+   * `preventDefault()` 하면 화면에 팝오버가 «존재하기만» 해도 document 버블 시점의 Escape 가
+   * 항상 소비된 것으로 보여, 소비자(그리고 우리 오버레이)가 `defaultPrevented` 로 «위에서 누가
+   * 먹었나» 를 가릴 수 없게 된다.
+   *
+   * 표시 대기 중(`showDelay`)이면 `targetEl` 이 이미 서 있으므로 그 대기는 취소한다 — 다만
+   * 아직 보이지 않았으니 소비하지는 않는다.
+   */
   private handleDocumentKeydown = (e: KeyboardEvent) => {
     if (e.key !== 'Escape') return;
-    e.preventDefault();
+    if (!this.open && !this.targetEl) return;
+    if (this.open) e.preventDefault();
     this.hide();
   };
 
