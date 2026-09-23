@@ -78,6 +78,13 @@ import { UButton, UInput } from '@iyulab/components/react';
 - [`u-form`](./references/components/form.md) — Form group with two-way model binding and validation
 - [`u-option`](./references/components/option.md) — Selectable option item for `u-select`, `u-radio`, `u-input`
 
+**`disabled` is exposed where assistive technology and test tools look for it** — on the node that
+carries the control's role, not on the host element. Native nodes use native `disabled`
+(`u-input`, `u-textarea`, `u-checkbox`, `u-switch`, `u-file-input`); role nodes get
+`aria-disabled="true"` (the `combobox` of `u-select`/`u-date-picker`, the `radiogroup` of
+`u-radio`/`u-rating`, the `slider` thumbs). In end-to-end tests, locate controls by role
+(`getByRole('combobox')`) rather than by tag, so actionability checks see the disabled state.
+
 ### Overlay & Floating
 
 - [`u-dialog`](./references/components/dialog.md) — Modal/non-modal dialog with configurable placement

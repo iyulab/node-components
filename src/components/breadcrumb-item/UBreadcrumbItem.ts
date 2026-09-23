@@ -35,6 +35,7 @@ export class UBreadcrumbItem extends UElement {
       return html`
         <a part="link"
           href=${this.href}
+          aria-disabled=${ifDefined(this.disabled ? 'true' : undefined)}
           target=${ifDefined(this.target)}
           rel=${ifDefined(this.rel)}
           @click=${this.handleAnchorClick}

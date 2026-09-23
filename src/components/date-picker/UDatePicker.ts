@@ -221,6 +221,7 @@ export class UDatePicker extends UFormControlElement<string> {
         <div class="container" part="container"
           tabindex=${this.disabled ? '-1' : '0'}
           role="combobox"
+          aria-disabled=${ifDefined(this.disabled ? 'true' : undefined)}
           aria-haspopup="dialog"
           aria-expanded=${this.open}
           aria-label=${ifDefined(this.resolvedAriaLabel)}

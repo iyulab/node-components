@@ -91,6 +91,9 @@ export class UTreeItem extends UElement {
 
     if (changedProperties.has('disabled')) {
       this.setAttribute('tabindex', this.disabled ? '-1' : '0');
+      // 역할이 호스트에 있으므로 비활성도 호스트가 알린다 — 보조기술·자동화 도구가 읽는 것은 이 속성이다.
+      if (this.disabled) this.setAttribute('aria-disabled', 'true');
+      else this.removeAttribute('aria-disabled');
     }
     if (changedProperties.has('depth')) {
       this.style.setProperty('--tree-item-depth', String(this.depth));

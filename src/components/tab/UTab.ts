@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, type PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import '../button/UButton.js';
 import '../icon/UIcon.js';
@@ -41,6 +41,15 @@ export class UTab extends UElement {
     this.setAttribute('tabindex', '0');
     if (!this.hasAttribute('slot')) {
       this.setAttribute('slot', 'tab');
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    // 역할이 호스트에 있으므로 비활성도 호스트가 알린다 — 보조기술·자동화 도구가 읽는 것은 이 속성이다.
+    if (changedProperties.has('disabled')) {
+      if (this.disabled) this.setAttribute('aria-disabled', 'true');
+      else this.removeAttribute('aria-disabled');
     }
   }
 

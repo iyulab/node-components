@@ -73,6 +73,7 @@ export class URating extends UFormControlElement<number> {
         .validationMessage=${this.validationMessage}
       >
         <div class="symbols" part="container" role="radiogroup"
+          aria-disabled=${ifDefined(this.disabled ? 'true' : undefined)}
           aria-label=${ifDefined(this.resolvedAriaLabel)}
           aria-description=${ifDefined(this.resolvedAriaDescription)}>
           ${Array.from({ length: this.max }, (_, i) => {

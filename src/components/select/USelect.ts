@@ -145,6 +145,7 @@ export class USelect extends UFormControlElement<string | string[]> {
 
         <div class="container" part="container" tabindex=${this.disabled ? "-1" : "0"}
           role="combobox"
+          aria-disabled=${ifDefined(this.disabled ? 'true' : undefined)}
           aria-label=${ifDefined(this.resolvedAriaLabel)}
           aria-description=${ifDefined(this.resolvedAriaDescription)}
           aria-haspopup=${this.searchable ? 'dialog' : 'listbox'}

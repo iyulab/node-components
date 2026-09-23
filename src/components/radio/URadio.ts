@@ -70,6 +70,7 @@ export class URadio extends UFormControlElement<string> {
       >
         <div class="container" part="container"
           role="radiogroup"
+          aria-disabled=${ifDefined(this.disabled ? 'true' : undefined)}
           aria-label=${ifDefined(this.resolvedAriaLabel)}
           aria-description=${ifDefined(this.resolvedAriaDescription)}>
           <slot @slotchange=${this.handleSlotChange}></slot>

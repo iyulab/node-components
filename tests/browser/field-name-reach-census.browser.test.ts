@@ -77,3 +77,42 @@ describe('u-field 라벨 → 폼 컨트롤 접근성 이름 전수 도달', () =
     expect(document.getElementById('c')!.shadowRoot!.querySelector('button.trigger')!.hasAttribute('aria-label')).toBe(false);
   });
 });
+
+/**
+ * 같은 표의 두 번째 축 — 「비활성이 **그 접근성 노드**에 도달하는가」.
+ *
+ * 이름이 도달해야 하는 노드와 비활성이 도달해야 하는 노드는 같은 노드다(역할을 가진 노드가
+ * 상태도 가진다). 그래서 표를 복제하지 않고 여기서 다시 쓴다 — 새 폼 컨트롤을 표에 더하면
+ * 두 축이 함께 그것을 본다.
+ *
+ * 결함: `u-select`·`u-date-picker`(콤보박스 `div`)와 `u-radio`·`u-rating`(`radiogroup`)은
+ * 비활성일 때 동작만 막고 **사실을 내지 않았다** — 네이티브 `disabled` 가 없는 노드인데
+ * `aria-disabled` 도 없었다. 보조기술은 아무것도 읽지 않았고, 자동화 도구(Playwright
+ * actionability)는 «활성»으로 보고 클릭했다가 그 클릭이 조용히 삼켜졌다.
+ *
+ * 판정: 네이티브 `disabled` 이거나 `aria-disabled="true"`.
+ */
+describe('폼 컨트롤 비활성 → 접근성 노드 전수 도달', () => {
+  beforeEach(() => { document.body.innerHTML = ''; });
+
+  const exposesDisabled = (node: Element) =>
+    (node as HTMLElement & { disabled?: boolean }).disabled === true ||
+    node.getAttribute('aria-disabled') === 'true';
+
+  it.each(CONTROLS)('%s: disabled 가 내부 접근성 노드에 드러난다', async (tag, sel) => {
+    document.body.innerHTML = `<${tag} id="c" disabled></${tag}>`;
+    await settle();
+    const inner = document.getElementById('c')!.shadowRoot!.querySelector(sel);
+    expect(inner, `${tag}: ${sel} 를 찾지 못했다 — 내부 구조가 바뀌었으면 이 표를 함께 고칠 것`).not.toBeNull();
+    expect(exposesDisabled(inner!)).toBe(true);
+  });
+
+  it.each(CONTROLS)('NEGATIVE: %s: 비활성을 풀면 그 표시도 사라진다', async (tag, sel) => {
+    document.body.innerHTML = `<${tag} id="c" disabled></${tag}>`;
+    await settle();
+    const host = document.getElementById('c') as HTMLElement & { disabled: boolean };
+    host.disabled = false;
+    await settle();
+    expect(exposesDisabled(host.shadowRoot!.querySelector(sel)!)).toBe(false);
+  });
+});
