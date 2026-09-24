@@ -12,6 +12,17 @@
   ⚠An empty `<u-icon>` (no `name`, no `src`) now also takes that box. If you rendered one as an
   invisible placeholder, render nothing instead.
 
+### Fixed
+
+- **A selectable `u-chip` is a keyboard-operable toggle button.** It had a click handler and
+  nothing else — no role, no tab stop, no key — so keyboard users could not reach it and assistive
+  tech did not know it toggles. It is now in the tab order with `role="button"` and `aria-pressed`,
+  and `Enter` / `Space` toggle it and fire `pick` like a click. A chip that is not selectable stays a
+  status label, out of the tab order; a `tabindex` you set is kept.
+- **`focus()` now reaches the control inside `u-icon-button`, `u-copy-button` and
+  `u-breadcrumb-item`** (with `href`) — the same defect `u-button` had in 1.45.2: the host is not
+  focusable, so calling `focus()` on it did nothing.
+
 ## [1.45.2] - 2026-09-24
 
 ### Fixed
