@@ -54,6 +54,13 @@ Interactive chip tag. Supports selectable toggle, removable button, and tooltip.
 | `pick` | Fires when the chip is selected/deselected |
 | `remove` | Fires when the remove button is clicked |
 
+## Keyboard and accessibility
+
+A `selectable` chip is a toggle button: it is a stop in the tab order, carries `role="button"` and
+`aria-pressed`, and `Enter` / `Space` toggle it and fire `pick` exactly like a click. A chip that is
+not selectable is a status label — no role, not in the tab order. A `tabindex` you set yourself is
+kept. The remove button of a `removable` chip is its own tab stop.
+
 ## CSS Parts
 
 | Part | Description |

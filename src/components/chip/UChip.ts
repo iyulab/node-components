@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, type PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import '../tag/UTag.js';
 import '../icon/UIcon.js';
@@ -81,9 +81,59 @@ export class UChip extends UElement {
     `;
   }
 
+  /** 이 요소가 스스로 붙인 `tabindex` 인가 — 소비자가 준 값은 건드리지 않는다. */
+  private ownsTabindex = false;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener('keydown', this.handleKeydown);
+  }
+
+  disconnectedCallback(): void {
+    this.removeEventListener('keydown', this.handleKeydown);
+    super.disconnectedCallback();
+  }
+
+  /**
+   * `selectable` 칩은 토글 버튼이다(WAI-ARIA APG «Button» · `aria-pressed`) — 역할·포커스·키가
+   * 없으면 키보드로 닿지 못하고 보조기기는 토글인지 모른다. 선택할 수 없는 칩은 상태 표시라
+   * 탭 순서에 들어오지 않는다.
+   */
+  protected updated(changed: PropertyValues): void {
+    super.updated(changed);
+    if (!changed.has('selectable') && !changed.has('selected')) return;
+    if (this.selectable) {
+      this.setAttribute('role', 'button');
+      this.setAttribute('aria-pressed', String(this.selected));
+      if (!this.hasAttribute('tabindex')) {
+        this.setAttribute('tabindex', '0');
+        this.ownsTabindex = true;
+      }
+    } else if (changed.has('selectable')) {
+      this.removeAttribute('role');
+      this.removeAttribute('aria-pressed');
+      if (this.ownsTabindex) {
+        this.removeAttribute('tabindex');
+        this.ownsTabindex = false;
+      }
+    }
+  }
+
+  /** Enter 와 Space 는 클릭과 같다 — 안쪽 삭제 버튼에서 온 키는 그 버튼의 몫이다. */
+  private handleKeydown = (e: KeyboardEvent) => {
+    if (!this.selectable || e.composedPath()[0] !== this) return;
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    this.toggle(e);
+  };
+
   private handleTagClick = (e: PointerEvent) => {
+    this.toggle(e);
+  };
+
+  private toggle(e: { shiftKey: boolean; metaKey: boolean; ctrlKey: boolean }): void {
     if (!this.selectable) return;
-    
+
     this.selected = !this.selected;
     this.fire<PickEventDetail>('pick', {
       detail: {
