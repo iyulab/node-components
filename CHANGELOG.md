@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.45.2] - 2026-09-24
+
+### Fixed
+
+- **`u-button.focus()` now focuses the button.** The host itself is not focusable, so calling
+  `focus()` on a `u-button` did nothing — no error, no focus. Anything that moves focus to a
+  button (initial focus when a panel opens, returning focus when it closes) failed silently. The
+  host now delegates focus to the inner native `<button>` (or `<a>` when `href` is set), and the
+  host matches `:focus` while it holds it. A disabled button still cannot take focus.
+
 ## [1.45.1] - 2026-09-24
 
 ### Fixed
