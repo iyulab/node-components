@@ -30,6 +30,8 @@ import { Locale } from '../../utilities/Locale.js';
 @customElement('u-copy-button')
 export class UCopyButton extends UElement {
   static styles = [ super.styles, styles ];
+  /** 호스트의 `.focus()` 를 안쪽 컨트롤로 위임한다 — `UButton` 과 같은 계약(호스트는 포커스 가능하지 않다). */
+  static shadowRootOptions: ShadowRootInit = { ...UElement.shadowRootOptions, delegatesFocus: true };
 
   /** 버튼 스타일 변형 */
   @property({ type: String, reflect: true }) variant: ButtonVariant = 'ghost';
