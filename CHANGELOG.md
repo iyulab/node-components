@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.46.0] - 2026-09-24
+
+### Changed
+
+- **`u-icon` takes its 1em box before the SVG arrives.** Icons resolve asynchronously and draw
+  nothing until they do; the host had no size of its own, so its box was 0 × 0 until the SVG
+  landed and everything around it moved — a layout shift wherever an icon appears (a collapsed
+  sidebar item jumped from 16px to 36px tall on load). The host is now `1em` square from the first
+  paint, and `font-size` still sets the size.
+  ⚠An empty `<u-icon>` (no `name`, no `src`) now also takes that box. If you rendered one as an
+  invisible placeholder, render nothing instead.
+
 ## [1.45.2] - 2026-09-24
 
 ### Fixed
