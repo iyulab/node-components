@@ -69,6 +69,12 @@ export type ButtonSize = "sm" | "md" | "lg";
 export class UButton extends UElement {
   static styles = [ super.styles, styles ];
   static formAssociated = true;
+  /**
+   * 호스트의 `.focus()` 를 섀도 안의 네이티브 `<button>`/`<a>` 로 위임한다. 호스트는 포커스
+   * 가능하지 않으므로 위임이 없으면 `el.focus()` 가 오류 없이 아무 일도 하지 않는다 —
+   * 네이티브 버튼을 대체하는 요소가 잃으면 안 되는 계약이다.
+   */
+  static shadowRootOptions: ShadowRootInit = { ...UElement.shadowRootOptions, delegatesFocus: true };
 
   /** 버튼 스타일 변형 */
   @property({ type: String, reflect: true }) variant: ButtonVariant = "solid";
