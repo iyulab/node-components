@@ -134,6 +134,10 @@ export type DatePickerMode = 'date' | 'datetime';
  * @csspart calendar-footer - the row holding the "today"/"clear" quick-action buttons
  * @csspart calendar-time - the row holding the time-of-day input (datetime mode only)
  *
+ * @cssprop --u-date-picker-display - host `display` (default: inline-block). Set `block` to fill
+ *   the container width in forms and grid cells.
+ * @cssprop --u-date-picker-width - host `width` (default: auto). Set `100%` where `block` alone
+ *   does not stretch the host (e.g. inside a flex container).
  * @cssprop --date-picker-popover-width - width of the calendar popover (default: 296px, independent of trigger width — a fixed-width calendar reads more naturally)
  *
  * @event change - fires when the user clicks a date cell, confirms via keyboard, changes the
