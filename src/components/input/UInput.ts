@@ -45,7 +45,7 @@ export type InputVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
  * @cssprop --input-popover-max-height - 드롭다운 팝오버의 최대 높이 (기본값: 50vh)
  * 
  * @event input - 입력값이 변경될 때 발생
- * @event change - 값이 확정됐을 때 발생
+ * @event change - 값이 확정됐을 때 발생 — Enter 또는 blur 에서, 값이 바뀐 경우에만(네이티브 입력과 같다)
  */
 @customElement('u-input')
 export class UInput extends UFormControlElement<string> {
@@ -340,8 +340,25 @@ export class UInput extends UFormControlElement<string> {
     this.relay(e);
   }
 
+  /**
+   * 호스트의 `change` 는 **내부 네이티브 입력의 `change` 를 그대로 옮긴다** — 커밋 시점을 흉내 내지 않고 브라우저에 맡긴다.
+   *
+   * 네이티브 단일 행 입력은 값이 바뀐 채 **Enter 를 누르거나 포커스를 잃을 때** `change` 를 낸다. 종전에는 blur 에서만
+   * 직접 디스패치해 ⑴Enter 로 암묵 제출할 때 `change` 가 **제출 뒤에야**(blur 시점) 나갔고 — `change` 로 값을 드는 폼이
+   * 빈 값으로 제출됐다 — ⑵값을 바꾸지 않은 blur 에도 `change` 를 냈다. 암묵 제출은 한 틱 뒤에 판정하므로(아래) 네이티브
+   * 순서(`change` → `submit`)가 그대로 선다.
+   */
   private handleInputChange = (e: Event) => {
     e.stopPropagation();
+    if (this.composing) return;
+    this.value = this.inputEl?.value || '';
+    if (!this.novalidate) {
+      this.validate();
+    }
+    this.dispatchEvent(new Event('change', {
+      bubbles: true,
+      composed: true
+    }));
   }
 
   private handleInputBlur = (_: FocusEvent) => {
@@ -350,10 +367,6 @@ export class UInput extends UFormControlElement<string> {
     if (!this.novalidate) {
       this.validate();
     }
-    this.dispatchEvent(new Event('change', { 
-      bubbles: true, 
-      composed: true 
-    }));
   }
 
   private handleInputKeydown = (e: KeyboardEvent) => {

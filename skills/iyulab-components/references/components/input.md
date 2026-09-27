@@ -79,7 +79,7 @@ for a KRW amount) is the consumer's call — the library does not infer one from
 | Event | Description |
 |-------|-------------|
 | `input` | Fires on every keystroke |
-| `change` | Fires when value is committed |
+| `change` | Fires when the value is committed — on `Enter` or on blur, and only if it changed (like a native `<input>`). On `Enter` inside a form it fires before the form submits |
 
 ## Form submission
 

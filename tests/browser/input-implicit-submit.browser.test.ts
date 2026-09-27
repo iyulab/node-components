@@ -153,3 +153,78 @@ describe('u-input 암묵 제출 (Enter → 소유 form)', () => {
     expect(host.isConnected).toBe(true);
   });
 });
+
+describe('u-input change — 네이티브 입력과 같은 커밋 시점', () => {
+  /** 호스트 `change` 와 폼 `submit` 을 한 줄로 기록한다 — 순서가 곧 계약이다. */
+  async function mountLogged(inner: string) {
+    const log: string[] = [];
+    const { form, hosts, submits } = await mountForm(inner);
+    for (const h of hosts) h.addEventListener('change', () => log.push(`change:${(h as Host).value ?? ''}`));
+    form.addEventListener('submit', () => log.push('submit'));
+    return { form, hosts, submits, log };
+  }
+
+  it('🔴타이핑 후 Enter — change 가 submit «앞에» 나가고 그때 값이 확정돼 있다 (네이티브 <input> 과 같은 순서)', async () => {
+    const { hosts, log } = await mountLogged('<u-input name="q"></u-input><button type="submit">Go</button>');
+    focusInner(hosts[0]);
+    await userEvent.keyboard('demo');
+    await userEvent.keyboard('{Enter}');
+    await settle();
+    expect(log).toEqual(['change:demo', 'submit']);
+
+    // 대조군 — 같은 조작을 네이티브 입력에 하면 같은 기록이 나온다(이 단언이 공허하지 않다는 근거)
+    document.body.innerHTML = '';
+    const form = document.createElement('form');
+    form.innerHTML = '<input name="q"><button type="submit">Go</button>';
+    const native: string[] = [];
+    const input = form.querySelector('input')!;
+    input.addEventListener('change', () => native.push(`change:${input.value}`));
+    form.addEventListener('submit', (e) => { e.preventDefault(); native.push('submit'); });
+    document.body.appendChild(form);
+    input.focus();
+    await userEvent.keyboard('demo');
+    await userEvent.keyboard('{Enter}');
+    await settle();
+    expect(native).toEqual(['change:demo', 'submit']);
+  });
+
+  it('🔴두 칸을 채우고 둘째 칸에서 Enter — 첫 칸은 blur 로, 둘째 칸은 Enter 로 커밋된 뒤 제출된다 (로그인 폼)', async () => {
+    const { hosts, log } = await mountLogged(
+      '<u-input name="u"></u-input><u-input name="p" type="password"></u-input><u-button type="submit">Sign in</u-button>',
+    );
+    focusInner(hosts[0]);
+    await userEvent.keyboard('demo');
+    focusInner(hosts[1]);
+    await userEvent.keyboard('secret');
+    await userEvent.keyboard('{Enter}');
+    await settle();
+    expect(log).toEqual(['change:demo', 'change:secret', 'submit']);
+  });
+
+  it('⚪NEGATIVE — Enter 로 커밋한 뒤 값을 그대로 두고 포커스를 옮기면 change 가 다시 나가지 않는다', async () => {
+    const { hosts, log } = await mountLogged('<u-input name="a"></u-input><u-input name="b"></u-input>');
+    focusInner(hosts[0]);
+    await userEvent.keyboard('x');
+    await userEvent.keyboard('{Enter}');
+    focusInner(hosts[1]);
+    await settle();
+    expect(log).toEqual(['change:x']);
+  });
+
+  it('⚪NEGATIVE — 값을 바꾸지 않은 blur 는 change 를 내지 않는다 (네이티브와 같다)', async () => {
+    const { hosts, log } = await mountLogged('<u-input name="a" value="kept"></u-input><u-input name="b"></u-input>');
+    focusInner(hosts[0]);
+    focusInner(hosts[1]);
+    await settle();
+    expect(log).toEqual([]);
+  });
+
+  it('값을 바꾸고 blur 하면 change 가 한 번 나간다 (종전 경로 유지)', async () => {
+    const { hosts, log } = await mountLogged('<u-input name="a"></u-input><u-input name="b"></u-input>');
+    focusInner(hosts[0]);
+    await userEvent.keyboard('abc');
+    focusInner(hosts[1]);
+    await settle();
+    expect(log).toEqual(['change:abc']);
+  });
+});

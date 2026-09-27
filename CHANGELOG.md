@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **`u-input` commits its value before `Enter` submits the form.** `change` used to fire only on
+  blur, so pressing `Enter` in a form submitted it first and committed the value afterwards — a
+  form that reads values from `change` (the usual React `onChange` wiring) submitted empty fields,
+  and a sign-in form typed and sent with `Enter` failed. `change` now follows the native input: it
+  fires on `Enter` and on blur, before the submit, and only when the value changed.
+  ⚠A blur that did not change the value no longer fires `change`. If you relied on that, listen
+  for `blur` (or `focusout`) instead.
+
 ## [1.46.0] - 2026-09-24
 
 ### Changed
