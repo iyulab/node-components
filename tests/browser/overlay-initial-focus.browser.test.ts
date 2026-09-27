@@ -1,6 +1,27 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import '../../src/components/dialog/UDialog.js';
 import '../../src/components/drawer/UDrawer.js';
+import { LitElement, html } from 'lit';
+import '../../src/components/select/USelect.js';
+import '../../src/components/input/UInput.js';
+
+/** 슬롯 자식이 컴포넌트인 경우 — 컨트롤은 그 섀도 루트에 있다. */
+class FormBody extends LitElement {
+  static properties = { auto: { type: Boolean } };
+  auto = false;
+  render() {
+    return this.auto
+      ? html`<input id="first" /><input id="second" autofocus />`
+      : html`<button id="b1">확인</button><input id="inp" />`;
+  }
+}
+customElements.define('test-form-body', FormBody);
+
+const deepActive = (): Element | null => {
+  let a: Element | null = document.activeElement;
+  while (a?.shadowRoot?.activeElement) a = a.shadowRoot.activeElement;
+  return a;
+};
 
 /**
  * **오버레이가 열릴 때 어디에 포커스가 가는가** — `UOverlayElement.resolveInitialFocus()`.
@@ -56,5 +77,30 @@ describe('오버레이 초기 포커스', () => {
   it('입력이 하나도 없으면 기본값(첫 tabbable)에 맡긴다', async () => {
     const el = await mount('u-dialog', `<button id="only">닫기</button>`);
     expect(document.activeElement).toBe(el.querySelector('#only'));
+  });
+
+  it('🔴u-drawer — 슬롯 자식 컴포넌트의 섀도 안 `[autofocus]` 도 찾는다 (되돌리면 첫 tabbable 이 잡는다)', async () => {
+    const el = await mount('u-drawer', `<test-form-body auto></test-form-body>`);
+    const body = el.querySelector('test-form-body')!;
+    expect(deepActive()).toBe(body.shadowRoot!.querySelector('#second'));
+  });
+
+  it('🔴u-dialog — 슬롯 자식 컴포넌트의 섀도 안 «첫 입력»도 찾는다 (되돌리면 버튼이 잡는다)', async () => {
+    const el = await mount('u-dialog', `<test-form-body></test-form-body>`);
+    const body = el.querySelector('test-form-body')!;
+    expect(deepActive()).toBe(body.shadowRoot!.querySelector('#inp'));
+  });
+
+  it('🔴u-select 가 앞에 있어도 그 섀도 안의 닫힌 팝오버(`autofocus` 속성)를 집지 않는다', async () => {
+    const el = await mount('u-drawer', `<u-select id="s"></u-select><button id="b">확인</button><input id="second" autofocus />`);
+    expect(deepActive()).toBe(el.querySelector('#second'));
+  });
+
+  it('`<u-input autofocus>` 는 호스트가 후보다 — 안쪽 입력칸으로 넘겨 준다', async () => {
+    const el = await mount('u-dialog', `<button id="b1">확인</button><u-input id="ui" autofocus></u-input>`);
+    const host = el.querySelector('#ui')!;
+    const active = deepActive();
+    expect(active?.tagName).toBe('INPUT');
+    expect(host.shadowRoot!.contains(active)).toBe(true);
   });
 });

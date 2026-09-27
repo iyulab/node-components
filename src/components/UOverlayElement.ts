@@ -2,6 +2,7 @@ import { CSSResultGroup, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import { createFocusTrap, type FocusTrap } from 'focus-trap';
+import { isFocusCandidate, querySelectorDeep } from '../utilities/elements.js';
 
 import { OverlayManager } from '../utilities/OverlayManager.js';
 import { arrayAttrConverter } from '../utilities/converters.js';
@@ -168,15 +169,26 @@ export abstract class UOverlayElement extends UElement {
    * (`tests/browser/overlay-initial-focus.browser.test.ts` 가 둘 다 감시한다.)
    */
   private resolveInitialFocus(): HTMLElement | false | undefined {
-    const explicit = this.querySelector<HTMLElement>('[autofocus]');
-    if (explicit) return explicit;
+    // 섀도 경계 안쪽까지 — 슬롯 자식이 컴포넌트면 컨트롤은 그 템플릿에 있다.
+    const content = Array.from(this.children);
+    const target = querySelectorDeep(content, '[autofocus]', isFocusCandidate)
+      ?? querySelectorDeep(
+        content,
+        'input, select, textarea, u-input, u-textarea, u-select, u-checkbox, u-radio, u-switch, u-slider',
+        isFocusCandidate,
+      );
+    if (!target) return undefined; // focus-trap 기본값(첫 tabbable)에 맡긴다
 
-    const control = this.querySelector<HTMLElement>(
-      'input, select, textarea, u-input, u-textarea, u-select, u-checkbox, u-radio, u-switch, u-slider',
-    );
-    if (control) return control;
-
-    return undefined; // focus-trap 기본값(첫 tabbable)에 맡긴다
+    // 직접 포커스한다 — `u-input` 처럼 `focus()` 를 안쪽으로 넘기는 호스트는 그 자신이 tabbable 이
+    // 아니라서, 노드로 넘기면 focus-trap 이 «포커스 불가» 로 보고 첫 tabbable 로 폴백한다(실측: 앞의 버튼).
+    // 포커스가 대상 안에 들어갔으면 `false`(trap 이 더 옮기지 않는다), 아니면 기본값.
+    target.focus();
+    let active: Element | null = document.activeElement;
+    while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement;
+    for (let n: Node | null = active; n; n = n.parentNode ?? (n as ShadowRoot).host ?? null) {
+      if (n === target) return false;
+    }
+    return undefined;
   }
 
   /** 오버레이가 닫힐 때 설정을 해제합니다. */

@@ -1,5 +1,26 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **`u-dialog` / `u-drawer` initial focus now reaches the control you asked for.** Three cases
+  sent it to the first tabbable element instead (often the close button):
+  - **`<u-input autofocus>`** (and any control component) — the component host was handed to the
+    focus trap, which does not count a host as focusable and fell back. The overlay now focuses the
+    target itself, so the component forwards focus to its inner field.
+  - **A form component slotted into the overlay** — `[autofocus]` and the first input control were
+    looked up with `querySelector`, which stops at shadow roots. The search now goes through them.
+  - **A `u-select` before the target** — once the search goes through shadow roots it must not stop
+    at the closed popover every `u-select` keeps inside (it carries an `autofocus` attribute of its
+    own). Only elements that can actually take focus are candidates.
+
+### Added
+
+- **`querySelectorDeep(roots, selectors, accept?)` and `isFocusCandidate(el)`** in
+  `utilities/elements` — the shadow-piercing lookup and the focusability test the overlays use,
+  for other layers that place initial focus the same way.
+
 ## [1.47.0] - 2026-09-28
 
 ### Added

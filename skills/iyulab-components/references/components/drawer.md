@@ -92,7 +92,7 @@ whole contract. Measured in a real browser
 
 | Requirement | How it is met |
 |---|---|
-| Focus the first input on open, restore the trigger on close | `[autofocus]` → first input control → first tabbable; focus is returned by the trap |
+| Focus the first input on open, restore the trigger on close | `[autofocus]` → first input control → first tabbable, searched through shadow roots (a form component slotted in works the same); focus is returned by the trap |
 | Body scrolls, footer stays visible | `part="body"` is `flex: 1; overflow: auto`; the `footer` slot is `flex-shrink: 0` |
 | Focus cannot leave the panel | `mode="modal"` (default) activates the focus trap |
 | `Esc` closes, background scroll is locked | `closeOn` defaults to `['escape','backdrop','button']` |
