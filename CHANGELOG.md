@@ -4,6 +4,9 @@
 
 ### Added
 
+- **Chart palette tokens `--u-chart-color-1` … `--u-chart-color-8`** — eight series colours, in a
+  fixed order, checked together for lightness, colour-vision-deficiency separation and (dark)
+  contrast, in both sheets. See "Chart palette" in `docs/theming.md`.
 - **`Dialog.confirm(message, { confirmColor })`** and **`DialogAction.color`**. Confirming an
   action that cannot be undone had no way to say so — the confirm button was always the default
   colour. `confirmColor: 'danger'` draws it in `danger`.
@@ -11,6 +14,11 @@
   follows the brand colour, so there was no way to draw a gray tag: a "Pending" status tag came out
   the same blue as an `info` "Shipped" next to it. `gray` reads the neutral ramp and, like the
   other decorative colours, ignores re-branding.
+
+### Changed
+
+- **`--u-font-mono` lists `Consolas`** after `Cascadia Code`, so Windows installs without Cascadia
+  get a code face instead of `Courier New`.
 
 ### Fixed
 

@@ -304,6 +304,26 @@ reason: no yellow shade carries white text at 4.5).
 
 ---
 
+## Chart palette — eight series colours, in order
+
+`--u-chart-color-1` … `--u-chart-color-8` are the colours for chart **series** (categories: one
+colour per product, per region). Use them in order — series 1 gets slot 1 — and never cycle: a
+ninth series is folded into "Other" or split into small multiples, not given a generated colour.
+A series keeps its colour when a filter hides others.
+
+The eight were chosen **as a set** and checked together: similar lightness, enough colour to not
+read as gray, neighbours distinguishable under red–green colour-vision deficiency and at full
+colour vision, and — in the dark sheet — at least 3:1 against the background. Slot 1 is the same
+blue as the default primary, so a single-series chart looks like the product.
+
+- They do **not** follow `--u-primary-color`. If only slot 1 moved with a re-brand, it would no
+  longer be checked against the other seven. To re-brand charts, redefine all eight together.
+- No slot is a status colour. Success, warning and danger mean something; a series does not.
+- Slot 6 (yellow) is below 3:1 on a white background — a chart that uses six or more series
+  needs a legend or direct labels, which a multi-series chart should have anyway.
+- The dark values are not the dark decorative ramps: those are muted for badges and tags and read
+  as gray in a chart, so the dark sheet sets its own eight, in the same hues and order.
+
 ## Custom Themes
 
 You can override any token — palette primitives included:

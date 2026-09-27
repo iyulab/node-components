@@ -295,6 +295,23 @@
   --u-shadow-xl: 0 6px 18px rgba(0, 0, 0, 0.60), 0 2px 6px rgba(0, 0, 0, 0.30);   /* = shadow-color-stronger */
 
 
+  /* ==========================================================================
+     Chart categorical palette — 다크 면(#121212 · 올림면 #2A2A2A)에 대해 **따로 고른** 여덟 칸
+     ★램프를 참조하지 않는 이유: 다크 장식 램프는 채도가 낮아(면 위 배지·태그용) 차트 계열로는
+       회색처럼 읽힌다 — 램프의 단 조합 39만 가지 중 검증을 통과한 것이 없었다. 그래서 라이트
+       여덟 칸과 **같은 색상·순서**를 OKLCH 밝기만 다크 대역으로 옮겨 잡았다.
+     검증: 밝기 0.48–0.67 · 채도 ≥ 0.1 · 색각 이상 이웃 ΔE ≥ 9.5 · 정상 시각 이웃 ΔE ≥ 25.1 ·
+       두 면 모두 대비 ≥ 3:1. 순서는 light.css 와 같다.
+     ========================================================================== */
+  --u-chart-color-1: #247EDB;
+  --u-chart-color-2: #D03E73;
+  --u-chart-color-3: #0DA1B2;
+  --u-chart-color-4: #ED5711;
+  --u-chart-color-5: #059183;
+  --u-chart-color-6: #D96D04;
+  --u-chart-color-7: #AE48CB;
+  --u-chart-color-8: #4AA74D;
+
   /* Scrollbar Colors */
   --u-scrollbar-color:       var(--u-neutral-500);
   --u-scrollbar-color-hover: var(--u-neutral-600);
@@ -432,7 +449,7 @@
      선택적 이름이다(없으면 조용히 다음으로 넘어간다).
      ========================================================================== */
   --u-font-base:    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', 'Hiragino Sans', 'Yu Gothic UI', 'Microsoft YaHei', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-  --u-font-mono:    ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace;
+  --u-font-mono:    ui-monospace, 'Cascadia Code', Consolas, 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace;
   --u-font-serif:   'Georgia', 'Times New Roman', Times, serif;
   --u-font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
   --u-font-modern:  'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;

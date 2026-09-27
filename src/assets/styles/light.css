@@ -439,6 +439,26 @@
   --u-scrollbar-track-color: transparent;
 
   /* ==========================================================================
+     Chart categorical palette — 차트 «계열» 색(범주형), 순서가 곧 계약이다
+     ★여덟 칸이 **한 벌로** 검증됐다(dataviz 검증기, 흰 면 · 올림면): OKLCH 밝기 대역 0.43–0.77 ·
+       채도 하한 0.1 · 색각 이상(적·녹) 이웃 ΔE ≥ 12.7 · 정상 시각 이웃 ΔE ≥ 28.1. 순서를 바꾸거나
+       한 칸만 갈아 끼우면 그 검증이 깨진다 — 리브랜딩은 여덟 칸을 함께 다시 고른다.
+     ★1번이 브랜드 파랑과 같은 단(blue-700)이라 계열 하나짜리 차트는 제품 색으로 그려진다.
+       그러나 역할 토큰(--u-primary-color)을 참조하지 **않는다** — 브랜드를 바꿨을 때 1번만 움직이면
+       나머지 일곱과의 구별이 검증 밖으로 나간다(장식 축과 같은 면역).
+     ⚠상태색(success·danger 등)과 겹치지 않는 단을 골랐다(green-600 ≠ success green-800 · 빨강 없음).
+     ⚠6번(yellow-900)은 흰 면 대비 2.65:1 — 범례·직접 레이블·표 보기가 함께 있어야 한다.
+     ========================================================================== */
+  --u-chart-color-1: var(--u-blue-700);
+  --u-chart-color-2: var(--u-pink-800);
+  --u-chart-color-3: var(--u-cyan-700);
+  --u-chart-color-4: var(--u-orange-900);
+  --u-chart-color-5: var(--u-teal-500);
+  --u-chart-color-6: var(--u-yellow-900);
+  --u-chart-color-7: var(--u-purple-600);
+  --u-chart-color-8: var(--u-green-600);
+
+  /* ==========================================================================
      Font Styles
      ★**CJK 폴백을 스택에 포함한다 — 국제화이지 취향이 아니다.**
      종전 스택(`-apple-system, Segoe UI, Noto Sans, Helvetica, Arial`)에는 **한중일 글립을
@@ -450,7 +470,7 @@
      선택적 이름이다(없으면 조용히 다음으로 넘어간다).
      ========================================================================== */
   --u-font-base:    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', 'Hiragino Sans', 'Yu Gothic UI', 'Microsoft YaHei', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-  --u-font-mono:    ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace;
+  --u-font-mono:    ui-monospace, 'Cascadia Code', Consolas, 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace;
   --u-font-serif:   'Georgia', 'Times New Roman', Times, serif;
   --u-font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
   --u-font-modern:  'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;

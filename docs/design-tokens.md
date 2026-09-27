@@ -10,7 +10,7 @@
 `dark.css` 는 같은 이름을 같은 구조로 정의하며 **값만** 다릅니다 — 다크 대응을 위해
 컴포넌트나 소비자가 할 일은 없습니다.
 
-**역할 25 · 스케일 19 · 시맨틱 100 · 팔레트 111**
+**역할 25 · 스케일 19 · 시맨틱 108 · 팔레트 111**
 
 ---
 
@@ -218,8 +218,16 @@
 | `--u-scrollbar-color` | `var(--u-neutral-400)` |
 | `--u-scrollbar-color-hover` | `var(--u-neutral-500)` |
 | `--u-scrollbar-track-color` | `transparent` |
+| `--u-chart-color-1` | `var(--u-blue-700)` |
+| `--u-chart-color-2` | `var(--u-pink-800)` |
+| `--u-chart-color-3` | `var(--u-cyan-700)` |
+| `--u-chart-color-4` | `var(--u-orange-900)` |
+| `--u-chart-color-5` | `var(--u-teal-500)` |
+| `--u-chart-color-6` | `var(--u-yellow-900)` |
+| `--u-chart-color-7` | `var(--u-purple-600)` |
+| `--u-chart-color-8` | `var(--u-green-600)` |
 | `--u-font-base` | `'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', 'Hiragino Sans', 'Yu Gothic UI', 'Microsoft YaHei', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'` |
-| `--u-font-mono` | `ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace` |
+| `--u-font-mono` | `ui-monospace, 'Cascadia Code', Consolas, 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace` |
 | `--u-font-serif` | `'Georgia', 'Times New Roman', Times, serif` |
 | `--u-font-display` | `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif` |
 | `--u-font-modern` | `'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif` |
