@@ -35,7 +35,7 @@ Side panel that slides in from any screen edge. Extends `UOverlayElement` (focus
 | `open` | `boolean` | `false` | ✓ | Show/hide state |
 | `closable` | `boolean` | `false` | ✓ | Show close button |
 | `placement` | `'left'\|'right'\|'top'\|'bottom'` | `'left'` | ✓ | Slide-in direction |
-| `mode` | `'modal'\|'non-modal'` | `'modal'` | ✓ | Focus-trap mode |
+| `mode` | `'modal'\|'non-modal'` | `'modal'` | ✓ | `modal` traps focus and places initial focus; `non-modal` does neither |
 | `contained` | `boolean` | `false` | ✓ | Contained to parent element |
 | `closeOn` | `string[]` | `['escape','backdrop','button']` | ✓ | Close triggers |
 
@@ -92,7 +92,7 @@ whole contract. Measured in a real browser
 
 | Requirement | How it is met |
 |---|---|
-| Focus the first input on open, restore the trigger on close | `[autofocus]` → first input control → first tabbable, searched through shadow roots (a form component slotted in works the same); focus is returned by the trap |
+| Focus the first input on open, restore the trigger on close | `mode="modal"` (default): `[autofocus]` → first input control → first tabbable, searched through shadow roots (a form component slotted in works the same); focus is returned by the trap. `mode="non-modal"` moves no focus on open — the page stays interactive, so where focus goes is yours to decide (`element.focus()` after `show`) |
 | Body scrolls, footer stays visible | `part="body"` is `flex: 1; overflow: auto`; the `footer` slot is `flex-shrink: 0` |
 | Focus cannot leave the panel | `mode="modal"` (default) activates the focus trap |
 | `Esc` closes, background scroll is locked | `closeOn` defaults to `['escape','backdrop','button']` |

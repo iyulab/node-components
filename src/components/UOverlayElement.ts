@@ -43,8 +43,8 @@ export abstract class UOverlayElement extends UElement {
   
   /**
    * 오버레이 모드
-   * - `modal` — focus trap, scroll lock, 백드롭 차단 (기본값)
-   * - `non-modal` — 주변 UI와 자유 상호작용, 배경 투명, scroll lock 없음
+   * - `modal` — focus trap, 초기 포커스 배치, scroll lock, 백드롭 차단 (기본값)
+   * - `non-modal` — 주변 UI와 자유 상호작용, 배경 투명, scroll lock 없음, 열려도 포커스를 옮기지 않음
    * 
    * @default 'modal'
    */

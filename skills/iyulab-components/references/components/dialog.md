@@ -60,7 +60,7 @@ panel of that size. A short dialog stays short.
 | `closable` | `boolean` | `false` | ✓ | Show close button |
 | `placement` | `'top-start'\|'top'\|'top-end'\|'start'\|'center'\|'end'\|'bottom-start'\|'bottom'\|'bottom-end'` | `'center'` | ✓ | Position on screen |
 | `offset` | `number` | `0` | ✓ | Distance from screen edge in px |
-| `mode` | `'modal'\|'non-modal'` | `'modal'` | ✓ | `modal` enables focus-trap |
+| `mode` | `'modal'\|'non-modal'` | `'modal'` | ✓ | `modal` traps focus and places initial focus (`[autofocus]` → first input control → first tabbable, through shadow roots); `non-modal` does neither |
 | `contained` | `boolean` | `false` | ✓ | Position relative to parent element |
 | `closeOn` | `string[]` | `['escape','backdrop','button']` | ✓ | Close triggers |
 
