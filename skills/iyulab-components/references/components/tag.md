@@ -37,7 +37,7 @@ For interactive chips (selectable/removable), use [`u-chip`](./chip.md) instead.
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `variant` | `'solid'\|'surface'\|'filled'\|'outlined'` | `'filled'` | ✓ | Visual style |
-| `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | `'neutral'` | ✓ | Color |
+| `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'\|'gray'` | `'neutral'` | ✓ | Color |
 | `rounded` | `boolean` | `false` | ✓ | Pill shape |
 | `icon` | `boolean` | `false` | ✓ | Adds a status icon so the meaning survives without color (`info`/`success`/`warning`/`danger` only) |
 
@@ -53,7 +53,11 @@ For interactive chips (selectable/removable), use [`u-chip`](./chip.md) instead.
 
 `color` carries **two** axes. The **role** axis (`primary`·`info`·`success`·`warning`·`danger`)
 means *semantics* — it follows re-branding and inherits the contrast contract. The **decorative**
-axis (`blue`·`purple` …) means *the color itself* and is deliberately immune to re-branding.
+axis (`blue`·`purple` … `gray`) means *the color itself* and is deliberately immune to re-branding.
+
+`neutral` (the default) is **not gray** — it follows the brand colour, so a default tag matches the
+product. For a label that should carry no colour at all — a status such as "Pending" next to an
+`info` "Shipped" — use `gray`.
 
 `icon` only applies to the four **status** roles — `neutral` and `primary` are not states, and the
 decorative axis carries no meaning, so no icon is drawn there.

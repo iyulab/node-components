@@ -66,6 +66,16 @@ export const styles = css`
      아래 9개 규칙이 hue 슬롯을 채우고, variant 규칙이 그것을 소비한다.
      슬롯이 비면(color="neutral") variant 규칙의 폴백 = 브랜드 경로를 탄다.
      ========================================================================== */
+  /* gray — 장식 축의 무채색. «neutral» 은 브랜드 경로(위 주석)라 «회색 레이블» 을 낼 방법이 없었다
+     («대기 중» 같은 상태가 «info» 와 같은 파랑으로 칠해졌다). 중립 램프를 읽되 명도 때문에 두 자리를
+     한 단 진하게 쓴다: solid 면은 흰 글자 대비로 700, 연한 면은 흰 바탕·올림면과 구별되게 200. */
+  :host([color="gray"]) {
+    --tag-hue-solid: var(--u-neutral-700, #616161);
+    --tag-hue-line: var(--u-neutral-300, #E0E0E0);
+    --tag-hue-surface: var(--u-neutral-200, #EEEEEE);
+    --tag-hue-text: var(--u-neutral-800, #424242);
+    --tag-hue-text-outlined: var(--u-neutral-700, #616161);
+  }
   :host([color="blue"]) {
     --tag-hue-solid: var(--u-blue-500, #2196F3);
     --tag-hue-line: var(--u-blue-300, #64B5F6);

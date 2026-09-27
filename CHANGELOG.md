@@ -2,8 +2,18 @@
 
 ## [Unreleased]
 
+### Added
+
+- **`u-tag color="gray"`** — a colourless label on the decorative axis. `neutral`, the default,
+  follows the brand colour, so there was no way to draw a gray tag: a "Pending" status tag came out
+  the same blue as an `info` "Shipped" next to it. `gray` reads the neutral ramp and, like the
+  other decorative colours, ignores re-branding.
+
 ### Fixed
 
+- **An empty `u-select` is as tall as a filled one.** With no value and no placeholder, its display
+  area had no line box, so the control was shorter than a `u-select` with a value — and shorter
+  than a `u-input` beside it in the same form row, which knocked the labels out of line.
 - **`u-input` commits its value before `Enter` submits the form.** `change` used to fire only on
   blur, so pressing `Enter` in a form submitted it first and committed the value afterwards — a
   form that reads values from `change` (the usual React `onChange` wiring) submitted empty fields,

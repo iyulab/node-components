@@ -99,7 +99,7 @@ import { UDialog } from '@iyulab/components/react';
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
 | `onInput` | `input` | `unknown` | 입력값이 변경될 때 발생 |
-| `onChange` | `change` | `unknown` | 값이 확정됐을 때 발생 |
+| `onChange` | `change` | `unknown` | 값이 확정됐을 때 발생 — Enter 또는 blur 에서, 값이 바뀐 경우에만(네이티브 입력과 같다) |
 
 ## `<u-menu>`
 

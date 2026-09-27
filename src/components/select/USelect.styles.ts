@@ -131,6 +131,9 @@ export const styles = css`
     flex: 1;
     min-width: 0;
     line-height: 1.5;
+    /* 비어 있어도(값 없음 · 플레이스홀더 없음) 한 줄 높이 — 종전에는 줄 상자가 없어 빈 선택이
+       값이 있는 선택보다, 그리고 같은 행의 u-input 보다 낮았고 라벨 기준선이 어긋났다. */
+    min-block-size: 1.5em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

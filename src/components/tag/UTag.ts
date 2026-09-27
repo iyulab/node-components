@@ -16,7 +16,8 @@ export type TagColor =
   | "neutral"
   | "primary" | "info" | "success" | "warning" | "danger"
   | "blue" | "green" | "yellow" | "red"
-  | "orange" | "teal" | "cyan" | "purple" | "pink";
+  | "orange" | "teal" | "cyan" | "purple" | "pink"
+  | "gray";
 
 /**
  * 레이블, 카테고리, 상태 등을 표시하는 태그 컴포넌트입니다.

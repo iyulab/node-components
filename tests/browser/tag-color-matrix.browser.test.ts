@@ -81,6 +81,33 @@ describe('u-tag 장식 매트릭스 (variant × color)', () => {
     document.documentElement.style.removeProperty('--u-primary-color');
   });
 
+  it('color="gray" 는 중립 램프를 읽는다 — solid 700 · surface/filled 면 200 · 글자 800 · 선 300 · outlined 글자 700', async () => {
+    const expect_: Record<string, Record<string, string>> = {
+      solid: { '--tag-bg-color': '--u-neutral-700', '--tag-border-color': '--u-neutral-700' },
+      surface: { '--tag-color': '--u-neutral-800', '--tag-bg-color': '--u-neutral-200', '--tag-border-color': '--u-neutral-300' },
+      filled: { '--tag-color': '--u-neutral-800', '--tag-bg-color': '--u-neutral-200' },
+      outlined: { '--tag-color': '--u-neutral-700', '--tag-border-color': '--u-neutral-300' },
+    };
+    const wrong: string[] = [];
+    for (const [variant, props] of Object.entries(expect_)) {
+      const el = await mount(variant, 'gray');
+      for (const [prop, tok] of Object.entries(props)) {
+        const actual = getComputedStyle(el).getPropertyValue(prop).trim();
+        if (actual !== token(tok)) wrong.push(`${variant} ${prop}: ${actual} ≠ ${tok}(${token(tok)})`);
+      }
+      el.remove();
+    }
+    expect(wrong).toEqual([]);
+  });
+
+  it('⚪NEGATIVE — gray 는 브랜드 오버라이드에 면역이다(neutral 과 다르다)', async () => {
+    const el = await mount('filled', 'gray');
+    const before = getComputedStyle(el).getPropertyValue('--tag-bg-color').trim();
+    document.documentElement.style.setProperty('--u-primary-color', 'rgb(255, 0, 128)');
+    expect(getComputedStyle(el).getPropertyValue('--tag-bg-color').trim()).toBe(before);
+    document.documentElement.style.removeProperty('--u-primary-color');
+  });
+
   it('색 지정 태그는 브랜드 오버라이드에 면역이다', async () => {
     const el = await mount('solid', 'green');
     const before = getComputedStyle(el).getPropertyValue('--tag-bg-color').trim();
