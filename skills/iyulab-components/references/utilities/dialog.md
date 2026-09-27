@@ -16,6 +16,11 @@ await Dialog.alert('Operation completed.');
 const confirmed = await Dialog.confirm('Delete this item?');
 if (confirmed) deleteItem();
 
+// Confirming something that cannot be undone — the confirm button is drawn in `danger`
+const ok = await Dialog.confirm('Cancel order G-2026-0512? This cannot be undone.', {
+  confirmLabel: 'Cancel order', cancelLabel: 'Keep order', confirmColor: 'danger',
+});
+
 // Prompt — returns entered string or null if cancelled
 const name = await Dialog.prompt('Enter your name:', { defaultValue: 'Alice' });
 
@@ -57,6 +62,7 @@ interface DialogOptions {
 interface ConfirmDialogOptions extends DialogOptions {
   confirmLabel?: string;     // default: the active locale's `confirm` (en: 'Confirm')
   cancelLabel?: string;      // default: the active locale's `cancel` (en: 'Cancel')
+  confirmColor?: ButtonColor; // e.g. 'danger' for an irreversible action — default: the button's default
 }
 
 interface PromptDialogOptions extends ConfirmDialogOptions {
@@ -74,5 +80,6 @@ interface DialogAction {
   label: string;
   value: string;
   variant?: ButtonVariant;
+  color?: ButtonColor;
 }
 ```

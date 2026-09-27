@@ -30,6 +30,21 @@ describe('Dialog 기본 버튼 문구', () => {
     expect(await labels()).toEqual(['취소', '확인']);
   });
 
+  it('confirmColor 가 확인 버튼에만 색을 준다 — 파괴적 확인', async () => {
+    void Dialog.confirm('Cancel this order?', { confirmColor: 'danger' });
+    await labels();
+    const [cancel, confirm] = [...document.body.querySelector('u-dialog')!.querySelectorAll('u-button')];
+    expect(confirm.getAttribute('color')).toBe('danger');
+    expect(cancel.getAttribute('color')).toBe('neutral');
+  });
+
+  it('NEGATIVE: confirmColor 가 없으면 확인 버튼은 기본색이다', async () => {
+    void Dialog.confirm('ok?');
+    await labels();
+    const confirm = [...document.body.querySelector('u-dialog')!.querySelectorAll('u-button')][1];
+    expect(confirm.getAttribute('color')).toBe('neutral');
+  });
+
   it('NEGATIVE: 명시한 문구는 로케일보다 우선한다', async () => {
     Locale.set('ko');
     void Dialog.confirm('delete?', { confirmLabel: 'Delete', cancelLabel: 'Keep' });

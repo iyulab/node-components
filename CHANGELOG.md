@@ -4,6 +4,9 @@
 
 ### Added
 
+- **`Dialog.confirm(message, { confirmColor })`** and **`DialogAction.color`**. Confirming an
+  action that cannot be undone had no way to say so — the confirm button was always the default
+  colour. `confirmColor: 'danger'` draws it in `danger`.
 - **`u-tag color="gray"`** — a colourless label on the decorative axis. `neutral`, the default,
   follows the brand colour, so there was no way to draw a gray tag: a "Pending" status tag came out
   the same blue as an `info` "Shipped" next to it. `gray` reads the neutral ramp and, like the

@@ -4,10 +4,11 @@ import '../components/input/UInput.js';
 
 import { UDialog } from '../components/dialog/UDialog.js';
 import type { DialogPlacement } from '../components/dialog/UDialog.js';
-import type { ButtonVariant } from '../components/button/UButton.js';
+import type { ButtonColor, ButtonVariant } from '../components/button/UButton.js';
 import type { CloseOnPolicy } from '../components/UOverlayElement.js';
 import type { UInput, InputType } from '../components/input/UInput.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { Locale } from './Locale.js';
 
 /** 공통 Dialog 옵션 */
@@ -36,6 +37,11 @@ export interface ConfirmDialogOptions extends DialogOptions {
   confirmLabel?: string;
   /** 취소 버튼 텍스트 (기본: 현재 로케일의 `cancel` — 영어는 'Cancel') */
   cancelLabel?: string;
+  /**
+   * 확인 버튼의 색. 되돌릴 수 없는 동작(삭제·취소)을 확인할 때 `'danger'` — 그 확인 버튼이 화면에서
+   * 파괴적 동작이 solid 로 칠해지는 유일한 자리가 된다. 기본은 버튼의 기본색.
+   */
+  confirmColor?: ButtonColor;
 }
 
 /** Prompt Dialog 옵션 */
@@ -64,6 +70,8 @@ export interface DialogAction {
   value: string;
   /** 버튼 스타일 */
   variant?: ButtonVariant;
+  /** 버튼 색 (기본: 버튼의 기본색) */
+  color?: ButtonColor;
 }
 
 /**
@@ -94,7 +102,7 @@ export class Dialog {
       content: message,
       actions: [
         { label: options?.cancelLabel || Locale.getValue('cancel'), value: 'cancel', variant: 'outlined' },
-        { label: options?.confirmLabel || Locale.getValue('confirm'), value: 'confirm' },
+        { label: options?.confirmLabel || Locale.getValue('confirm'), value: 'confirm', color: options?.confirmColor },
       ],
     });
     return result === 'confirm';
@@ -159,6 +167,7 @@ export class Dialog {
             ${actions.map(action => html`
               <u-button
                 variant=${action.variant || 'solid'}
+                color=${ifDefined(action.color)}
                 @click=${() => { closeValue = action.value; dialog.hide(); }}
               >${action.label}</u-button>
             `)}
