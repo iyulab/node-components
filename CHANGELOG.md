@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- **`glob` is now an optional peer dependency instead of a dependency.** Only the build plugin
+  `@iyulab/components/plugins/vite-plugin-react-wrapper` uses it, yet every app installing the
+  components also installed `glob` and its five transitive packages. Browser apps install none of
+  them now. If your build imports that plugin, add `glob` to your `devDependencies`.
+
 ## [1.47.1] - 2026-09-28
 
 ### Fixed

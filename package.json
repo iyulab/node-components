@@ -66,19 +66,22 @@
   "dependencies": {
     "@floating-ui/dom": "^1.8.0",
     "focus-trap": "^8.2.2",
-    "glob": "^13.0.6",
     "lit": "^3.3.3",
     "tabbable": "^6.5.0"
   },
   "peerDependencies": {
     "@lit/react": ">=1.0.8",
-    "react": ">=18.0.0"
+    "react": ">=18.0.0",
+    "glob": ">=13.0.0"
   },
   "peerDependenciesMeta": {
     "@lit/react": {
       "optional": true
     },
     "react": {
+      "optional": true
+    },
+    "glob": {
       "optional": true
     }
   },
@@ -89,6 +92,7 @@
     "@vitest/browser-playwright": "^5.0.0",
     "eslint": "^10.1.0",
     "eslint-plugin-lit": "^2.3.1",
+    "glob": "^13.0.6",
     "globals": "^17.7.0",
     "happy-dom": "^20.10.6",
     "react": "^19.2.7",
