@@ -284,7 +284,7 @@ function writeFile(filePath: string, content: string, buildOutDir: string): File
 /**
  * 래퍼가 원본 엘리먼트 클래스를 가리키는 경로.
  *
- * 🔴**상대 경로가 아니라 «패키지 스펙»으로 낸다**(cycle-434). 상대 경로는 패키지
+ * 🔴**상대 경로가 아니라 «패키지 스펙»으로 낸다**. 상대 경로는 패키지
  * `exports` 맵을 거치지 않으므로, 로컬 워크스페이스에서 래퍼는 **항상 진짜 `dist`**
  * 의 클래스를 싣는다. 그런데 같은 워크스페이스의 소비자가 하는 deep import 는
  * `"./dist/*": "./src/*"` 리다이렉트를 타 **`src` 의 클래스**를 싣는다 — 같은 논리적
