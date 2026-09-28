@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.49.1] - 2026-09-28
+
+### Fixed
+
+- Comments shipped in `dist/utilities/Toast` and `dist/plugins/vite-plugin-react-wrapper` referred to
+  internal planning documents. They now describe the behavior on their own. No code change.
+
 ## [1.49.0] - 2026-09-28
 
 ### Added
