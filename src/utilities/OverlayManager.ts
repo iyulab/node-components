@@ -76,10 +76,15 @@ export class OverlayManager {
    * 알린다(뒤에 듣는 앱 리스너가 «누가 먹었나» 를 가릴 수 있게). IME 조합 중인 Escape 는 조합을
    * 끝내는 키라 받지 않는다.
    */
-  private static readonly layers: { el: HTMLElement; onEscape: () => void }[] = [];
+  private static readonly layers: { el: HTMLElement; onEscape: (e: KeyboardEvent) => boolean | void }[] = [];
 
-  /** 층을 연다 — 이미 열려 있으면 맨 위로 옮긴다. `onEscape` 는 이 층이 가장 위일 때 Escape 가 부른다. */
-  public static openLayer(el: HTMLElement, onEscape: () => void): void {
+  /**
+   * 층을 연다 — 이미 열려 있으면 맨 위로 옮긴다. `onEscape` 는 이 층이 가장 위일 때 Escape 가 부른다.
+   *
+   * `onEscape` 가 `false` 를 돌려주면 **거절**이다 — 키를 소비하지 않고 어떤 층도 닫지 않는다.
+   * 비모달 패널이 «포커스가 자기 안에 있을 때만» Escape 로 닫히는 경우에 쓴다(WAI-ARIA 비모달 대화상자).
+   */
+  public static openLayer(el: HTMLElement, onEscape: (e: KeyboardEvent) => boolean | void): void {
     this.closeLayer(el);
     this.layers.push({ el, onEscape });
   }
@@ -100,8 +105,8 @@ export class OverlayManager {
     if (e.key !== 'Escape' || e.isComposing || e.defaultPrevented) return;
     const top = OverlayManager.layers[OverlayManager.layers.length - 1];
     if (!top) return;
+    if (top.onEscape(e) === false) return;
     e.preventDefault();
-    top.onEscape();
   };
 
   static {

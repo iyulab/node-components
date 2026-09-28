@@ -10,7 +10,9 @@
   layers; an app surface that is not an overlay component (a shell panel, a custom sheet) can join
   the same order instead of listening for Escape itself. The manager listens once on `document`: an
   Escape a control already handled closes no layer, and the Escape that closes one is marked
-  consumed, so listeners on `window` see `defaultPrevented`.
+  consumed, so listeners on `window` see `defaultPrevented`. `onEscape` receives the event and may
+  return `false` to decline — for a non-modal panel that only closes while focus is inside it —
+  which leaves the key unconsumed and closes nothing.
 
 ### Fixed
 

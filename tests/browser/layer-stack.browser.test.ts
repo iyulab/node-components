@@ -128,6 +128,26 @@ describe('layer stack — Escape closes the topmost layer only', () => {
     expect(pop.open).toBe(true);
   });
 
+  it('a layer that declines (onEscape returns false) leaves the Escape unconsumed and closes nothing', async () => {
+    const panel = document.createElement('div');
+    document.body.appendChild(panel);
+    let asked = 0;
+    let seen: boolean | undefined;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') seen = e.defaultPrevented; };
+    window.addEventListener('keydown', onKey);
+    OverlayManager.openLayer(panel, () => { asked++; return false; });
+    try {
+      await userEvent.keyboard('{Escape}');
+      await settle();
+      expect(asked).toBe(1);
+      expect(seen).toBe(false);
+      expect(OverlayManager.topLayer).toBe(panel);
+    } finally {
+      OverlayManager.closeLayer(panel);
+      window.removeEventListener('keydown', onKey);
+    }
+  });
+
   it('an app-owned layer opened over a dialog is closed first', async () => {
     const dialog = document.createElement('u-dialog') as UDialog;
     document.body.appendChild(dialog);

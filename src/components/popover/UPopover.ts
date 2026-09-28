@@ -107,7 +107,7 @@ export class UPopover extends UFloatingElement {
     // 열린 팝오버는 층이다 — Escape 는 층 스택이 «가장 위 층 하나» 에만 준다. 팝오버 안에서 연
     // 하위 팝오버가 나중에 열렸으니 위에 서고, Escape 한 번에 그것만 닫힌다.
     if (changedProperties.has('open') || changedProperties.has('dismiss')) {
-      if (this.open && this.dismiss.includes('escape')) OverlayManager.openLayer(this, () => this.hide());
+      if (this.open && this.dismiss.includes('escape')) OverlayManager.openLayer(this, () => { void this.hide(); });
       else OverlayManager.closeLayer(this);
     }
 
