@@ -3,7 +3,7 @@ import '../../src/components/drawer/UDrawer.js';
 import '../../src/components/dialog/UDialog.js';
 
 /**
- * Regression for ISSUE-20260715-uoverlay-panel-token-no-fallback:
+ * Regression — overlay panel token had no fallback:
  * With no `--u-*` theme tokens defined (no Theme.init), the overlay panel used
  * `var(--u-panel-bg-color)` with no fallback and rendered fully transparent —
  * the modal looked "not open" while the backdrop dimmed. The backdrop already had

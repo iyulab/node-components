@@ -6,7 +6,7 @@ import type { UDialog } from '../../src/components/dialog/UDialog.js';
 /**
  * `Dialog.confirm`/`prompt` 의 기본 버튼 문구는 현재 로케일을 따른다.
  *
- * 결함(docket `#417`): 기본값이 영어 리터럴(`'Cancel'`·`'Confirm'`)이라, `Locale.set('ko')` 한
+ * 결함: 기본값이 영어 리터럴(`'Cancel'`·`'Confirm'`)이라, `Locale.set('ko')` 한
  * 앱의 한국어 본문 아래에 영어 버튼이 섰다. 같은 패키지의 다른 chrome 문구(`close`·`clear` …)는
  * 이미 `Locale` 표를 탔다 — 이 유틸리티 하나가 그것을 우회하고 있었다.
  */

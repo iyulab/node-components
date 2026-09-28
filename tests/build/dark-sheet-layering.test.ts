@@ -12,7 +12,7 @@ const read = (p: string) => readFileSync(join(root, 'src/assets/styles', p), 'ut
  *   `:root:where([theme="dark"])` (0,1,0)  모드와 무관한 스케일 — 반경·여백·글자·모션·글꼴
  *
  * 뒤의 것이 앞 블록에 있으면 `:root` 로 선언한 하우스·소비자 층이 다크 모드에서만 조용히
- * 진다(docket `#413`). 그리고 지속시간이 앞 블록에 있으면 light.css 의 `prefers-reduced-motion`
+ * 진다. 그리고 지속시간이 앞 블록에 있으면 light.css 의 `prefers-reduced-motion`
  * 규칙(`:root`)이 다크에서 무시된다 — 이 불변식이 그 둘을 함께 지킨다.
  *
  * ⚠**범주 목록은 손으로 쓴다** — «어떤 토큰이 모드와 무관한가» 는 시트에서 도출할 수 있는

@@ -7,7 +7,7 @@ import type { UTab } from '../../src/components/tab/UTab.js';
 /**
  * `u-tab-panel` 의 탭 키보드 내비게이션 회귀.
  *
- * ★**이 표면에는 회귀가 0건이었다**(cycle-474 실측 — `tests/**` 어디에도 `u-tab-panel` 의
+ * ★**이 표면에는 회귀가 0건이었다**(`tests/**` 어디에도 `u-tab-panel` 의
  *   키 처리를 보는 것이 없었다). ESLint 10 의 신규 규칙 `no-useless-assignment` 가
  *   `handleTabKeydown` 의 죽은 초기화(`let targetIndex = -1`)를 지목해 그 자리를 고치면서,
  *   ***고치는 코드에 회귀가 없다는 사실이 함께 드러났다.***

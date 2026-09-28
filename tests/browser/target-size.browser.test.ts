@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
 
 /**
- * **WCAG 2.2 SC 2.5.8 Target Size (Minimum) — 24×24 CSS px** 게이트 (§C-A).
+ * **WCAG 2.2 SC 2.5.8 Target Size (Minimum) — 24×24 CSS px** 게이트.
  *
  * ## 왜 브라우저에서 재는가
  *
@@ -20,10 +20,10 @@ import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
  * 그 밖의 예외(등가 컨트롤 · 인라인 · UA 컨트롤 · 본질적)는 **모델링하지 않는다** — 문서
  * 문맥이나 디자인 의도를 읽어야 하는 축이라 기계가 판정할 수 없다.
  *
- * ## 🔴 대상은 «도출»하고 규칙만 «손으로 쓴다» (cycle-486)
+ * ## 🔴 대상은 «도출»하고 규칙만 «손으로 쓴다»
  *
  * 이 파일의 첫 판은 컴포넌트 일곱을 **임포트로 손수 열거**했다. 그런데 이 패키지는 46개를
- * 게시하므로, 그 상태로 «게이트가 초록이다»를 «전부 준수한다»로 읽으면 ***§C-A 가 A안을
+ * 게시하므로, 그 상태로 «게이트가 초록이다»를 «전부 준수한다»로 읽으면 ***이미
  * 기각한 바로 그 형태의 거짓 선언***이 된다. 그리고 손으로 쓴 대상 목록은 이 리포가
  * **여섯 번** 데인 형태다(`tokens:sync` 의 `flex-table` · `gitignore-check` 의 `dist` ·
  * `draft-backlog` 의 `draftFolders`/`searchRoots` · `skill-doc-check` 의 스킬 경로 ·
@@ -31,7 +31,7 @@ import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
  *
  * ⇒ **배럴을 임포트하면서 `customElements.define` 을 가로채** 등록된 태그 전부를 얻는다.
  * 손으로 쓰는 것은 «무엇이 포인터 타깃인가»라는 **규칙**뿐이다 — 그것은 리포에서 읽어낼 수
- * 있는 사실이 아니라 우리 지식이다(cycle-181 의 경계 그대로).
+ * 있는 사실이 아니라 우리 지식이다.
  *
  * 🔴**그리고 그 규칙 표가 낡지 않도록 «전수 대응»을 단언한다**: 등록된 태그는 아래 세 집합
  * 중 정확히 하나에 있어야 하고, 세 집합에 등록되지 않은 이름이 있어도 실패한다. ⇒ ***새
@@ -40,14 +40,14 @@ import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
  * ## ⚠ 「미판정」을 통과로 세지 않는다
  *
  * `NEEDS_FIXTURE` 는 «타깃이 있는데 아직 우리가 픽스처를 못 썼다»는 뜻이고 **이름을 그대로
- * 보고한다**. 침묵이 아니라 ***할 일이 있다***는 신호다 — cycle-485 가 `u-radio` 에서
+ * 보고한다**. 침묵이 아니라 ***할 일이 있다***는 신호다 — `u-radio` 에서
  * 정확히 그것을 확인했다(«잴 수 없다»의 원인이 컴포넌트가 아니라 빈 픽스처였다).
  *
- * ✅**cycle-487 로 그 집합이 비었다**(24 판정 · 0 미판정 · 22 대상아님). 그 일곱을 열어 보니
+ * ✅**그 집합은 비었다**(24 판정 · 0 미판정 · 22 대상아님). 그 일곱을 열어 보니
  * 둘은 애초에 **타깃이 없었고**(`u-tag` 는 제거 버튼 자체가 없다 · `u-split-panel` 의
  * splitter 는 **소비자가 슬롯으로 넣는다**) 다섯은 픽스처만 있으면 재졌다.
  *
- * 🔴**(cycle-539 정정) `u-split-panel` 에 대한 위 판단은 틀렸다.** 컴포넌트가 분할 핸들
+ * 🔴**(정정) `u-split-panel` 에 대한 위 판단은 틀렸다.** 컴포넌트가 분할 핸들
  * `div.splitter[part=splitter]` 를 **스스로 만들고** `pointerdown`·`dblclick` 을 건다 — `splitter`
  * 슬롯의 내용은 그 안에 복제되는 장식일 뿐이다. 그래서 «대상 아님» 에서 꺼내 재고, 기본 4px 라
  * `UNDERSIZED_PINS` 에 핀으로 둔다(사람 판단 대기).
@@ -89,20 +89,20 @@ function parts(host: Element, part: string): Element[] {
 }
 
 /**
- * 🔴**hit-test 축**(cycle-553 · 세 게이트 공통) — 타깃의 중심과 1px 안쪽 네 가장자리를 실제로 누르면 그 타깃이 받는가.
+ * 🔴**hit-test 축**(세 게이트 공통) — 타깃의 중심과 1px 안쪽 네 가장자리를 실제로 누르면 그 타깃이 받는가.
  *
  * `getBoundingClientRect` 는 조상의 `overflow` 가 자른 부분도, 닫혀서 보이지 않는 요소의 박스도 그대로 보고한다 — 크기만
  * 재면 ***보이지도 눌리지도 않는 타깃이 통과한다.*** 실제로 그랬다: components 게이트의 `u-input` 접미 아이콘(좁은 필드에서
  * 밖으로 밀려나 잘렸다)과, 닫힌 채 띄운 대화상자 픽스처(닫기 버튼 중심을 누르면 `body` 가 받았다).
  *
  * - **사용자가 스크롤로 닿을 수 있으면 닿는 것이다** — 점마다, 그 점이 보이도록 `overflow: auto|scroll` 조상과 창만 스크롤한
- *   뒤 잰다(cycle-554: 표·시트·블록이 러너의 좁은 뷰포트를 넘어 `elementFromPoint` 가 `null` 을 돌려줬고, 뷰포트보다 넓은
+ *   뒤 잰다(표·시트·블록이 러너의 좁은 뷰포트를 넘어 `elementFromPoint` 가 `null` 을 돌려줬고, 뷰포트보다 넓은
  *   타깃은 양 끝을 한 화면에 담을 수 없다). `overflow: hidden|clip` 조상은 사용자가 움직일 수 없으므로 **건드리지 않는다** —
  *   `scrollIntoView` 는 그것까지 스크롤해 잘린 타깃을 통과시킨다. 움직인 스크롤은 점마다 돌려놓는다.
  * - 판정은 타깃이 속한 트리(`getRootNode()`)에서 한다. 그 트리로 retarget 되어 **호스트**가 돌아오면, 그 점이 타깃 안
  *   `<slot>` 에 꽂힌 라이트 DOM 내용 위일 때 타깃이 받은 것으로 센다(링크 안에 꽂힌 글자 등).
  * - ⚠**이웃 타깃이 받은 것은 봐주지 않는다.** 붙어 있는 격자 셀의 경계선 때문에 가장자리를 이웃에 양보하는 면제를
- *   시험해 봤지만(cycle-554), 네거티브 컨트롤로 끄자 **어떤 픽스처도 빨개지지 않았다** — 셀 가장자리의 불일치는 경계선이
+ *   시험해 봤지만, 네거티브 컨트롤로 끄자 **어떤 픽스처도 빨개지지 않았다** — 셀 가장자리의 불일치는 경계선이
  *   아니라 뷰포트 밖이었다. 쓰이지 않는 면제는 조용한 미탐이라 걷어냈다. 필요해지면 그 픽스처가 빨강으로 알린다.
  *
  * ⚠이 헬퍼는 세 게이트(components · chat-components · data-components)에 **같은 코드로** 한 벌씩 있다 — 고치면 셋 다.
@@ -289,21 +289,21 @@ const NEEDS_FIXTURE = new Set<string>([]);
 /**
  * 🔴**측정 결과 미달인데 «치수를 올리는 것이 시각적 공개 계약 변경»이라 사람 판단이 필요한 것.**
  *
- * §C-A 가 채택한 순서(게이트 → 위반 확정 → 치수 조정 → 선언 상향)의 «위반 확정» 자리다.
+ * 채택한 순서(게이트 → 위반 확정 → 치수 조정 → 선언 상향)의 «위반 확정» 자리다.
  * 여기 있는 동안 이 파일은 그것을 **미달로 단언**하므로 스위트는 초록이고, 치수를 올리면
- * 빨개진다 — 그때 이 집합에서 빼는 것이 완료 신호다(cycle-479 가 쓴 것과 같은 장치).
+ * 빨개진다 — 그때 이 집합에서 빼는 것이 완료 신호다.
  *
- * `u-slider`(thumb 18×18)가 첫 항목이었고 cycle-492 가 사람 결정(§C-A ⑷ ⑵안 — 히트 영역만
+ * `u-slider`(thumb 18×18)가 첫 항목이었고 사람 결정(히트 영역만
  * 넓힌다)에 따라 해소했다. 새로 핀을 넣을 때는 **왜 자율로 고칠 수 없는지**(선택지가 둘 이상인
  * 시각 계약 변경인지)를 여기 함께 적을 것.
  *
- * ✅**`u-split-panel`**(cycle-539 핀 → cycle-540 해소) — 분할 핸들이 4px 라 핀으로 뒀고, 사람
- * 결정(HD-55 ⑷)으로 **레이아웃 거터**가 됐다: 핸들 박스가 24px 공간을 차지하고 보이는 선은
+ * ✅**`u-split-panel`**(핀 → 해소) — 분할 핸들이 4px 라 핀으로 뒀고, 사람
+ * 결정으로 **레이아웃 거터**가 됐다: 핸들 박스가 24px 공간을 차지하고 보이는 선은
  * 4px 그대로다. `u-slider` 식(포인터 영역만 겹쳐 넓힘)을 쓰지 않은 이유 — 핸들 양옆이 패널이고
  * 패널마다 `overflow: auto` 라 스크롤바가 핸들에 붙어 있다. 두 축은
  * `split-panel-handle.browser.test.ts` 가 잰다.
  */
-/* ✅**`u-input` 접미 아이콘 넷의 핀은 `HD-57` ⒜ 채택으로 해소됐다**(2026-09-12) — 아이콘 사이 간격 0.25→0.5em ·
+/* ✅**`u-input` 접미 아이콘 넷의 핀은 해소됐다**(2026-09-12) — 아이콘 사이 간격 0.25→0.5em ·
    스테퍼 글리프 0.85→1em · 좌우 여백 0 인 변형의 컨테이너에 오른쪽 0.25em. 이제 모든 접미 아이콘이 24×24 다. */
 const UNDERSIZED_PINS = new Set<string>([]);
 
@@ -332,7 +332,7 @@ interface Fixture {
    * 초록이었다(이웃이 없어 간격 예외를 받았다). ***조용한 미탐이었고, 넓은 예외가 그 원인이다.***
    *
    * 🔴**그리고 「우리가 배치를 소유하는가」만으로는 부족하다 — 「그 예외가 실제로 일하는가」를
-   * 함께 물어야 한다**(cycle-496 이 기준을 바꾸고 cycle-504 가 다섯을 전수 실측했다). 소유하되
+   * 함께 물어야 한다**(기준을 바꾼 뒤 다섯을 전수 실측했다). 소유하되
    * 크기만으로도 이미 통과하고 이웃까지의 거리가 늘 24 를 넘으면, 그 예외가 하는 일은
    * ***미탐뿐***이다 — 나중에 치수가 줄어도 게이트가 초록으로 남는다. 실측(2026-09-09):
    *
@@ -346,11 +346,11 @@ interface Fixture {
    *
    * ⇒ 넷에서 걷어냈고 `u-carousel` 만 남겼다(페이지네이션 점이 실제로 미달이고 그 간격 25px 는
    * 우리가 정한다). `u-rating` 은 25×25 로 하한을 **1px** 넘고 있어, 예외가 있는 동안에는
-   * cycle-484 가 어렵게 올린 그 치수를 지키는 장치가 없었다.
+   * 앞서 어렵게 올린 그 치수를 지키는 장치가 없었다.
    */
   spacingIsOurs?: true;
   /**
-   * 🔴**타깃이 «열린 상태»에서만 렌더되면 재기 전에 그 상태를 만든다**(`HD-46` — `chat-components`
+   * 🔴**타깃이 «열린 상태»에서만 렌더되면 재기 전에 그 상태를 만든다**(`chat-components`
    * 게이트가 먼저 들였다). 사용자와 같은 경로(클릭·키)로 연다 — 내부 상태를 직접 세우면 «그 경로로
    * 열리는가»가 빠진다. 열리지 않으면 «타깃 0개» 단언이 빨강을 낸다(조용히 통과하지 않는다).
    */
@@ -368,7 +368,7 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   'u-button': [
     { state: '기본', html: '<u-button>OK</u-button>' },
     // `sm` 은 크기 축(font-size 12px — 여백·최소 높이가 em 이라 비례한다)이다. 달력의 «Today» 가 정확히 이
-    // 조합(`variant="ghost" size="sm"`)으로 그려진다 — 거기서 재지 않고 여기서 재는 이유는 `DL-536-1`.
+    // 조합(`variant="ghost" size="sm"`)으로 그려진다 — 그래서 여기서 잰다.
     { state: 'sm', html: '<u-button variant="ghost" size="sm">Today</u-button>' },
     // 가장 좁은 `sm` — 아이콘만 든 버튼(글자 폭에 기대지 못한다).
     { state: 'sm 아이콘', html: '<u-button size="sm" aria-label="Close"><u-icon name="close"></u-icon></u-button>' },
@@ -605,13 +605,13 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   ],
   // 항목은 `href` 가 있을 때만 링크(`a[part=link]`)를 그리는 타깃이고, **마지막 항목은 현재 페이지**라 브레드크럼이
   // `pointer-events: none` 을 준다. 종전 픽스처(항목 하나 · `href` 없음)는 두 겹으로 타깃이 아닌 것을 재고 통과했다
-  // (cycle-553 hit-test 축 — 다섯 점 모두 부모가 받았다). ⇒ 링크 항목 + 현재 항목, 앞의 것만 잰다.
+  // (hit-test 축 — 다섯 점 모두 부모가 받았다). ⇒ 링크 항목 + 현재 항목, 앞의 것만 잰다.
   'u-breadcrumb-item': {
     html: '<u-breadcrumb><u-breadcrumb-item href="#home">Home</u-breadcrumb-item><u-breadcrumb-item>Page</u-breadcrumb-item></u-breadcrumb>',
     targets: () => [document.querySelector('u-breadcrumb-item')!],
   },
 
-  // 타깃이 호스트가 아닌 것들 — cycle-485 가 확인한 함정이다(빈 컨테이너를 재면 0x0).
+  // 타깃이 호스트가 아닌 것들 — 빈 컨테이너를 재면 0x0 이 나오는 함정이다.
   'u-radio': {
     html: '<u-radio name="s" value="md"><u-option value="sm">Small</u-option>' +
       '<u-option value="md">Medium</u-option><u-option value="lg">Large</u-option></u-radio>',
@@ -630,7 +630,7 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
     targets: () => parts(document.querySelector('u-slider')!, 'thumb'),
   },
 
-  // 부수 컨트롤(닫기·제거·이동)이 타깃인 것들 — cycle-487.
+  // 부수 컨트롤(닫기·제거·이동)이 타깃인 것들.
   'u-alert': {
     html: '<u-alert open closable>Message</u-alert>',
     targets: () => parts(document.querySelector('u-alert')!, 'close-btn'),
@@ -640,7 +640,7 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
     targets: () => parts(document.querySelector('u-chip')!, 'remove'),
   },
   // ⚠`open` 이어야 닫기 버튼이 화면에 있다 — 종전 픽스처는 닫힌 대화상자를 띄워 **보이지 않는 버튼의 박스**를 재고 통과했다
-  //   (cycle-553 hit-test 축이 찾았다: 중심을 누르면 `body` 가 받았다).
+  //   (hit-test 축이 찾았다: 중심을 누르면 `body` 가 받았다).
   'u-dialog': {
     html: '<u-dialog closable open>body</u-dialog>',
     targets: () => parts(document.querySelector('u-dialog')!, 'close-btn'),
@@ -651,7 +651,7 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   },
   'u-carousel': {
     // ⚠`navigation`·`pagination` 을 켜야 화살표·인디케이터가 렌더된다 — 끄면 `hidden` 이라
-    //   **0x0 이 나오고 그것을 «통과»로 읽으면 미탐이다**(cycle-485·486 이 세 번 밟은 함정).
+    //   **0x0 이 나오고 그것을 «통과»로 읽으면 미탐이다**(세 번 밟은 함정).
     html: '<u-carousel navigation pagination loop style="width:300px;height:150px">' +
       '<div>1</div><div>2</div></u-carousel>',
     targets: () => {
@@ -720,7 +720,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
     });
 
     it('⚪NEGATIVE — 빈 컨테이너(0x0)는 위반이 아니다', () => {
-      // cycle-485: `<u-radio></u-radio>` 가 0x0 인 것은 컨테이너라서지 결함이 아니다.
+      // `<u-radio></u-radio>` 가 0x0 인 것은 컨테이너라서지 결함이 아니다.
       expect(judge({ w: 0, h: 0, cx: 0, cy: 0 }, [])).toBe('exempt-by-spacing');
     });
   });
@@ -895,7 +895,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
         const detail = `실측 ${targets.map((t) => `${Math.round(t.w)}x${Math.round(t.h)}`).join(' ')} · 판정 ${verdicts.join(' ')}`;
 
         if (pinned) {
-          // ⚠**핀이다** — cycle-479 가 §C-A ⑵에서 쓴 것과 같은 장치다. 치수를 올리면 이
+          // ⚠**핀이다**. 치수를 올리면 이
           //   단언이 빨개지고, 그때 `UNDERSIZED_PINS` 에서 빼는 것이 그 작업의 완료 신호다.
           expect(verdicts.some((v) => v === 'undersized'), detail).toBe(true);
         } else {
@@ -905,13 +905,13 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
     }
   });
 
-  describe('📌미달 재고 — 사람 판단 대기 (§C-A 의 「위반 확정」 자리)', () => {
+  describe('📌미달 재고 — 사람 판단 대기 (「위반 확정」 자리)', () => {
     it('핀 목록이 실제 미달과 일치한다 — 낡으면 위 per-tag 단언이 먼저 빨개진다', () => {
       expect([...UNDERSIZED_PINS].sort()).toEqual([]);
     });
   });
 
-  describe('u-slider — 「히트 영역만 넓힌다」가 실제로 그렇게 됐는가 (§C-A ⑷, cycle-492)', () => {
+  describe('u-slider — 「히트 영역만 넓힌다」가 실제로 그렇게 됐는가', () => {
     /* ⚠**두 축을 함께 재지 않으면 이 결정을 검증할 수 없다.** 타깃만 재면 「보이는 원까지
        커졌다」를 통과시키고, 보이는 원만 재면 「타깃이 안 커졌다」를 통과시킨다. */
     it('타깃은 24×24 이고, 보이는 원은 그대로 18×18 이다', async () => {

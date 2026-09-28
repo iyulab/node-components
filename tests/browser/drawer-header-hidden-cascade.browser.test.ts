@@ -4,14 +4,14 @@ import '../../src/components/drawer/UDrawer.js';
 /**
  * **Does `?hidden` still work next to an unconditional `display:` on the same element?**
  *
- * house-style Sub-project D (cycle-268, working in `modern-app`) read `UDrawer.header`'s
+ * An earlier review (working in `modern-app`) read `UDrawer.header`'s
  * source — `?hidden=${!this.hasHeader && !this.closable}` alongside an unconditional
  * `.header { display: flex; }` in `UDrawer.styles.ts`, no `[hidden]` override — and formed a
  * hypothesis from CSS cascade theory: author-origin rules always outrank the UA stylesheet's
  * `[hidden] { display: none }`, regardless of specificity, so `hidden` should have no visual
  * effect here.
  *
- * 🔴**Empirically false.** `hidden` does hide the header (this file, cycle-270). The theory
+ * 🔴**Empirically false.** `hidden` does hide the header (this file). The theory
  * about origin ordering is correct in general, but doesn't predict this case — browsers give
  * the `hidden`-attribute UA rule enough weight (commonly `!important` in the UA sheet) to win
  * over ordinary author rules specifically so components can't accidentally break it this way.

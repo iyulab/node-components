@@ -5,7 +5,7 @@ import '../../src/components/button/UButton.js';
  * `<u-button aria-label="...">`는 호스트 속성으로는 정확히 붙지만, 실제 접근성
  * 트리에 노출되는 노드는 호스트가 아니라 shadow DOM 안의 네이티브 `<button>`/`<a>`다
  * — 섀도우 경계를 넘지 않으므로 호스트의 `aria-label`은 스크린리더에 닿지 않았다
- * (docket #75 실측, Playwright 접근성 스냅샷으로 재현: 속성은 있는데 접근 가능한
+ * (Playwright 접근성 스냅샷으로 재현: 속성은 있는데 접근 가능한
  * 이름이 빈 채로 `- button`만 나옴). `render()`가 이제 호스트의 `aria-label`을 읽어
  * 내부 네이티브 엘리먼트에 직접 옮긴다.
  */

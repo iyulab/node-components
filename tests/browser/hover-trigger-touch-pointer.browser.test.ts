@@ -7,7 +7,7 @@ import type { UTooltip } from '../../src/components/tooltip/UTooltip.js';
 import type { USlider } from '../../src/components/slider/USlider.js';
 
 /**
- * 회귀 고정 — docket #104: touch/pen은 지속되는 hover 상태가 없어 짧은 탭 시
+ * 회귀 고정 — touch/pen은 지속되는 hover 상태가 없어 짧은 탭 시
  * pointerenter 직후 pointerleave가 뒤따른다. `u-popover[trigger="hover"]`가 이를
  * 구분하지 않으면 열리자마자(SAFE_TIMER 뒤) 닫혀 터치 사용자가 메뉴를 조작할 수
  * 없었다 — `u-menu-item`의 서브메뉴도 같은 경로를 쓴다.

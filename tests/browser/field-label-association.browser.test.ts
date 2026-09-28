@@ -7,7 +7,7 @@ import '../../src/components/textarea/UTextarea.js';
 import { resetDevWarnings } from '../../src/utilities/devWarning.js';
 
 /**
- * docket #309 — `u-field` 가 라벨을 **그리기만** 하고 슬롯된 컨트롤과 잇지 않았다.
+ * `u-field` 가 라벨을 **그리기만** 하고 슬롯된 컨트롤과 잇지 않았다.
  * 소비자 실측: 한 화면에서 컨트롤 11개가 접근성 트리에서 이름을 잃었다. 그리고 그 형태는
  * 이 패키지 자신의 게시 문서(`references/components/field.md`)와 house-style 레시피가
  * **적극 권하는 정석 형태**였다 — 소비자 오용이 아니다.
@@ -70,7 +70,7 @@ describe('u-field ↔ 슬롯 컨트롤 라벨 연결', () => {
     expect((shadow('i', 'input') as HTMLInputElement).getAttribute('aria-label')).toBe('After');
   });
 
-  it('호스트의 aria-label 은 u-field 없이도 내부로 전달된다 (docket #75 처방의 폼 컨트롤 확장)', async () => {
+  it('호스트의 aria-label 은 u-field 없이도 내부로 전달된다 (버튼 aria-label 전달의 폼 컨트롤 확장)', async () => {
     await mount('<u-input id="i" aria-label="HostAria"></u-input>');
     expect((shadow('i', 'input') as HTMLInputElement).getAttribute('aria-label')).toBe('HostAria');
   });
@@ -151,7 +151,7 @@ describe('u-field 개발 모드 경고', () => {
   });
 
   /**
-   * 🔴**cycle-639 — 위 넷은 전부 «보이는» 상태로 마운트한다. 그 시야 밖에 결함이 살아 있었다.**
+   * 🔴**위 넷은 전부 «보이는» 상태로 마운트한다. 그 시야 밖에 결함이 살아 있었다.**
    *
    * 판정이 `isFocusable()`(tabbable)로 후보를 골랐고 그 기본 `displayCheck` 는 **렌더 여부를
    * 본다** ⇒ `display:none` 하위에서 처음 렌더되면 **정상 컨트롤이 «없는 것» 이 됐다.** 발견은
@@ -163,7 +163,7 @@ describe('u-field 개발 모드 경고', () => {
    * ⚠**그리고 오탐 자체보다 그 다음이 나쁘다** — 키가 평평해 오탐이 «한 번뿐인 예산» 을 먼저
    * 쓰면 같은 페이지의 **진짜 위반이 조용히 억제된다.** 마지막 두 케이스가 그 축을 고정한다.
    */
-  describe('가시성 축 — 숨겨진 컨테이너 (cycle-639)', () => {
+  describe('가시성 축 — 숨겨진 컨테이너', () => {
     async function mountHidden(markup: string): Promise<void> {
       await mount(`<div id="hidden-host" style="display:none">${markup}</div>`);
     }

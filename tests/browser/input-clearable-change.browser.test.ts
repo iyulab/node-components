@@ -55,10 +55,10 @@ describe('UInput clearable — clear 버튼이 change를 발화하고 폼 값을
     expect(clearIcon.hasAttribute('hidden')).toBe(true);
   });
 
-  // docket #163: 타이핑은 input 이벤트로 값 변경을 알리는데 clear 버튼은 change만
+  // 타이핑은 input 이벤트로 값 변경을 알리는데 clear 버튼은 change만
   // 쐈다 — input 하나만 구독하는 소비자(React 커스텀 바인딩 훅 등)는 클리어를
   // 놓쳤다. 타이핑과 동일하게 input도 함께 발화해야 한다.
-  it('clear 아이콘 클릭은 input도 정확히 1회 발화한다 (docket #163)', async () => {
+  it('clear 아이콘 클릭은 input도 정확히 1회 발화한다', async () => {
     const input = createInput({ clearable: '', value: 'hello' });
     document.body.appendChild(input);
     await input.updateComplete;

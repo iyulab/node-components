@@ -5,11 +5,11 @@ import { IconCache } from '../../src/utilities/icons.js';
 import { resetDevWarnings } from '../../src/utilities/devWarning.js';
 
 /**
- * HD-61 ⒝ — «조용히 틀리는» 두 자리에 개발 모드 1회성 경고.
+ * «조용히 틀리는» 두 자리에 개발 모드 1회성 경고.
  *
  * ⑴ `u-icon`: 이름이 해석되지 않으면 폴백(또는 아무것도)을 그리고 **신호가 없었다** — 소비앱의 메뉴
- *    30개가 같은 큐브로 그려졌다(docket #265 R3). 폴백은 의도된 것이라 유지하고 경고만 더한다.
- * ⑵ `u-split-panel`: 높이 제약이 없으면 18px 로 붕괴하고 `overflow: hidden` 이라 패널에 닿을 수 없다(cycle-565).
+ *    30개가 같은 큐브로 그려졌다. 폴백은 의도된 것이라 유지하고 경고만 더한다.
+ * ⑵ `u-split-panel`: 높이 제약이 없으면 18px 로 붕괴하고 `overflow: hidden` 이라 패널에 닿을 수 없다.
  *
  * 계약은 셋이다: 정확히 **한 번**(같은 키) · 정상이면 **0회** · 개발 모드에서만(`process.env.NODE_ENV
  * !== 'production'` — vitest 는 이 스위트에서 `NODE_ENV='test'` 를 준다). ⚠**소스를 직접 import
@@ -83,7 +83,7 @@ describe('개발 모드 사용 안내 경고', () => {
     async function mountSplit(style: string) {
       const el = document.createElement('u-split-panel');
       el.setAttribute('style', style);
-      el.innerHTML = '<div style="height:900px">A</div><div style="height:900px">B</div>'; // cycle-565 의 픽스처 — 패널 높이는 지워진다
+      el.innerHTML = '<div style="height:900px">A</div><div style="height:900px">B</div>'; // 패널 높이는 지워진다
       document.body.appendChild(el);
       await (el as HTMLElement & { updateComplete: Promise<unknown> }).updateComplete;
       await settle();

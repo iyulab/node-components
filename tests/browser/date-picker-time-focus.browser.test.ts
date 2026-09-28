@@ -4,7 +4,7 @@ import '../../src/components/input/UInput.js';
 import type { UDatePicker } from '../../src/components/date-picker/UDatePicker.js';
 
 /**
- * 달력 시간칸(`.time-input`)의 포커스 표시 — **형제 텍스트 입력과 같은 규약이고, 잘리지 않는다** (cycle-559).
+ * 달력 시간칸(`.time-input`)의 포커스 표시 — **형제 텍스트 입력과 같은 규약이고, 잘리지 않는다**.
  *
  * 인계된 관찰은 «기본 포커스 링을 지우고 1px 그림자로 대신한다» 였다. 판독하면 그것은 이 라이브러리 텍스트 입력의 포커스 규약
  * 그대로다 — `u-input`·`u-date-picker` 컨테이너의 `:focus-within` 도 포커스 색 1px 링이다(2px 는 달력 날짜 칸만). 포커스 색은
@@ -57,7 +57,7 @@ describe('u-date-picker 시간칸 — 포커스 표시', () => {
     await settle(field);
     field.shadowRoot!.querySelector('input')!.focus();
     // ⚠`u-input` 컨테이너는 box-shadow 에 전환(`--u-duration-normal`, 220ms)이 걸려 있다 — 포커스 직후에 읽으면 전환의
-    //   시작값(투명 0px)이 나온다(첫 판이 그렇게 틀렸다 · cycle-543 과 같은 함정). 끝난 뒤에 읽는다.
+    //   시작값(투명 0px)이 나온다(첫 판이 그렇게 틀렸다). 끝난 뒤에 읽는다.
     await new Promise((r) => setTimeout(r, 350));
     const inputRing = getComputedStyle(field.shadowRoot!.querySelector('.container')!).boxShadow;
 

@@ -6,7 +6,7 @@ import '../../src/components/tab/UTab.js';
 import '../../src/components/panel/UPanel.js';
 
 /**
- * **`u-dialog` · `u-tab-panel` 의 크기 계약**(cycle-566).
+ * **`u-dialog` · `u-tab-panel` 의 크기 계약**.
  *
  * 두 컴포넌트는 **올바르게 만들어져 있었다** — 이 파일이 고정하는 것은 결함 수정이 아니라
  * «게시 참조 문서가 이제 주장하는 계약» 이다(두 문서에 크기 서술이 **0건**이었다).
@@ -25,8 +25,8 @@ import '../../src/components/panel/UPanel.js';
  * 계산하지 않아 원리적으로 답을 줄 수 없다.
  *
  * ⚠**이 런의 교훈 둘을 적용한다**: ⑴넘침 측정만으로는 스크롤 컨테이너임을 증명하지 못하므로
- * `scrollTop` 이 **실제로 남는지** 함께 잰다(cycle-563) ⑵«제약» 을 어떻게 만드는지가 곧 커버리지라
- * 호스트 높이 축을 별도 사례로 둔다(cycle-565).
+ * `scrollTop` 이 **실제로 남는지** 함께 잰다 ⑵«제약» 을 어떻게 만드는지가 곧 커버리지라
+ * 호스트 높이 축을 별도 사례로 둔다.
  */
 
 let wrap: HTMLDivElement;
@@ -41,7 +41,7 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-/** `.panel` 은 320ms 전환을 갖는다 — 전환이 끝난 뒤에 잰다(cycle-559·543 의 함정). */
+/** `.panel` 은 320ms 전환을 갖는다 — 전환이 끝난 뒤에 잰다. */
 const settle = async (ms = 420) => {
   await new Promise((r) => requestAnimationFrame(() => r(null)));
   await new Promise((r) => setTimeout(r, ms));
@@ -98,7 +98,7 @@ describe('u-dialog — 패널은 내용 크기, 호스트 상자의 90% 가 상�
     const header = part(el, '.header');
     expect(Math.round((h(panel) / h(container)) * 100), '패널은 컨테이너의 90% 다').toBe(90);
     expect(body.scrollHeight - body.clientHeight, '본문이 스크롤 영역이어야 한다').toBeGreaterThan(0);
-    // 🔴넘침 측정만으로는 스크롤 컨테이너임을 증명하지 못한다(cycle-563).
+    // 🔴넘침 측정만으로는 스크롤 컨테이너임을 증명하지 못한다.
     body.scrollTop = 200;
     await new Promise((r) => setTimeout(r, 60));
     expect(body.scrollTop, '본문이 실제로 스크롤되어야 한다').toBeGreaterThan(0);

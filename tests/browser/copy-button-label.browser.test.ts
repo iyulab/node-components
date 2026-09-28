@@ -3,7 +3,7 @@ import '../../src/components/copy-button/UCopyButton.js';
 import type { UCopyButton } from '../../src/components/copy-button/UCopyButton.js';
 
 /**
- * Capability gap ISSUE-20260715-ucopybutton-no-inline-label:
+ * Capability gap — no inline label:
  * u-copy-button was icon-only (its default slot feeds the icon-button tooltip),
  * so a labeled copy button ("Copy results" + icon) could not reuse its clipboard
  * logic. Adds an additive `label` prop that renders a visible inline text label

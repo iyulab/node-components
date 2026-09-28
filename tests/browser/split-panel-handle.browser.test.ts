@@ -4,7 +4,7 @@ import '../../src/components/split-panel/USplitPanel.js';
 import { Locale } from '../../src/utilities/Locale.js';
 
 /**
- * `u-split-panel` 분할 핸들 — **포인터 영역(24px)과 보이는 선(4px)을 가른다** (HD-55 ⑷).
+ * `u-split-panel` 분할 핸들 — **포인터 영역(24px)과 보이는 선(4px)을 가른다**.
  *
  * ⚠**두 축을 함께 재지 않으면 이 결정을 검증할 수 없다**(u-slider 와 같은 이유). 핸들 박스만
  * 재면 «선까지 굵어졌다» 를 통과시키고, 선만 재면 «영역이 안 넓어졌다» 를 통과시킨다.
@@ -42,7 +42,7 @@ function line(host: HTMLElement): { start: number; size: number; center: number 
 
 const panels = (host: HTMLElement) => Array.from(host.children) as HTMLElement[];
 
-describe('u-split-panel — 분할 핸들: 24px 포인터 영역 · 4px 보이는 선 (HD-55 ⑷)', () => {
+describe('u-split-panel — 분할 핸들: 24px 포인터 영역 · 4px 보이는 선', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });
@@ -173,13 +173,13 @@ describe('u-split-panel — 분할 핸들: 24px 포인터 영역 · 4px 보이�
 });
 
 /**
- * 키보드 경로 — WAI-ARIA APG «Window Splitter» (§D-59).
+ * 키보드 경로 — WAI-ARIA APG «Window Splitter».
  *
  * 분할 크기를 바꾸는 경로가 포인터 드래그뿐이면 키보드 사용자는 레이아웃을 바꿀 수 없다
  * (SC 2.1.1 · 드래그의 대체 수단 SC 2.5.7). 핸들은 명령형으로 만들어 Lit 템플릿 밖에 있으므로
  * «비율이 바뀐 뒤에도 값이 따라오는가» 를 매번 함께 잰다.
  */
-describe('u-split-panel — 키보드 경로 (APG Window Splitter, §D-59)', () => {
+describe('u-split-panel — 키보드 경로 (APG Window Splitter)', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
     // ⚠브라우저 프로젝트의 기본 로케일은 OS 를 따른다(이 머신은 ko) — 이름 단언은 명시한다.

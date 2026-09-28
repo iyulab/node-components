@@ -252,7 +252,7 @@ export class Toast {
    * `target` 이 주어진 컨테이너는 `position: absolute` 로 **그 엘리먼트 기준**으로 놓인다.
    * top layer 원소는 조상의 배치 문맥에서 떨어져 나오므로 그 좌표계가 통째로 깨진다 ⇒
    * 타깃 기준 컨테이너는 **종전 z-index 경로를 그대로 쓴다.** 이것이 시범 범위이고,
-   * 오버레이 전면 전환(`u-dialog`·`u-drawer` 등)은 별개 결정이다(`ROADMAP.md` §C-B).
+   * 오버레이 전면 전환(`u-dialog`·`u-drawer` 등)은 별개 결정이다.
    *
    * ## ⚠ z-index 를 지우지 않는다
    *

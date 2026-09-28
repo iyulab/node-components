@@ -4,7 +4,7 @@ import { cdp } from 'vitest/browser';
 import '../../src/components/panel/UPanel.js';
 
 /**
- * **인쇄에서 `u-panel` 은 자손의 끝 여백을 가두지 않는다** (cycle-662).
+ * **인쇄에서 `u-panel` 은 자손의 끝 여백을 가두지 않는다**.
  *
  * `overflow: auto` 는 독립 서식 문맥을 만든다 — 패널 안 마지막 블록의 아래 여백이 패널 «안» 에 갇혀
  * 패널이 그만큼 자라고, 내용 끝이 쪽 경계에서 그 여백 이내에 있으면 여백만 담긴 빈 꼬리 쪽이 찍힌다

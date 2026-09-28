@@ -3,7 +3,7 @@ import '../../src/components/icon/UIcon.js';
 import { IconCache } from '../../src/utilities/icons.js';
 
 /**
- * ISSUE-components-20260722-iconregistry-resolver-no-cache:
+ * 아이콘 resolver 캐시 부재:
  * 스트리밍 UI처럼 u-icon이 반복 재마운트되는 시나리오에서 같은 아이콘이
  * 마운트마다 다시 fetch되는 스톰 방지 — `src` 경로와 무-lib 기본(baseUrl) 경로도
  * IconRegistry의 URL 캐시를 경유해 동일 리소스는 세션당 1회만 fetch되어야 한다.

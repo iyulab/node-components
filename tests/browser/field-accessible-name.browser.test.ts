@@ -8,7 +8,7 @@ import '../../src/components/select/USelect.js';
 import '../../src/components/option/UOption.js';
 
 /**
- * ISSUE-20260723-uinput-label-a11y: u-field 합성 컴포넌트의 라벨은 u-field 의 별도
+ * u-field 합성 컴포넌트의 라벨은 u-field 의 별도
  * 섀도 스코프에 렌더되어 네이티브/role 컨트롤과 label[for] 로 연결될 수 없었다. 섀도 경계
  * 탓에 cross-root `aria-labelledby` 도 현 브라우저에서 신뢰성 있게 배송되지 않으므로, 각
  * 컴포넌트가 자신의 접근 가능한 이름 호스트(네이티브 input/textarea, role=radiogroup)에

@@ -3,7 +3,7 @@ import '../../src/components/tree-item/UTreeItem.js';
 import type { UTreeItem } from '../../src/components/tree-item/UTreeItem.js';
 
 /**
- * `UCheckbox`(docket #147)와 같은 결함 형태 — `.prefix-checkbox`/`.prefix-toggler`도
+ * `UCheckbox`와 같은 결함 형태 — `.prefix-checkbox`/`.prefix-toggler`도
  * 상태에 따라 보이는 `u-icon`을 자기 클릭 핸들러가 있는 박스 위에 얹는 동일한 패턴을 쓴다.
  */
 function createItem(attrs: Record<string, string> = {}): UTreeItem {
@@ -12,7 +12,7 @@ function createItem(attrs: Record<string, string> = {}): UTreeItem {
   return item;
 }
 
-describe('UTreeItem — prefix 아이콘이 클릭을 가로채지 않는다 (docket #147과 같은 부류)', () => {
+describe('UTreeItem — prefix 아이콘이 클릭을 가로채지 않는다 (UCheckbox와 같은 부류)', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });

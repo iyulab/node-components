@@ -2,7 +2,7 @@
  * React strict 소비 타입 스모크 — **컴파일되는 것 자체가 테스트**다(런타임 assertion 없음).
  *
  * 배경: React 19 + TS strict 환경에서 래퍼를 쓰지 못했던 결함 2건
- * (ISSUE-20260722-react-wrapper-typing)은 순수 **타입** 실패였다 —
+ *은 순수 **타입** 실패였다 —
  *   1. `Partial<Element>` 의 DOM `children: HTMLCollection` 이 JSX children 을 가려
  *      `<UButton>text</UButton>` 이 TS2747 로 실패.
  *   2. `React.HTMLAttributes` 의 `onChange` 와 래퍼의 CustomEvent 시그니처가 교집합되어

@@ -27,7 +27,7 @@ function typeSearch(select: USelect, value: string) {
   input.dispatchEvent(new InputEvent('input', { bubbles: true }));
 }
 
-describe('USelect search 이벤트 (docket #128 — 원격/서버 검색 지원)', () => {
+describe('USelect search 이벤트 (원격/서버 검색 지원)', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });

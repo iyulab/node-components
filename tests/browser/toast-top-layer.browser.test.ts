@@ -4,7 +4,7 @@ import { OverlayManager } from '../../src/utilities/OverlayManager.js';
 import '../../src/components/alert/UAlert.js';
 
 /**
- * `Toast` 컨테이너의 **네이티브 top layer 승격** 회귀 (§C-B 시범, cycle-477).
+ * `Toast` 컨테이너의 **네이티브 top layer 승격** 회귀 (시범).
  *
  * ⚠**이 파일은 «이득»과 «한계»를 둘 다 고정한다.** 시범의 산출물은 «되더라»가 아니라
  * ***«어디까지 되고 어디서부터 안 되는가»*** 이고, 한계를 고정하지 않으면 다음 사람이

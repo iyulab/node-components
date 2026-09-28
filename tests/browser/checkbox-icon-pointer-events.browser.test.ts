@@ -8,7 +8,7 @@ function createCheckbox(attrs: Record<string, string> = {}): UCheckbox {
   return checkbox;
 }
 
-describe('UCheckbox — 체크 상태 아이콘이 클릭을 가로채지 않는다 (docket #147)', () => {
+describe('UCheckbox — 체크 상태 아이콘이 클릭을 가로채지 않는다', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });

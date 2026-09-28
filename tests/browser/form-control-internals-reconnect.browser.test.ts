@@ -29,7 +29,7 @@ async function reconnect(el: HTMLElement) {
   await new Promise(r => setTimeout(r, 0));
 }
 
-describe('form-associated connectedCallback survives disconnect+reconnect (docket #165)', () => {
+describe('form-associated connectedCallback survives disconnect+reconnect', () => {
   it('UButton — attachInternals()를 재호출하지 않는다', async () => {
     const el = document.createElement('u-button') as UButton;
     document.body.appendChild(el);

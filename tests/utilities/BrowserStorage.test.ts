@@ -4,8 +4,8 @@ import { BrowserStorage } from '../../src/utilities/BrowserStorage.js';
 import type { BrowserStorageOptions } from '../../src/utilities/BrowserStorage.js';
 
 /**
- * `ISSUE-components-20260901-browserstorage-generic-error.md` — `set`/`get`/`remove`
- * 세 메서드 모두 지원하지 않는 `options.type`을 만나면 실제 값·유효 목록을 안 낸다.
+ * `set`/`get`/`remove` 세 메서드 모두 지원하지 않는 `options.type`을 만나면
+ * 실제 값·유효 목록을 안 내던 결함.
  * `type`은 컴파일 타임엔 `'localStorage' | 'cookie'`로 좁혀지므로, 런타임에 그 계약을
  * 어긴 값(오타·구버전 저장 설정 등)을 시뮬레이션하려면 타입 단언으로 우회해야 한다.
  */

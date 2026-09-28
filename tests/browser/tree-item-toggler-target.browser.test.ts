@@ -3,9 +3,9 @@ import '../../src/components/tree/UTree.js';
 import '../../src/components/tree-item/UTreeItem.js';
 
 /**
- * `u-tree-item` 펼침 토글 — **잡히는 영역(24×24)과 보이는 사각형(18×18)을 가른다** (§D-57).
+ * `u-tree-item` 펼침 토글 — **잡히는 영역(24×24)과 보이는 사각형(18×18)을 가른다**.
  *
- * `u-slider` 의 thumb 와 같은 결정(§C-A ⑷ «히트 영역만 넓힌다»)이다. ⚠두 축을 함께 재지 않으면
+ * `u-slider` 의 thumb 와 같은 결정(«히트 영역만 넓힌다»)이다. ⚠두 축을 함께 재지 않으면
  * 검증이 안 된다 — 영역만 재면 «보이는 사각형까지 커졌다» 를, 사각형만 재면 «영역이 안
  * 넓어졌다» 를 통과시킨다. 그리고 이 결정이 성립하는 조건 — **늘어난 3px 가 다른 타깃 위에
  * 떨어지지 않는다**(헤더 자신의 여백과 레이블 앞 간격) — 을 «레이아웃이 그대로다» 로 잰다.
@@ -35,7 +35,7 @@ function parts() {
   return { parent, leaf, toggler, box, visible };
 }
 
-describe('u-tree-item 펼침 토글 — 영역 24 · 보이는 사각형 18 (§D-57)', () => {
+describe('u-tree-item 펼침 토글 — 영역 24 · 보이는 사각형 18', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });
@@ -103,7 +103,7 @@ function visibleRect(el: HTMLElement) {
   return { left, top, width, height, right: left + width, cx: left + width / 2, cy: top + height / 2 };
 }
 
-describe('u-tree-item checkable 행 — 체크박스 영역 24 · 보이는 16, 토글과 겹치지 않는다 (§D-57)', () => {
+describe('u-tree-item checkable 행 — 체크박스 영역 24 · 보이는 16, 토글과 겹치지 않는다', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });

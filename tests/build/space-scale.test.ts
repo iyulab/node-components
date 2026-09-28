@@ -40,8 +40,6 @@ const SPACING_DECL =
  *   것이다. "여백 토큰을 만들었으니 전부 토큰으로" 는 자연스러운 다음 수순처럼 보이지만,
  *   그렇게 하면 `body { font-size: 18px }` 를 지정한 소비자의 폼 여백이 따라 커지지 않는다 —
  *   기능이 조용히 사라지고 아무 테스트도 실패하지 않는다. 그래서 여기서 세어 둔다.
- *
- * 판정 근거: claudedocs/plans/20260801-space-axis-verdict.md
  */
 describe('스케일 토큰 — 여백(축 B, 절대)', () => {
   const sheet = (name: string) =>

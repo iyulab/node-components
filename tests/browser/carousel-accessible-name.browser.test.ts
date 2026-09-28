@@ -5,14 +5,13 @@ import { Locale } from '../../src/utilities/Locale.js';
 
 /**
  * `u-carousel`의 이전/다음 버튼(`u-button`)과 페이지네이션 점(native `<button>`)이
- * 아이콘 전용이라 접근 가능한 이름이 아예 생성된 적이 없었다(cycle-345 실측 —
- * HD-17). `Locale.getValue()`로 채운 `aria-label`이 실제 접근성 트리에 노출되는
+ * 아이콘 전용이라 접근 가능한 이름이 아예 생성된 적이 없었다. `Locale.getValue()`로 채운 `aria-label`이 실제 접근성 트리에 노출되는
  * 노드까지 도달하는지(u-button은 shadow forwarding을 거친다) 확인한다.
  */
 describe('u-carousel accessible name', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
-    // 활성 로케일은 이제 이 문서의 `<html lang="en">` 을 따라간다(cycle-445) — 그래도
+    // 활성 로케일은 이제 이 문서의 `<html lang="en">` 을 따라간다 — 그래도
     // 값 자체는 여기서 재는 대상이 아니므로 'en'으로 고정해 명시적으로 만든다.
     // 감지 «순서» 자체는 locale-detection.browser.test.ts 가 잰다.
     Locale.set('en');

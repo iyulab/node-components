@@ -8,7 +8,7 @@ import type { UPopover } from '../../src/components/popover/UPopover.js';
 /**
  * 앵커가 클리핑 영역 밖으로 나갔을 때 팝오버 가시성.
  *
- * cycle-09 에서 `scroll` dismiss 가 실앵커를 더 이상 닫지 않게 되면서 드러난 케이스다.
+ * `scroll` dismiss 가 실앵커를 더 이상 닫지 않게 되면서 드러난 케이스다.
  * `strategy="fixed"` 팝오버는 overflow 조상에 클립되지 않으므로(그것이 fixed 를 쓰는 이유 —
  * select-popover-strategy.browser.test.ts 참조), 앵커가 스크롤 패널 밖으로 나가도 팝오버만
  * 화면에 남아 무관한 콘텐츠 위를 덮을 수 있다. floating-ui `hide` middleware 로 숨기되
