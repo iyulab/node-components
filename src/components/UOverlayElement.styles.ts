@@ -3,7 +3,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     position: fixed;
-    z-index: 9999;
+    z-index: var(--u-layer-overlay, 9999);
     inset: 0;
     display: flex;
     background: var(--u-overlay-bg-color, rgba(0, 0, 0, 0.5));

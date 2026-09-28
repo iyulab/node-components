@@ -11,7 +11,7 @@ import { css } from "lit";
 export const styles = css`
   :host {
     position: absolute;
-    z-index: 1000;
+    z-index: var(--u-layer-floating, 1000);
     top: 0;
     left: 0;
     width: max-content;

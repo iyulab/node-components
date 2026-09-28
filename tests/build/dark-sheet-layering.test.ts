@@ -19,7 +19,7 @@ const read = (p: string) => readFileSync(join(root, 'src/assets/styles', p), 'ut
  * 사실이 아니라 설계 지식이다(값이 우연히 같은 색도 있다). 대신 그 목록이 **실제로** 모드
  * 무관인지(라이트와 값이 같은지)를 여기서 대조한다.
  */
-const SCALE = /^--u-(radius|space|text|duration|ease|font)-/;
+const SCALE = /^--u-(radius|space|text|duration|ease|font|layer)-/;
 
 function declarations(css: string): Map<string, string> {
   const m = new Map<string, string>();

@@ -14,6 +14,11 @@
   return `false` to decline — for a non-modal panel that only closes while focus is inside it —
   which leaves the key unconsumed and closes nothing.
 
+- **Stacking tokens for surfaces that overlap across the page: `--u-layer-shell` (1000),
+  `--u-layer-floating` (1000) and `--u-layer-overlay` (9999).** Floating elements and overlays now
+  read them (same values as before), so an app surface that must sit in the same order reads the
+  token instead of repeating a number. Both sheets declare them. See `docs/design-tokens.md`.
+
 ### Fixed
 
 - **A popover opened inside a popover now closes alone on Escape.** Each open popover listened for
