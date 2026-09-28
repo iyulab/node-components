@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators.js";
 import { arrayAttrConverter } from "../../utilities/converters.js";
 import { isCoarsePointer } from "../../utilities/elements.js";
 import { UFloatingElement } from "../UFloatingElement.js";
+import { OverlayManager } from "../../utilities/OverlayManager.js";
 import { styles } from "./UPopover.styles.js";
 
 const FOCUSABLE = 'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -91,6 +92,7 @@ export class UPopover extends UFloatingElement {
 
   disconnectedCallback(): void {
     clearTimeout(this.safeTimer);
+    OverlayManager.closeLayer(this);
     if (this.anchors) this.unbind(this.anchors);
     super.disconnectedCallback();
   }
@@ -100,6 +102,13 @@ export class UPopover extends UFloatingElement {
 
     if (changedProperties.has('open') && this.open && this.autofocus) {
       this.focusTo(0);
+    }
+
+    // 열린 팝오버는 층이다 — Escape 는 층 스택이 «가장 위 층 하나» 에만 준다. 팝오버 안에서 연
+    // 하위 팝오버가 나중에 열렸으니 위에 서고, Escape 한 번에 그것만 닫힌다.
+    if (changedProperties.has('open') || changedProperties.has('dismiss')) {
+      if (this.open && this.dismiss.includes('escape')) OverlayManager.openLayer(this, () => this.hide());
+      else OverlayManager.closeLayer(this);
     }
 
     if (['anchors', 'trigger', 'dismiss'].some(k => changedProperties.has(k))) {
@@ -331,8 +340,8 @@ export class UPopover extends UFloatingElement {
    */
   private handleDocumentKeydown = (e: KeyboardEvent) => {
     if (e.key !== 'Escape') return;
-    if (!this.open && !this.targetEl) return;
-    if (this.open) e.preventDefault();
+    // 열린 팝오버의 Escape 는 층 스택이 다룬다(위 `updated`). 여기 남은 일은 표시 대기 취소뿐이다.
+    if (this.open || !this.targetEl) return;
     this.hide();
   };
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.49.0] - 2026-09-28
+
+### Added
+
+- **A layer stack for Escape: `OverlayManager.openLayer(el, onEscape)`, `closeLayer(el)`,
+  `topLayer`.** Every surface that closes on Escape is a layer, layers stack in the order they
+  opened, and one Escape closes the topmost one. `u-dialog`, `u-drawer` and an open `u-popover` are
+  layers; an app surface that is not an overlay component (a shell panel, a custom sheet) can join
+  the same order instead of listening for Escape itself. The manager listens once on `document`: an
+  Escape a control already handled closes no layer, and the Escape that closes one is marked
+  consumed, so listeners on `window` see `defaultPrevented`.
+
+### Fixed
+
+- **A popover opened inside a popover now closes alone on Escape.** Each open popover listened for
+  Escape itself, so one press closed the whole chain (a submenu and its menu). The second press
+  closes the outer one.
+
 ## [1.48.0] - 2026-09-28
 
 ### Changed

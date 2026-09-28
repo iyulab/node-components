@@ -57,6 +57,57 @@ export class OverlayManager {
   /** focus-trap 공유 trapStack */
   public static readonly trapStack: FocusTrap[] = [];
 
+  /**
+   * 닫을 수 있는 층 — **여는 순서대로** 쌓인다. 대화상자·서랍(`UOverlayElement`)만이 아니라
+   * 팝오버·앱 셸의 패널처럼 z-index 띠를 쓰지 않는 층도 여기 선다.
+   *
+   * ## 왜 한 곳인가 — «한 번의 Escape 는 가장 위 층 하나만 닫는다»
+   *
+   * 층마다 제 리스너로 Escape 를 받으면 순서가 «리스너를 등록한 순서» 가 된다. 그것은 층이 쌓인
+   * 순서와 다르다 — 앱 셸은 패널을 열 때 등록하므로 패널 «안» 에서 나중에 연 서랍보다 먼저 돌아
+   * 바깥을 닫았고, 닫힌 팝오버가 document 에서 Escape 를 먹어 셸의 닫기를 막았고, 팝오버 안에서 연
+   * 하위 팝오버는 Escape 한 번에 둘 다 닫혔다. 순서를 «여는 순서» 로 한 곳에 두면 셋이 같은 규칙이
+   * 된다.
+   *
+   * 리스너는 **document 버블 하나이고, 모듈을 읽을 때 한 번 붙는다** — 안쪽 컨트롤(목록·입력)이
+   * 요소 수준에서 먹은 Escape(`defaultPrevented`)는 층을 닫지 않고, 앱이 window 에 건 리스너보다는
+   * 항상 먼저 돈다(층이 열린 «뒤» 에 붙이면 먼저 등록된 앱 리스너가 소비 전의 키를 본다 — 팝오버가
+   * 층이 되기 전 document 에서 먹던 순서를 지킨다). 층이 없으면 곧바로 돌아간다. 층을 닫은 Escape 는 `preventDefault` 로 소비됐음을
+   * 알린다(뒤에 듣는 앱 리스너가 «누가 먹었나» 를 가릴 수 있게). IME 조합 중인 Escape 는 조합을
+   * 끝내는 키라 받지 않는다.
+   */
+  private static readonly layers: { el: HTMLElement; onEscape: () => void }[] = [];
+
+  /** 층을 연다 — 이미 열려 있으면 맨 위로 옮긴다. `onEscape` 는 이 층이 가장 위일 때 Escape 가 부른다. */
+  public static openLayer(el: HTMLElement, onEscape: () => void): void {
+    this.closeLayer(el);
+    this.layers.push({ el, onEscape });
+  }
+
+  /** 층을 닫는다(스택에서 뺀다). 열려 있지 않으면 아무것도 하지 않는다. */
+  public static closeLayer(el: HTMLElement): void {
+    const idx = this.layers.findIndex(l => l.el === el);
+    if (idx === -1) return;
+    this.layers.splice(idx, 1);
+  }
+
+  /** 가장 위의 층(없으면 `undefined`). */
+  public static get topLayer(): HTMLElement | undefined {
+    return this.layers[this.layers.length - 1]?.el;
+  }
+
+  private static handleLayerKeydown = (e: KeyboardEvent): void => {
+    if (e.key !== 'Escape' || e.isComposing || e.defaultPrevented) return;
+    const top = OverlayManager.layers[OverlayManager.layers.length - 1];
+    if (!top) return;
+    e.preventDefault();
+    top.onEscape();
+  };
+
+  static {
+    if (typeof document !== 'undefined') document.addEventListener('keydown', OverlayManager.handleLayerKeydown);
+  }
+
   /** 현재 열린 오버레이 수 */
   public static get size(): number {
     return this.stack.length;

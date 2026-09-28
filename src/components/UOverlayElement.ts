@@ -132,7 +132,9 @@ export abstract class UOverlayElement extends UElement {
   /** 오버레이가 열릴 때 설정을 적용합니다. */
   private setup(): void {
     OverlayManager.add(this, this.shouldLockBody);
-    window.addEventListener('keydown', this.handleWindowKeydown);
+    // Escape 는 층 스택이 «가장 위 층 하나» 에만 준다 — 여기서 받으면 순서가 등록 순서가 된다.
+    // 닫지 않는 정책(`closeOn` 에 escape 없음)이어도 이 층이 가장 위면 키를 먹는다(아래로 새지 않게).
+    OverlayManager.openLayer(this, () => this.requestClose('escape'));
     this.addEventListener('pointerdown', this.handlePointerdown);
 
     if (this.mode === 'modal') {
@@ -194,8 +196,8 @@ export abstract class UOverlayElement extends UElement {
   /** 오버레이가 닫힐 때 설정을 해제합니다. */
   private cleanup(): void {
     this.focusTrap?.deactivate();
-    window.removeEventListener('keydown', this.handleWindowKeydown);
     this.removeEventListener('pointerdown', this.handlePointerdown);
+    OverlayManager.closeLayer(this);
     OverlayManager.remove(this, this.shouldLockBody);
   }
 
@@ -204,19 +206,5 @@ export abstract class UOverlayElement extends UElement {
     if (e.composedPath()[0] === this) {
       this.requestClose('backdrop');
     }
-  }
-
-  /**
-   * ESC 키 입력 시 닫기 요청 (최상위 오버레이에 대해서만).
-   *
-   * 이미 소비된 Escape(`defaultPrevented`)는 받지 않는다 — 오버레이 안에서 열린 목록·팝오버가
-   * 자기 층을 닫으며 먹은 키다. 한 번의 Escape 는 한 층만 닫는다. 이 리스너는 window 버블에
-   * 있으므로 안쪽 컨트롤과 document 리스너가 모두 돈 «뒤» 에 판단한다.
-   */
-  private handleWindowKeydown = (e: KeyboardEvent) => {
-    if (!this.open || e.key !== 'Escape' || e.defaultPrevented) return;
-    if (!OverlayManager.isTopmost(this)) return;
-    e.preventDefault();
-    this.requestClose('escape');
   }
 }
