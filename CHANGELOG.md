@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- `u-breadcrumb` with a custom `separator` slot rendered no separators at all. Separators are now
+  placed between the items whatever the order of the slotted elements, and follow later changes to
+  the separator slot. Separators are marked `aria-hidden`, so a text separator such as `/` is no
+  longer read out between items.
+
 ## [1.49.1] - 2026-09-28
 
 ### Fixed

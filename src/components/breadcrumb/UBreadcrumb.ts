@@ -24,7 +24,7 @@ export class UBreadcrumb extends UElement {
   render() {
     return html`
       <nav aria-label=${Locale.getValue('breadcrumb')} part="nav">
-        <slot @slotchange=${this.handleSlotChange}></slot>
+        <slot @slotchange=${this.layout}></slot>
       </nav>
       <div hidden aria-hidden="true">
         <slot name="separator" @slotchange=${this.handleSeparatorSlotChange}></slot>
@@ -32,25 +32,22 @@ export class UBreadcrumb extends UElement {
     `;
   }
 
-  private handleSlotChange = (e: Event) => {
-    const slot = e.target as HTMLSlotElement;
-    const items = slot.assignedElements({ flatten: true })
-      .filter((el): el is HTMLElement => el instanceof HTMLElement);
-    this.appendSeparator(items);
-  }
-
   private handleSeparatorSlotChange = (e: Event) => {
     const slot = e.target as HTMLSlotElement;
     this.separator = slot.assignedNodes({ flatten: true }).at(0);
-
-    const nodes = this.shadowRoot?.querySelectorAll('nav > *:not(.separator)') ?? [];
-    const items = Array.from(nodes).filter((el): el is HTMLElement => el instanceof HTMLElement);
-    this.appendSeparator(items);
+    this.layout();
   }
 
-  private appendSeparator(items: HTMLElement[]) {
+  /**
+   * 항목 사이에 구분자를 놓는다. 항목은 **언제나 기본 슬롯의 배정 결과**에서 구한다 —
+   * 항목은 슬롯된 라이트 DOM 이라 섀도의 `nav` 자식을 훑으면 `<slot>` 하나만 나온다.
+   */
+  private layout = () => {
     const nav = this.shadowRoot?.querySelector('nav');
-    if (!nav) return;
+    const slot = nav?.querySelector<HTMLSlotElement>('slot:not([name])');
+    if (!nav || !slot) return;
+    const items = slot.assignedElements({ flatten: true })
+      .filter((el): el is HTMLElement => el instanceof HTMLElement);
 
     nav.querySelectorAll('.separator').forEach(el => el.remove());
     items.forEach(item => item.removeAttribute('data-last'));
@@ -71,6 +68,8 @@ export class UBreadcrumb extends UElement {
     const sep = document.createElement('span');
     sep.setAttribute('class', 'separator');
     sep.setAttribute('part', 'separator');
+    // 장식이다 — 사용자 지정 텍스트 구분자('/')를 스크린리더가 항목 사이마다 읽지 않게 한다.
+    sep.setAttribute('aria-hidden', 'true');
     sep.style.order = String(index * 2 + 1);
 
     if (this.separator) {
