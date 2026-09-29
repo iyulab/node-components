@@ -4,6 +4,12 @@
 
 ### Fixed
 
+- **`form.reset()` now resets form controls.** A native form reset — including `u-button
+  type="reset"` — left every control as it was. Controls now implement the standard
+  `formResetCallback` and return to their default: the `value` attribute (`checked` for
+  `u-checkbox` and `u-switch`, taken when the control is first connected), or empty when there is
+  none, with validation marks cleared. A control's own `reset()` is unchanged: it empties that
+  control.
 - **Form controls and `u-button` now follow a disabled `<fieldset>`.** Inside `<fieldset disabled>`
   they were only left out of the submitted data: the inner input stayed enabled and focusable, the
   control did not look disabled, and a `u-button type="submit"` still submitted the form. They now

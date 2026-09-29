@@ -223,8 +223,30 @@ export abstract class UFormControlElement<T> extends UElement {
   }
 
   /**
-   * 폼이 리셋될 때 호출되는 메서드입니다.
-   * 각 컴포넌트가 자신의 초기 상태로 리셋하는 로직을 구현합니다.
+   * **이 컨트롤 하나를** 비우고 검증 상태를 지운다(지우기 버튼이 쓰는 경로). 각 컴포넌트가 구현한다.
+   *
+   * ⚠«폼 초기화» 와 다르다 — 폼 단위 초기화는 두 경로 모두 **처음 값으로 되돌린다**:
+   * 네이티브 `form.reset()` 은 기본값(콘텐츠 속성, 아래 `formResetCallback`)으로,
+   * `u-form.reset()` 은 모델 스냅샷으로.
    */
   abstract reset(): void;
+
+  /**
+   * form-associated 표준 콜백 — 소속 `<form>` 이 리셋될 때 UA 가 부른다. 네이티브 입력과 같이
+   * **기본값**(콘텐츠 속성)으로 되돌린다: 비운 뒤(`reset()`) 기본값을 다시 얹는다.
+   */
+  formResetCallback(): void {
+    this.reset();
+    this.restoreDefaults();
+  }
+
+  /**
+   * 기본값을 다시 얹는다. 기본은 `value` 콘텐츠 속성 — 속성이 없으면 비운 상태가 곧 기본값이다.
+   * 속성값은 그 컨트롤이 선언한 변환기를 거친다(`attributeChangedCallback` 경로 — 숫자·배열 값 컨트롤도 같다).
+   * 기본값이 다른 속성에 있는 컨트롤(체크형의 `checked`)은 덮어쓴다.
+   */
+  protected restoreDefaults(): void {
+    const value = this.getAttribute('value');
+    if (value !== null) this.attributeChangedCallback('value', null, value);
+  }
 }

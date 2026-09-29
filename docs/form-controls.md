@@ -43,6 +43,24 @@ function handleSubmit(e: SubmitEvent) {
 }
 ```
 
+### Resetting a native `<form>`
+
+`form.reset()` — or a `u-button type="reset"` inside the form — returns every control to its
+**default**, as it does for native inputs: the `value` attribute (`checked` for `u-checkbox` and
+`u-switch`), or empty when there is none. Validation marks are cleared. A value set only as a
+property (`.value=${…}`) is not a default, exactly as with a native input.
+
+```html
+<form>
+  <u-input name="period" value="this-month"></u-input>   <!-- reset returns here -->
+  <u-checkbox name="active" checked>Active only</u-checkbox>
+  <u-button type="reset" variant="ghost">Reset</u-button>
+</form>
+```
+
+This is different from a control's own `reset()`, which **empties** that one control (the clear
+button uses it). `u-form.reset()` also returns to the starting values — its model snapshot.
+
 ### Disabling a group with `<fieldset disabled>`
 
 A disabled `<fieldset>` disables every control inside it, as it does for native inputs — `u-button`
@@ -73,7 +91,7 @@ To style a disabled control from outside, use `:disabled` (`u-input:disabled`) r
 ```ts
 const input = document.querySelector('u-input')!;
 input.validate(); // runs validation logic, sets input.invalid = true/false
-input.reset();    // clears value and validation state
+input.reset();    // empties this control and clears its validation state
 ```
 
 ### Using `u-form`

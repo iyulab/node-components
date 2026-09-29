@@ -256,10 +256,10 @@ All form control components (`u-input`, `u-select`, `u-checkbox`, etc.) use the 
 ```ts
 const input = document.querySelector('u-input');
 input.validate(); // returns boolean, sets `invalid` attribute
-input.reset();    // clears value and validation state
+input.reset();    // empties this control and clears its validation state
 ```
 
-A disabled `<fieldset>` disables every control inside it (and `u-button`), exactly like the control's own `disabled` attribute. Style disabled controls with `:disabled`, not `[disabled]`.
+A native `form.reset()` (or `u-button type="reset"`) returns each control to its default — the `value` attribute, `checked` for checkbox/switch — not to empty. A disabled `<fieldset>` disables every control inside it (and `u-button`), exactly like the control's own `disabled` attribute. Style disabled controls with `:disabled`, not `[disabled]`.
 
 ### Using `u-form` for model binding
 

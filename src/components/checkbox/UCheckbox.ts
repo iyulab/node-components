@@ -47,6 +47,23 @@ export class UCheckbox extends UFormControlElement<string> {
   /** 체크 여부 */
   @property({ type: Boolean, reflect: true }) checked: boolean = false;
 
+  /**
+   * 네이티브 `defaultChecked` 에 해당하는 값 — **처음 연결될 때의 `checked` 속성**.
+   * `checked` 는 반영(reflect)되는 속성이라 사용자가 바꾸면 속성도 바뀐다. 그래서 속성을
+   * 리셋 시점에 읽으면 «현재» 가 나온다 — 기본값은 그 전에 붙잡아 둔다.
+   */
+  private defaultChecked?: boolean;
+
+  connectedCallback(): void {
+    this.defaultChecked ??= this.hasAttribute('checked');
+    super.connectedCallback();
+  }
+
+  protected override restoreDefaults(): void {
+    super.restoreDefaults();
+    this.checked = this.defaultChecked ?? false;
+  }
+
   @query('input', true) inputEl?: HTMLInputElement;
 
   protected shouldValidate(changed: PropertyValues): boolean {
