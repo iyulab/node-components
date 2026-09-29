@@ -1,6 +1,12 @@
 # Changelog
 
-## [Unreleased]
+## [1.50.0] - 2026-09-29
+
+### Added
+
+- `protected effectivelyDisabled` on the form control base class — `disabled` or disabled by an
+  ancestor `<fieldset>`. Subclasses that draw their own controls should read it instead of
+  `disabled`.
 
 ### Fixed
 
