@@ -49,7 +49,7 @@ export class URating extends UFormControlElement<number> {
   }
 
   private get interactive() {
-    return !this.disabled && !this.readonly;
+    return !this.effectivelyDisabled && !this.readonly;
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -66,14 +66,14 @@ export class URating extends UFormControlElement<number> {
     return html`
       <u-field part="field"
         ?required=${this.required}
-        ?disabled=${this.disabled}
+        ?disabled=${this.effectivelyDisabled}
         ?invalid=${this.invalid}
         .label=${this.label}
         .description=${this.description}
         .validationMessage=${this.validationMessage}
       >
         <div class="symbols" part="container" role="radiogroup"
-          aria-disabled=${ifDefined(this.disabled ? 'true' : undefined)}
+          aria-disabled=${ifDefined(this.effectivelyDisabled ? 'true' : undefined)}
           aria-label=${ifDefined(this.resolvedAriaLabel)}
           aria-description=${ifDefined(this.resolvedAriaDescription)}>
           ${Array.from({ length: this.max }, (_, i) => {
@@ -193,18 +193,18 @@ export class URating extends UFormControlElement<number> {
   }
 
   private handleSymbolPointerMove = (e: PointerEvent) => {
-    if (this.disabled || this.readonly) return;
+    if (this.effectivelyDisabled || this.readonly) return;
     const score = Number((e.currentTarget as HTMLElement).dataset.score);
     this.buffer = this.calibrate(e, score);
   }
 
   private handleSymbolPointerLeave = (_: PointerEvent) => {
-    if (this.disabled || this.readonly) return;
+    if (this.effectivelyDisabled || this.readonly) return;
     this.buffer = -1;
   }
 
   private handleSymbolClick = (e: PointerEvent) => {
-    if (this.disabled || this.readonly) return;
+    if (this.effectivelyDisabled || this.readonly) return;
     const score = Number((e.currentTarget as HTMLElement).dataset.score);
     const val = this.precision < 1 ? this.calibrate(e, score) : score;
     const next = this.value === val ? 0 : val;
@@ -214,7 +214,7 @@ export class URating extends UFormControlElement<number> {
   }
 
   private handleSymbolKeydown = (e: KeyboardEvent) => {
-    if (this.disabled || this.readonly) return;
+    if (this.effectivelyDisabled || this.readonly) return;
 
     const symbols = Array.from(this.renderRoot.querySelectorAll('.symbol')) as HTMLElement[];
     const currentSymbol = e.currentTarget as HTMLElement;

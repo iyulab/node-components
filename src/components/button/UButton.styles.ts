@@ -134,7 +134,7 @@ export const styles = css`
   :host(:active) {
     transform: translateY(1px);
   }
-  :host([disabled]) {
+  :host(:disabled) {
     opacity: 0.5;
     pointer-events: none;
     cursor: not-allowed;

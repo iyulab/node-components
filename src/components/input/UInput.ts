@@ -104,7 +104,7 @@ export class UInput extends UFormControlElement<string> {
   }
 
   render() {
-    const editable = !this.disabled && !this.readonly;
+    const editable = !this.effectivelyDisabled && !this.readonly;
     const showToggle = this.type === 'password' && editable;
     const showClear = this.clearable && editable && !!this.value;
     const showStepper = this.type === 'number' && editable;
@@ -112,7 +112,7 @@ export class UInput extends UFormControlElement<string> {
     return html`
       <u-field part="field"
         ?required=${this.required}
-        ?disabled=${this.disabled}
+        ?disabled=${this.effectivelyDisabled}
         ?invalid=${this.invalid}
         .label=${this.label}
         .description=${this.description}
@@ -128,7 +128,7 @@ export class UInput extends UFormControlElement<string> {
             aria-description=${ifDefined(this.resolvedAriaDescription)}
             name=${ifDefined(this.name)}
             ?required=${this.required}
-            ?disabled=${this.disabled}
+            ?disabled=${this.effectivelyDisabled}
             ?readonly=${this.readonly}
             minlength=${ifDefined(this.minlength)}
             maxlength=${ifDefined(this.maxlength)}

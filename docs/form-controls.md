@@ -43,6 +43,27 @@ function handleSubmit(e: SubmitEvent) {
 }
 ```
 
+### Disabling a group with `<fieldset disabled>`
+
+A disabled `<fieldset>` disables every control inside it, as it does for native inputs — `u-button`
+included. The control looks and behaves exactly as with its own `disabled` attribute: it matches
+`:disabled`, cannot be focused or changed, and is left out of the submitted data. Its own `disabled`
+property is not touched, so a control you disabled yourself stays disabled when the fieldset is
+enabled again.
+
+```html
+<form>
+  <fieldset ?disabled=${saving}>
+    <u-input name="title"></u-input>
+    <u-select name="status">…</u-select>
+    <u-button type="submit">Save</u-button>
+  </fieldset>
+</form>
+```
+
+To style a disabled control from outside, use `:disabled` (`u-input:disabled`) rather than
+`[disabled]` — the attribute is only there when the control itself is disabled.
+
 ---
 
 ## Validation

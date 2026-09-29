@@ -14,7 +14,7 @@ export const styles = css`
     font-family: var(--u-font-base);
     color: var(--u-txt-color, #212121);
   }
-  :host([disabled]) {
+  :host(:disabled) {
     opacity: 0.6;
     pointer-events: none;
   }

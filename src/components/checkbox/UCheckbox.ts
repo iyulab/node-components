@@ -72,7 +72,7 @@ export class UCheckbox extends UFormControlElement<string> {
         <input part="input"
           type="checkbox"
           aria-label=${ifDefined(this.contentAriaLabel)}
-          ?disabled=${this.disabled || this.readonly}
+          ?disabled=${this.effectivelyDisabled || this.readonly}
           ?required=${this.required}
           .checked=${live(this.checked)}
           @change=${this.handleInputChange}
@@ -121,7 +121,7 @@ export class UCheckbox extends UFormControlElement<string> {
   private handleInputChange = (e: Event) => {
     e.stopImmediatePropagation();
 
-    if (this.readonly || this.disabled) {
+    if (this.readonly || this.effectivelyDisabled) {
       return;
     }
 

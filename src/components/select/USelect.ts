@@ -133,7 +133,7 @@ export class USelect extends UFormControlElement<string | string[]> {
     return html`
       <u-field part="field"
         ?required=${this.required}
-        ?disabled=${this.disabled}
+        ?disabled=${this.effectivelyDisabled}
         ?invalid=${this.invalid}
         .label=${this.label}
         .description=${this.description}
@@ -143,9 +143,9 @@ export class USelect extends UFormControlElement<string | string[]> {
           ${this.valueAsArray.length} / ${this.maxCount}
         </span>
 
-        <div class="container" part="container" tabindex=${this.disabled ? "-1" : "0"}
+        <div class="container" part="container" tabindex=${this.effectivelyDisabled ? "-1" : "0"}
           role="combobox"
-          aria-disabled=${ifDefined(this.disabled ? 'true' : undefined)}
+          aria-disabled=${ifDefined(this.effectivelyDisabled ? 'true' : undefined)}
           aria-label=${ifDefined(this.resolvedAriaLabel)}
           aria-description=${ifDefined(this.resolvedAriaDescription)}
           aria-haspopup=${this.searchable ? 'dialog' : 'listbox'}
@@ -156,7 +156,7 @@ export class USelect extends UFormControlElement<string | string[]> {
           <slot name="suffix"></slot>
 
           <u-icon class="suffix-item"
-            ?hidden=${!this.clearable || !this.hasValue || this.disabled || this.readonly}
+            ?hidden=${!this.clearable || !this.hasValue || this.effectivelyDisabled || this.readonly}
             role="button"
             tabindex="0"
             aria-label=${Locale.getValue('clear')}
@@ -271,7 +271,7 @@ export class USelect extends UFormControlElement<string | string[]> {
    *  Tab 순서에서 빠지고 프로그램적 `.focus()`는 여전히 통과하므로, `UInput.focus()`가
    *  네이티브 `disabled` `<input>`에서 얻는 것과 같은 no-op을 여기서 직접 재현한다. */
   public focus(options?: FocusOptions): void {
-    if (this.disabled) return;
+    if (this.effectivelyDisabled) return;
     this.containerEl?.focus(options);
   }
 
@@ -286,7 +286,7 @@ export class USelect extends UFormControlElement<string | string[]> {
       option.addEventListener('click', this.handleOptionClick);
       option.addEventListener('keydown', this.handleOptionKeydown);
       option.marker = this.multiple ? 'check' : undefined;
-      option.disabled = this.disabled;
+      option.disabled = this.effectivelyDisabled;
       option.selected = this.multiple 
         ? this.valueAsArray.includes(option.value) 
         : option.value === this.value;

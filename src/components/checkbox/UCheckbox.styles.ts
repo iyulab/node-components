@@ -25,7 +25,7 @@ export const styles = css`
   }
 
   /* === 상태 스타일 === */
-  :host([disabled]) {
+  :host(:disabled) {
     opacity: 0.6;
     cursor: not-allowed;
   }
@@ -42,7 +42,7 @@ export const styles = css`
   :host([indeterminate]) .checkbox u-icon {
     transform: scale(1);
   }
-  :host(:not([disabled]):not([readonly]):hover) {
+  :host(:not(:disabled):not([readonly]):hover) {
     --checkbox-border-color: var(--u-input-border-color-hover, #BDBDBD);
   }
 

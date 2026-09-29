@@ -47,10 +47,10 @@ export class URadio extends UFormControlElement<string> {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (['type','disabled','readonly'].some(k => changedProperties.has(k))) {
+    if (['type','disabled','formDisabled','readonly'].some(k => changedProperties.has(k))) {
       this.options.forEach(option => {
         option.marker = this.type === 'button' ? undefined : 'radio';
-        option.disabled = this.disabled || this.readonly;
+        option.disabled = this.effectivelyDisabled || this.readonly;
       });
     }
     if (['value','options'].some(k => changedProperties.has(k))) {
@@ -62,7 +62,7 @@ export class URadio extends UFormControlElement<string> {
     return html`
       <u-field part="field"
         ?required=${this.required}
-        ?disabled=${this.disabled}
+        ?disabled=${this.effectivelyDisabled}
         ?invalid=${this.invalid}
         .label=${this.label}
         .description=${this.description}
@@ -70,7 +70,7 @@ export class URadio extends UFormControlElement<string> {
       >
         <div class="container" part="container"
           role="radiogroup"
-          aria-disabled=${ifDefined(this.disabled ? 'true' : undefined)}
+          aria-disabled=${ifDefined(this.effectivelyDisabled ? 'true' : undefined)}
           aria-label=${ifDefined(this.resolvedAriaLabel)}
           aria-description=${ifDefined(this.resolvedAriaDescription)}>
           <slot @slotchange=${this.handleSlotChange}></slot>
@@ -113,7 +113,7 @@ export class URadio extends UFormControlElement<string> {
       option.addEventListener('keydown', this.handleOptionKeyDown);
       option.selected = option.value === this.value;
       option.marker = this.type === 'button' ? undefined : 'radio';
-      option.disabled = this.disabled || this.readonly;
+      option.disabled = this.effectivelyDisabled || this.readonly;
     }
   }
 
@@ -156,7 +156,7 @@ export class URadio extends UFormControlElement<string> {
   };
 
   private handleOptionClick = (e: PointerEvent) => {
-    if (this.readonly || this.disabled) return;
+    if (this.readonly || this.effectivelyDisabled) return;
 
     const option = e.currentTarget as UOption;
     if (option.disabled) return;
@@ -168,7 +168,7 @@ export class URadio extends UFormControlElement<string> {
   };
 
   private handleOptionKeyDown = (e: KeyboardEvent) => {
-    if (this.readonly || this.disabled) return;
+    if (this.readonly || this.effectivelyDisabled) return;
 
     const options = this.options.filter(o => !o.disabled);
     const currentOption = e.currentTarget as UOption;

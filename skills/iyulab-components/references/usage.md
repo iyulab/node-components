@@ -259,6 +259,8 @@ input.validate(); // returns boolean, sets `invalid` attribute
 input.reset();    // clears value and validation state
 ```
 
+A disabled `<fieldset>` disables every control inside it (and `u-button`), exactly like the control's own `disabled` attribute. Style disabled controls with `:disabled`, not `[disabled]`.
+
 ### Using `u-form` for model binding
 
 ```ts

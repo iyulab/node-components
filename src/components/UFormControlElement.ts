@@ -14,6 +14,21 @@ export abstract class UFormControlElement<T> extends UElement {
 
   /** 비활성 상태 */
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
+  /**
+   * UA 가 알려 준 비활성 상태 — 조상 `<fieldset disabled>` 든 자기 `disabled` 속성이든(`formDisabledCallback`).
+   * ⚠사용자의 `disabled` 를 **덮어쓰지 않고** 따로 든다: 덮어쓰면 ⑴사용자가 준 값을 잃고 ⑵반영된
+   * `disabled` 속성이 스스로를 비활성으로 붙잡아 fieldset 을 다시 켜도 풀리지 않는다.
+   */
+  private formDisabled = false;
+
+  /**
+   * 실제로 비활성인가 — 자기 `disabled` **또는** 조상 fieldset. 렌더·상호작용은 이것을 읽는다.
+   * 스타일은 같은 뜻의 표준 의사클래스 `:host(:disabled)` 를 쓴다(form-associated 요소는 둘 다에서 매칭된다).
+   */
+  protected get effectivelyDisabled(): boolean {
+    return this.disabled || this.formDisabled;
+  }
+
   /** 읽기 전용 상태 */
   @property({ type: Boolean, reflect: true }) readonly: boolean = false;
   /** 필수 입력 여부 */
@@ -87,6 +102,15 @@ export abstract class UFormControlElement<T> extends UElement {
     } else {
       this.internals?.setValidity(flags, message, anchor);
     }
+  }
+
+  /** form-associated 표준 콜백 — 조상 fieldset 의 비활성 상태가 바뀔 때 UA 가 부른다. */
+  formDisabledCallback(disabled: boolean): void {
+    const old = this.formDisabled;
+    this.formDisabled = disabled;
+    // ⚠자기 `disabled` 속성이 바뀔 때도 불리고, 그때는 **Lit 의 update 도중**(속성 반영 순간)이다 —
+    // 거기서 요청한 변경은 그 update 끝에서 지워져 재렌더가 사라진다. 현재 update 뒤에 요청한다.
+    void this.updateComplete.then(() => this.requestUpdate('formDisabled', old));
   }
 
   connectedCallback(): void {

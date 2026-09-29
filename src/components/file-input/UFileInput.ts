@@ -96,7 +96,7 @@ export class UFileInput extends UFormControlElement<File[] | null> {
     return html`
       <u-field part="field"
         ?required=${this.required}
-        ?disabled=${this.disabled}
+        ?disabled=${this.effectivelyDisabled}
         ?invalid=${this.invalid}
         .label=${this.label}
         .description=${this.description}
@@ -106,14 +106,14 @@ export class UFileInput extends UFormControlElement<File[] | null> {
           <button class="trigger" part="trigger"
             type="button"
             aria-label=${ifDefined(this.triggerAriaLabel)}
-            ?disabled=${this.disabled || this.readonly}
+            ?disabled=${this.effectivelyDisabled || this.readonly}
             @click=${this.handleTriggerClick}
           >${Locale.getValue('chooseFile')}</button>
 
           <span class="status" part="status" ?data-empty=${!hasFiles}>${status}</span>
 
           <u-icon class="clear-btn" part="clear-button"
-            ?hidden=${!hasFiles || this.disabled || this.readonly}
+            ?hidden=${!hasFiles || this.effectivelyDisabled || this.readonly}
             role="button"
             tabindex="0"
             aria-label=${Locale.getValue('clear')}
@@ -129,7 +129,7 @@ export class UFileInput extends UFormControlElement<File[] | null> {
             name=${ifDefined(this.name)}
             accept=${ifDefined(this.accept)}
             ?multiple=${this.multiple}
-            ?disabled=${this.disabled || this.readonly}
+            ?disabled=${this.effectivelyDisabled || this.readonly}
             @change=${this.handleInputChange}
           />
         </div>
@@ -162,7 +162,7 @@ export class UFileInput extends UFormControlElement<File[] | null> {
 
   private handleTriggerClick = (e: MouseEvent) => {
     e.stopImmediatePropagation();
-    if (this.disabled || this.readonly) return;
+    if (this.effectivelyDisabled || this.readonly) return;
     this.inputEl?.click();
   }
 

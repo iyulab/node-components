@@ -216,16 +216,16 @@ export class UDatePicker extends UFormControlElement<string> {
     return html`
       <u-field part="field"
         ?required=${this.required}
-        ?disabled=${this.disabled}
+        ?disabled=${this.effectivelyDisabled}
         ?invalid=${this.invalid}
         .label=${this.label}
         .description=${this.description}
         .validationMessage=${this.validationMessage}
       >
         <div class="container" part="container"
-          tabindex=${this.disabled ? '-1' : '0'}
+          tabindex=${this.effectivelyDisabled ? '-1' : '0'}
           role="combobox"
-          aria-disabled=${ifDefined(this.disabled ? 'true' : undefined)}
+          aria-disabled=${ifDefined(this.effectivelyDisabled ? 'true' : undefined)}
           aria-haspopup="dialog"
           aria-expanded=${this.open}
           aria-label=${ifDefined(this.resolvedAriaLabel)}
@@ -234,7 +234,7 @@ export class UDatePicker extends UFormControlElement<string> {
         >
           <span class="text-content ${!displayText ? 'placeholder' : ''}">${displayText || this.placeholder || ''}</span>
           <u-icon class="suffix-item"
-            ?hidden=${!this.clearable || !this.value || this.disabled || this.readonly}
+            ?hidden=${!this.clearable || !this.value || this.effectivelyDisabled || this.readonly}
             role="button"
             tabindex="0"
             aria-label=${Locale.getValue('clear')}
@@ -530,7 +530,7 @@ export class UDatePicker extends UFormControlElement<string> {
    *  Tab 순서에서 빠지고 프로그램적 `.focus()`는 여전히 통과하므로, `UInput.focus()`가
    *  네이티브 `disabled` `<input>`에서 얻는 것과 같은 no-op을 여기서 직접 재현한다. */
   public focus(options?: FocusOptions): void {
-    if (this.disabled) return;
+    if (this.effectivelyDisabled) return;
     this.containerEl?.focus(options);
   }
 

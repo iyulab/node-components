@@ -30,17 +30,17 @@ export const styles = css`
     overflow: hidden;
   }
   :host([readonly]) .container,
-  :host([disabled]) .container {
+  :host(:disabled) .container {
     border-color: var(--u-border-color-weak, #EEEEEE);
     background-color: var(--u-bg-color-disabled, #FAFAFA);
   }
-  :host(:not([readonly]):not([disabled])) .container:hover {
+  :host(:not([readonly]):not(:disabled)) .container:hover {
     box-shadow: 0 0 0 1px var(--u-input-border-color-hover, #BDBDBD);
   }
-  :host(:not([readonly]):not([disabled])) .container:focus-within {
+  :host(:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: 0 0 0 1px var(--u-input-border-color-focus, #1565C0);
   }
-  :host([invalid]:not([readonly]):not([disabled])) .container {
+  :host([invalid]:not([readonly]):not(:disabled)) .container {
     box-shadow: 0 0 0 1px var(--u-input-border-color-invalid, #C62828);
   }
 
@@ -52,20 +52,20 @@ export const styles = css`
     background-color: var(--u-neutral-200, #EEEEEE);
   }
   :host([variant="filled"][readonly]) .container,
-  :host([variant="filled"][disabled]) .container {
+  :host([variant="filled"]:disabled) .container {
     background-color: var(--u-bg-color-disabled, #FAFAFA);
     border-bottom-color: var(--u-border-color-weak, #EEEEEE);
   }
-  :host([variant="filled"]:not([readonly]):not([disabled])) .container:hover {
+  :host([variant="filled"]:not([readonly]):not(:disabled)) .container:hover {
     box-shadow: none;
     background-color: var(--u-neutral-300, #E0E0E0);
     border-bottom-color: var(--u-input-border-color-hover, #BDBDBD);
   }
-  :host([variant="filled"]:not([readonly]):not([disabled])) .container:focus-within {
+  :host([variant="filled"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-focus, #1565C0);
   }
-  :host([variant="filled"][invalid]:not([readonly]):not([disabled])) .container {
+  :host([variant="filled"][invalid]:not([readonly]):not(:disabled)) .container {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-invalid, #C62828);
   }
@@ -80,20 +80,20 @@ export const styles = css`
     background-color: transparent;
   }
   :host([variant="underlined"][readonly]) .container,
-  :host([variant="underlined"][disabled]) .container {
+  :host([variant="underlined"]:disabled) .container {
     background-color: transparent;
     border-bottom-color: var(--u-border-color-weak, #EEEEEE);
   }
-  :host([variant="underlined"]:not([readonly]):not([disabled])) .container:hover {
+  :host([variant="underlined"]:not([readonly]):not(:disabled)) .container:hover {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-hover, #BDBDBD);
   }
-  :host([variant="underlined"]:not([readonly]):not([disabled])) .container:focus-within {
+  :host([variant="underlined"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-focus, #1565C0);
     border-bottom-width: 2px;
   }
-  :host([variant="underlined"][invalid]:not([readonly]):not([disabled])) .container {
+  :host([variant="underlined"][invalid]:not([readonly]):not(:disabled)) .container {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-invalid, #C62828);
   }
@@ -106,8 +106,8 @@ export const styles = css`
     padding: 0;
     box-shadow: none;
   }
-  :host([variant="borderless"]:not([readonly]):not([disabled])) .container:hover,
-  :host([variant="borderless"]:not([readonly]):not([disabled])) .container:focus-within {
+  :host([variant="borderless"]:not([readonly]):not(:disabled)) .container:hover,
+  :host([variant="borderless"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
   }
 

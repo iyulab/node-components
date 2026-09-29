@@ -28,18 +28,18 @@ export const styles = css`
       box-shadow var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   :host([readonly]) .container,
-  :host([disabled]) .container {
+  :host(:disabled) .container {
     cursor: not-allowed;
     border-color: var(--u-border-color-weak, #EEEEEE);
     background-color: var(--u-bg-color-disabled, #FAFAFA);
   }
-  :host(:not([readonly]):not([disabled])) .container:hover {
+  :host(:not([readonly]):not(:disabled)) .container:hover {
     box-shadow: 0 0 0 1px var(--u-input-border-color-hover, #BDBDBD);
   }
-  :host(:not([readonly]):not([disabled])) .container:focus-within {
+  :host(:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: 0 0 0 1px var(--u-input-border-color-focus, #1565C0);
   }
-  :host([invalid]:not([readonly]):not([disabled])) .container {
+  :host([invalid]:not([readonly]):not(:disabled)) .container {
     box-shadow: 0 0 0 1px var(--u-input-border-color-invalid, #C62828);
   }
 

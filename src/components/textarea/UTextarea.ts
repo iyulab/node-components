@@ -87,7 +87,7 @@ export class UTextarea extends UFormControlElement<string> {
     return html`
       <u-field part="field"
         ?required=${this.required}
-        ?disabled=${this.disabled}
+        ?disabled=${this.effectivelyDisabled}
         ?invalid=${this.invalid}
         .label=${this.label}
         .description=${this.description}
@@ -99,7 +99,7 @@ export class UTextarea extends UFormControlElement<string> {
             aria-label=${ifDefined(this.resolvedAriaLabel)}
             aria-description=${ifDefined(this.resolvedAriaDescription)}
             ?required=${this.required}
-            ?disabled=${this.disabled}
+            ?disabled=${this.effectivelyDisabled}
             ?readonly=${this.readonly}
             rows=${this.minRows || 1}
             minlength=${ifDefined(this.minlength)}

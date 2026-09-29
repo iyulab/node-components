@@ -4,6 +4,13 @@
 
 ### Fixed
 
+- **Form controls and `u-button` now follow a disabled `<fieldset>`.** Inside `<fieldset disabled>`
+  they were only left out of the submitted data: the inner input stayed enabled and focusable, the
+  control did not look disabled, and a `u-button type="submit"` still submitted the form. They now
+  implement the standard `formDisabledCallback` and behave exactly as with their own `disabled`
+  attribute. The `disabled` property itself is not changed, so a control disabled on its own stays
+  disabled when the fieldset is enabled again. Built-in disabled styles now use `:host(:disabled)`,
+  which matches both cases.
 - `u-breadcrumb` with a custom `separator` slot rendered no separators at all. Separators are now
   placed between the items whatever the order of the slotted elements, and follow later changes to
   the separator slot. Separators are marked `aria-hidden`, so a text separator such as `/` is no

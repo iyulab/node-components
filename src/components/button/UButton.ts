@@ -90,6 +90,23 @@ export class UButton extends UElement {
   @property({ type: Boolean, reflect: true }) rounded = false;
   /** 비활성화 여부 */
   @property({ type: Boolean, reflect: true }) disabled = false;
+
+  /** UA 가 알려 준 비활성 상태 — 폼 컨트롤 기반 클래스와 같은 계약(사용자 `disabled` 와 따로 든다). */
+  private formDisabled = false;
+
+  /** 자기 `disabled` 또는 조상 fieldset. */
+  protected get effectivelyDisabled(): boolean {
+    return this.disabled || this.formDisabled;
+  }
+
+  /** form-associated 표준 콜백 — 조상 fieldset 의 비활성 상태가 바뀔 때 UA 가 부른다. */
+  formDisabledCallback(disabled: boolean): void {
+    const old = this.formDisabled;
+    this.formDisabled = disabled;
+    // ⚠자기 `disabled` 속성이 바뀔 때도 불리고, 그때는 **Lit 의 update 도중**(속성 반영 순간)이다 —
+    // 거기서 요청한 변경은 그 update 끝에서 지워져 재렌더가 사라진다. 현재 update 뒤에 요청한다.
+    void this.updateComplete.then(() => this.requestUpdate('formDisabled', old));
+  }
   /** 로딩 상태 여부 */
   @property({ type: Boolean, reflect: true }) loading = false;
   /** 버튼 타입 */
@@ -163,9 +180,9 @@ export class UButton extends UElement {
       return html`
         <a part="link"
           aria-label=${ifDefined(ariaLabel)}
-          ?disabled=${this.disabled || this.loading}
-          tabindex=${this.disabled || this.loading ? -1 : 0}
-          href=${ifDefined(this.disabled || this.loading ? undefined : this.href)}
+          ?disabled=${this.effectivelyDisabled || this.loading}
+          tabindex=${this.effectivelyDisabled || this.loading ? -1 : 0}
+          href=${ifDefined(this.effectivelyDisabled || this.loading ? undefined : this.href)}
           download=${ifDefined(this.download)}
           target=${ifDefined(this.target)}
           rel=${ifDefined(this.rel)}
@@ -180,7 +197,7 @@ export class UButton extends UElement {
       <button part="button"
         aria-label=${ifDefined(ariaLabel)}
         type=${this.type}
-        ?disabled=${this.disabled || this.loading}
+        ?disabled=${this.effectivelyDisabled || this.loading}
       >
         ${this.renderContent()}
       </button>
@@ -208,7 +225,7 @@ export class UButton extends UElement {
   }
 
   private handleClick = (e: MouseEvent) => {
-    if (this.disabled || this.loading) {
+    if (this.effectivelyDisabled || this.loading) {
       e.preventDefault();
       e.stopImmediatePropagation();
       return;

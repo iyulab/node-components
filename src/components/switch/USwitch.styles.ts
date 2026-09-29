@@ -34,7 +34,7 @@ export const styles = css`
   }
 
   /* === 상태 스타일 === */
-  :host([disabled]) {
+  :host(:disabled) {
     opacity: 0.6;
     cursor: not-allowed;
   }
@@ -45,7 +45,7 @@ export const styles = css`
     outline: 2px solid var(--u-danger-color, #D32F2F);
     outline-offset: 1px;
   }
-  :host(:not([disabled]):not([readonly]):hover) .track {
+  :host(:not(:disabled):not([readonly]):hover) .track {
     filter: brightness(0.95);
   }
 

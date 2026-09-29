@@ -41,7 +41,7 @@ export const styles = css`
     outline: 2px solid var(--u-primary-color-strong, #1565C0);
     outline-offset: 2px;
   }
-  :host(:not([disabled]):not([readonly])) .symbol:hover {
+  :host(:not(:disabled):not([readonly])) .symbol:hover {
     transform: scale(1.2);
   }
 

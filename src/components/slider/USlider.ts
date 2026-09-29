@@ -147,7 +147,7 @@ export class USlider extends UFormControlElement<number | number[]> {
     return html`
       <u-field part="field"
         ?required=${this.required}
-        ?disabled=${this.disabled}
+        ?disabled=${this.effectivelyDisabled}
         ?invalid=${this.invalid}
         .label=${this.label}
         .description=${this.description}
@@ -222,7 +222,7 @@ export class USlider extends UFormControlElement<number | number[]> {
    *  순서에서 빠지고 프로그램적 `.focus()`는 여전히 통과하므로, `UInput.focus()`가
    *  네이티브 `disabled` `<input>`에서 얻는 것과 같은 no-op을 여기서 직접 재현한다. */
   public focus(options?: FocusOptions): void {
-    if (this.disabled) return;
+    if (this.effectivelyDisabled) return;
     this.minThumbEl?.focus(options);
   }
 
@@ -263,10 +263,10 @@ export class USlider extends UFormControlElement<number | number[]> {
         aria-valuemax=${this.max}
         aria-valuetext=${this.formatValue(val)}
         aria-orientation="horizontal"
-        aria-disabled=${this.disabled ? 'true' : 'false'}
+        aria-disabled=${this.effectivelyDisabled ? 'true' : 'false'}
         ?hidden=${isEnd && !this.range}
         style="left: ${pct}%"
-        tabindex=${this.disabled || (isEnd && !this.range) ? -1 : 0}
+        tabindex=${this.effectivelyDisabled || (isEnd && !this.range) ? -1 : 0}
         data-thumb=${thumb}
         @keydown=${this.handleThumbKeyDown}
       >
@@ -316,7 +316,7 @@ export class USlider extends UFormControlElement<number | number[]> {
   }
 
   private handleContainerPointerDown = (e: PointerEvent) => {
-    if (this.disabled || this.readonly) return;
+    if (this.effectivelyDisabled || this.readonly) return;
 
     const getPointerValue = (ev: PointerEvent) => {
       if (!this.trackEl) return 0;
@@ -362,7 +362,7 @@ export class USlider extends UFormControlElement<number | number[]> {
   };
 
   private handleThumbKeyDown = (e: KeyboardEvent) => {
-    if (this.disabled || this.readonly) return;
+    if (this.effectivelyDisabled || this.readonly) return;
 
     const thumb = (e.currentTarget as HTMLElement).dataset.thumb as ThumbId;
     const currentVal = this.getThumbValue(thumb);
