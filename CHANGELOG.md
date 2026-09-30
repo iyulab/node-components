@@ -17,6 +17,12 @@
 - Peer dependency ranges promise only the majors that are tested: `@lit/react ^1.0.8` (was
   `>=1.0.8`) and `react ^18.0.0 || ^19.0.0` (was `>=18.0.0`).
 
+### Documentation
+
+- README: a **KWCAG 2.2** table (the Korean web accessibility standard used for certification) — all
+  33 check items, each marked as guaranteed by a test, shared with the app, or not applicable, with
+  the test that measures it across this package and its siblings.
+
 ## [1.52.0] - 2026-09-30
 
 ### Added
