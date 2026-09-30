@@ -18,6 +18,8 @@
   "previousSlide": "Diapositiva anterior",
   "nextSlide": "Siguiente diapositiva",
   "goToSlide": "Ir a la diapositiva {n}",
+  "stopSlideRotation": "Detener la presentación automática",
+  "startSlideRotation": "Iniciar la presentación automática",
   "chooseDate": "Elegir fecha",
   "previousMonth": "Mes anterior",
   "nextMonth": "Mes siguiente",

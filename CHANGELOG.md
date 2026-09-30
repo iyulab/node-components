@@ -1,5 +1,22 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **An `autoplay` carousel can now be stopped** (WCAG 2.2.2 Pause, Stop, Hide). `u-carousel` with
+  `autoplay` renders a stop/start button as the first control of its indicator row (part
+  `rotation-button`, with localized names). Rotation also pauses while the mouse is over the
+  carousel, and stops when keyboard focus moves into it until the user starts it again — the
+  WAI-ARIA APG carousel pattern. While rotating, the slides are `aria-live="off"`; when stopped,
+  `polite`, so a screen reader announces the slide the user moves to.
+- Two built-in icons, `player-pause-fill` and `player-play-fill`, back that button.
+
+### Changed
+
+- Peer dependency ranges promise only the majors that are tested: `@lit/react ^1.0.8` (was
+  `>=1.0.8`) and `react ^18.0.0 || ^19.0.0` (was `>=18.0.0`).
+
 ## [1.52.0] - 2026-09-30
 
 ### Added

@@ -72,6 +72,26 @@ export const styles = css`
     transform: translateY(-50%) scale(0.95);
   }
 
+  /* ── Rotation control (autoplay) ── */
+  .rotation-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: var(--u-radius-circle, 50%);
+    font-size: 12px;
+    color: var(--u-neutral-900, #212121);
+    background-color: var(--u-neutral-100, #F5F5F5);
+    box-shadow: var(--u-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.05));
+    cursor: pointer;
+  }
+  .rotation-button:hover {
+    background-color: var(--u-neutral-200, #EEEEEE);
+  }
+
   .nav-button.prev { left: 12px; }
   .nav-button.next { right: 12px; }
 

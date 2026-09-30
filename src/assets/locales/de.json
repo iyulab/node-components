@@ -18,6 +18,8 @@
   "previousSlide": "Vorherige Folie",
   "nextSlide": "Nächste Folie",
   "goToSlide": "Zu Folie {n} wechseln",
+  "stopSlideRotation": "Automatische Diashow anhalten",
+  "startSlideRotation": "Automatische Diashow starten",
   "chooseDate": "Datum auswählen",
   "previousMonth": "Vorheriger Monat",
   "nextMonth": "Nächster Monat",

@@ -21,6 +21,11 @@ Slide carousel. Each direct child element becomes one slide.
 </u-carousel>
 ```
 
+With `autoplay`, the carousel renders a stop/start button as the first control of its indicator
+row (WCAG 2.2.2). Rotation pauses while the mouse is over the carousel and stops when keyboard focus
+moves into it, until the user presses start (WAI-ARIA APG carousel pattern). Slides are
+`aria-live="off"` while rotating and `polite` when stopped.
+
 ---
 
 ## Slots
@@ -61,3 +66,4 @@ Slide carousel. Each direct child element becomes one slide.
 | `next-button` | Next navigation button |
 | `indicator` | Pagination indicator wrapper |
 | `dot` | Individual pagination dot |
+| `rotation-button` | Stop/start button (only with `autoplay`, inside the indicator) |

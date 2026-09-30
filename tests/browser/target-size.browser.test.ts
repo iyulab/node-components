@@ -652,11 +652,15 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   'u-carousel': {
     // ⚠`navigation`·`pagination` 을 켜야 화살표·인디케이터가 렌더된다 — 끄면 `hidden` 이라
     //   **0x0 이 나오고 그것을 «통과»로 읽으면 미탐이다**(세 번 밟은 함정).
-    html: '<u-carousel navigation pagination loop style="width:300px;height:150px">' +
+    //   `autoplay` 는 회전 제어 버튼을 그리게 한다 — 간격을 길게 둬 재는 동안 넘어가지 않게 한다.
+    html: '<u-carousel navigation pagination loop autoplay autoplay-interval="600000" style="width:300px;height:150px">' +
       '<div>1</div><div>2</div></u-carousel>',
     targets: () => {
       const c = document.querySelector('u-carousel')!;
-      return [...parts(c, 'prev-button'), ...parts(c, 'next-button'), ...parts(c, 'dot')];
+      return [
+        ...parts(c, 'rotation-button'),
+        ...parts(c, 'prev-button'), ...parts(c, 'next-button'), ...parts(c, 'dot'),
+      ];
     },
     spacingIsOurs: true,
   },

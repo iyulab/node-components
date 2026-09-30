@@ -18,6 +18,8 @@
   "previousSlide": "Slide trước",
   "nextSlide": "Slide sau",
   "goToSlide": "Đi đến slide {n}",
+  "stopSlideRotation": "Dừng tự động chuyển slide",
+  "startSlideRotation": "Bắt đầu tự động chuyển slide",
   "chooseDate": "Chọn ngày",
   "previousMonth": "Tháng trước",
   "nextMonth": "Tháng sau",

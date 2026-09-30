@@ -18,6 +18,8 @@
   "previousSlide": "الشريحة السابقة",
   "nextSlide": "الشريحة التالية",
   "goToSlide": "الانتقال إلى الشريحة {n}",
+  "stopSlideRotation": "إيقاف العرض التلقائي للشرائح",
+  "startSlideRotation": "بدء العرض التلقائي للشرائح",
   "chooseDate": "اختر التاريخ",
   "previousMonth": "الشهر السابق",
   "nextMonth": "الشهر التالي",

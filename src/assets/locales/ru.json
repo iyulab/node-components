@@ -18,6 +18,8 @@
   "previousSlide": "Предыдущий слайд",
   "nextSlide": "Следующий слайд",
   "goToSlide": "Перейти к слайду {n}",
+  "stopSlideRotation": "Остановить автопрокрутку слайдов",
+  "startSlideRotation": "Запустить автопрокрутку слайдов",
   "chooseDate": "Выбрать дату",
   "previousMonth": "Предыдущий месяц",
   "nextMonth": "Следующий месяц",

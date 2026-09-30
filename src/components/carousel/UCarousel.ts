@@ -1,5 +1,6 @@
-import { html, PropertyValues } from "lit";
+import { html, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 import '../button/UButton.js';
 import '../icon/UIcon.js';
 
@@ -12,11 +13,16 @@ import { styles } from "./UCarousel.styles.js";
  *
  * @slot - 슬라이드로 표시할 콘텐츠 (각 자식 요소가 하나의 슬라이드)
  *
+ * `autoplay` 이면 회전 제어 버튼(정지/시작)이 인디케이터 줄의 첫 자리에 그려진다. 포인터가 캐러셀 위에
+ * 있는 동안은 잠시 멈추고, 키보드 초점이 안으로 들어오면 사용자가 다시 시작할 때까지 멈춘다
+ * (WAI-ARIA APG Carousel · WCAG 2.2.2).
+ *
  * @csspart slides - 슬라이드 컨테이너
  * @csspart prev-button - 이전 버튼
  * @csspart next-button - 다음 버튼
  * @csspart indicator - 페이지네이션 컨테이너
  * @csspart dot - 페이지네이션 점
+ * @csspart rotation-button - 자동 넘김 정지/시작 버튼 (`autoplay` 일 때만, 인디케이터 안)
  */
 @customElement('u-carousel')
 export class UCarousel extends UElement {
@@ -46,11 +52,24 @@ export class UCarousel extends UElement {
   @state() private slideCount = 0;
   @state() private isDragging = false;
   @state() private dragOffset = 0;
+  /** 사용자가 회전을 멈췄다(정지 버튼, 또는 키보드 초점 진입). 다시 시작할 때까지 유지된다. */
+  @state() private rotationStopped = false;
+  /** 포인터가 캐러셀 위에 있다 — 그동안만 잠시 멈춘다. */
+  @state() private hovered = false;
 
   private autoplayTimer?: number;
   private dragStartX = 0;
   private dragStartTime = 0;
   private pointerDown = false;
+
+  /** 지금 자동으로 넘기고 있는가. */
+  private get rotating() {
+    return this.autoplay && !this.rotationStopped && !this.hovered;
+  }
+
+  private get showDots() {
+    return this.pagination && this.pageCount > 1;
+  }
 
   private get perView() { 
     return Math.max(1, this.slidesPerView); 
@@ -74,16 +93,27 @@ export class UCarousel extends UElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    if (this.autoplay) this.startAutoplay();
+    this.addEventListener('focusin', this.handleFocusIn);
+    this.addEventListener('pointerenter', this.handlePointerEnter);
+    this.addEventListener('pointerleave', this.handlePointerLeave);
+    if (this.rotating) this.startAutoplay();
   }
 
   disconnectedCallback(): void {
     this.stopAutoplay();
+    this.removeEventListener('focusin', this.handleFocusIn);
+    this.removeEventListener('pointerenter', this.handlePointerEnter);
+    this.removeEventListener('pointerleave', this.handlePointerLeave);
     super.disconnectedCallback();
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
+
+    // 자동 넘김을 새로 켜면 이전의 «사용자가 멈춤» 은 잊는다.
+    if (changedProperties.has('autoplay') && this.autoplay) {
+      this.rotationStopped = false;
+    }
 
     if (changedProperties.has('slidesPerView')) {
       this.style.setProperty('--slides-per-view', String(this.perView));
@@ -96,8 +126,13 @@ export class UCarousel extends UElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (changedProperties.has('autoplay') || changedProperties.has('autoplayInterval')) {
-      if (this.autoplay) this.startAutoplay();
+    if (
+      changedProperties.has('autoplay') ||
+      changedProperties.has('autoplayInterval') ||
+      changedProperties.has('rotationStopped') ||
+      changedProperties.has('hovered')
+    ) {
+      if (this.rotating) this.startAutoplay();
       else this.stopAutoplay();
     }
   }
@@ -117,7 +152,8 @@ export class UCarousel extends UElement {
         @pointermove=${this.draggable ? this.handlePointerMove : null}
         @pointerup=${this.draggable ? this.handlePointerUp : null}
         @pointerleave=${this.draggable ? this.handlePointerUp : null}>
-        <div part="slides" class="slides" style="${style}">
+        <div part="slides" class="slides" style="${style}"
+          aria-live=${ifDefined(this.autoplay ? (this.rotating ? 'off' : 'polite') : undefined)}>
           <slot @slotchange=${this.handleSlotChange}></slot>
         </div>
       </div>
@@ -140,8 +176,15 @@ export class UCarousel extends UElement {
       </u-button>
 
       <div part="indicator" class="indicator"
-        ?hidden=${!this.pagination || this.pageCount <= 1}>
-        ${Array.from({ length: this.pageCount }, (_, i) => html`
+        ?hidden=${!this.autoplay && !this.showDots}>
+        ${this.autoplay ? html`
+          <button part="rotation-button" class="rotation-button"
+            aria-label=${Locale.getValue(this.rotationStopped ? 'startSlideRotation' : 'stopSlideRotation')}
+            @click=${this.toggleRotation}>
+            <u-icon lib="internal" name=${this.rotationStopped ? 'player-play-fill' : 'player-pause-fill'}></u-icon>
+          </button>
+        ` : nothing}
+        ${!this.showDots ? nothing : Array.from({ length: this.pageCount }, (_, i) => html`
           <button part="dot" class="dot"
             aria-label=${Locale.getValue('goToSlide', { n: i + 1 })}
             aria-current=${i === this.currentPage ? 'true' : 'false'}
@@ -174,7 +217,7 @@ export class UCarousel extends UElement {
   public goTo = (index: number) => {
     if (index < 0 || index > this.maxIndex || index === this.index) return;
     this.index = index;
-    if (this.autoplay) this.startAutoplay();
+    if (this.rotating) this.startAutoplay();
   }
 
   private startAutoplay() {
@@ -209,7 +252,7 @@ export class UCarousel extends UElement {
     this.dragStartX = e.clientX;
     this.dragOffset = 0;
     this.dragStartTime = Date.now();
-    if (this.autoplay) this.stopAutoplay();
+    this.stopAutoplay();
   };
 
   private handlePointerMove = (e: PointerEvent) => {
@@ -249,7 +292,28 @@ export class UCarousel extends UElement {
     this.pointerDown = false;
     this.isDragging = false;
     this.dragOffset = 0;
-    if (this.autoplay) this.startAutoplay();
+    if (this.rotating) this.startAutoplay();
+  };
+
+  private toggleRotation = () => {
+    this.rotationStopped = !this.rotationStopped;
+  };
+
+  /** 키보드 초점이 들어오면 멈춘다 — 포인터로 누른 초점은 멈추지 않는다(누른 버튼이 정지 버튼이면 그 클릭이 결정한다). */
+  private handleFocusIn = (e: FocusEvent) => {
+    if (!this.autoplay) return;
+    const origin = e.composedPath()[0];
+    if (origin instanceof Element && origin.matches(':focus-visible')) {
+      this.rotationStopped = true;
+    }
+  };
+
+  private handlePointerEnter = (e: PointerEvent) => {
+    if (e.pointerType === 'mouse') this.hovered = true;
+  };
+
+  private handlePointerLeave = () => {
+    this.hovered = false;
   };
 
   private handleClickCancel = (e: Event) => {

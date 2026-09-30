@@ -18,6 +18,8 @@
   "previousSlide": "Slide sebelumnya",
   "nextSlide": "Slide berikutnya",
   "goToSlide": "Buka slide {n}",
+  "stopSlideRotation": "Hentikan slide otomatis",
+  "startSlideRotation": "Mulai slide otomatis",
   "chooseDate": "Pilih tanggal",
   "previousMonth": "Bulan sebelumnya",
   "nextMonth": "Bulan berikutnya",

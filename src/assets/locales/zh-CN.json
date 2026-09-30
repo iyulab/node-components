@@ -18,6 +18,8 @@
   "previousSlide": "上一张幻灯片",
   "nextSlide": "下一张幻灯片",
   "goToSlide": "转到幻灯片{n}",
+  "stopSlideRotation": "停止自动播放幻灯片",
+  "startSlideRotation": "开始自动播放幻灯片",
   "chooseDate": "选择日期",
   "previousMonth": "上个月",
   "nextMonth": "下个月",

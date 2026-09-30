@@ -36,6 +36,9 @@ export type LocaleMessageKey =
   | 'previousSlide'
   | 'nextSlide'
   | 'goToSlide'
+  // 자동 넘김 캐러셀의 회전 제어 버튼 — 움직이는 콘텐츠에는 멈출 수단이 있어야 한다(WCAG 2.2.2).
+  | 'stopSlideRotation'
+  | 'startSlideRotation'
   | 'chooseDate'
   | 'previousMonth'
   | 'nextMonth'

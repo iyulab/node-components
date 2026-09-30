@@ -18,6 +18,8 @@
   "previousSlide": "前のスライド",
   "nextSlide": "次のスライド",
   "goToSlide": "スライド{n}に移動",
+  "stopSlideRotation": "スライドの自動再生を停止",
+  "startSlideRotation": "スライドの自動再生を開始",
   "chooseDate": "日付を選択",
   "previousMonth": "前月",
   "nextMonth": "翌月",
