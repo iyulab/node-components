@@ -10,6 +10,7 @@ import type { UInput, InputType } from '../components/input/UInput.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { Locale } from './Locale.js';
+import { isImeComposing } from './keyboard.js';
 
 /** 공통 Dialog 옵션 */
 export interface DialogOptions {
@@ -129,7 +130,8 @@ export class Dialog {
               inputValue = input.value || '';
             }}
             @keydown=${(e: KeyboardEvent) => {
-              if (e.key === 'Enter') {
+              // IME 조합을 확정하는 Enter 는 확인이 아니다 — 마지막 음절 입력 도중 대화상자가 닫힌다.
+              if (e.key === 'Enter' && !isImeComposing(e)) {
                 const input = e.target as UInput;
                 inputValue = input.value || '';
                 const dialog = input.closest('u-dialog') as UDialog;

@@ -113,6 +113,16 @@ describe('u-input 암묵 제출 (Enter → 소유 form)', () => {
     expect(submits, '대조군 — 이 경로가 핸들러에 닿는다').toHaveLength(1);
   });
 
+  it('⚪NEGATIVE — Safari 의 조합 확정 키(isComposing 없이 keyCode 229)도 제출하지 않는다', async () => {
+    const { submits, hosts } = await mountForm('<u-input name="q"></u-input><button type="submit">Go</button>');
+    const input = focusInner(hosts[0]);
+    const e = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true });
+    Object.defineProperty(e, 'keyCode', { value: 229 });
+    input.dispatchEvent(e);
+    await settle();
+    expect(submits).toEqual([]);
+  });
+
   it('🔴Enter 에서 직접 requestSubmit() 하고 preventDefault() 하는 소비자 우회는 이중 제출되지 않는다', async () => {
     const { form, submits, hosts } = await mountForm('<u-input name="q"></u-input><u-button type="submit">Go</u-button>');
     form.addEventListener('keydown', (e) => {

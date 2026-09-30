@@ -1,4 +1,5 @@
 import type { FocusTrap } from 'focus-trap';
+import { isImeComposing } from './keyboard.js';
 
 /**
  * OverlayManager는 **겹치는 표면 전체의 층(layer)을 소유**합니다.
@@ -102,7 +103,7 @@ export class OverlayManager {
   }
 
   private static handleLayerKeydown = (e: KeyboardEvent): void => {
-    if (e.key !== 'Escape' || e.isComposing || e.defaultPrevented) return;
+    if (e.key !== 'Escape' || isImeComposing(e) || e.defaultPrevented) return;
     const top = OverlayManager.layers[OverlayManager.layers.length - 1];
     if (!top) return;
     if (top.onEscape(e) === false) return;

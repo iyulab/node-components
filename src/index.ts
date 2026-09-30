@@ -71,6 +71,7 @@ export * from './utilities/Dialog.js';
 export * from './utilities/elements.js';
 export * from './utilities/format.js';
 export * from './utilities/icons.js';
+export * from './utilities/keyboard.js';
 export * from './utilities/Locale.js';
 export * from './utilities/OverlayManager.js';
 export * from './utilities/Theme.js';

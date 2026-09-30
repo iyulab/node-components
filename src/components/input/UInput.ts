@@ -11,6 +11,7 @@ import { Locale } from "../../utilities/Locale.js";
 import { UOption } from "../option/UOption.js";
 import { UPopover } from "../popover/UPopover.js";
 import { styles } from "./UInput.styles.js";
+import { isImeComposing } from '../../utilities/keyboard.js';
 
 export type InputType = 'text' | 'password' | 'email' | 'tel' | 'url' | 'search' | 'number' | 'date' | 'time' | 'datetime-local' | 'month' | 'week';
 export type InputModeOption = 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
@@ -407,7 +408,7 @@ export class UInput extends UFormControlElement<string> {
    *   아니면 `requestSubmit()` 한다(검증도 그 안에서 돈다).
    */
   private handleImplicitSubmission(e: KeyboardEvent): void {
-    if (e.isComposing || this.composing || e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return;
+    if (isImeComposing(e) || this.composing || e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return;
     setTimeout(() => {
       const form = this.form;
       if (e.defaultPrevented || !form || !this.isConnected) return;

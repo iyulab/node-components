@@ -134,6 +134,7 @@ carries the control's role, not on the host element. Native nodes use native `di
 - [`Locale`](./references/utilities/locale.md) — Validation-message locale registry and lookup utility
 - [`elements`](./references/utilities/elements.md) — Shadow-DOM-aware DOM query helpers
 - [`format`](./references/utilities/format.md) — Locale-aware number, currency and date formatting
+- [`keyboard`](./references/utilities/keyboard.md) — `isImeComposing` for Enter handlers that must not fire mid-composition (Korean/Japanese/Chinese input)
 - [`OverlayManager`](./references/utilities/overlay-manager.md) — Internal overlay stack and z-index manager
 
 ---

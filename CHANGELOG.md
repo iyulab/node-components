@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.51.0] - 2026-09-30
+
+### Added
+
+- `isImeComposing(event)` — whether a key event belongs to an IME composition (Korean, Japanese,
+  Chinese …). It checks `isComposing` and also `keyCode` 229, because Safari delivers the key that
+  confirms a composition after `compositionend` with `isComposing` false. Use it in any handler that
+  acts on Enter while the user types text.
+
+### Fixed
+
+- **`Dialog.prompt` no longer confirms on the Enter that finishes an IME composition** — typing a
+  Korean name and pressing Enter closed the dialog before the last syllable was committed.
+- `u-input` no longer submits its form on Safari's composition-confirming Enter (it already ignored
+  the Enter that Chrome and Firefox send while composing).
+
 ## [1.50.0] - 2026-09-29
 
 ### Added
