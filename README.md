@@ -176,7 +176,7 @@ Theme.set('system');
 | 검사항목 | 구분 | 이 생태계가 하는 것 · 앱이 할 것 | 재는 곳 |
 |---|---|---|---|
 | 5.1.1 적절한 대체 텍스트 | 공동 책임 | 아이콘만 있는 내장 컨트롤은 로케일을 따르는 접근성 이름을 갖는다. 이미지·아이콘 콘텐츠의 대체 텍스트는 앱이 준다 | `tests/browser/carousel-accessible-name` · `copy-button-label` · `dialog-default-labels` · chat-components `icon-only-button-accessible-name` |
-| 5.2.1 자막 제공 | 공동 책임 | 자막 내용은 앱의 몫이다. ⚠u-widgets `video` 와 chat-components 동영상 블록은 아직 자막 트랙을 받는 수단이 없다 — 자막이 필요한 영상은 앱이 직접 `<video>` 로 그린다 | — |
+| 5.2.1 자막 제공 | 공동 책임 | u-widgets `video` 는 `data.tracks`, chat-components `u-video-block` 은 `tracks` 로 자막·캡션 트랙(WebVTT)을 받는다 — 영상이 섀도 안에 있어 앱이 `<track>` 을 넣을 수 없기 때문이다. 자막 내용은 앱이 준다 | u-widgets `video-tracks` · chat-components `video-block-tracks` |
 | 5.3.1 표의 구성 | 공동 책임 | `u-flex-table` 은 가상 스크롤에서도 행·열 순번(`aria-rowindex`·`aria-colindex`)과 전체 크기를 알린다. 표 제목·머리글 문구는 앱이 준다 | flex-table `tests/browser/aria-grid-index` |
 | 5.3.2 콘텐츠의 선형구조 | 공동 책임 | 컴포넌트의 DOM 순서가 표시 순서다. 화면 배치 순서는 앱이 정한다 | — |
 | 5.3.3 명확한 지시사항 제공 | 공동 책임 | 내장 문구(검증 메시지 등)는 모양·위치에 기대지 않는다. 앱의 안내 문구는 앱이 쓴다 | — |
