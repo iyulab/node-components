@@ -6,14 +6,20 @@ import { encodeTsv, decodeTsv } from '../../src/utilities/tsv.js';
  * 왕복해야 한다. 인용하지 않으면 줄바꿈이 든 셀이 붙여넣는 쪽에서 행으로 쪼개진다.
  */
 describe('encodeTsv', () => {
-  it('탭·줄바꿈·따옴표가 든 셀만 인용하고 행마다 줄바꿈으로 끝낸다', () => {
-    expect(encodeTsv([['a', 'b'], ['c', 'd']])).toBe('a\tb\nc\td\n');
-    expect(encodeTsv([['첫 줄\n둘째 줄', 'x']])).toBe('"첫 줄\n둘째 줄"\tx\n');
-    expect(encodeTsv([['5" 나사']])).toBe('"5"" 나사"\n');
-    expect(encodeTsv([['a\tb']])).toBe('"a\tb"\n');
+  it('탭·줄바꿈·따옴표가 든 셀만 인용하고 행을 줄바꿈으로 잇는다', () => {
+    expect(encodeTsv([['a', 'b'], ['c', 'd']])).toBe('a\tb\nc\td');
+    expect(encodeTsv([['첫 줄\n둘째 줄', 'x']])).toBe('"첫 줄\n둘째 줄"\tx');
+    expect(encodeTsv([['5" 나사']])).toBe('"5"" 나사"');
+    expect(encodeTsv([['a\tb']])).toBe('"a\tb"');
   });
 
-  it('빈 표는 빈 문자열이다', () => {
+  it('한 셀은 줄바꿈 없이 그 글자 그대로다 — 입력란에 붙여넣어도 줄바꿈이 따라오지 않는다', () => {
+    expect(encodeTsv([['hello']])).toBe('hello');
+  });
+
+  it('마지막 행이 빈 셀 하나면 줄바꿈으로 닫아 그 행을 보존한다', () => {
+    expect(encodeTsv([['a'], ['']])).toBe('a\n\n');
+    expect(encodeTsv([['']])).toBe('\n');
     expect(encodeTsv([])).toBe('');
   });
 });

@@ -6,14 +6,15 @@ import { encodeTsv, decodeTsv } from '@iyulab/components';
 ```
 
 The clipboard format spreadsheets use for copy and paste (Excel, Google Sheets, LibreOffice): cells
-separated by tabs, rows ended by a line break, and RFC 4180 quoting.
+separated by tabs, rows separated by line breaks, and RFC 4180 quoting.
 
 ## `encodeTsv(rows: readonly (readonly string[])[]): string`
 
 Writes a table that pastes into a spreadsheet cell for cell. A cell containing a tab, a line break, or a
 double quote is wrapped in double quotes, with inner quotes doubled — without that, a cell with a line
-break is split into several rows by the application you paste into. Every row ends with `\n`, as
-spreadsheets write it.
+break is split into several rows by the application you paste into. Rows are joined with `\n` and no line
+break follows the last one, so a single copied cell pastes into a text field as just its text. (A last
+row made of one empty cell is closed with `\n` so that it survives the round trip.)
 
 ## `decodeTsv(text: string): string[][]`
 
