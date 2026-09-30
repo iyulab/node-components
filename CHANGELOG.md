@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.52.0] - 2026-09-30
+
+### Added
+
+- `encodeTsv(rows)` and `decodeTsv(text)` — the clipboard format spreadsheets use for copy and paste
+  (tab-separated, RFC 4180 quoting). A cell containing a tab, a line break or a double quote is quoted,
+  so a multi-line cell pastes into Excel as one cell instead of several rows; reading accepts CRLF,
+  keeps rows of empty cells and treats a quote in the middle of a cell as text.
+  `decodeTsv(encodeTsv(rows))` returns `rows`.
+
 ## [1.51.0] - 2026-09-30
 
 ### Added
