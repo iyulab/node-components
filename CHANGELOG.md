@@ -16,6 +16,10 @@
 - `u-input` no longer submits its form on Safari's composition-confirming Enter (it already ignored
   the Enter that Chrome and Firefox send while composing).
 
+### Documentation
+
+- README component list includes `u-expander`.
+
 ## [1.50.0] - 2026-09-29
 
 ### Added
