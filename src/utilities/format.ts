@@ -103,3 +103,67 @@ export function formatDateRange(
   if (okA && okB) return a.getTime() <= b.getTime() ? formatter.formatRange(a, b) : formatter.formatRange(b, a);
   return `${okA ? formatter.format(a) : String(start)} – ${okB ? formatter.format(b) : String(end)}`;
 }
+
+/** The decimal separator `Intl.NumberFormat` writes for `locale` (`.` or `,` in practice). */
+function decimalSeparatorOf(locale: LocaleTag): string {
+  return new Intl.NumberFormat(locale).formatToParts(1.1).find(p => p.type === 'decimal')?.value ?? '.';
+}
+
+/** Space-like characters and apostrophes that locales use to group digits (fr/ru NBSP, de-CH ’). */
+const GROUP_MARKS = /[\s   '’]/;
+
+/**
+ * Reads a number the way a person types it, in any locale — the inverse of {@link formatNumber}.
+ * Returns `null` for text that is not a number; never a partial number (`"1,5x"` is `null`, not 1.5).
+ *
+ * Which separator is the decimal one:
+ * - `.` and `,` both present → the **last** one is decimal, the other groups (`1.234,5` and
+ *   `1,234.5` are both 1234.5).
+ * - one separator, repeated → it groups (`1.234.567` → 1234567).
+ * - a single `.` → decimal (`0.125` stays 0.125 on a comma-decimal page — people type dots).
+ * - a single `,` → decimal, except when the locale writes decimals with `.` and exactly three
+ *   digits follow (`1,234` on an English page → 1234).
+ *
+ * Grouping (by either separator, spaces or apostrophes) must come in threes after a first group of
+ * one to three digits — `1,23,4` is `null`. A leading `+`, `-` or `−` sets the sign. Exponents are
+ * not read. `locale` defaults to the active `Locale`.
+ */
+export function parseNumber(text: string, locale?: LocaleTag): number | null {
+  const trimmed = text.trim();
+  const signed = trimmed.match(/^([+\-−]?)(.*)$/s)!;
+  const negative = signed[1] === '-' || signed[1] === '−';
+  const body = signed[2];
+  if (!body || !/^[\d.,\s   '’]+$/.test(body) || !/\d/.test(body)) return null;
+  if (GROUP_MARKS.test(body[0]) || GROUP_MARKS.test(body[body.length - 1])) return null;
+
+  const dots = body.split('.').length - 1;
+  const commas = body.split(',').length - 1;
+  let decimal: '.' | ',' | undefined;
+  if (dots && commas) {
+    decimal = body.lastIndexOf('.') > body.lastIndexOf(',') ? '.' : ',';
+    if ((decimal === '.' ? dots : commas) > 1) return null;
+  } else if (dots === 1) {
+    decimal = '.';
+  } else if (commas === 1) {
+    const after = body.slice(body.indexOf(',') + 1);
+    const dotDecimalLocale = decimalSeparatorOf(locale ?? Locale.get()) === '.';
+    decimal = dotDecimalLocale && /^\d{3}$/.test(after) && /\d/.test(body.slice(0, body.indexOf(','))) ? undefined : ',';
+  }
+
+  const cut = decimal ? body.lastIndexOf(decimal) : body.length;
+  const intPart = body.slice(0, cut);
+  const fracPart = decimal ? body.slice(cut + 1) : '';
+  if (!/^\d*$/.test(fracPart)) return null;
+
+  const groups = intPart.split(/[.,\s   '’]/);
+  if (groups.length > 1) {
+    if (!/^\d{1,3}$/.test(groups[0]) || groups.slice(1).some(g => !/^\d{3}$/.test(g))) return null;
+  } else if (!/^\d*$/.test(intPart)) {
+    return null;
+  }
+  const digits = groups.join('');
+  if (!digits && !fracPart) return null;
+
+  const value = Number(`${negative ? '-' : ''}${digits || '0'}.${fracPart || '0'}`);
+  return Number.isFinite(value) ? value : null;
+}

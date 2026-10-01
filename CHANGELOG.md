@@ -24,6 +24,11 @@
   `Intl.DateTimeFormat#formatRange`, so the locale chooses the separator and drops the parts both
   ends share.
 - Locale key `chooseDateRange` (the range calendar's dialog name), in all 14 built-in locales.
+- `parseNumber(text, locale?)` — reads a number the way a person types it, in any locale (the
+  inverse of `formatNumber`). With both `.` and `,` present the last is decimal; one separator
+  repeated groups; a single `.` is decimal; a single `,` is decimal except on a dot-decimal locale
+  with exactly three digits after it. Grouping by separators, spaces or apostrophes must come in
+  threes. Returns `null` for anything else — never a partial number.
 
 ### Changed
 

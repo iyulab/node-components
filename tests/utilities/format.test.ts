@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { Locale } from '../../src/utilities/Locale.js';
-import { formatNumber, formatCurrency, formatDate, formatDateRange } from '../../src/utilities/format.js';
+import { formatNumber, formatCurrency, formatDate, formatDateRange, parseNumber } from '../../src/utilities/format.js';
 
 describe('format utilities', () => {
   afterEach(() => Locale.set('en'));
@@ -90,6 +90,68 @@ describe('format utilities', () => {
       expect(() => formatDateRange('x', 'y')).not.toThrow();
       expect(formatDateRange('x', 'y')).toBe('x – y');
       expect(formatDateRange('2026-03-06', 'y', opts, 'en')).toBe(`${formatDate('2026-03-06', opts, 'en')} – y`);
+    });
+  });
+
+  describe('parseNumber', () => {
+    it.each([
+      // both separators — the last one is decimal
+      ['1.234,5', 'de', 1234.5],
+      ['1,234.5', 'en', 1234.5],
+      ['1,234.5', 'de', 1234.5],
+      // one separator repeated — grouping
+      ['1.234.567', 'de', 1234567],
+      ['1,234,567', 'en', 1234567],
+      // a single dot is decimal, even on a comma-decimal page
+      ['0.125', 'de', 0.125],
+      ['1.234', 'de', 1.234],
+      // a single comma is decimal, except 3 digits after on a dot-decimal page
+      ['1,5', 'de', 1.5],
+      ['1,5', 'en', 1.5],
+      ['2,25', 'en', 2.25],
+      ['1,234', 'en', 1234],
+      ['1,234', 'de', 1.234],
+      // spaces / NBSP / apostrophes group
+      ['1 234,5', 'fr', 1234.5],
+      ['1 234,5', 'fr', 1234.5],
+      ['1 234 567', 'ru', 1234567],
+      ["1'234.5", 'de-CH', 1234.5],
+      // signs and edges
+      ['-0,5', 'de', -0.5],
+      ['−3', 'en', -3],
+      ['+7', 'en', 7],
+      ['.5', 'en', 0.5],
+      ['1.', 'en', 1],
+      ['  42  ', 'ko', 42],
+      ['0', 'en', 0],
+    ] as const)('%s (%s) → %s', (text, locale, expected) => {
+      expect(parseNumber(text, locale)).toBe(expected);
+    });
+
+    it.each([
+      ['', 'en'], ['   ', 'en'], [',', 'en'], ['.', 'de'], ['-', 'en'],
+      ['1,23,4', 'en'], ['12 34', 'fr'], ['1.234,5,6', 'de'], ['1,5.2.3', 'en'],
+      ['1,5x', 'de'], ['abc', 'en'], ['1e3', 'en'], [' 1 2', 'fr'],
+      ['1..2', 'en'], ['--1', 'en'], ['1-', 'en'],
+    ] as const)('⚪NEGATIVE — %j (%s) is not a number, never a partial one', (text, locale) => {
+      expect(parseNumber(text, locale)).toBeNull();
+    });
+
+    it('defaults to the active Locale for the one ambiguous case', async () => {
+      const { Locale } = await import('../../src/utilities/Locale.js');
+      Locale.set('en');
+      expect(parseNumber('1,234')).toBe(1234);
+      Locale.set('de');
+      expect(parseNumber('1,234')).toBe(1.234);
+      Locale.set('en');
+    });
+
+    it('round-trips formatNumber in every built-in locale', () => {
+      for (const locale of ['en', 'ko', 'de', 'fr', 'es', 'pt-BR', 'ru', 'vi', 'id', 'ja', 'zh-CN', 'th']) {
+        for (const n of [0.5, 12.75, 1234.5, 1234567.25, -9876.125]) {
+          expect(parseNumber(formatNumber(n, { maximumFractionDigits: 3 }, locale), locale), `${locale} ${n}`).toBe(n);
+        }
+      }
     });
   });
 });
