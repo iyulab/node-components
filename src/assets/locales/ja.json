@@ -31,6 +31,7 @@
   "lastMonth": "先月",
   "thisYear": "今年",
   "quickRanges": "クイック選択",
+  "rangeStartChosen": "開始日 {date}。終了日を選んでください。",
   "previousMonth": "前月",
   "nextMonth": "翌月",
   "close": "閉じる",

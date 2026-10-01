@@ -501,12 +501,12 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
       prepare: async (host) => {
         const root = host.shadowRoot!;
         (root.querySelector('.container') as HTMLElement).click();
-        for (let i = 0; i < 50 && !root.querySelector('.presets u-button'); i++) {
+        for (let i = 0; i < 50 && !root.querySelector('.presets .preset'); i++) {
           await new Promise((r) => setTimeout(r, 20));
         }
       },
       targets: () => Array.from(
-        document.querySelector('u-date-range-picker')!.shadowRoot!.querySelectorAll('.presets u-button'),
+        document.querySelector('u-date-range-picker')!.shadowRoot!.querySelectorAll('.presets .preset'),
       ),
     },
     {

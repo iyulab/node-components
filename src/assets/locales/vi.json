@@ -31,6 +31,7 @@
   "lastMonth": "Tháng trước",
   "thisYear": "Năm nay",
   "quickRanges": "Chọn nhanh",
+  "rangeStartChosen": "Bắt đầu: {date}. Hãy chọn ngày kết thúc.",
   "previousMonth": "Tháng trước",
   "nextMonth": "Tháng sau",
   "close": "Đóng",

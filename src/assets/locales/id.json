@@ -31,6 +31,7 @@
   "lastMonth": "Bulan lalu",
   "thisYear": "Tahun ini",
   "quickRanges": "Rentang cepat",
+  "rangeStartChosen": "Mulai: {date}. Pilih tanggal akhir.",
   "previousMonth": "Bulan sebelumnya",
   "nextMonth": "Bulan berikutnya",
   "close": "Tutup",

@@ -31,6 +31,7 @@
   "lastMonth": "الشهر الماضي",
   "thisYear": "هذا العام",
   "quickRanges": "نطاقات سريعة",
+  "rangeStartChosen": "البداية: {date}. اختر تاريخ النهاية.",
   "previousMonth": "الشهر السابق",
   "nextMonth": "الشهر التالي",
   "close": "إغلاق",

@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import '../../src/components/calendar/UCalendar.js';
 import type { UCalendar, CalendarRangeSelectDetail } from '../../src/components/calendar/UCalendar.js';
+import { Locale } from '../../src/utilities/Locale.js';
 
 /**
  * 내부 달력의 범위 선택 — 두 번 고르기, 미리 표시, 순서 보정, Escape 로 반쯤 고른 범위 버리기.
@@ -32,7 +33,7 @@ function captureRanges(el: UCalendar): CalendarRangeSelectDetail[] {
 }
 
 describe('u-calendar — 범위 선택', () => {
-  beforeEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => { Locale.set('en'); document.body.innerHTML = ''; });
 
   it('두 번째 날을 고를 때에만 range-select 가 난다', async () => {
     const el = await mount();
@@ -86,6 +87,19 @@ describe('u-calendar — 범위 선택', () => {
     expect(flagged(el, 'data-range-end')).toEqual(['2026-03-08']);
     // 앵커만 «선택됨» 이다 — 미리 표시는 선택이 아니다.
     expect(flagged(el, 'aria-selected="true"')).toEqual(['2026-03-05']);
+  });
+
+  it('앵커를 고른 순간 상태 영역이 시작일과 다음 할 일을 알린다 — 확정·취소하면 비운다', async () => {
+    const el = await mount();
+    const status = el.shadowRoot!.querySelector('[role="status"]')!;
+    expect(status.textContent!.trim()).toBe('');
+    day(el, '2026-03-05').click();
+    await el.updateComplete;
+    expect(status.textContent).toContain('March 5, 2026');
+    expect(status.textContent).toContain('end date');
+    day(el, '2026-03-07').click();
+    await el.updateComplete;
+    expect(status.textContent!.trim()).toBe('');
   });
 
   it('키보드: Enter 로 앵커, 화살표로 미리 표시, Enter 로 확정', async () => {

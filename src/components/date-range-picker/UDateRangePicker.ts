@@ -46,7 +46,8 @@ function parseInterval(value?: string): { start: string; end: string } | undefin
  * `last7Days`, `last30Days`, `thisWeek`, `lastWeek`, `thisMonth`, `lastMonth`, `thisYear`, which
  * can be written as a space-separated attribute) and app-defined `{ label, range }` objects, in the
  * order given. Picking one sets the range at once, fires `change` and closes the calendar. A preset
- * whose range reaches outside `min`/`max` is disabled. Relative ranges are computed when drawn.
+ * whose range reaches outside `min`/`max` is disabled; the one equal to the current range is
+ * marked `aria-pressed="true"`. Relative ranges are computed when drawn.
  *
  * The calendar week starts on Sunday regardless of locale (same as `u-date-picker`); `thisWeek` and
  * `lastWeek` follow it.
@@ -240,10 +241,11 @@ export class UDateRangePicker extends UFormControlElement<string> {
     return html`
       <div class="presets" part="presets" role="group" aria-label=${Locale.getValue('quickRanges')}>
         ${presets.map(p => html`
-          <u-button part="preset" variant="ghost" size="sm"
+          <button type="button" class="preset" part="preset"
+            aria-pressed=${`${p.start}/${p.end}` === this.value}
             ?disabled=${this.outOfBounds(p)}
             @click=${() => this.commitRange(p.start, p.end)}
-          >${p.label}</u-button>
+          >${p.label}</button>
         `)}
       </div>
     `;

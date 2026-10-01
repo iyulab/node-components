@@ -18,7 +18,8 @@ The popover shows two months (on a narrow screen the second month moves below th
 day picked is an anchor; the range previews up to the day under the pointer or keyboard focus. The
 second day completes the range — if it comes before the anchor it becomes the start — fires
 `change` and closes the calendar. Picking the same day twice gives a one-day range. Escape while a
-range is half picked drops the anchor; Escape again closes the calendar. A reversed value set from
+range is half picked drops the anchor; Escape again closes the calendar. When the first day is
+picked, an off-screen status region announces it and asks for the end date. A reversed value set from
 code is put in order (no `change`).
 
 > The calendar week always starts on Sunday, regardless of locale.
@@ -37,8 +38,9 @@ code is put in order (no `change`).
 Built-in names can be written as a space-separated attribute; app-defined presets are objects with
 a `label` and a `range()` function returning the two ends (`Date`s or ISO days, either order).
 Picking a preset sets the range at once, fires `change` and closes the calendar. A preset whose
-range reaches outside `min`/`max` is disabled. Relative ranges are computed each time the calendar
-opens, so "Last 7 days" is always the last seven days.
+range reaches outside `min`/`max` is disabled, and the one equal to the current range is marked
+`aria-pressed="true"` (and highlighted). Relative ranges are computed each time the calendar opens,
+so "Last 7 days" is always the last seven days.
 
 | Name | Range (both ends inclusive) |
 |------|-----------------------------|

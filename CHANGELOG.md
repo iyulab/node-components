@@ -17,6 +17,9 @@
   `min`/`max` is disabled. Locale keys for their labels (`yesterday`, `last7Days`, `last30Days`,
   `thisWeek`, `lastWeek`, `thisMonth`, `lastMonth`, `thisYear`, `quickRanges`) in all 14 built-in
   locales.
+- The range calendar announces the first day picked through an off-screen status region ("Start:
+  March 5, 2026. Choose the end date."), and the preset equal to the current range is marked
+  `aria-pressed="true"`. Locale key `rangeStartChosen`.
 - `formatDateRange(start, end, options?, locale?)` — formats a date range with
   `Intl.DateTimeFormat#formatRange`, so the locale chooses the separator and drops the parts both
   ends share.

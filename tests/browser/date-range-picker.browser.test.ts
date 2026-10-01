@@ -183,7 +183,7 @@ describe('u-date-range-picker', () => {
 
   describe('빠른 선택(프리셋)', () => {
     const presetButtons = (el: UDateRangePicker) =>
-      Array.from(el.shadowRoot!.querySelectorAll('.presets u-button')) as HTMLElement[];
+      Array.from(el.shadowRoot!.querySelectorAll('.presets .preset')) as HTMLElement[];
     const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
     it('presets 가 없으면 목록도 없다', async () => {
@@ -231,6 +231,18 @@ describe('u-date-range-picker', () => {
       const [t, y] = presetButtons(el);
       expect(t.hasAttribute('disabled')).toBe(false);
       expect(y.hasAttribute('disabled')).toBe(true);
+    });
+
+    it('지금 범위와 같은 프리셋만 aria-pressed=true 다', async () => {
+      const el = await mount('<u-date-range-picker></u-date-range-picker>');
+      el.presets = [
+        { label: 'A', range: () => ['2026-01-01', '2026-01-31'] },
+        { label: 'B', range: () => ['2026-02-01', '2026-02-28'] },
+      ];
+      el.value = '2026-02-01/2026-02-28';
+      await settle(el);
+      await open(el);
+      expect(presetButtons(el).map(b => b.getAttribute('aria-pressed'))).toEqual(['false', 'true']);
     });
 
     it('⚪NEGATIVE — 모르는 이름은 그리지 않고 개발 경고 한 번', async () => {

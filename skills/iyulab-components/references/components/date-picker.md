@@ -88,4 +88,6 @@ day preserves whatever time-of-day was already set; only the "Today" button over
 
 | Property | Description |
 |----------|-------------|
+| `--u-date-picker-display` | Host `display` (default: inline-block). Set `block` to fill the container width in forms and grid cells |
+| `--u-date-picker-width` | Host `width` (default: auto). Set `100%` where `block` alone does not stretch the host (e.g. inside a flex container) |
 | `--date-picker-popover-width` | Width of the calendar popover (default: 296px, independent of trigger width — a fixed-width calendar reads more naturally) |

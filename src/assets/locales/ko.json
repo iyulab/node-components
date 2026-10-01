@@ -31,6 +31,7 @@
   "lastMonth": "지난달",
   "thisYear": "올해",
   "quickRanges": "빠른 선택",
+  "rangeStartChosen": "시작일 {date}. 종료일을 고르세요.",
   "previousMonth": "이전 달",
   "nextMonth": "다음 달",
   "close": "닫기",

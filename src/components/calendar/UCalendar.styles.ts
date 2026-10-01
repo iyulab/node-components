@@ -2,6 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
+    position: relative;
     display: block;
     color: var(--u-txt-color, #212121);
     font-family: var(--u-font-base);
@@ -117,5 +118,18 @@ export const styles = css`
   .day[aria-disabled="true"] {
     color: var(--u-txt-color-disabled, #BDBDBD);
     cursor: not-allowed;
+  }
+
+  /* 상태 공지 — 화면에는 없고 보조기술만 읽는다. 영역은 늘 DOM 에 있어야 바뀐 내용이 읽힌다. */
+  .status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
   }
 `;

@@ -31,8 +31,37 @@ export const styles = css`
     padding-inline-end: 8px;
     border-inline-end: 1px solid var(--u-border-color-weak, #EEEEEE);
   }
-  .presets u-button::part(content) {
-    justify-content: flex-start;
+  .preset {
+    display: flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border: none;
+    border-radius: var(--u-radius-md, 4px);
+    background: transparent;
+    color: var(--u-txt-color, #212121);
+    font: inherit;
+    font-size: var(--u-text-label-size, 13px);
+    text-align: start;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .preset:hover:not(:disabled) {
+    background-color: var(--u-bg-color-hover, #F5F5F5);
+  }
+  .preset:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--u-input-border-color-focus, #1565C0);
+  }
+  /* 지금 범위와 같은 프리셋 — 달력의 띠와 같은 색 축으로 «지금 이것» 을 보인다. */
+  .preset[aria-pressed="true"] {
+    background-color: var(--u-primary-bg-color, #E3F2FD);
+    color: var(--u-primary-color-strong, #1565C0);
+    font-weight: var(--u-text-label-weight, 600);
+  }
+  .preset:disabled {
+    color: var(--u-txt-color-disabled, #BDBDBD);
+    cursor: not-allowed;
   }
   .calendar {
     flex: 1 1 auto;

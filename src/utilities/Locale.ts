@@ -51,6 +51,8 @@ export type LocaleMessageKey =
   | 'lastMonth'
   | 'thisYear'
   | 'quickRanges'
+  // 범위 달력에서 첫 날(앵커)을 고른 순간의 상태 공지 — 화면에는 띠가 보이지만 스크린리더는 «선택됨» 하나만 듣는다.
+  | 'rangeStartChosen'
   | 'previousMonth'
   | 'nextMonth'
   | 'close'

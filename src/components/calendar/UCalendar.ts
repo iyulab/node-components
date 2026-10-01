@@ -65,6 +65,8 @@ export type CalendarSelection = 'single' | 'range';
  * 머무는 날까지가 미리 표시된다. 두 번째 날을 고르면 둘 중 앞선 날이 시작이 되어
  * `range-select` 가 난다(순서는 구성으로 보장된다 — 뒤집힌 범위는 만들어지지 않는다).
  * 앵커가 있는 동안 Escape 는 앵커만 지운다(그 Escape 는 감싸는 피커로 가지 않는다).
+ * 앵커를 고른 순간은 화면 밖 상태 영역(`role="status"`)이 «시작일 … 종료일을 고르세요» 로
+ * 알린다 — 화면에서는 띠가 보이지만 보조기술에는 «선택됨» 하나만 들린다.
  *
  * 감싸는 피커의 공개 `::part` 를 지키기 위해 파트 이름은 종전 `u-date-picker` 의 것을
  * 그대로 쓰고, 피커가 `exportparts` 로 다시 내보낸다.
@@ -150,6 +152,9 @@ export class UCalendar extends UElement {
       <div class="months" @pointerleave=${this.handlePointerLeave}>
         ${months.map((month, i) => this.renderMonth(month, weekdayLabels, i === 0, i === months.length - 1, range))}
       </div>
+      <span class="status" role="status">${this.anchor
+        ? Locale.getValue('rangeStartChosen', { date: formatDate(this.anchor, { dateStyle: 'long' }) })
+        : ''}</span>
     `;
   }
 

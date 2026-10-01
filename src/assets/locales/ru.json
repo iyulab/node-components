@@ -31,6 +31,7 @@
   "lastMonth": "Прошлый месяц",
   "thisYear": "Этот год",
   "quickRanges": "Быстрый выбор",
+  "rangeStartChosen": "Начало: {date}. Выберите дату окончания.",
   "previousMonth": "Предыдущий месяц",
   "nextMonth": "Следующий месяц",
   "close": "Закрыть",

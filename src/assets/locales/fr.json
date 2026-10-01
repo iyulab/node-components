@@ -31,6 +31,7 @@
   "lastMonth": "Mois dernier",
   "thisYear": "Cette année",
   "quickRanges": "Plages rapides",
+  "rangeStartChosen": "Début : {date}. Choisissez la date de fin.",
   "previousMonth": "Mois précédent",
   "nextMonth": "Mois suivant",
   "close": "Fermer",

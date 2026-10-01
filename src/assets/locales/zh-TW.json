@@ -31,6 +31,7 @@
   "lastMonth": "上個月",
   "thisYear": "今年",
   "quickRanges": "快速選擇",
+  "rangeStartChosen": "開始日期 {date}。請選擇結束日期。",
   "previousMonth": "上個月",
   "nextMonth": "下個月",
   "close": "關閉",
