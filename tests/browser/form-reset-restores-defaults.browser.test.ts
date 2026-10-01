@@ -30,6 +30,7 @@ const DEFAULTS: Record<string, [string, (el: Control) => void]> = {
   'u-select': ['value="b"><u-option value="a">A</u-option><u-option value="b">B</u-option', (el) => { el.value = 'a'; }],
   'u-radio': ['value="b"><u-option value="a">A</u-option><u-option value="b">B</u-option', (el) => { el.value = 'a'; }],
   'u-date-picker': ['value="2026-01-15"', (el) => { el.value = '2026-02-20'; }],
+  'u-date-range-picker': ['value="2026-01-15/2026-01-20"', (el) => { el.value = '2026-02-01/2026-02-03'; }],
   'u-rating': ['value="3"', (el) => { el.value = 5; }],
   'u-slider': ['value="30"', (el) => { el.value = 70; }],
   'u-checkbox': ['value="yes" checked', (el) => { el.checked = false; }],

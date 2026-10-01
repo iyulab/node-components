@@ -40,6 +40,7 @@ export type LocaleMessageKey =
   | 'stopSlideRotation'
   | 'startSlideRotation'
   | 'chooseDate'
+  | 'chooseDateRange'
   | 'previousMonth'
   | 'nextMonth'
   | 'close'

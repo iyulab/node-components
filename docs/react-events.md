@@ -21,7 +21,7 @@ import { UDialog } from '@iyulab/components/react';
 
 `detail` 열이 `unknown` 이면 `CustomEvent`(detail 타입 미지정)로 노출된다.
 
-**컴포넌트 27개 · 이벤트 42개**
+**컴포넌트 28개 · 이벤트 43개**
 
 ## `<u-alert>`
 
@@ -60,6 +60,12 @@ import { UDialog } from '@iyulab/components/react';
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
 | `onChange` | `change` | `unknown` | fires when the user clicks a date cell, confirms via keyboard, changes the |
+
+## `<u-date-range-picker>`
+
+| React prop | 이벤트 | detail | 설명 |
+|---|---|---|---|
+| `onChange` | `change` | `unknown` | fires when the user completes a range or clears it. Programmatic value |
 
 ## `<u-dialog>`
 

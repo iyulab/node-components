@@ -21,6 +21,7 @@
   "stopSlideRotation": "停止自动播放幻灯片",
   "startSlideRotation": "开始自动播放幻灯片",
   "chooseDate": "选择日期",
+  "chooseDateRange": "选择日期范围",
   "previousMonth": "上个月",
   "nextMonth": "下个月",
   "close": "关闭",

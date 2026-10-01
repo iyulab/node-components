@@ -21,6 +21,7 @@
   "stopSlideRotation": "슬라이드 자동 넘김 정지",
   "startSlideRotation": "슬라이드 자동 넘김 시작",
   "chooseDate": "날짜 선택",
+  "chooseDateRange": "기간 선택",
   "previousMonth": "이전 달",
   "nextMonth": "다음 달",
   "close": "닫기",

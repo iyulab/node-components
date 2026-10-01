@@ -21,6 +21,7 @@
   "stopSlideRotation": "Detener la presentación automática",
   "startSlideRotation": "Iniciar la presentación automática",
   "chooseDate": "Elegir fecha",
+  "chooseDateRange": "Elegir intervalo de fechas",
   "previousMonth": "Mes anterior",
   "nextMonth": "Mes siguiente",
   "close": "Cerrar",

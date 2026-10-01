@@ -492,6 +492,26 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
       ),
     },
   ],
+  'u-date-range-picker': [
+    { state: '닫힘', html: '<u-date-range-picker></u-date-range-picker>' },
+    {
+      state: '달력',
+      // 두 달 팝오버 — 날짜 칸은 내부 `u-calendar` 의 섀도 안에 있다. 열림이 비동기라 칸이 나타날 때까지 기다린다.
+      html: '<u-date-range-picker value="2026-03-06/2026-03-12"></u-date-range-picker>',
+      prepare: async (host) => {
+        const root = host.shadowRoot!;
+        (root.querySelector('.container') as HTMLElement).click();
+        const grid = () => root.querySelector('u-calendar')?.shadowRoot;
+        for (let i = 0; i < 50 && !grid()?.querySelector('button.day'); i++) {
+          await new Promise((r) => setTimeout(r, 20));
+        }
+      },
+      targets: () => Array.from(
+        document.querySelector('u-date-range-picker')!.shadowRoot!.querySelector('u-calendar')?.shadowRoot
+          ?.querySelectorAll('button.day, .calendar-header u-icon-button') ?? [],
+      ),
+    },
+  ],
   'u-date-picker': [
     { state: '닫힘', html: '<u-date-picker></u-date-picker>' },
     {
@@ -876,7 +896,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 26(44상태) · 미판정 0() · 대상아님 21');
+      ).toBe('판정 27(46상태) · 미판정 0() · 대상아님 21');
     });
   });
 

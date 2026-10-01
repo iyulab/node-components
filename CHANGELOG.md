@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+### Added
+
+- **`u-date-range-picker`** — a period of days in one form field. The value is an ISO 8601
+  interval, `YYYY-MM-DD/YYYY-MM-DD` (start first), with `start`/`end` getters; it submits as one
+  field. The popover shows two months; the first day picked anchors the range and the range
+  previews up to the day under the pointer or keyboard focus. The second day completes it — the
+  earlier of the two becomes the start, so a range never comes out reversed. Escape while a range
+  is half picked drops the anchor. Supports `min`/`max`, `required`, `clearable` and form reset.
+- `formatDateRange(start, end, options?, locale?)` — formats a date range with
+  `Intl.DateTimeFormat#formatRange`, so the locale chooses the separator and drops the parts both
+  ends share.
+- Locale key `chooseDateRange` (the range calendar's dialog name), in all 14 built-in locales.
+
 ### Changed
 
 - `u-date-picker` draws its calendar through a new internal element, `u-calendar` (registered

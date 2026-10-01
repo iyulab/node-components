@@ -18,6 +18,7 @@ export * from './components/checkbox/UCheckbox.js';
 export * from './components/chip/UChip.js';
 export * from './components/copy-button/UCopyButton.js';
 export * from './components/date-picker/UDatePicker.js';
+export * from './components/date-range-picker/UDateRangePicker.js';
 export * from './components/dialog/UDialog.js';
 export * from './components/divider/UDivider.js';
 export * from './components/drawer/UDrawer.js';

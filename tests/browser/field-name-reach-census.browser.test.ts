@@ -23,6 +23,7 @@ const CONTROLS: Array<[string, string]> = [
   ['u-textarea', 'textarea'],
   ['u-select', '[role="combobox"]'],
   ['u-date-picker', '[role="combobox"]'],
+  ['u-date-range-picker', '[role="combobox"]'],
   ['u-file-input', 'button.trigger'],
   ['u-checkbox', 'input'],
   ['u-radio', '[role="radiogroup"]'],

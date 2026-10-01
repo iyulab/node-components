@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 30개 · 프로퍼티 134개**
+**컴포넌트 31개 · 프로퍼티 136개**
 
 ## `<u-alert>`
 
@@ -84,6 +84,13 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--u-date-picker-display` | host `display` (default: inline-block). Set `block` to fill the container width in forms and grid cells. |
 | `--u-date-picker-width` | host `width` (default: auto). Set `100%` where `block` alone does not stretch the host (e.g. inside a flex container). |
 | `--date-picker-popover-width` | width of the calendar popover (default: 296px, independent of trigger width — a fixed-width calendar reads more naturally) |
+
+## `<u-date-range-picker>`
+
+| 프로퍼티 | 설명 |
+|---|---|
+| `--u-date-range-picker-display` | host `display` (default: inline-block). Set `block` to fill the container width in forms and grid cells. |
+| `--u-date-range-picker-width` | host `width` (default: auto). Set `100%` where `block` alone does not stretch the host (e.g. inside a flex container). |
 
 ## `<u-divider>`
 

@@ -79,3 +79,27 @@ export function formatDate(
   if (Number.isNaN(date.getTime())) return String(value);
   return new Intl.DateTimeFormat(locale ?? Locale.get(), options).format(date);
 }
+
+/**
+ * Formats a date range with the active locale, via `Intl.DateTimeFormat#formatRange` — the
+ * locale decides the separator and drops the parts the two ends share (`Mar 6 – Apr 3, 2026`,
+ * `2026. 3. 6. ~ 4. 3.`). Accepts Date objects or ISO `YYYY-MM-DD` strings (local time).
+ *
+ * Like {@link formatDate}, an end that can't be resolved to a real date degrades instead of
+ * throwing: both invalid → the two raw values joined with ` – `; one invalid → that raw value
+ * stands in for its formatted side.
+ */
+export function formatDateRange(
+  start: Date | string,
+  end: Date | string,
+  options?: Intl.DateTimeFormatOptions,
+  locale?: LocaleTag,
+): string {
+  const a = resolve(start);
+  const b = resolve(end);
+  const okA = !Number.isNaN(a.getTime());
+  const okB = !Number.isNaN(b.getTime());
+  const formatter = new Intl.DateTimeFormat(locale ?? Locale.get(), options);
+  if (okA && okB) return a.getTime() <= b.getTime() ? formatter.formatRange(a, b) : formatter.formatRange(b, a);
+  return `${okA ? formatter.format(a) : String(start)} – ${okB ? formatter.format(b) : String(end)}`;
+}

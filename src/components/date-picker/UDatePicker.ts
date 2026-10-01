@@ -13,6 +13,7 @@ import { formatDate } from "../../utilities/format.js";
 import { UCalendar } from "../calendar/UCalendar.js";
 import { isOutOfRange, parseISODate, toISODate } from "../calendar/dates.js";
 import { UPopover } from "../popover/UPopover.js";
+import { styles as pickerStyles } from "../calendar/picker.styles.js";
 import { styles } from "./UDatePicker.styles.js";
 
 /** `±HH:mm` for the browser's local timezone at `date` (DST-aware — recomputed per date,
@@ -87,7 +88,7 @@ export type DatePickerMode = 'date' | 'datetime';
  */
 @customElement('u-date-picker')
 export class UDatePicker extends UFormControlElement<string> {
-  static styles = [super.styles, styles];
+  static styles = [super.styles, pickerStyles, styles];
 
   /** `date` (default) selects a calendar day only. `datetime` also captures a time-of-day and
    *  the value becomes a complete ISO-8601 `DateTimeOffset` string. */

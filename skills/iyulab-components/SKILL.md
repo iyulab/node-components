@@ -68,6 +68,7 @@ import { UButton, UInput } from '@iyulab/components/react';
 - [`u-textarea`](./references/components/textarea.md) — Multi-line text input with auto-resize and character counter
 - [`u-select`](./references/components/select.md) — Dropdown select; single or multiple, with search
 - [`u-date-picker`](./references/components/date-picker.md) — Single-date(-time) selection with a popover calendar
+- [`u-date-range-picker`](./references/components/date-range-picker.md) — A period of days in one field (`start/end`), picked in a two-month calendar
 - [`u-file-input`](./references/components/file-input.md) — File picker with a design-system trigger button and selected-file(s) display
 - [`u-checkbox`](./references/components/checkbox.md) — Checkbox with indeterminate state support
 - [`u-radio`](./references/components/radio.md) — Radio group built from `u-option` children

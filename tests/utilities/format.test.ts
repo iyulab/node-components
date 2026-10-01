@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { Locale } from '../../src/utilities/Locale.js';
-import { formatNumber, formatCurrency, formatDate } from '../../src/utilities/format.js';
+import { formatNumber, formatCurrency, formatDate, formatDateRange } from '../../src/utilities/format.js';
 
 describe('format utilities', () => {
   afterEach(() => Locale.set('en'));
@@ -62,6 +62,34 @@ describe('format utilities', () => {
     it('degrades to the raw string instead of throwing on a malformed value', () => {
       expect(() => formatDate('not-a-date')).not.toThrow();
       expect(formatDate('not-a-date')).toBe('not-a-date');
+    });
+  });
+
+  describe('formatDateRange', () => {
+    const opts: Intl.DateTimeFormatOptions = { dateStyle: 'medium' };
+
+    it('lets the locale join the two ends and drop what they share', () => {
+      expect(formatDateRange('2026-03-06', '2026-04-03', opts, 'en')).toBe(
+        new Intl.DateTimeFormat('en', opts).formatRange(new Date(2026, 2, 6), new Date(2026, 3, 3)),
+      );
+      // Same year: the year is written once, not twice.
+      expect(formatDateRange('2026-03-06', '2026-04-03', opts, 'en').match(/2026/g)).toHaveLength(1);
+    });
+
+    it('reads ISO dates as local days (no UTC shift)', () => {
+      const text = formatDateRange('2026-03-01', '2026-03-01', { day: 'numeric', month: 'numeric' }, 'en');
+      expect(text).toBe('3/1');
+    });
+
+    it('formats a reversed pair earliest first', () => {
+      expect(formatDateRange('2026-04-03', '2026-03-06', opts, 'en'))
+        .toBe(formatDateRange('2026-03-06', '2026-04-03', opts, 'en'));
+    });
+
+    it('degrades a malformed end to its raw string instead of throwing', () => {
+      expect(() => formatDateRange('x', 'y')).not.toThrow();
+      expect(formatDateRange('x', 'y')).toBe('x – y');
+      expect(formatDateRange('2026-03-06', 'y', opts, 'en')).toBe(`${formatDate('2026-03-06', opts, 'en')} – y`);
     });
   });
 });

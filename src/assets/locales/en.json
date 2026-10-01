@@ -21,6 +21,7 @@
   "stopSlideRotation": "Stop automatic slide show",
   "startSlideRotation": "Start automatic slide show",
   "chooseDate": "Choose date",
+  "chooseDateRange": "Choose date range",
   "previousMonth": "Previous month",
   "nextMonth": "Next month",
   "close": "Close",
