@@ -110,7 +110,7 @@ function decimalSeparatorOf(locale: LocaleTag): string {
 }
 
 /** Space-like characters and apostrophes that locales use to group digits (fr/ru NBSP, de-CH ’). */
-const GROUP_MARKS = /[\s   '’]/;
+const GROUP_MARKS = /[\s\u00A0\u202F\u2009'\u2019]/;
 
 /**
  * Reads a number the way a person types it, in any locale — the inverse of {@link formatNumber}.
@@ -130,10 +130,10 @@ const GROUP_MARKS = /[\s   '’]/;
  */
 export function parseNumber(text: string, locale?: LocaleTag): number | null {
   const trimmed = text.trim();
-  const signed = trimmed.match(/^([+\-−]?)(.*)$/s)!;
-  const negative = signed[1] === '-' || signed[1] === '−';
+  const signed = trimmed.match(/^([+\-\u2212]?)(.*)$/s)!;
+  const negative = signed[1] === '-' || signed[1] === '\u2212';
   const body = signed[2];
-  if (!body || !/^[\d.,\s   '’]+$/.test(body) || !/\d/.test(body)) return null;
+  if (!body || !/^[\d.,\s\u00A0\u202F\u2009'\u2019]+$/.test(body) || !/\d/.test(body)) return null;
   if (GROUP_MARKS.test(body[0]) || GROUP_MARKS.test(body[body.length - 1])) return null;
 
   const dots = body.split('.').length - 1;
@@ -155,7 +155,7 @@ export function parseNumber(text: string, locale?: LocaleTag): number | null {
   const fracPart = decimal ? body.slice(cut + 1) : '';
   if (!/^\d*$/.test(fracPart)) return null;
 
-  const groups = intPart.split(/[.,\s   '’]/);
+  const groups = intPart.split(/[.,\s\u00A0\u202F\u2009'\u2019]/);
   if (groups.length > 1) {
     if (!/^\d{1,3}$/.test(groups[0]) || groups.slice(1).some(g => !/^\d{3}$/.test(g))) return null;
   } else if (!/^\d*$/.test(intPart)) {

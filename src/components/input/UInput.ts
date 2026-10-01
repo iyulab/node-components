@@ -8,6 +8,7 @@ import '../spinner/USpinner.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
+import { parseNumber } from "../../utilities/format.js";
 import { UOption } from "../option/UOption.js";
 import { UPopover } from "../popover/UPopover.js";
 import { styles } from "./UInput.styles.js";
@@ -23,6 +24,15 @@ export type InputVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
  * 사용자 입력을 받는 텍스트 입력 필드 컴포넌트입니다.
  * prefix, suffix 슬롯과 라벨, 설명, 유효성 검사 기능을 지원합니다.
  * 기본 슬롯에 u-option을 넣으면 combobox 모드로 동작합니다.
+ *
+ * `type="number"` reads what the user types in the page's locale — `1,5` on a German page and
+ * `1.5` anywhere are both 1.5, `1.234,5` and `1,234.5` are both 1234.5 (rules: `parseNumber`).
+ * The inner input is `type="text" inputmode="decimal"`, because a native number input drops or
+ * rejects a decimal comma depending on the browser. `value` is always the canonical dot-decimal
+ * string (`""` when the text is not a number — that text reports `badInput`), `valueAsNumber` the
+ * number. On blur the text is shown with the locale's decimal separator. `min`/`max`/`step` are
+ * checked on the parsed number with native semantics (no `step` = 1; `step="any"` = no step check);
+ * the stepper buttons and ArrowUp/ArrowDown step the value.
  *
  * @slot - u-option 아이템 (combobox 모드)
  * @slot prefix - 입력 필드 앞에 표시하는 아이콘 등
@@ -97,6 +107,19 @@ export class UInput extends UFormControlElement<string> {
 
   @state() showPassword: boolean = false;
 
+  /** `type="number"` — the text in the field, which may differ from `value` (`1,5` shows while
+   *  `value` is `1.5`; unparseable text shows while `value` is `""`). */
+  @state() private numberText: string = '';
+  /** Set while `value` is being written from what the user typed, so the field keeps their text
+   *  instead of being re-rendered from `value` mid-edit. */
+  private syncingFromText = false;
+
+  /** The value as a number — `NaN` when empty or not a number (same as the native input). */
+  get valueAsNumber(): number {
+    if (this.type !== 'number' || !this.value) return NaN;
+    return parseNumber(this.value, 'en') ?? NaN;
+  }
+
   private options: UOption[] = [];
 
   disconnectedCallback(): void {
@@ -108,7 +131,8 @@ export class UInput extends UFormControlElement<string> {
     const editable = !this.effectivelyDisabled && !this.readonly;
     const showToggle = this.type === 'password' && editable;
     const showClear = this.clearable && editable && !!this.value;
-    const showStepper = this.type === 'number' && editable;
+    const isNumber = this.type === 'number';
+    const showStepper = isNumber && editable;
 
     return html`
       <u-field part="field"
@@ -124,7 +148,7 @@ export class UInput extends UFormControlElement<string> {
           <slot name="prefix"></slot>
 
           <input part="input"
-            type=${this.type === 'password' && this.showPassword ? 'text' : this.type}
+            type=${isNumber || (this.type === 'password' && this.showPassword) ? 'text' : this.type}
             aria-label=${ifDefined(this.resolvedAriaLabel)}
             aria-description=${ifDefined(this.resolvedAriaDescription)}
             name=${ifDefined(this.name)}
@@ -133,21 +157,21 @@ export class UInput extends UFormControlElement<string> {
             ?readonly=${this.readonly}
             minlength=${ifDefined(this.minlength)}
             maxlength=${ifDefined(this.maxlength)}
-            min=${ifDefined(this.min)}
-            max=${ifDefined(this.max)}
-            step=${ifDefined(this.step)}
+            min=${ifDefined(isNumber ? undefined : this.min)}
+            max=${ifDefined(isNumber ? undefined : this.max)}
+            step=${ifDefined(isNumber ? undefined : this.step)}
             dirname=${ifDefined(this.dirname)}
             spellcheck=${this.spellcheck}
             ?autofocus=${this.autofocus}
             ?autocorrect=${this.autocorrect}
             autocapitalize=${ifDefined(this.autocapitalize)}
             autocomplete=${ifDefined(this.autocomplete)}
-            inputmode=${ifDefined(this.inputmode)}
+            inputmode=${ifDefined(this.inputmode ?? (isNumber ? 'decimal' : undefined))}
             enterkeyhint=${ifDefined(this.enterkeyhint)}
             size=${ifDefined(this.size)}
             pattern=${ifDefined(this.pattern)}
             placeholder=${ifDefined(this.placeholder)}
-            .value=${live(this.value || '')}
+            .value=${live(isNumber ? this.numberText : (this.value || ''))}
             @input=${this.handleInputInput}
             @change=${this.handleInputChange}
             @blur=${this.handleInputBlur}
@@ -223,6 +247,16 @@ export class UInput extends UFormControlElement<string> {
    *  blur 전에 폼이 제출되면(다른 컨트롤의 Enter 등) `FormData`가 낡은 값을 돌려줬다.
    *  형제 `USelect`의 `updated()`+`onChangeValue()` 패턴과 같은 경계 — `T`가 이미
    *  `string`이라 `valueAsString` 같은 변환 없이 그대로 넘긴다. */
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    // A value set from outside (attribute, code, reset, stepper) is shown in the locale's form;
+    // a value derived from what the user is typing leaves their text alone.
+    if (this.type === 'number' && (changedProperties.has('value') || changedProperties.has('type')) && !this.syncingFromText) {
+      this.numberText = this.displayNumber(this.value ?? '');
+    }
+    this.syncingFromText = false;
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (changedProperties.has('value')) {
@@ -230,7 +264,53 @@ export class UInput extends UFormControlElement<string> {
     }
   }
 
+  /** Canonical `value` → the text shown: the locale's decimal separator, no grouping inserted. */
+  private displayNumber(value: string): string {
+    const n = value ? parseNumber(value, 'en') : null;
+    if (n === null) return value;
+    const decimal = new Intl.NumberFormat(Locale.get()).formatToParts(1.1).find(p => p.type === 'decimal')?.value ?? '.';
+    return value.replace('.', decimal);
+  }
+
+  /** Writes what the user typed into `value` (canonical, or `""` when it is not a number). */
+  private syncNumberFromText(text: string): void {
+    this.numberText = text;
+    const n = parseNumber(text);
+    const next = text.trim() === '' || n === null ? '' : String(n);
+    if (next !== this.value) {
+      this.syncingFromText = true;
+      this.value = next;
+    }
+  }
+
+  /** `type="number"` 의 검증 — 네이티브 숫자 입력이 아니므로 파싱한 수로 직접 잰다(같은 플래그·같은 문구). */
+  private numberValidity(): { flags: ValidityStateFlags; message: string } | undefined {
+    const text = this.numberText.trim();
+    if (!text) {
+      return this.required ? { flags: { valueMissing: true }, message: Locale.getValue('valueMissing') } : undefined;
+    }
+    const n = parseNumber(text);
+    if (n === null) return { flags: { badInput: true }, message: Locale.getValue('badInput') };
+    const min = this.min !== undefined && this.min !== '' ? Number(this.min) : undefined;
+    const max = this.max !== undefined && this.max !== '' ? Number(this.max) : undefined;
+    if (min !== undefined && n < min) return { flags: { rangeUnderflow: true }, message: Locale.getValue('rangeUnderflow', { min: this.min ?? '' }) };
+    if (max !== undefined && n > max) return { flags: { rangeOverflow: true }, message: Locale.getValue('rangeOverflow', { max: this.max ?? '' }) };
+    const step = this.step ?? 1;
+    if (Number.isFinite(step) && step > 0) {
+      const k = (n - (min ?? 0)) / step;
+      if (Math.abs(k - Math.round(k)) > 1e-9) {
+        return { flags: { stepMismatch: true }, message: Locale.getValue('stepMismatch', { step }) };
+      }
+    }
+    return undefined;
+  }
+
   protected setValidity(): void {
+    if (this.type === 'number') {
+      const result = this.numberValidity();
+      this.commit(result?.flags ?? {}, result?.message ?? '', this.containerEl ?? undefined);
+      return;
+    }
     const v = this.inputEl?.validity;
     let flags: ValidityStateFlags = {};
     let message = '';
@@ -269,6 +349,7 @@ export class UInput extends UFormControlElement<string> {
 
   public reset(): void {
     this.value = '';
+    this.numberText = '';
     this.invalid = false;
   }
 
@@ -334,6 +415,14 @@ export class UInput extends UFormControlElement<string> {
     // 조합 중(IME) value를 다시 쓰면 .value=live()가 조합을 취소시켜
     // 한글 입력·띄어쓰기가 깨진다. 조합 완료(compositionend) 시점에만 동기화한다.
     if (this.composing) return;
+    if (this.type === 'number') {
+      // 숫자는 보이는 글자와 값이 다르다(`1,5` ↔ `1.5`) — 글자가 바뀌었으면 값이 같아도 입력이다.
+      const text = this.inputEl?.value ?? '';
+      if (text === this.numberText) return;
+      this.syncNumberFromText(text);
+      this.relay(e);
+      return;
+    }
     const next = this.inputEl?.value;
     // compositionend 보강 dispatch와 후속 native input의 이중 relay를 값 비교로 차단한다.
     if (next === this.value) return;
@@ -352,7 +441,8 @@ export class UInput extends UFormControlElement<string> {
   private handleInputChange = (e: Event) => {
     e.stopPropagation();
     if (this.composing) return;
-    this.value = this.inputEl?.value || '';
+    if (this.type === 'number') this.syncNumberFromText(this.inputEl?.value ?? '');
+    else this.value = this.inputEl?.value || '';
     if (!this.novalidate) {
       this.validate();
     }
@@ -363,7 +453,13 @@ export class UInput extends UFormControlElement<string> {
   }
 
   private handleInputBlur = (_: FocusEvent) => {
-    this.value = this.inputEl?.value || '';
+    if (this.type === 'number') {
+      this.syncNumberFromText(this.inputEl?.value ?? '');
+      // 읽을 수 있는 수는 로케일 모양으로 다시 보인다(`1.234,5` → `1234,5`). 못 읽는 글자는 그대로 둔다 — 고칠 대상이다.
+      if (parseNumber(this.numberText) !== null) this.numberText = this.displayNumber(this.value ?? '');
+    } else {
+      this.value = this.inputEl?.value || '';
+    }
 
     if (!this.novalidate) {
       this.validate();
@@ -373,6 +469,13 @@ export class UInput extends UFormControlElement<string> {
   private handleInputKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       this.handleImplicitSubmission(e);
+      return;
+    }
+    // 숫자 입력의 화살표 증감 — 네이티브 숫자 입력이 하던 일이다. 제안 목록이 열려 있으면 목록이 키를 갖는다.
+    if (this.type === 'number' && (e.key === 'ArrowUp' || e.key === 'ArrowDown') && !this.popoverEl?.open
+        && !this.readonly && !this.effectivelyDisabled) {
+      e.preventDefault();
+      this.stepBy(e.key === 'ArrowUp' ? 1 : -1);
       return;
     }
     if (this.options.length === 0) return;
@@ -468,25 +571,35 @@ export class UInput extends UFormControlElement<string> {
     return Number(this.value) > Number(this.min);
   }
 
-  /** 네이티브 `<input type="number">`의 stepUp/stepDown에 위임한다 — min/max/step 클램핑을
-   *  다시 구현하지 않는다. 클릭이 곧 "값을 확정"하는 동작이라 change도 함께 낸다(네이티브
-   *  스핀 버튼과 동일하게, 타이핑 중 blur 대기가 아니다). */
+  /** 증감 버튼 — 클릭이 곧 «값을 확정» 하는 동작이라 change 도 함께 낸다(네이티브 스핀 버튼과 같다). */
   private handleStepperClick = (delta: 1 | -1) => (e: PointerEvent) => {
     e.stopImmediatePropagation();
-    const input = this.inputEl;
-    if (!input) return;
-    try {
-      if (delta === 1) input.stepUp();
-      else input.stepDown();
-    } catch {
-      // 값이 step 기준선에 정렬돼 있지 않으면(예: step="4"인데 값이 "5") 네이티브가
-      // InvalidStateError를 던진다 — 이 클릭만 조용히 무시한다(다음 클릭은 값이 바뀌지
-      // 않아 여전히 실패할 수 있으나, 사용자는 직접 타이핑으로 벗어날 수 있다).
-      return;
-    }
-    input.dispatchEvent(new InputEvent('input', { bubbles: true }));
-    this.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+    this.stepBy(delta);
     this.focus();
+  }
+
+  /**
+   * 한 step 만큼 올리거나 내린다 — 네이티브 `stepUp`/`stepDown` 의 규칙: 기준선(`min`, 없으면 0)에서 step 의
+   * 정수배로 맞추고(어긋난 값은 그 방향의 다음 눈금으로), `min`/`max` 로 자른다. 빈 값은 0 에서 출발한다.
+   * 이동이 없으면(경계) 아무 이벤트도 내지 않는다. 소수 step 의 부동소수 잡음(0.1+0.2)은 step·기준선의 자릿수로 반올림한다.
+   */
+  private stepBy(delta: 1 | -1): void {
+    const step = this.step !== undefined && Number.isFinite(this.step) && this.step > 0 ? this.step : 1;
+    const min = this.min !== undefined && this.min !== '' ? Number(this.min) : undefined;
+    const max = this.max !== undefined && this.max !== '' ? Number(this.max) : undefined;
+    const current = parseNumber(this.numberText) ?? 0;
+    const base = min ?? 0;
+    const k = (current - base) / step;
+    const index = delta > 0 ? Math.floor(k + 1e-9) + 1 : Math.ceil(k - 1e-9) - 1;
+    const places = Math.max(fractionDigits(step), fractionDigits(base));
+    let next = Number((base + index * step).toFixed(places));
+    if (min !== undefined && next < min) next = min;
+    if (max !== undefined && next > max) next = max;
+    if (this.numberText.trim() !== '' && next === current) return;
+    this.value = String(next);
+    this.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true }));
+    if (!this.novalidate) this.validate();
+    this.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
   }
 
   private handleOptionClick = (e: PointerEvent) => {
@@ -540,6 +653,13 @@ export class UInput extends UFormControlElement<string> {
       e.preventDefault();
     }
   };
+}
+
+/** 수의 소수 자릿수(`0.25` → 2, `1e-7` → 7) — step 연산의 반올림 자리. */
+function fractionDigits(n: number): number {
+  const [mantissa, exponent] = String(n).split('e');
+  const digits = (mantissa.split('.')[1] ?? '').length;
+  return Math.max(0, digits - Number(exponent ?? 0));
 }
 
 /** HTML 명세의 «암묵 제출을 막는 필드» — 네이티브 단일 행 입력의 이 type 들. `u-input` 의 type 은 전부 여기에 든다. */

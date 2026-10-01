@@ -30,6 +30,16 @@
   with exactly three digits after it. Grouping by separators, spaces or apostrophes must come in
   threes. Returns `null` for anything else — never a partial number.
 
+### Fixed
+
+- **`u-input type="number"` reads a decimal comma.** A native number input drops or rejects it
+  depending on the browser — `1,5` became `15`, a valid number ten times too large, with nothing
+  invalid to report. The inner input is now `type="text" inputmode="decimal"` and the text is read
+  with `parseNumber` in the page's locale. `value` stays the canonical dot-decimal string (`""` for
+  text that is not a number, which reports `badInput`); new `valueAsNumber`. On blur the text is
+  shown with the locale's decimal separator. `min`/`max`/`step` are checked on the parsed number
+  with native semantics, and the stepper buttons and ArrowUp/ArrowDown step it.
+
 ### Changed
 
 - `u-date-picker` draws its calendar through a new internal element, `u-calendar` (registered

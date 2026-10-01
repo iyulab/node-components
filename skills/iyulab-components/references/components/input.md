@@ -26,10 +26,19 @@ Text input field with prefix/suffix slots and label. Add `u-option` children for
 <u-input type="number" value="5000" step="1000" min="0"></u-input>
 ```
 
-`type="number"` replaces the browser's native spin buttons with `−`/`+` icons in the suffix
-area — clicking delegates to the native `stepUp()`/`stepDown()`, so `min`/`max`/`step` are
-respected exactly as they are for keyboard arrows. A field-specific step (e.g. `step="1000"`
-for a KRW amount) is the consumer's call — the library does not infer one from field meaning.
+`type="number"` reads what the user types **in the page's locale**: `1,5` on a German page and
+`1.5` anywhere are both 1.5; `1.234,5` and `1,234.5` are both 1234.5 (rules: `parseNumber`). The
+inner input is `type="text" inputmode="decimal"` — a native number input drops or rejects a
+decimal comma depending on the browser (`1,5` became `15`, a valid number ten times too large).
+`value` is always the canonical dot-decimal string — `""` when the text is not a number, which
+then reports `badInput` — and `valueAsNumber` is the number. On blur the text is shown with the
+locale's decimal separator; no grouping is inserted.
+
+`min`/`max`/`step` are checked on the parsed number with native semantics: no `step` means 1, so a
+field that takes decimals sets `step="any"` or a fractional step. The `−`/`+` icons in the suffix
+area and ArrowUp/ArrowDown step the value, snapping to the step from `min` (or 0) and stopping at
+`min`/`max`. A field-specific step (e.g. `step="1000"` for a KRW amount) is the consumer's call —
+the library does not infer one from field meaning.
 
 ---
 
@@ -104,6 +113,7 @@ Call `preventDefault()` on the `keydown` to cancel it. Do not also submit on Ent
 |--------|-------------|
 | `validate()` | Validate; sets `invalid` |
 | `reset()` | Clear value and validation state |
+| `valueAsNumber` *(getter)* | `type="number"`: the value as a number, `NaN` when empty or not a number |
 | `focus(options?)` | Focus the input |
 | `blur()` | Blur the input |
 
