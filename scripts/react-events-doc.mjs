@@ -9,6 +9,7 @@
 //   node scripts/react-events-doc.mjs --write
 import { readFileSync, writeFileSync, existsSync, globSync } from 'fs';
 import { join, resolve, dirname } from 'path';
+import { isInternalElement } from './internal-element.mjs';
 
 export const DOC_PATH = 'docs/react-events.md';
 
@@ -52,7 +53,7 @@ export function renderReactEventsDoc(root) {
     const file = join(root, rel);
     const src = readFileSync(file, 'utf-8');
     const tag = src.match(/@customElement\s*\(\s*['"]([^'"]+)['"]\s*\)/);
-    if (!tag) continue;
+    if (!tag || isInternalElement(src)) continue;
     const events = [...collect(file)].map(([name, v]) => ({ name, ...v }));
     if (events.length) components.push({ tag: tag[1], events });
   }

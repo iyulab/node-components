@@ -2,6 +2,11 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import '../../src/components/date-picker/UDatePicker.js';
 import type { UDatePicker } from '../../src/components/date-picker/UDatePicker.js';
 
+/** 달력 격자는 내부 `u-calendar` 의 섀도 안에 있다(피커는 그것을 감쌀 뿐이다). */
+function cal(el: HTMLElement): ShadowRoot {
+  return el.shadowRoot!.querySelector('u-calendar')!.shadowRoot!;
+}
+
 async function settle(el: UDatePicker) {
   await el.updateComplete;
   await new Promise(r => setTimeout(r, 0));
@@ -56,7 +61,7 @@ describe('UDatePicker — mode="datetime"', () => {
     el.addEventListener('change', () => changeCount++);
 
     const iso = fifteenthOfCurrentMonthIso();
-    const day15 = el.shadowRoot!.querySelector(`button.day[data-iso="${iso}"]`) as HTMLButtonElement;
+    const day15 = cal(el).querySelector(`button.day[data-iso="${iso}"]`) as HTMLButtonElement;
     day15.click();
     await settle(el);
 
@@ -104,7 +109,7 @@ describe('UDatePicker — mode="datetime"', () => {
     expect(changeCount).toBe(0);
 
     const iso = fifteenthOfCurrentMonthIso();
-    const day15 = el.shadowRoot!.querySelector(`button.day[data-iso="${iso}"]`) as HTMLButtonElement;
+    const day15 = cal(el).querySelector(`button.day[data-iso="${iso}"]`) as HTMLButtonElement;
     day15.click();
     await settle(el);
 
@@ -117,7 +122,7 @@ describe('UDatePicker — mode="datetime"', () => {
     document.body.appendChild(el);
     await openCalendar(el);
 
-    const day20 = el.shadowRoot!.querySelector('button.day[data-iso="2026-02-20"]') as HTMLButtonElement;
+    const day20 = cal(el).querySelector('button.day[data-iso="2026-02-20"]') as HTMLButtonElement;
     day20.click();
     await settle(el);
 

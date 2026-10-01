@@ -5,9 +5,12 @@ import { globSync } from 'glob';
 import {
   collectComponentEvents,
   findEventDeclarationViolations,
+  isInternalElement,
 } from '../../plugins/vite-plugin-react-wrapper';
 // @ts-expect-error — 문서 생성기는 .mjs 로, 타입 선언이 없다
 import { renderReactEventsDoc, DOC_PATH } from '../../scripts/react-events-doc.mjs';
+// @ts-expect-error — .mjs, 타입 선언이 없다
+import { isInternalElement as isInternalElementMjs } from '../../scripts/internal-element.mjs';
 
 const root = resolve(__dirname, '../..');
 const src = (p: string) => resolve(__dirname, '../../src', p);
@@ -65,6 +68,30 @@ describe('react wrapper — 이벤트 수집', () => {
     });
   });
 
+  // 내부 요소(`@internal`)는 래퍼도 공개 문서도 만들지 않는다 — 표식을 읽는 곳이 플러그인(TS)과
+  // 문서 생성기(.mjs) 두 곳이라, 같은 판정을 내는지 전 컴포넌트에서 대조한다.
+  describe('내부 요소 표식', () => {
+    it('u-calendar 는 내부 요소로 판정되고, 공개 컴포넌트는 아니다', () => {
+      const read = (p: string) => readFileSync(src(p), 'utf-8');
+      expect(isInternalElement(read('components/calendar/UCalendar.ts'))).toBe(true);
+      expect(isInternalElement(read('components/date-picker/UDatePicker.ts'))).toBe(false);
+    });
+
+    it('⚪NEGATIVE — 등록 데코레이터 «위» JSDoc 의 표식만 센다 (본문 주석의 낱말은 무시)', () => {
+      expect(isInternalElement("/** a */\n@customElement('x-a')\nclass A { /** @internal */ m() {} }")).toBe(false);
+      expect(isInternalElement("/** @internal */\nfunction f() {}\n/** b */\n@customElement('x-b')\nclass B {}")).toBe(false);
+      expect(isInternalElement("/**\n * b\n * @internal\n */\n@customElement('x-b')\nclass B {}")).toBe(true);
+    });
+
+    it('플러그인과 문서 생성기가 전 컴포넌트에서 같은 판정을 낸다', () => {
+      const diff = globSync('src/components/**/*.ts', { cwd: root })
+        .map(rel => [rel, readFileSync(resolve(root, rel), 'utf-8')] as const)
+        .filter(([, text]) => isInternalElement(text) !== isInternalElementMjs(text))
+        .map(([rel]) => rel);
+      expect(diff).toEqual([]);
+    });
+  });
+
   describe('소비자 레퍼런스 문서', () => {
     it('문서가 JSDoc/소스와 동기화돼 있다', () => {
       const expected = renderReactEventsDoc(root);
@@ -81,7 +108,7 @@ describe('react wrapper — 이벤트 수집', () => {
         const file = resolve(root, rel);
         const src = readFileSync(file, 'utf-8');
         const tag = src.match(/@customElement\s*\(\s*['"]([^'"]+)['"]\s*\)/);
-        if (!tag) continue;
+        if (!tag || isInternalElement(src)) continue;
         const authoritative = collectComponentEvents(file).map(e => e.name).sort();
         const section = doc.split(`## \`<${tag[1]}>\``)[1]?.split('\n## ')[0] ?? '';
         const documented = [...section.matchAll(/\| `on\w+` \| `([\w-]+)`/g)].map(m => m[1]).sort();

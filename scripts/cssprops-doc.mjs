@@ -6,6 +6,7 @@
 //   node scripts/cssprops-doc.mjs --write
 import { readFileSync, writeFileSync, globSync } from 'fs';
 import { join, resolve } from 'path';
+import { isInternalElement } from './internal-element.mjs';
 
 export const DOC_PATH = 'docs/css-custom-properties.md';
 
@@ -14,7 +15,7 @@ export function renderCssPropsDoc(root) {
   for (const rel of globSync('src/components/**/*.ts', { cwd: root })) {
     const source = readFileSync(join(root, rel), 'utf-8');
     const tag = source.match(/@customElement\s*\(\s*['"]([^'"]+)['"]\s*\)/);
-    if (!tag) continue;
+    if (!tag || isInternalElement(source)) continue;
     // `@cssprop --name - 설명` (설명은 다음 태그/블록 끝까지 이어질 수 있다)
     const props = [...source.matchAll(/@cssprop\s+(--[\w-]+)\s*-\s*([\s\S]*?)(?=\n\s*\*\s*@|\n\s*\*\/)/g)]
       .map(m => [m[1], m[2].replace(/\n\s*\*\s?/g, ' ').replace(/\s+/g, ' ').trim()]);

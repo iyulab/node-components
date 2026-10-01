@@ -2,52 +2,18 @@ import { html, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import '../button/UButton.js';
+import '../calendar/UCalendar.js';
 import '../field/UField.js';
 import '../icon/UIcon.js';
-import '../icon-button/UIconButton.js';
 import '../popover/UPopover.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
-import { Locale, type LocaleTag } from "../../utilities/Locale.js";
+import { Locale } from "../../utilities/Locale.js";
 import { formatDate } from "../../utilities/format.js";
+import { UCalendar } from "../calendar/UCalendar.js";
+import { isOutOfRange, parseISODate, toISODate } from "../calendar/dates.js";
 import { UPopover } from "../popover/UPopover.js";
 import { styles } from "./UDatePicker.styles.js";
-
-// Module-scope date helpers — grid assembly only. Locale formatting is owned by
-// format.ts (Task 1); these functions only compute "which date does this cell represent".
-// The two responsibilities are kept separate.
-
-function parseISODate(iso: string): Date {
-  const [y, m, d] = iso.split('-').map(Number);
-  return new Date(y, m - 1, d);
-}
-
-function toISODate(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-function isSameDay(a: Date, b: Date): boolean {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-}
-
-function startOfMonth(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
-}
-
-function addMonths(date: Date, delta: number): Date {
-  return new Date(date.getFullYear(), date.getMonth() + delta, 1);
-}
-
-function addDays(date: Date, delta: number): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + delta);
-}
-
-function daysInMonth(date: Date): number {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-}
 
 /** `±HH:mm` for the browser's local timezone at `date` (DST-aware — recomputed per date,
  *  not cached — `getTimezoneOffset()`'s sign is the inverse of the ISO-8601 offset sign). */
@@ -72,31 +38,6 @@ function splitValue(value: string): { date: Date; time: string } {
   const [datePart, rest] = value.split('T');
   const match = rest?.match(/^(\d{2}:\d{2})/);
   return { date: parseISODate(datePart), time: match ? match[1] : '00:00' };
-}
-
-/** Cells to render for the calendar grid — leading `null`s pad the previous month's weekday offset. */
-function buildMonthGrid(viewDate: Date): (Date | null)[] {
-  const first = startOfMonth(viewDate);
-  const startOffset = first.getDay(); // 0=Sun
-  const total = daysInMonth(viewDate);
-  const cells: (Date | null)[] = [];
-  for (let i = 0; i < startOffset; i++) cells.push(null);
-  for (let d = 1; d <= total; d++) cells.push(new Date(viewDate.getFullYear(), viewDate.getMonth(), d));
-  return cells;
-}
-
-/** Splits the flat cell list into 7-day weeks — the `role="row"` grouping the APG grid pattern expects. */
-function chunkWeeks<T>(cells: T[]): T[][] {
-  const weeks: T[][] = [];
-  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
-  return weeks;
-}
-
-/** 2023-01-01 was a Sunday — a fixed reference date that always yields Sun..Sat order regardless of today. */
-function getWeekdayLabels(locale?: LocaleTag): string[] {
-  const formatter = new Intl.DateTimeFormat(locale ?? Locale.get(), { weekday: 'narrow' });
-  const sunday = new Date(2023, 0, 1);
-  return Array.from({ length: 7 }, (_, i) => formatter.format(addDays(sunday, i)));
 }
 
 export type DatePickerMode = 'date' | 'datetime';
@@ -164,23 +105,15 @@ export class UDatePicker extends UFormControlElement<string> {
 
   @query('.container', true) containerEl?: HTMLElement;
   @query('u-popover', true) popoverEl?: UPopover;
+  @query('u-calendar') calendarEl?: UCalendar;
 
   /** Unique id wiring the combobox's `aria-controls` to the calendar dialog — mirrors USelect's `listboxId`. */
   private readonly calendarId = `u-date-picker-calendar-${Math.random().toString(36).slice(2, 8)}`;
 
   @state() private open: boolean = false;
-  @state() private viewDate: Date = startOfMonth(new Date());
-  @state() private focusedDate: Date = new Date();
   /** Time-of-day for the next selection while no `value` exists yet (`mode="datetime"` only) —
    *  once `value` is set, the time input reads/writes its time portion directly instead. */
   @state() private pendingTime: string = '00:00';
-
-  // Distinguishes "focusedDate changed because the user is navigating the grid with arrow
-  // keys" from "focusedDate changed because the header's prev/next-month button was clicked".
-  // Only the former should yank focus into the grid — the latter would steal focus back off
-  // the header button the user just activated. Set by `moveFocus`/`handlePopoverShow`, left
-  // `false` by `navigateMonth`, and consumed (reset) once `updated()` acts on it.
-  private grabFocusOnUpdate = false;
 
   protected updated(changed: PropertyValues): void {
     super.updated(changed);
@@ -194,15 +127,15 @@ export class UDatePicker extends UFormControlElement<string> {
     if (changed.has('open')) {
       this.internals?.states[this.open ? 'add' : 'delete']('open');
     }
-    const shouldGrabFocus =
-      (changed.has('open') && this.open) ||
-      (changed.has('focusedDate') && this.open && this.grabFocusOnUpdate);
-    if (shouldGrabFocus) {
-      this.grabFocusOnUpdate = false;
-      // The popover's `open` attribute (and the `visibility: hidden -> visible` CSS it drives)
-      // reflects on the popover's own update cycle, which runs after this one — focusing a day
-      // button before that resolves is a no-op because it is still `visibility: hidden`.
-      this.popoverEl?.updateComplete.then(() => this.focusDayButton(this.focusedDate));
+    if (changed.has('open') && this.open) {
+      // The calendar only renders while open, so it exists from this update on. The popover's
+      // `open` attribute (and the `visibility: hidden -> visible` CSS it drives) reflects on the
+      // popover's own update cycle, which runs after this one — focusing a day button before
+      // that resolves is a no-op because it is still `visibility: hidden`.
+      const calendar = this.calendarEl;
+      const base = this.value ? toISODate(splitValue(this.value).date) : toISODate(new Date());
+      calendar?.showDate(base);
+      this.popoverEl?.updateComplete.then(() => calendar?.focusDay());
     }
   }
 
@@ -268,27 +201,16 @@ export class UDatePicker extends UFormControlElement<string> {
   }
 
   private renderCalendar() {
-    const cells = buildMonthGrid(this.viewDate);
-    const monthLabel = formatDate(this.viewDate, { year: 'numeric', month: 'long' });
-    const weekdayLabels = getWeekdayLabels();
-
     return html`
       <div class="calendar" part="calendar">
-        <div class="calendar-header" part="calendar-header">
-          <u-icon-button lib="internal" name="chevron-left" aria-label=${Locale.getValue('previousMonth')} @click=${this.handlePrevMonth}></u-icon-button>
-          <span class="calendar-title" part="calendar-title">${monthLabel}</span>
-          <u-icon-button lib="internal" name="chevron-right" aria-label=${Locale.getValue('nextMonth')} @click=${this.handleNextMonth}></u-icon-button>
-        </div>
-        <div class="calendar-weekdays" part="calendar-weekdays" role="row">
-          ${weekdayLabels.map(w => html`<span class="weekday" role="columnheader">${w}</span>`)}
-        </div>
-        <div class="calendar-grid" part="calendar-grid" role="grid">
-          ${chunkWeeks(cells).map(week => html`
-            <div class="calendar-week" part="calendar-week" role="row">
-              ${week.map(date => date ? this.renderDay(date) : html`<span class="day-empty" role="gridcell" aria-hidden="true"></span>`)}
-            </div>
-          `)}
-        </div>
+        <u-calendar
+          exportparts="calendar-header, calendar-title, calendar-weekdays, calendar-grid, calendar-week, day"
+          .value=${this.value ? toISODate(splitValue(this.value).date) : undefined}
+          .min=${this.min}
+          .max=${this.max}
+          @day-select=${this.handleDaySelect}
+          @keydown=${this.handleCalendarKeydown}
+        ></u-calendar>
         ${this.renderTimeRow()}
         ${this.renderFooter()}
       </div>
@@ -310,7 +232,7 @@ export class UDatePicker extends UFormControlElement<string> {
   }
 
   private renderFooter() {
-    const todayDisabled = this.isOutOfRange(new Date());
+    const todayDisabled = isOutOfRange(new Date(), this.min, this.max);
     return html`
       <div class="calendar-footer" part="calendar-footer">
         <u-button variant="ghost" size="sm" ?disabled=${todayDisabled} @click=${this.handleTodayClick}>${Locale.getValue('today')}</u-button>
@@ -321,45 +243,12 @@ export class UDatePicker extends UFormControlElement<string> {
     `;
   }
 
-  private renderDay(date: Date) {
-    const selected = this.value ? isSameDay(date, splitValue(this.value).date) : false;
-    const focused = isSameDay(date, this.focusedDate);
-    const today = isSameDay(date, new Date());
-    const outOfRange = this.isOutOfRange(date);
-
-    return html`
-      <button type="button" class="day" part="day"
-        role="gridcell"
-        data-iso=${toISODate(date)}
-        tabindex=${focused ? 0 : -1}
-        aria-selected=${selected}
-        aria-disabled=${outOfRange}
-        ?data-today=${today}
-        @click=${() => this.selectDay(date)}
-        @keydown=${(e: KeyboardEvent) => this.handleDayKeydown(e, date)}
-        @focus=${() => { this.focusedDate = date; }}
-      >${date.getDate()}</button>
-    `;
-  }
-
-  private isOutOfRange(date: Date): boolean {
-    if (this.min && date.getTime() < parseISODate(this.min).getTime()) return true;
-    if (this.max && date.getTime() > parseISODate(this.max).getTime()) return true;
-    return false;
-  }
-
-  private focusDayButton(date: Date): void {
-    const iso = toISODate(date);
-    const btn = this.renderRoot.querySelector<HTMLButtonElement>(`button.day[data-iso="${iso}"]`);
-    btn?.focus();
-  }
-
   /** `timeOverride` lets a caller force the time-of-day (the "today" quick action wants
    *  "right now", overriding whatever time was previously set) — a plain day-cell click omits
    *  it, which preserves the existing time-of-day (or `pendingTime`) so switching the date
    *  alone doesn't clobber a time the user already picked. */
   private selectDay(date: Date, timeOverride?: string): void {
-    if (this.isOutOfRange(date)) return;
+    if (isOutOfRange(date, this.min, this.max)) return;
     const time = timeOverride ?? (this.value ? splitValue(this.value).time : this.pendingTime);
     const iso = buildValue(date, this.mode, time);
     const changed = iso !== this.value;
@@ -384,71 +273,21 @@ export class UDatePicker extends UFormControlElement<string> {
     if (changed) this.emitChange();
   };
 
-  private handlePrevMonth = () => this.navigateMonth(-1);
-  private handleNextMonth = () => this.navigateMonth(1);
-
-  private navigateMonth(delta: number): void {
-    this.grabFocusOnUpdate = false;
-    const next = addMonths(this.viewDate, delta);
-    this.viewDate = next;
-    const clampedDay = Math.min(this.focusedDate.getDate(), daysInMonth(next));
-    this.focusedDate = new Date(next.getFullYear(), next.getMonth(), clampedDay);
-  }
-
-  private handleDayKeydown = (e: KeyboardEvent, date: Date) => {
-    switch (e.key) {
-      case 'ArrowRight':
-        e.preventDefault();
-        this.moveFocus(date, 1);
-        break;
-      case 'ArrowLeft':
-        e.preventDefault();
-        this.moveFocus(date, -1);
-        break;
-      case 'ArrowDown':
-        e.preventDefault();
-        this.moveFocus(date, 7);
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        this.moveFocus(date, -7);
-        break;
-      case 'Home':
-        e.preventDefault();
-        this.moveFocus(date, -date.getDay());
-        break;
-      case 'End':
-        e.preventDefault();
-        this.moveFocus(date, 6 - date.getDay());
-        break;
-      case 'Enter':
-      case ' ':
-        e.preventDefault();
-        this.selectDay(date);
-        break;
-      case 'Escape':
-        e.preventDefault();
-        this.popoverEl?.hide();
-        this.containerEl?.focus();
-        break;
-    }
+  private handleDaySelect = (e: CustomEvent<{ date: string }>) => {
+    this.selectDay(parseISODate(e.detail.date));
   };
 
-  private moveFocus(from: Date, deltaDays: number): void {
-    this.grabFocusOnUpdate = true;
-    const next = addDays(from, deltaDays);
-    if (next.getMonth() !== this.viewDate.getMonth() || next.getFullYear() !== this.viewDate.getFullYear()) {
-      this.viewDate = startOfMonth(next);
-    }
-    this.focusedDate = next;
-  }
+  /** Escape inside the grid closes the calendar and returns focus to the trigger — the grid
+   *  itself does not know it lives in a popover, so the picker owns this. */
+  private handleCalendarKeydown = (e: KeyboardEvent) => {
+    if (e.key !== 'Escape') return;
+    e.preventDefault();
+    this.popoverEl?.hide();
+    this.containerEl?.focus();
+  };
 
   private handlePopoverShow = () => {
     this.open = true;
-    this.grabFocusOnUpdate = true;
-    const base = this.value ? splitValue(this.value).date : new Date();
-    this.viewDate = startOfMonth(base);
-    this.focusedDate = base;
   };
 
   private handlePopoverHide = () => {
@@ -462,8 +301,8 @@ export class UDatePicker extends UFormControlElement<string> {
     this.containerEl?.focus();
   };
 
-  /** "오늘" 퀵액션 — `today` 셀이 이미 렌더에서 계산해 표시 중인 값(`renderDay`의
-   *  `isSameDay(date, new Date())`)을 실제로 선택하는 것뿐이라 `selectDay`를 그대로 탄다
+  /** "오늘" 퀵액션 — 달력이 이미 `data-today` 로 표시 중인 날을 실제로 선택하는 것뿐이라
+   *  `selectDay`를 그대로 탄다
    *  (범위 밖이면 `selectDay`가 조용히 no-op — 클릭 불가 상태인 day 셀과 동일 규약).
    *  datetime 모드에서는 "지금"을 통째로 채우는 것이 소비자 요청의 본질
    *  이라 시간까지 `now`로 덮어쓴다 — 평범한 day 셀 클릭과 달리 기존 시각을 보존하지 않는다. */

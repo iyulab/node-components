@@ -3,6 +3,11 @@ import '../../src/components/date-picker/UDatePicker.js';
 import type { UDatePicker } from '../../src/components/date-picker/UDatePicker.js';
 import { Locale } from '../../src/utilities/Locale.js';
 
+/** 달력 격자는 내부 `u-calendar` 의 섀도 안에 있다(피커는 그것을 감쌀 뿐이다). */
+function cal(el: HTMLElement): ShadowRoot {
+  return el.shadowRoot!.querySelector('u-calendar')!.shadowRoot!;
+}
+
 /**
  * 오늘 날짜를 **로컬 캘린더 기준**으로 만든다.
  *
@@ -56,7 +61,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     await settle(el);
 
     const today = new Date();
-    const title = el.shadowRoot!.querySelector('.calendar-title')!.textContent!;
+    const title = cal(el).querySelector('.calendar-title')!.textContent!;
     expect(title).toContain(String(today.getFullYear()));
   });
 
@@ -82,7 +87,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     container.click();
     await settle(el);
 
-    const day15 = el.shadowRoot!.querySelector('button.day[data-iso="2026-02-15"]') as HTMLButtonElement;
+    const day15 = cal(el).querySelector('button.day[data-iso="2026-02-15"]') as HTMLButtonElement;
     day15.click();
     await settle(el);
 
@@ -104,8 +109,8 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     await settle(el);
     expect(el.matches(':state(open)')).toBe(true);
 
-    const day15 = el.shadowRoot!.querySelector('button.day[data-today]') as HTMLButtonElement | null;
-    (day15 ?? el.shadowRoot!.querySelector('button.day')!).click();
+    const day15 = cal(el).querySelector('button.day[data-today]') as HTMLButtonElement | null;
+    (day15 ?? cal(el).querySelector('button.day')!).click();
     await settle(el);
     expect(el.matches(':state(open)')).toBe(false);
   });
@@ -129,7 +134,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     container.click();
     await settle(el);
 
-    const outOfRange = el.shadowRoot!.querySelector('button.day[data-iso="2026-02-05"]') as HTMLButtonElement;
+    const outOfRange = cal(el).querySelector('button.day[data-iso="2026-02-05"]') as HTMLButtonElement;
     expect(outOfRange.getAttribute('aria-disabled')).toBe('true');
 
     outOfRange.click();
@@ -146,7 +151,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     container.click();
     await settle(el);
 
-    const grid = el.shadowRoot!.querySelector('.calendar-grid')!;
+    const grid = cal(el).querySelector('.calendar-grid')!;
     expect(grid.getAttribute('role')).toBe('grid');
     const rows = grid.querySelectorAll(':scope > [role="row"]');
     expect(rows.length).toBeGreaterThan(0);
@@ -157,7 +162,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
         expect(cell.getAttribute('role')).toBe('gridcell');
       }
     }
-    const headerCells = el.shadowRoot!.querySelectorAll('.calendar-weekdays [role="columnheader"]');
+    const headerCells = cal(el).querySelectorAll('.calendar-weekdays [role="columnheader"]');
     expect(headerCells.length).toBe(7);
   });
 
@@ -261,7 +266,7 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
       container.click();
       await settle(el);
       const popover = el.shadowRoot!.querySelector('u-popover')!;
-      const [prevMonth, nextMonth] = el.shadowRoot!.querySelectorAll('.calendar-header u-icon-button');
+      const [prevMonth, nextMonth] = cal(el).querySelectorAll('.calendar-header u-icon-button');
       return {
         dialog: popover.getAttribute('aria-label'),
         prev: prevMonth.getAttribute('aria-label'),
@@ -288,5 +293,35 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
       await settle(ko);
       expect(await labelsOf(ko)).toEqual({ dialog: '날짜 선택', prev: '이전 달', next: '다음 달' });
     });
+  });
+});
+
+// 달력 격자가 내부 `u-calendar` 로 옮겨 간 뒤에도, 피커 밖에서 `::part(day)` 같은 종전 파트
+// 이름으로 날짜 칸을 꾸밀 수 있어야 한다 — 피커의 `exportparts` 가 그 계약을 잇는다.
+describe('UDatePicker — 달력 파트는 피커 밖에서 그대로 닿는다', () => {
+  afterEach(() => {
+    document.head.querySelector('style[data-test="part-reach"]')?.remove();
+    document.body.innerHTML = '';
+  });
+
+  it('::part(day) 와 ::part(calendar-title) 이 내부 달력의 칸에 적용된다', async () => {
+    const style = document.createElement('style');
+    style.dataset.test = 'part-reach';
+    style.textContent = `
+      u-date-picker::part(day) { outline: 3px solid rgb(1, 2, 3); }
+      u-date-picker::part(calendar-title) { letter-spacing: 7px; }
+    `;
+    document.head.appendChild(style);
+    const el = createDatePicker({ value: '2026-02-10' });
+    document.body.appendChild(el);
+    await settle(el);
+    (el.shadowRoot!.querySelector('.container') as HTMLElement).click();
+    await settle(el);
+    await (cal(el).host as UDatePicker).updateComplete;
+
+    const day = cal(el).querySelector('button.day[data-iso="2026-02-10"]') as HTMLElement;
+    const title = cal(el).querySelector('.calendar-title') as HTMLElement;
+    expect(getComputedStyle(day).outlineColor).toBe('rgb(1, 2, 3)');
+    expect(getComputedStyle(title).letterSpacing).toBe('7px');
   });
 });

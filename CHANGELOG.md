@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- `u-date-picker` draws its calendar through a new internal element, `u-calendar` (registered
+  with the date picker; not exported from the package entry and not part of the public API). The
+  picker's existing parts — `calendar-header`, `calendar-title`, `calendar-weekdays`,
+  `calendar-grid`, `calendar-week`, `day` — still reach the day grid from outside through
+  `exportparts`. The grid now carries an accessible name (the month and year).
+- Calendar day cells never shrink below 32px wide; a multi-month calendar places the next month
+  on its own row when the space for one month drops below that.
+
 ## [1.53.0] - 2026-09-30
 
 ### Fixed

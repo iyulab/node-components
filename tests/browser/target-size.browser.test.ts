@@ -481,6 +481,17 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
     },
   ],
   'u-file-input': { html: '<u-file-input></u-file-input>' },
+  // 내부 요소지만 날짜 피커들이 이것으로 날짜 칸·이전/다음 달 버튼을 그린다 — 열지 않아도 바로 렌더되므로
+  // 피커의 «달력» 상태와 별개로 두 달 보기(범위 피커의 배치)까지 직접 잰다.
+  'u-calendar': [
+    {
+      state: '두 달',
+      html: '<u-calendar visible-months="2"></u-calendar>',
+      targets: () => Array.from(
+        document.querySelector('u-calendar')!.shadowRoot!.querySelectorAll('button.day, .calendar-header u-icon-button'),
+      ),
+    },
+  ],
   'u-date-picker': [
     { state: '닫힘', html: '<u-date-picker></u-date-picker>' },
     {
@@ -494,13 +505,15 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
       prepare: async (host) => {
         const root = host.shadowRoot!;
         (root.querySelector('.container') as HTMLElement).click();
-        for (let i = 0; i < 50 && !root.querySelector('button.day'); i++) {
+        // 날짜 칸은 내부 `u-calendar` 의 섀도 안에 있다.
+        const grid = () => root.querySelector('u-calendar')?.shadowRoot;
+        for (let i = 0; i < 50 && !grid()?.querySelector('button.day'); i++) {
           await new Promise((r) => setTimeout(r, 20));
         }
       },
       targets: () => Array.from(
-        document.querySelector('u-date-picker')!.shadowRoot!
-          .querySelectorAll('button.day, .calendar-header u-icon-button'),
+        document.querySelector('u-date-picker')!.shadowRoot!.querySelector('u-calendar')?.shadowRoot
+          ?.querySelectorAll('button.day, .calendar-header u-icon-button') ?? [],
       ),
     },
     {
@@ -863,7 +876,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 25(43상태) · 미판정 0() · 대상아님 21');
+      ).toBe('판정 26(44상태) · 미판정 0() · 대상아님 21');
     });
   });
 

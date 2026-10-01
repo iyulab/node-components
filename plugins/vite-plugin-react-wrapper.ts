@@ -128,12 +128,23 @@ export default function reactWrapperPlugin(options: PluginOptions): Plugin {
 
 // --- 컴포넌트 파싱 ---
 
+/**
+ * 등록 데코레이터 바로 위 JSDoc 에 `@internal` 이 있는가 — 다른 컴포넌트가 내부에서만 쓰는
+ * 요소(예: 날짜 피커들의 달력 격자)는 공개 표면이 아니므로 래퍼도 문서도 만들지 않는다.
+ * 표식은 컴포넌트 소스 한 곳에 두고, 표면을 만드는 쪽(이 플러그인 · `scripts/*-doc.mjs`)이
+ * 각자 읽는다 — 제외 목록을 설정 파일마다 따로 두면 서로 어긋난다.
+ */
+export function isInternalElement(content: string): boolean {
+  const doc = content.match(/\/\*\*((?:(?!\*\/)[\s\S])*)\*\/\s*@customElement\s*\(/);
+  return !!doc && /@internal\b/.test(doc[1]);
+}
+
 function parseComponent(filePath: string, violations: string[] = []): ComponentInfo[] {
   const content = readFileSync(filePath, 'utf-8');
 
   // @customElement('tag-name') 데코레이터 확인
   const tagMatch = content.match(/@customElement\s*\(\s*['"]([^'"]+)['"]\s*\)/);
-  if (!tagMatch) return [];
+  if (!tagMatch || isInternalElement(content)) return [];
 
   // export class ClassName 추출
   const classMatch = content.match(/export\s+(?:abstract\s+)?class\s+(\w+)/);

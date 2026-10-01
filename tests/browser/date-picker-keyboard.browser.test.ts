@@ -3,6 +3,11 @@ import '../../src/components/date-picker/UDatePicker.js';
 import type { UDatePicker } from '../../src/components/date-picker/UDatePicker.js';
 import { Locale } from '../../src/utilities/Locale.js';
 
+/** 달력 격자는 내부 `u-calendar` 의 섀도 안에 있다(피커는 그것을 감쌀 뿐이다). */
+function cal(el: HTMLElement): ShadowRoot {
+  return el.shadowRoot!.querySelector('u-calendar')!.shadowRoot!;
+}
+
 async function settle(el: UDatePicker) {
   await el.updateComplete;
   await new Promise(r => setTimeout(r, 0));
@@ -19,7 +24,7 @@ async function openWithFocus(el: UDatePicker): Promise<HTMLButtonElement> {
   const container = el.shadowRoot!.querySelector('.container') as HTMLElement;
   container.click();
   await settle(el);
-  return el.shadowRoot!.activeElement as HTMLButtonElement;
+  return cal(el).activeElement as HTMLButtonElement;
 }
 
 describe('UDatePicker — 키보드 내비게이션', () => {
@@ -51,12 +56,12 @@ describe('UDatePicker — 키보드 내비게이션', () => {
 
     day15.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
     await settle(el);
-    let focused = el.shadowRoot!.activeElement as HTMLButtonElement;
+    let focused = cal(el).activeElement as HTMLButtonElement;
     expect(focused.dataset.iso).toBe('2026-02-16');
 
     focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, composed: true }));
     await settle(el);
-    focused = el.shadowRoot!.activeElement as HTMLButtonElement;
+    focused = cal(el).activeElement as HTMLButtonElement;
     expect(focused.dataset.iso).toBe('2026-02-23');
   });
 
@@ -70,10 +75,10 @@ describe('UDatePicker — 키보드 내비게이션', () => {
     for (let i = 0; i < 2; i++) {
       focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
       await settle(el);
-      focused = el.shadowRoot!.activeElement as HTMLButtonElement;
+      focused = cal(el).activeElement as HTMLButtonElement;
     }
     expect(focused.dataset.iso).toBe('2026-03-01');
-    expect(el.shadowRoot!.querySelector('.calendar-title')!.textContent).toContain('March');
+    expect(cal(el).querySelector('.calendar-title')!.textContent).toContain('March');
   });
 
   it('Home/End 로 그 주의 처음/끝으로 이동한다', async () => {
@@ -84,12 +89,12 @@ describe('UDatePicker — 키보드 내비게이션', () => {
 
     focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true, composed: true }));
     await settle(el);
-    focused = el.shadowRoot!.activeElement as HTMLButtonElement;
+    focused = cal(el).activeElement as HTMLButtonElement;
     expect(focused.dataset.iso).toBe('2026-02-15'); // 그 주 일요일
 
     focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true, composed: true }));
     await settle(el);
-    focused = el.shadowRoot!.activeElement as HTMLButtonElement;
+    focused = cal(el).activeElement as HTMLButtonElement;
     expect(focused.dataset.iso).toBe('2026-02-21'); // 그 주 토요일
   });
 
@@ -103,7 +108,7 @@ describe('UDatePicker — 키보드 내비게이션', () => {
     let focused = await openWithFocus(el);
     focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
     await settle(el);
-    focused = el.shadowRoot!.activeElement as HTMLButtonElement;
+    focused = cal(el).activeElement as HTMLButtonElement;
 
     focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
     await settle(el);
@@ -135,13 +140,13 @@ describe('UDatePicker — 키보드 내비게이션', () => {
     // 2026-02-16(max) 까지 이동
     focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
     await settle(el);
-    focused = el.shadowRoot!.activeElement as HTMLButtonElement;
+    focused = cal(el).activeElement as HTMLButtonElement;
     expect(focused.dataset.iso).toBe('2026-02-16');
 
     // 한 칸 더 — 범위 밖(2026-02-17)으로 포커스는 이동하되 disabled
     focused.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
     await settle(el);
-    focused = el.shadowRoot!.activeElement as HTMLButtonElement;
+    focused = cal(el).activeElement as HTMLButtonElement;
     expect(focused.dataset.iso).toBe('2026-02-17');
     expect(focused.getAttribute('aria-disabled')).toBe('true');
 
@@ -161,7 +166,7 @@ describe('UDatePicker — 키보드 내비게이션', () => {
 
     // u-icon-button itself carries no tabindex (no delegatesFocus) — the truly focusable
     // node is the native <button> two shadow boundaries down (u-icon-button > u-button > button).
-    const iconButton = el.shadowRoot!.querySelector('u-icon-button[aria-label="Next month"]') as HTMLElement;
+    const iconButton = cal(el).querySelector('u-icon-button[aria-label="Next month"]') as HTMLElement;
     const innerButton = iconButton.shadowRoot!.querySelector('u-button') as HTMLElement;
     const nativeButton = innerButton.shadowRoot!.querySelector('button') as HTMLButtonElement;
 
@@ -169,8 +174,8 @@ describe('UDatePicker — 키보드 내비게이션', () => {
     nativeButton.click();
     await settle(el);
 
-    expect(el.shadowRoot!.querySelector('.calendar-title')!.textContent).toContain('March');
+    expect(cal(el).querySelector('.calendar-title')!.textContent).toContain('March');
     // Focus should stay on the header button — not get yanked into the day grid.
-    expect(el.shadowRoot!.activeElement).toBe(iconButton);
+    expect(cal(el).activeElement).toBe(iconButton);
   });
 });
