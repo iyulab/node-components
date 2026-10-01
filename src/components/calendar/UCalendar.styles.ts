@@ -89,6 +89,31 @@ export const styles = css`
     background-color: var(--u-primary-color, #1976D2);
     color: var(--u-primary-txt-color, #FFFFFF);
   }
+  /* 범위 — 안쪽 날은 띠로 잇고(모서리 없음), 양 끝은 선택 원으로 둔다. 미리 표시(앵커를 고른 뒤
+     두 번째 날을 고르기 전)는 띠 대신 위아래 점선으로 그려 아직 확정 전임을 구분한다. */
+  .day[data-in-range] {
+    border-radius: var(--u-radius-none, 0);
+    background-color: var(--u-primary-bg-color, #E3F2FD);
+    color: var(--u-txt-color, #212121);
+  }
+  .day[data-in-range][data-preview] {
+    background-color: transparent;
+    border-block: 1px dashed var(--u-primary-color, #1976D2);
+  }
+  .day[data-range-start] {
+    border-start-start-radius: var(--u-radius-circle, 50%);
+    border-end-start-radius: var(--u-radius-circle, 50%);
+  }
+  .day[data-range-end] {
+    border-start-end-radius: var(--u-radius-circle, 50%);
+    border-end-end-radius: var(--u-radius-circle, 50%);
+  }
+  .day[data-range-start]:not([data-preview]),
+  .day[data-range-end]:not([data-preview]),
+  .day[aria-selected="true"][data-preview] {
+    background-color: var(--u-primary-color, #1976D2);
+    color: var(--u-primary-txt-color, #FFFFFF);
+  }
   .day[aria-disabled="true"] {
     color: var(--u-txt-color-disabled, #BDBDBD);
     cursor: not-allowed;
