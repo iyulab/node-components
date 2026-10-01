@@ -495,6 +495,21 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   'u-date-range-picker': [
     { state: '닫힘', html: '<u-date-range-picker></u-date-range-picker>' },
     {
+      state: '프리셋',
+      // 달력 옆 빠른 선택 목록 — 좁은 뷰포트에서는 달력 위로 올라가 가로로 흐른다.
+      html: '<u-date-range-picker presets="today yesterday last7Days last30Days thisWeek lastWeek thisMonth lastMonth thisYear"></u-date-range-picker>',
+      prepare: async (host) => {
+        const root = host.shadowRoot!;
+        (root.querySelector('.container') as HTMLElement).click();
+        for (let i = 0; i < 50 && !root.querySelector('.presets u-button'); i++) {
+          await new Promise((r) => setTimeout(r, 20));
+        }
+      },
+      targets: () => Array.from(
+        document.querySelector('u-date-range-picker')!.shadowRoot!.querySelectorAll('.presets u-button'),
+      ),
+    },
+    {
       state: '달력',
       // 두 달 팝오버 — 날짜 칸은 내부 `u-calendar` 의 섀도 안에 있다. 열림이 비동기라 칸이 나타날 때까지 기다린다.
       html: '<u-date-range-picker value="2026-03-06/2026-03-12"></u-date-range-picker>',
@@ -896,7 +911,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 27(46상태) · 미판정 0() · 대상아님 21');
+      ).toBe('판정 27(47상태) · 미판정 0() · 대상아님 21');
     });
   });
 

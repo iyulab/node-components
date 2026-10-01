@@ -14,7 +14,11 @@ import { UCalendar, type CalendarRangeSelectDetail } from "../calendar/UCalendar
 import { parseISODate } from "../calendar/dates.js";
 import { styles as pickerStyles } from "../calendar/picker.styles.js";
 import { UPopover } from "../popover/UPopover.js";
+import { devWarnOnce } from "../../utilities/devWarning.js";
+import { resolvePresets, type DateRangePresetOption, type ResolvedPreset } from "./presets.js";
 import { styles } from "./UDateRangePicker.styles.js";
+
+export type { DateRangePreset, DateRangePresetName, DateRangePresetOption } from "./presets.js";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -38,7 +42,14 @@ function parseInterval(value?: string): { start: string; end: string } | undefin
  * the day under the pointer or keyboard focus; the second day completes the range, fires
  * `change` and closes the calendar. Escape while an anchor is set drops it; Escape again closes.
  *
- * The calendar week starts on Sunday regardless of locale (same as `u-date-picker`).
+ * `presets` adds a list of quick ranges beside the calendar — built-in names (`today`, `yesterday`,
+ * `last7Days`, `last30Days`, `thisWeek`, `lastWeek`, `thisMonth`, `lastMonth`, `thisYear`, which
+ * can be written as a space-separated attribute) and app-defined `{ label, range }` objects, in the
+ * order given. Picking one sets the range at once, fires `change` and closes the calendar. A preset
+ * whose range reaches outside `min`/`max` is disabled. Relative ranges are computed when drawn.
+ *
+ * The calendar week starts on Sunday regardless of locale (same as `u-date-picker`); `thisWeek` and
+ * `lastWeek` follow it.
  *
  * Exposes a `:state(open)` custom state while the calendar is showing.
  *
@@ -54,6 +65,8 @@ function parseInterval(value?: string): { start: string; end: string } | undefin
  * @csspart calendar-week - one week row inside a date grid
  * @csspart day - a date cell button
  * @csspart calendar-footer - the row holding the "clear" quick action
+ * @csspart presets - the list of quick ranges beside the calendar
+ * @csspart preset - one quick-range button
  *
  * @cssprop --u-date-range-picker-display - host `display` (default: inline-block). Set `block` to
  *   fill the container width in forms and grid cells.
@@ -75,6 +88,16 @@ export class UDateRangePicker extends UFormControlElement<string> {
   @property({ type: Boolean, reflect: true }) clearable: boolean = false;
   /** Placeholder text (shown on the trigger when there is no value) */
   @property({ type: String }) placeholder?: string;
+  /**
+   * Quick ranges listed beside the calendar, in display order — built-in names and app-defined
+   * `{ label, range }` presets. As an attribute: space-separated built-in names
+   * (`presets="today last7Days thisMonth"`). Empty (default) shows no list.
+   */
+  @property({
+    attribute: 'presets',
+    converter: { fromAttribute: (v: string | null) => (v ?? '').split(/\s+/).filter(Boolean) },
+  })
+  presets: DateRangePresetOption[] = [];
 
   /** First day of the range (ISO), or `undefined` when there is no complete range. */
   get start(): string | undefined {
@@ -186,36 +209,65 @@ export class UDateRangePicker extends UFormControlElement<string> {
   }
 
   private renderCalendar() {
+    const presets = resolvePresets(this.presets, new Date(), name =>
+      devWarnOnce(`date-range-preset:${name}`, `u-date-range-picker: unknown preset "${name}" — it is not listed.`));
     return html`
-      <div class="calendar" part="calendar">
-        <u-calendar
-          exportparts="calendar-month, calendar-header, calendar-title, calendar-weekdays, calendar-grid, calendar-week, day"
-          selection="range"
-          visible-months="2"
-          .start=${this.start}
-          .end=${this.end}
-          .min=${this.min}
-          .max=${this.max}
-          @range-select=${this.handleRangeSelect}
-          @keydown=${this.handleCalendarKeydown}
-        ></u-calendar>
-        ${this.clearable && this.value ? html`
-          <div class="calendar-footer" part="calendar-footer">
-            <u-button variant="ghost" size="sm" @click=${this.handleFooterResetClick}>${Locale.getValue('clear')}</u-button>
-          </div>
-        ` : ''}
+      <div class="body">
+        ${presets.length ? this.renderPresets(presets) : ''}
+        <div class="calendar" part="calendar">
+          <u-calendar
+            exportparts="calendar-month, calendar-header, calendar-title, calendar-weekdays, calendar-grid, calendar-week, day"
+            selection="range"
+            visible-months="2"
+            .start=${this.start}
+            .end=${this.end}
+            .min=${this.min}
+            .max=${this.max}
+            @range-select=${this.handleRangeSelect}
+            @keydown=${this.handleCalendarKeydown}
+          ></u-calendar>
+          ${this.clearable && this.value ? html`
+            <div class="calendar-footer" part="calendar-footer">
+              <u-button variant="ghost" size="sm" @click=${this.handleFooterResetClick}>${Locale.getValue('clear')}</u-button>
+            </div>
+          ` : ''}
+        </div>
       </div>
     `;
   }
 
+  private renderPresets(presets: ResolvedPreset[]) {
+    return html`
+      <div class="presets" part="presets" role="group" aria-label=${Locale.getValue('quickRanges')}>
+        ${presets.map(p => html`
+          <u-button part="preset" variant="ghost" size="sm"
+            ?disabled=${this.outOfBounds(p)}
+            @click=${() => this.commitRange(p.start, p.end)}
+          >${p.label}</u-button>
+        `)}
+      </div>
+    `;
+  }
+
+  /** A preset that reaches outside `min`/`max` is not offered — its label would promise more
+   *  than the picker may hold. */
+  private outOfBounds(p: { start: string; end: string }): boolean {
+    return (!!this.min && p.start < this.min) || (!!this.max && p.end > this.max);
+  }
+
   private handleRangeSelect = (e: CustomEvent<CalendarRangeSelectDetail>) => {
-    const next = `${e.detail.start}/${e.detail.end}`;
+    this.commitRange(e.detail.start, e.detail.end);
+  };
+
+  /** A user-chosen range (calendar or preset): set it, announce it, close the calendar. */
+  private commitRange(start: string, end: string): void {
+    const next = `${start}/${end}`;
     const changed = next !== this.value;
     this.value = next;
     if (changed) this.emitChange();
     this.popoverEl?.hide();
     this.containerEl?.focus();
-  };
+  }
 
   /** Escape that reaches the picker closes the calendar — the calendar keeps the first Escape
    *  for itself while a range is half picked. */

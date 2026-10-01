@@ -31,6 +31,41 @@ code is put in order (no `change`).
   min="2026-01-01" max="2026-12-31" value="2026-03-01/2026-03-31"></u-date-range-picker>
 ```
 
+### Quick ranges (presets)
+
+`presets` lists quick ranges beside the calendar (above it on a narrow screen), in the order given.
+Built-in names can be written as a space-separated attribute; app-defined presets are objects with
+a `label` and a `range()` function returning the two ends (`Date`s or ISO days, either order).
+Picking a preset sets the range at once, fires `change` and closes the calendar. A preset whose
+range reaches outside `min`/`max` is disabled. Relative ranges are computed each time the calendar
+opens, so "Last 7 days" is always the last seven days.
+
+| Name | Range (both ends inclusive) |
+|------|-----------------------------|
+| `today` | today |
+| `yesterday` | yesterday |
+| `last7Days` | the 7 days ending today |
+| `last30Days` | the 30 days ending today |
+| `thisWeek` | Sunday–Saturday of this week |
+| `lastWeek` | Sunday–Saturday of last week |
+| `thisMonth` | the whole of this month |
+| `lastMonth` | the whole of last month |
+| `thisYear` | January 1 – December 31 of this year |
+
+Labels come from the built-in locale tables (14 languages). Organization-specific periods — fiscal
+quarters, half-years — are not built in; define them as presets:
+
+```html
+<u-date-range-picker label="Ordered" presets="today last7Days thisMonth lastMonth"></u-date-range-picker>
+```
+
+```ts
+picker.presets = [
+  'thisMonth',
+  { label: 'Q1 FY2026', range: () => ['2026-01-01', '2026-03-31'] },
+];
+```
+
 ```ts
 const picker = document.querySelector('u-date-range-picker')!;
 picker.addEventListener('change', () => {
@@ -52,6 +87,7 @@ picker.addEventListener('change', () => {
 | `max` | `string` | — | — | Latest selectable day (ISO `YYYY-MM-DD`), inclusive |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
 | `placeholder` | `string` | — | — | Placeholder text |
+| `presets` | `Array<DateRangePresetName \| DateRangePreset>` | `[]` | — | Quick ranges beside the calendar; attribute form is space-separated built-in names |
 | `disabled` | `boolean` | `false` | ✓ | Disable |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
 | `required` | `boolean` | `false` | ✓ | Required |
@@ -95,6 +131,8 @@ Validation: `required` with no value → `valueMissing`; a value that is not two
 | `calendar-week` | One week row inside a date grid |
 | `day` | A date cell button |
 | `calendar-footer` | The row holding the "Clear" quick action |
+| `presets` | The list of quick ranges beside the calendar |
+| `preset` | One quick-range button |
 
 The range look comes from theme tokens — `--u-primary-color` (end caps), `--u-primary-bg-color`
 (the band between them) and `--u-primary-txt-color` — so a theme restyles it without part selectors.

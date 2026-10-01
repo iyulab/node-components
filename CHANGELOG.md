@@ -10,6 +10,13 @@
   previews up to the day under the pointer or keyboard focus. The second day completes it — the
   earlier of the two becomes the start, so a range never comes out reversed. Escape while a range
   is half picked drops the anchor. Supports `min`/`max`, `required`, `clearable` and form reset.
+- `u-date-range-picker` `presets` — quick ranges beside the calendar. Built-in: `today`,
+  `yesterday`, `last7Days`, `last30Days`, `thisWeek`, `lastWeek`, `thisMonth`, `lastMonth`,
+  `thisYear` (attribute: space-separated names); app-defined `{ label, range }` presets for
+  periods such as fiscal quarters. Picking one commits the range; one that reaches outside
+  `min`/`max` is disabled. Locale keys for their labels (`yesterday`, `last7Days`, `last30Days`,
+  `thisWeek`, `lastWeek`, `thisMonth`, `lastMonth`, `thisYear`, `quickRanges`) in all 14 built-in
+  locales.
 - `formatDateRange(start, end, options?, locale?)` — formats a date range with
   `Intl.DateTimeFormat#formatRange`, so the locale chooses the separator and drops the parts both
   ends share.

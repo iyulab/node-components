@@ -1,9 +1,10 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import '../../src/components/date-range-picker/UDateRangePicker.js';
 import type { UDateRangePicker } from '../../src/components/date-range-picker/UDateRangePicker.js';
 import { Locale } from '../../src/utilities/Locale.js';
 import { formatDateRange } from '../../src/utilities/format.js';
+import { resolvePresets } from '../../src/components/date-range-picker/presets.js';
 
 /** 달력 격자는 내부 `u-calendar` 의 섀도 안에 있다. */
 function cal(el: HTMLElement): ShadowRoot {
@@ -178,5 +179,70 @@ describe('u-date-range-picker', () => {
     } finally {
       style.remove();
     }
+  });
+
+  describe('빠른 선택(프리셋)', () => {
+    const presetButtons = (el: UDateRangePicker) =>
+      Array.from(el.shadowRoot!.querySelectorAll('.presets u-button')) as HTMLElement[];
+    const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+    it('presets 가 없으면 목록도 없다', async () => {
+      const el = await mount('<u-date-range-picker></u-date-range-picker>');
+      await open(el);
+      expect(el.shadowRoot!.querySelector('.presets')).toBeNull();
+    });
+
+    it('속성으로 준 이름을 그 순서대로, 로케일 문구로, 이름 붙은 묶음으로 그린다', async () => {
+      Locale.set('ko');
+      const el = await mount('<u-date-range-picker presets="today last7Days thisMonth"></u-date-range-picker>');
+      await open(el);
+      expect(presetButtons(el).map(b => b.textContent!.trim())).toEqual(['오늘', '최근 7일', '이번 달']);
+      expect(el.shadowRoot!.querySelector('.presets')!.getAttribute('aria-label')).toBe('빠른 선택');
+    });
+
+    it('🔴프리셋을 누르면 그 범위로 즉시 확정된다 — change 한 번, 달력 닫힘', async () => {
+      const el = await mount('<u-date-range-picker presets="today last7Days"></u-date-range-picker>');
+      let changes = 0;
+      el.addEventListener('change', () => changes++);
+      await open(el);
+      presetButtons(el)[1].click();
+      await settle(el);
+      const [expected] = resolvePresets(['last7Days'], new Date());
+      expect(el.value).toBe(`${expected.start}/${expected.end}`);
+      expect(changes).toBe(1);
+      expect(isOpen(el)).toBe(false);
+    });
+
+    it('앱이 정의한 프리셋을 속성(property)으로 받는다', async () => {
+      const el = await mount('<u-date-range-picker></u-date-range-picker>');
+      el.presets = ['today', { label: 'Q1 2026', range: () => ['2026-01-01', '2026-03-31'] }];
+      await settle(el);
+      await open(el);
+      expect(presetButtons(el).map(b => b.textContent!.trim())).toEqual(['Today', 'Q1 2026']);
+      presetButtons(el)[1].click();
+      await settle(el);
+      expect(el.value).toBe('2026-01-01/2026-03-31');
+    });
+
+    it('min/max 밖으로 나가는 프리셋은 비활성이다', async () => {
+      const today = iso(new Date());
+      const el = await mount(`<u-date-range-picker presets="today yesterday" min="${today}"></u-date-range-picker>`);
+      await open(el);
+      const [t, y] = presetButtons(el);
+      expect(t.hasAttribute('disabled')).toBe(false);
+      expect(y.hasAttribute('disabled')).toBe(true);
+    });
+
+    it('⚪NEGATIVE — 모르는 이름은 그리지 않고 개발 경고 한 번', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      try {
+        const el = await mount('<u-date-range-picker presets="today lastFortnight"></u-date-range-picker>');
+        await open(el);
+        expect(presetButtons(el)).toHaveLength(1);
+        expect(warn.mock.calls.some(c => String(c[0]).includes('lastFortnight'))).toBe(true);
+      } finally {
+        warn.mockRestore();
+      }
+    });
   });
 });

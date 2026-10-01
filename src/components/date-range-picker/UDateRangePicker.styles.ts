@@ -16,7 +16,37 @@ export const styles = css`
     width: max-content;
     max-width: calc(100vw - 16px);
   }
+  /* 빠른 선택 목록은 달력 왼쪽 세로 줄 — 자리가 모자라면(좁은 화면) 달력 위로 올라가 가로로 흐른다. */
+  .body {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .presets {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding-inline-end: 8px;
+    border-inline-end: 1px solid var(--u-border-color-weak, #EEEEEE);
+  }
+  .presets u-button::part(content) {
+    justify-content: flex-start;
+  }
   .calendar {
+    flex: 1 1 auto;
     min-width: 0;
+  }
+  @media (max-width: 560px) {
+    .presets {
+      flex-direction: row;
+      flex-wrap: wrap;
+      flex-basis: 100%;
+      padding-inline-end: 0;
+      padding-block-end: 8px;
+      border-inline-end: none;
+      border-block-end: 1px solid var(--u-border-color-weak, #EEEEEE);
+    }
   }
 `;
