@@ -52,6 +52,7 @@ day preserves whatever time-of-day was already set; only the "Today" button over
 | `value` | `string` | — | — | Selected date (ISO `YYYY-MM-DD`), or full ISO-8601 datetime in `mode="datetime"` |
 | `min` | `string` | — | — | Minimum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
 | `max` | `string` | — | — | Maximum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
+| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: 12px · `--u-density` (14px) · 16px. A field and a button of the same size share a height |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
 | `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type, e.g. `YYYY-MM-DD` or `YYYY-MM-DD HH:mm`) |
 | `format` | `'iso' \| 'locale'` | `'iso'` | ✓ | How the text box writes and reads the date part |

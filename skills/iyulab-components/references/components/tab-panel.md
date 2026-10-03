@@ -21,8 +21,8 @@ Tab-based content switcher. Pair each `u-tab` with a `u-panel` of the same `valu
   <u-panel value="settings">Settings content</u-panel>
 </u-tab-panel>
 
-<!-- Card variant, left placement -->
-<u-tab-panel variant="card" placement="left">
+<!-- Card appearance, left placement -->
+<u-tab-panel appearance="card" placement="left">
   <u-tab value="a" removable>Tab A</u-tab>
   <u-panel value="a">Panel A</u-panel>
 </u-tab-panel>
@@ -62,7 +62,7 @@ out of the component.
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `value` | `string` | `''` | ✓ | Currently active tab value |
-| `variant` | `'line'\|'card'\|'pill'\|'plain'` | `'line'` | ✓ | Tab bar style |
+| `appearance` | `'line'\|'card'\|'pill'\|'plain'` | `'line'` | ✓ | Tab bar style |
 | `placement` | `'top'\|'bottom'\|'left'\|'right'` | `'top'` | ✓ | Tab bar position |
 | `draggable` | `boolean` | `false` | ✓ | Native drag attribute — **no built-in reordering** |
 | `disabled` | `boolean` | `false` | ✓ | Disable all tabs |

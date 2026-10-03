@@ -17,7 +17,7 @@ Layout wrapper for form controls. Renders label, required marker, description te
   <u-select name="role">
     <u-option value="admin">Admin</u-option>
   </u-select>
-  <u-button slot="label-aside" variant="link">Learn more</u-button>
+  <u-button slot="label-aside" appearance="link">Learn more</u-button>
 </u-field>
 ```
 

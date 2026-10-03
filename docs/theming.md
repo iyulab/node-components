@@ -219,25 +219,27 @@ is how you say the second one.
 **A role value brings its foreground with it.** That is the point of the axis, not a detail —
 the surface and the text on it arrive as a pair, so `warning` renders dark text on yellow rather
 than the white text every decorative value uses. The same applies where a mark sits on the page
-background instead of on a filled surface (`variant="link"`, `u-checkbox[variant="outline"]`,
+background instead of on a filled surface (`appearance="link"`, `u-checkbox[appearance="outlined"]`,
 `u-spinner`): those read the `-strong` step, because a surface step used as text on the page
 background measures 3.07 in dark and fails AA.
 
 ⚠ Role values are **additive** — every decorative value renders exactly as before.
 
-#### `neutral` does not mean the same thing everywhere
+#### `neutral` is grey, `primary` is the brand (2.0)
 
-Adding `primary` exposed an existing asymmetry rather than creating one. `color="neutral"` is
-the default on every component that has the attribute, but it resolves two different ways:
+`color="neutral"` means **achromatic** — a grey drawn from the neutral ramp — on `u-button`,
+`u-tag`, `u-chip`, `u-badge` and `u-checkbox`. The brand colour is `color="primary"`, which reads
+the role tokens and follows a rebrand. Before 2.0 `neutral` was the brand path on `u-button` and
+`u-tag` but a grey on `u-badge` and `u-checkbox`, so the same word meant opposite things.
 
-| Component | `color="neutral"` resolves to | So `color="primary"` is… |
+| Component | Default `color` | A bare element is… |
 |---|---|---|
-| `u-button` · `u-tag` · `u-spinner` | the **brand hook** (`--u-primary-color`) | the same colour, said explicitly |
-| `u-badge` · `u-checkbox` | a **grey** (`--u-neutral-800` / `--u-neutral-600`) | a genuinely different colour |
+| `u-button` · `u-checkbox` | `primary` | the brand colour |
+| `u-tag` · `u-chip` | `neutral` | a grey label — use `color="primary"` for a brand tint |
+| `u-badge` | `blue` | the palette blue |
 
-Prefer `color="primary"` when you mean *"the brand colour"* — it says so, and it reads the same
-on all five components. `neutral` is kept as-is because changing either group would move
-already-published renders; unifying it is a visual change, not a naming one.
+Say `color="primary"` when you mean *"the brand colour"* and `color="neutral"` when you mean
+*"no colour"*.
 
 `u-spinner` has a second wrinkle: it draws on the page background, so `color="primary"` reads the
 `-strong` step while the default still reads the surface step. Both clear the 3.0 non-text
@@ -553,7 +555,8 @@ look different depending on the language. Apply `text-transform` at the site tha
 ## Density — `--u-density`
 
 `--u-density` is the **base font size of form controls**, not a scale factor. It defaults to `14px`
-and is read by `u-button` (at its default size), `u-button-group`, and `u-form` — and because
+and is read by `u-button` and the text fields (`u-input`, `u-select`, `u-textarea`, the date
+pickers) at their default `size="md"`, `u-button-group`, and `u-form` — and because
 `u-form` sets it as its own `font-size`, every control inside the form inherits it. Set it on an
 ancestor to make a screen denser or roomier:
 
@@ -591,7 +594,7 @@ u-input[type="number"]::part(input) {
 }
 ```
 
-Attribute selectors like `[type="number"]` only work on properties the component **reflects** back to the host element. `u-input` reflects `type`, `variant`, and `clearable`, so the selector above matches whether you set it as an HTML attribute or as a JS/React property. For non-reflected properties, select by a class you control instead:
+Attribute selectors like `[type="number"]` only work on properties the component **reflects** back to the host element. `u-input` reflects `type`, `appearance`, `size`, and `clearable`, so the selector above matches whether you set it as an HTML attribute or as a JS/React property. For non-reflected properties, select by a class you control instead:
 
 ```css
 u-input.amount::part(input) { text-align: right; }

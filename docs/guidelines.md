@@ -58,8 +58,8 @@ src/components/<name>/
 ### 프로퍼티
 
 ```ts
-/** 버튼 스타일 변형 */
-@property({ type: String, reflect: true }) variant: ButtonVariant = 'solid';
+/** 외형 정도 */
+@property({ type: String, reflect: true }) appearance: ButtonAppearance = 'solid';
 /** 비활성 상태 */
 @property({ type: Boolean, reflect: true }) disabled = false;
 /** 링크 URL */
@@ -67,7 +67,7 @@ src/components/<name>/
 ```
 
 - 각 프로퍼티 위에 한 줄 JSDoc 주석 작성.
-- `variant`, `disabled`, `open`, `loading` 등 HTML 속성으로 관찰 가능해야 하는 값에는 `reflect: true` 사용.
+- `appearance`, `disabled`, `open`, `loading` 등 HTML 속성으로 관찰 가능해야 하는 값에는 `reflect: true` 사용.
 - 내부 상태만 반영하는 서술형 값(`href`, `label` 등)에는 `reflect` 생략.
 - 타입 유니언은 파일 상단에 `export type`으로 분리해 선언.
 

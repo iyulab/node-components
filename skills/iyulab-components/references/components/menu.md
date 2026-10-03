@@ -45,7 +45,7 @@ Keyboard-navigable menu. Supports single/multiple selection, highlight or checkm
 | `align` | `'left'\|'center'\|'right'` | `'left'` | ✓ | Item text alignment |
 | `loop` | `boolean` | `false` | ✓ | Keyboard navigation wraps around |
 | `inline` | `boolean` | `false` | ✓ | Horizontal layout |
-| `borderless` | `boolean` | `false` | ✓ | Remove border |
+| `appearance` | `'outlined'\|'plain'` | `'outlined'` | ✓ | `outlined` bordered box · `plain` no border and no padding |
 
 ### Events
 

@@ -13,7 +13,7 @@ Square icon-only button with a built-in tooltip (shown from the default slot). R
   Delete
 </u-icon-button>
 
-<u-icon-button variant="outlined" rounded lib="heroicons" name="plus:solid">
+<u-icon-button appearance="outlined" rounded lib="heroicons" name="plus:solid">
   Add item
 </u-icon-button>
 
@@ -34,7 +34,7 @@ Square icon-only button with a built-in tooltip (shown from the default slot). R
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
-| `variant` | `'solid'\|'surface'\|'filled'\|'outlined'\|'ghost'\|'link'` | `'ghost'` | ✓ | Button variant |
+| `appearance` | `'solid'\|'soft'\|'outlined'\|'plain'\|'link'` | `'plain'` | ✓ | Button appearance (see [`u-button`](./button.md)) |
 | `rounded` | `boolean` | `false` | ✓ | Circular shape |
 | `disabled` | `boolean` | `false` | ✓ | Disable the button |
 | `loading` | `boolean` | `false` | ✓ | Loading state |

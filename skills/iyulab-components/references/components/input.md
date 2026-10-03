@@ -54,7 +54,8 @@ the library does not infer one from field meaning.
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
-| `variant` | `'outlined'\|'filled'\|'underlined'\|'borderless'` | `'outlined'` | ✓ | Visual style |
+| `appearance` | `'outlined'\|'soft'\|'underlined'\|'plain'` | `'outlined'` | ✓ | How much chrome: `outlined` · `soft` tinted face · `underlined` bottom line only · `plain` no chrome |
+| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: 12px · `--u-density` (14px) · 16px. A field and a button of the same size share a height |
 | `type` | `'text'\|'password'\|'email'\|'tel'\|'url'\|'search'\|'number'\|'date'\|'time'`… | `'text'` | — | Input type |
 | `placeholder` | `string` | — | — | Placeholder text |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
@@ -72,7 +73,6 @@ the library does not infer one from field meaning.
 | `enterkeyhint` | `'enter'\|'done'\|'go'\|'next'\|'previous'\|'search'\|'send'` | — | — | Enter-key label hint |
 | `autocorrect` | `boolean` | `false` | — | Native autocorrect (Safari/iOS) |
 | `autocapitalize` | `'off'\|'none'\|'on'\|'sentences'\|'words'\|'characters'` | `'off'` | — | Auto-capitalization behavior |
-| `size` | `number` | — | — | Native `size` — visible width in characters |
 | `disabled` | `boolean` | `false` | ✓ | Disabled |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
 | `required` | `boolean` | `false` | ✓ | Required |
@@ -130,6 +130,8 @@ Call `preventDefault()` on the `keydown` to cancel it. Do not also submit on Ent
 
 | Property | Description |
 |----------|-------------|
+| `--u-input-display` | Host `display` (default `inline-block`); set `block` to fill a form or grid cell |
+| `--u-input-width` | Host `width` (default `auto`); set `100%` where `block` alone does not stretch, such as in a flex container |
 | `--input-popover-width` | Combobox popover width (fixed to anchor width by default) |
 | `--input-popover-min-height` | Combobox popover min-height |
 | `--input-popover-max-height` | Combobox popover max-height |

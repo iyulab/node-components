@@ -54,7 +54,7 @@ property (`.value=${…}`) is not a default, exactly as with a native input.
 <form>
   <u-input name="period" value="this-month"></u-input>   <!-- reset returns here -->
   <u-checkbox name="active" checked>Active only</u-checkbox>
-  <u-button type="reset" variant="ghost">Reset</u-button>
+  <u-button type="reset" appearance="plain">Reset</u-button>
 </form>
 ```
 

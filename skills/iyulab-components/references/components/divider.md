@@ -13,7 +13,7 @@ Horizontal or vertical separator line. Slot content is overlaid as an inline lab
 
 <u-divider>OR</u-divider>
 
-<u-divider variant="dashed" align="start">Section</u-divider>
+<u-divider line="dashed" align="start">Section</u-divider>
 
 <!-- Vertical -->
 <div style="display:flex; height:40px;">
@@ -36,7 +36,7 @@ Horizontal or vertical separator line. Slot content is overlaid as an inline lab
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `vertical` | `boolean` | `false` | ✓ | Vertical orientation |
-| `variant` | `'solid'\|'dashed'\|'dotted'` | `'solid'` | ✓ | Line style |
+| `line` | `'solid'\|'dashed'\|'dotted'` | `'solid'` | ✓ | Line style |
 | `align` | `'start'\|'center'\|'end'` | `'center'` | ✓ | Label alignment |
 
 ## CSS Parts

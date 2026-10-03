@@ -11,7 +11,7 @@ Checkbox with `indeterminate` state support. Form-associated (`formAssociated = 
 ```html
 <u-checkbox name="agree" required>I agree to the terms</u-checkbox>
 
-<u-checkbox checked color="green" variant="outline">
+<u-checkbox checked color="green" appearance="outlined">
   Enabled feature
 </u-checkbox>
 
@@ -33,8 +33,8 @@ Checkbox with `indeterminate` state support. Form-associated (`formAssociated = 
 |----------|------|---------|---------|-------------|
 | `checked` | `boolean` | `false` | ✓ | Checked state |
 | `indeterminate` | `boolean` | `false` | ✓ | Partial / indeterminate state |
-| `variant` | `'filled'\|'outline'` | `'filled'` | ✓ | Visual style |
-| `color` | `'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'\|'neutral'` | `'blue'` | ✓ | Accent color — role axis (`primary`…`danger`, follows rebranding) and decorative axis (`blue`…, immune to it) |
+| `appearance` | `'solid'\|'outlined'` | `'solid'` | ✓ | `solid` fills the checked box with the colour · `outlined` colours the border and checkmark |
+| `color` | `'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'\|'neutral'` | `'primary'` | ✓ | Accent color — role axis (`primary`…`danger`, follows rebranding) and decorative axis (`blue`…, the palette colour itself, immune to it). `neutral` is grey |
 | `disabled` | `boolean` | `false` | ✓ | Disable the control |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
 | `required` | `boolean` | `false` | ✓ | Required field |
@@ -67,6 +67,6 @@ Checkbox with `indeterminate` state support. Form-associated (`formAssociated = 
 
 | Property | Description |
 |----------|-------------|
-| `--checkbox-color` | Checkmark color |
+| `--checkbox-color` | Checkmark color (`outlined`) |
 | `--checkbox-border-color` | Border color |
-| `--checkbox-background-color` | Fill color when checked |
+| `--checkbox-background-color` | Fill color when checked (`solid`) |

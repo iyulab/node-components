@@ -30,7 +30,7 @@ const result = await Dialog.show({
   content: 'Which plan do you want?',
   actions: [
     { label: 'Free', value: 'free' },
-    { label: 'Pro', value: 'pro', variant: 'solid' }
+    { label: 'Pro', value: 'pro', appearance: 'solid' }
   ]
 });
 // result = 'free' | 'pro' | null (if closed without selecting)
@@ -79,7 +79,7 @@ interface CustomDialogOptions extends DialogOptions {
 interface DialogAction {
   label: string;
   value: string;
-  variant?: ButtonVariant;
+  appearance?: ButtonAppearance; // default: 'solid'
   color?: ButtonColor;
 }
 ```

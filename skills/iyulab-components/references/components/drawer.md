@@ -84,7 +84,7 @@ whole contract. Measured in a real browser
   <u-textarea label="Note"></u-textarea>
 
   <div slot="footer">
-    <u-button variant="ghost" @click=${() => edit.hide()}>Cancel</u-button>
+    <u-button appearance="plain" @click=${() => edit.hide()}>Cancel</u-button>
     <u-button color="primary" @click=${save}>Save</u-button>
   </div>
 </u-drawer>

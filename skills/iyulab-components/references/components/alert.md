@@ -13,9 +13,9 @@ Closable message banner with status icons, auto-dismiss timer, and open/hide tra
   Your changes have been saved.
 </u-alert>
 
-<u-alert status="error" variant="outlined" open>
+<u-alert status="error" appearance="outlined" open>
   Failed to load data.
-  <u-button slot="footer" variant="solid">Retry</u-button>
+  <u-button slot="footer" appearance="solid">Retry</u-button>
 </u-alert>
 ```
 
@@ -34,7 +34,7 @@ Closable message banner with status icons, auto-dismiss timer, and open/hide tra
 |----------|------|---------|---------|-------------|
 | `open` | `boolean` | `false` | ✓ | Show/hide the alert |
 | `closable` | `boolean` | `false` | ✓ | Show close button |
-| `variant` | `'solid'\|'filled'\|'outlined'\|'glass'` | `'solid'` | ✓ | Visual style |
+| `appearance` | `'soft'\|'outlined'` | `'soft'` | ✓ | `soft` status-colour tint, no outline · `outlined` status-colour border on a transparent face |
 | `status` | `'error'\|'warning'\|'success'\|'info'\|'notice'` | — | ✓ | Status type; controls icon and color |
 | `title` | `string` | `''` | — | Title label. Left empty, the status name in the current locale is shown (`Locale.set('ko')` → 「오류」), not the raw status value |
 | `duration` | `number` | `0` | — | Auto-dismiss delay in ms; `0` disables |
@@ -69,6 +69,6 @@ Closable message banner with status icons, auto-dismiss timer, and open/hide tra
 
 | Property | Description |
 |----------|-------------|
-| `--alert-background-color` | Background color (auto-set by status) |
-| `--alert-border-color` | Border color (auto-set by status) |
+| `--alert-background-color` | Background color (auto-set by status; transparent for `appearance="outlined"`) |
+| `--alert-border-color` | Border color (auto-set by status; transparent for `appearance="soft"`) |
 | `--alert-icon-color` | Icon color (auto-set by status) |

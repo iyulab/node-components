@@ -118,7 +118,7 @@ tracked as open work, because the sheet pairs it by hand across five colour role
 
 ⚠ Setting `--u-primary-color` alone is **not enough**: hover/focus/link colors resolve from
 `--u-primary-color-strong`, so they stay on the default ramp and your brand looks half-applied.
-The measured symptom is a *selected table row* or *tag* that stays blue while buttons turn brand —
+The measured symptom is a *selected table row* or `color="primary"` *tag* that stays blue while buttons turn brand —
 that one is `--u-primary-bg-color`.
 
 ### Typography

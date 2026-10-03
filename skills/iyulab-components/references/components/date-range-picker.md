@@ -96,6 +96,7 @@ picker.addEventListener('change', () => {
 | `end` | `string` (read-only) | — | — | Last day of the range (ISO), `undefined` without a complete range |
 | `min` | `string` | — | — | Earliest selectable day (ISO `YYYY-MM-DD`), inclusive |
 | `max` | `string` | — | — | Latest selectable day (ISO `YYYY-MM-DD`), inclusive |
+| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: 12px · `--u-density` (14px) · 16px. A field and a button of the same size share a height |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
 | `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type) |
 | `format` | `'iso' \| 'locale'` | `'iso'` | ✓ | How the text box writes and reads each day |

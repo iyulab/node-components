@@ -15,7 +15,7 @@ Status badge for numbers, labels, or dot indicators. Use `anchor` to position it
 <!-- Anchored on another element -->
 <div style="position:relative; display:inline-block;">
   <u-icon lib="tabler" name="bell"></u-icon>
-  <u-badge variant="dot" color="red" anchor="top-right"></u-badge>
+  <u-badge shape="dot" color="red" anchor="top-right"></u-badge>
 </div>
 ```
 
@@ -40,7 +40,7 @@ Status badge for numbers, labels, or dot indicators. Use `anchor` to position it
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
-| `variant` | `'pill'\|'dot'\|'square'` | `'pill'` | ✓ | Shape variant; `dot` renders no content |
+| `shape` | `'pill'\|'dot'\|'square'` | `'pill'` | ✓ | Shape; `dot` renders no content |
 | `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | `'blue'` | ✓ | Badge color (role axis = semantics, decorative axis = the color itself) |
 | `anchor` | `'top-right'\|'top-left'\|'bottom-right'\|'bottom-left'` | — | ✓ | Absolute anchor position relative to parent |
-| `icon` | `boolean` | `false` | ✓ | Adds a status icon so the meaning survives without color (`info`/`success`/`warning`/`danger`; not drawn for `variant="dot"`) |
+| `icon` | `boolean` | `false` | ✓ | Adds a status icon so the meaning survives without color (`info`/`success`/`warning`/`danger`; not drawn for `shape="dot"`) |

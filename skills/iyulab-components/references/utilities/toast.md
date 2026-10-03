@@ -27,7 +27,7 @@ await Toast.show('success', 'Custom message', {
   title: 'Done',
   position: 'top-center',
   duration: 3000,
-  variant: 'outlined',
+  appearance: 'outlined',
   closable: true
 });
 ```
@@ -50,7 +50,7 @@ await Toast.show('success', 'Custom message', {
 ```ts
 interface ToastOptions {
   target?: HTMLElement;       // mount point (default: document.body)
-  variant?: AlertVariant;     // 'solid' | 'filled' | 'outlined' | 'glass'
+  appearance?: AlertAppearance; // 'soft' | 'outlined' — default: 'soft'
   title?: string;             // Optional title override
   position?: ToastPosition;
   duration?: number;          // Auto-dismiss ms (0 = no auto-dismiss)

@@ -15,8 +15,8 @@ For programmatic usage (`Dialog.alert`, `Dialog.confirm`, `Dialog.prompt`), see 
   <span slot="header">Confirm Action</span>
   <p>Are you sure you want to delete this item?</p>
   <div slot="footer">
-    <u-button variant="ghost" @click=${() => dlg.hide()}>Cancel</u-button>
-    <u-button variant="solid" @click=${handleConfirm}>Delete</u-button>
+    <u-button appearance="plain" @click=${() => dlg.hide()}>Cancel</u-button>
+    <u-button appearance="solid" @click=${handleConfirm}>Delete</u-button>
   </div>
 </u-dialog>
 

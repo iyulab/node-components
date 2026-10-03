@@ -37,7 +37,8 @@ Dropdown select with single or multiple selection, search, and clear support. Fo
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `value` | `string \| string[]` | — | — | Selected value(s) |
-| `variant` | `'outlined'\|'filled'\|'underlined'\|'borderless'` | `'outlined'` | ✓ | Visual style |
+| `appearance` | `'outlined'\|'soft'\|'underlined'\|'plain'` | `'outlined'` | ✓ | How much chrome: `outlined` · `soft` tinted face · `underlined` bottom line only · `plain` no chrome |
+| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: 12px · `--u-density` (14px) · 16px. A field and a button of the same size share a height |
 | `multiple` | `boolean` | `false` | ✓ | Allow multiple selections |
 | `searchable` | `boolean` | `false` | ✓ | Filter options by text |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |

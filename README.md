@@ -70,7 +70,7 @@ function Form() {
   return (
     <>
       <UInput label="Name" />
-      <UButton variant="solid" color="primary" size="sm">Submit</UButton>
+      <UButton appearance="solid" color="primary" size="sm">Submit</UButton>
     </>
   );
 }

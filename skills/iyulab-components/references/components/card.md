@@ -13,7 +13,7 @@ Content card with optional media, header, body, and footer sections.
   <img slot="media" src="/cover.jpg" alt="Cover" />
   <span slot="header">Title</span>
   <p>Card body content.</p>
-  <u-button slot="footer" variant="ghost">Read more</u-button>
+  <u-button slot="footer" appearance="plain">Read more</u-button>
 </u-card>
 
 <u-card orientation="horizontal" hoverable>
@@ -39,7 +39,7 @@ Content card with optional media, header, body, and footer sections.
 |----------|------|---------|---------|-------------|
 | `orientation` | `'vertical'\|'horizontal'` | `'vertical'` | ✓ | Layout direction |
 | `shadowless` | `boolean` | `false` | ✓ | Remove drop shadow |
-| `borderless` | `boolean` | `false` | ✓ | Remove border |
+| `appearance` | `'outlined'\|'plain'` | `'outlined'` | ✓ | `outlined` border and drop shadow · `plain` no border and no shadow (layout only) |
 | `hoverable` | `boolean` | `false` | ✓ | Lift effect on hover |
 
 ## CSS Parts
@@ -57,5 +57,5 @@ Content card with optional media, header, body, and footer sections.
 
 | Property | Description |
 |----------|-------------|
-| `--card-border-width` | Border thickness (`0` when `borderless`) |
+| `--card-border-width` | Border thickness (`0` for `appearance="plain"`) |
 | `--card-border-color` | Border color |

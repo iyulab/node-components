@@ -17,10 +17,16 @@ Radio group built from `u-option` children. Form-associated.
 </u-radio>
 
 <!-- Button style, horizontal -->
-<u-radio name="plan" type="button" orientation="horizontal" variant="outlined">
+<u-radio name="plan" type="button" orientation="horizontal" appearance="outlined">
   <u-option value="free">Free</u-option>
   <u-option value="pro">Pro</u-option>
   <u-option value="enterprise">Enterprise</u-option>
+</u-radio>
+
+<!-- Segmented control -->
+<u-radio name="view" type="button" orientation="horizontal" appearance="soft" value="list">
+  <u-option value="list">List</u-option>
+  <u-option value="board">Board</u-option>
 </u-radio>
 ```
 
@@ -38,7 +44,7 @@ Radio group built from `u-option` children. Form-associated.
 |----------|------|---------|---------|-------------|
 | `value` | `string` | — | — | Currently selected value |
 | `type` | `'default'\|'button'` | `'default'` | ✓ | `button` renders options as toggle buttons |
-| `variant` | `'filled'\|'outlined'` | `'filled'` | ✓ | Visual style |
+| `appearance` | `'solid'\|'outlined'\|'soft'` | `'solid'` | ✓ | `solid` fills the picked option · `outlined` · `soft` (`type="button"` only) a segmented control — a quiet track where the picked segment rises onto the surface |
 | `orientation` | `'vertical'\|'horizontal'` | `'vertical'` | ✓ | Layout direction |
 | `disabled` | `boolean` | `false` | ✓ | Disable all options |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |

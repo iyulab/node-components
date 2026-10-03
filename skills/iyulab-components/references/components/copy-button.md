@@ -49,7 +49,7 @@ button.addEventListener('copy', (e: ClipboardEvent) => {
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
-| `variant` | `'solid'\|'outline'\|'ghost'\|'link'` | `'ghost'` | ✓ | Button style |
+| `appearance` | `'solid'\|'soft'\|'outlined'\|'plain'\|'link'` | `'plain'` | ✓ | Button appearance (see [`u-button`](./button.md)) |
 | `rounded` | `boolean` | `false` | ✓ | Circular shape |
 | `disabled` | `boolean` | `false` | ✓ | Disabled state |
 | `copied` | `boolean` | `false` | ✓ | Currently showing the copied state |
