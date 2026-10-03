@@ -223,4 +223,13 @@ export const styles = css`
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  /* 앞머리 점 — 글자색을 따른다(역할·장식 축 어느 쪽이든 글자와 같은 색). */
+  .dot {
+    flex: none;
+    width: var(--tag-dot-size, 6px);
+    height: var(--tag-dot-size, 6px);
+    border-radius: var(--u-radius-circle, 50%);
+    background: currentColor;
+  }
 `;

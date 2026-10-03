@@ -29,6 +29,7 @@ export type TagColor =
  * @csspart base - 태그 바깥 상자
  * @csspart content - 콘텐츠 영역
  * @csspart icon - 상태 아이콘 (`icon` + 역할 색일 때만 렌더된다)
+ * @csspart dot - 앞머리 점 (`dot` 일 때만 렌더된다)
  *
  * @cssprop --tag-color - 텍스트 색상
  * @cssprop --tag-bg-color - 배경 색상
@@ -37,6 +38,7 @@ export type TagColor =
  * @cssprop --tag-padding-block - 세로 여백
  * @cssprop --tag-padding-inline - 가로 여백
  * @cssprop --tag-gap - prefix/본문/suffix 사이 간격
+ * @cssprop --tag-dot-size - 앞머리 점의 지름 (기본 6px)
  */
 @customElement('u-tag')
 export class UTag extends UElement {
@@ -54,6 +56,12 @@ export class UTag extends UElement {
    * 의미가 없는 색(`neutral`·`primary`·장식 축)에서는 아무것도 그리지 않습니다.
    */
   @property({ type: Boolean, reflect: true }) icon = false;
+  /**
+   * 글자 앞에 글자색의 작은 점을 찍습니다 — 표 안의 상태 배지처럼 **같은 열에서 색이 줄지어 반복될 때**
+   * 색이 아니라 모양으로도 «이것은 상태다» 를 표시하는 보조 표식입니다. 상태의 뜻은 여전히 글자가 말합니다.
+   * `icon` 과 함께 켜면 아이콘이 우선합니다(둘 다 그리지 않습니다).
+   */
+  @property({ type: Boolean, reflect: true }) dot = false;
 
   render() {
     const iconName = this.icon ? statusIcon(this.color) : undefined;
@@ -61,7 +69,9 @@ export class UTag extends UElement {
       <div class="base" part="base">
         ${iconName
           ? html`<u-icon class="icon" part="icon" lib="internal" name=${iconName}></u-icon>`
-          : nothing}
+          : this.dot
+            ? html`<span class="dot" part="dot" aria-hidden="true"></span>`
+            : nothing}
         <slot name="prefix"></slot>
         <span class="content" part="content">
           <slot></slot>

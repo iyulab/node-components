@@ -20,6 +20,8 @@
   `--u-bg-color` stays the surface components paint their own face with.
 - **`--u-txt-color-weaker`** — a third text step below `-weak` for metadata, units, secondary columns
   and an empty value's dash (readable on the surface: 4.6 light · 5.0 dark).
+- **`dot` on `u-tag`** — a small leading mark in the text colour (`part="dot"`, `--tag-dot-size`), for
+  status labels repeated down a table column. The status `icon` wins when both are set.
 - **`--u-focus-ring-color`** — every focus outline reads it (default `--u-primary-color-strong`),
   so a theme with a neutral ink primary can keep focus on an interaction hue.
 
