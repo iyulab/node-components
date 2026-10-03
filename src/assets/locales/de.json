@@ -54,5 +54,7 @@
   "confirm": "Bestätigen",
   "cancel": "Abbrechen",
   "apply": "Übernehmen",
-  "dateUnavailable": "Dieses Datum ist nicht verfügbar"
+  "dateUnavailable": "Dieses Datum ist nicht verfügbar",
+  "startTime": "Startzeit",
+  "endTime": "Endzeit"
 }

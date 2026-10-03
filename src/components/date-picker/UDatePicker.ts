@@ -13,33 +13,24 @@ import { dateTextPattern, formatDateText, formatDateTimeText, parseDate, parseDa
 import { UCalendar } from "../calendar/UCalendar.js";
 import { DateTextController } from "../calendar/date-text-controller.js";
 import { isDayUnavailable, parseISODate, toISODate, type DateDisabledFn } from "../calendar/dates.js";
+import { splitDateTime, toDateTimeOffset } from "../calendar/datetime.js";
 import { UPopover } from "../popover/UPopover.js";
 import { styles as pickerStyles } from "../calendar/picker.styles.js";
 import { styles } from "./UDatePicker.styles.js";
-
-/** `±HH:mm` for the browser's local timezone at `date` (DST-aware — recomputed per date,
- *  not cached — `getTimezoneOffset()`'s sign is the inverse of the ISO-8601 offset sign). */
-function getLocalOffset(date: Date): string {
-  const minutes = -date.getTimezoneOffset();
-  const sign = minutes >= 0 ? '+' : '-';
-  const abs = Math.abs(minutes);
-  return `${sign}${String(Math.floor(abs / 60)).padStart(2, '0')}:${String(abs % 60).padStart(2, '0')}`;
-}
 
 /** Builds the `value` for the given mode — `datetime` always emits seconds + local offset so
  *  the result is unconditionally a valid, unambiguous ISO-8601 `DateTimeOffset` regardless of
  *  how coarse the UI input was (this is the guarantee the datetime mode request asked for). */
 function buildValue(date: Date, mode: DatePickerMode, time: string): string {
-  return mode === 'datetime' ? `${toISODate(date)}T${time}:00${getLocalOffset(date)}` : toISODate(date);
+  return mode === 'datetime' ? toDateTimeOffset(toISODate(date), time) : toISODate(date);
 }
 
-/** Splits a `value` into its date portion (as a `Date`, via the local `parseISODate` above —
- *  date-only, no timezone conversion) and its `HH:mm` time-of-day (`'00:00'` if absent —
- *  covers both plain date-mode values and a datetime value with no time captured yet). */
+/** Splits a `value` into its date portion (as a local-midnight `Date` — no timezone conversion)
+ *  and its `HH:mm` time-of-day (`'00:00'` if absent — covers both plain date-mode values and a
+ *  datetime value with no time captured yet). */
 function splitValue(value: string): { date: Date; time: string } {
-  const [datePart, rest] = value.split('T');
-  const match = rest?.match(/^(\d{2}:\d{2})/);
-  return { date: parseISODate(datePart), time: match ? match[1] : '00:00' };
+  const { day, time } = splitDateTime(value);
+  return { date: parseISODate(day), time };
 }
 
 export type DatePickerMode = 'date' | 'datetime';

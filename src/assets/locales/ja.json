@@ -54,5 +54,7 @@
   "confirm": "OK",
   "cancel": "キャンセル",
   "apply": "適用",
-  "dateUnavailable": "この日付は選択できません"
+  "dateUnavailable": "この日付は選択できません",
+  "startTime": "開始時刻",
+  "endTime": "終了時刻"
 }

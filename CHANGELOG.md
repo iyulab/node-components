@@ -16,8 +16,18 @@
   may run across a disabled day but cannot start or end on one. A typed or assigned value on a
   disabled day reports `stepMismatch` with the new locale message `dateUnavailable`.
 
+- **`u-date-range-picker mode="datetime"`: a period with start and end times.** Labelled start and end
+  time inputs sit under the calendar; each half of the value is a complete ISO-8601 `DateTimeOffset`
+  (`2026-10-01T09:00:00+09:00/2026-10-01T18:00:00+09:00`). The first range picked, and any preset,
+  covers its days whole (00:00–23:59); picking other days afterwards keeps the times. The text box reads
+  `2026-10-01 09:00 ~ 2026-10-31 18:00` and `2026-10-01 09:00 ~ 18:00`. New exports
+  `parseDateTimeRange` / `formatDateTimeRangeText`, new parts `calendar-time` / `time-input`, new
+  locale keys `startTime` / `endTime`.
+
 ### Fixed
 
+- **`u-date-picker mode="datetime"` takes the UTC offset of the chosen time, not of midnight.** On a
+  day the clocks change, a time after the change carried the offset from before it.
 - **`u-date-picker` re-validates when `min` or `max` changes.** A value that a new bound put out of
   range kept reporting valid until the value itself changed; `u-date-range-picker` already re-validated.
 

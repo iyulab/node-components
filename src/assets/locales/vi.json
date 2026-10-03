@@ -54,5 +54,7 @@
   "confirm": "Xác nhận",
   "cancel": "Hủy",
   "apply": "Áp dụng",
-  "dateUnavailable": "Ngày này không khả dụng"
+  "dateUnavailable": "Ngày này không khả dụng",
+  "startTime": "Giờ bắt đầu",
+  "endTime": "Giờ kết thúc"
 }

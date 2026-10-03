@@ -318,3 +318,56 @@ export function parseDateRange(
 export function formatDateRangeText(start: string, end: string, format: DateTextFormat = 'iso', locale?: LocaleTag): string {
   return `${formatDateText(start, format, locale)} – ${formatDateText(end, format, locale)}`;
 }
+
+const TIME_ONLY = /^(\d{1,2}):(\d{2})(?::\d{2})?$/;
+
+/**
+ * Reads a period with times of day — `2026-10-01 09:00 ~ 2026-10-31 18:00`, `2026-10-01 09:00 ~ 18:00`
+ * (a time alone ends on the first day), the ISO interval `2026-10-01T09:00/2026-10-31T18:00`, or the
+ * day forms {@link parseDateRange} reads — and returns `{ start, end }` as local `YYYY-MM-DDTHH:mm`,
+ * earlier first, or `null`. A day typed without a time takes `startTime` (default `00:00`) at the
+ * start and `endTime` (default `23:59`) at the end, so a period of days covers them whole; one day
+ * alone runs from `startTime` to `endTime` that day. A short second day takes the first day's year,
+ * or the next year when it would otherwise fall before the first day.
+ */
+export function parseDateTimeRange(
+  text: string,
+  options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date; startTime?: string; endTime?: string } = {},
+): { start: string; end: string } | null {
+  const t = text.trim();
+  if (!t) return null;
+  const startTime = options.startTime ?? '00:00';
+  const endTime = options.endTime ?? '23:59';
+  let parts = t.split(RANGE_SEPARATOR);
+  if (parts.length === 1 && t.includes('/')) {
+    const iso = /^(\d{4}-\d{2}-\d{2}(?:T[\d:]+)?)[^/]*\/(\d{4}-\d{2}-\d{2}(?:T[\d:]+)?)/.exec(t);
+    if (iso) parts = [iso[1], iso[2]];
+  }
+  if (parts.length > 2) return null;
+  const start = parseDateTime(parts[0], { ...options, defaultTime: startTime });
+  if (!start) return null;
+  const startDay = start.slice(0, 10);
+  if (parts.length === 1) {
+    const sameDayEnd = `${startDay}T${endTime}`;
+    return { start, end: sameDayEnd < start ? start : sameDayEnd };
+  }
+  let end: string | null;
+  const timeOnly = TIME_ONLY.exec(parts[1].trim());
+  if (timeOnly) {
+    end = parseDateTime(`${startDay} ${parts[1].trim()}`, options);
+  } else {
+    const [y, m, d] = startDay.split('-').map(Number);
+    end = parseDateTime(parts[1], { ...options, referenceDate: new Date(y, m - 1, d), defaultTime: endTime });
+    // A second day typed without a year that falls before the first runs into the next year.
+    if (end && end.slice(0, 10) < startDay && !/\d{4}/.test(parts[1])) {
+      end = parseDateTime(parts[1], { ...options, referenceDate: new Date(y + 1, 0, 1), defaultTime: endTime });
+    }
+  }
+  if (!end) return null;
+  return start <= end ? { start, end } : { start: end, end: start };
+}
+
+/** Writes a period with times as `{start} – {end}`, each as {@link formatDateTimeText} writes it. */
+export function formatDateTimeRangeText(start: string, end: string, format: DateTextFormat = 'iso', locale?: LocaleTag): string {
+  return `${formatDateTimeText(start, format, locale)} – ${formatDateTimeText(end, format, locale)}`;
+}

@@ -54,5 +54,7 @@
   "confirm": "Konfirmasi",
   "cancel": "Batal",
   "apply": "Terapkan",
-  "dateUnavailable": "Tanggal ini tidak tersedia"
+  "dateUnavailable": "Tanggal ini tidak tersedia",
+  "startTime": "Waktu mulai",
+  "endTime": "Waktu selesai"
 }

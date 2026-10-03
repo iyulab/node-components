@@ -54,5 +54,7 @@
   "confirm": "確定",
   "cancel": "取消",
   "apply": "套用",
-  "dateUnavailable": "此日期無法選取"
+  "dateUnavailable": "此日期無法選取",
+  "startTime": "開始時間",
+  "endTime": "結束時間"
 }

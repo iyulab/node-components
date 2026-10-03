@@ -54,5 +54,7 @@
   "confirm": "Confirmar",
   "cancel": "Cancelar",
   "apply": "Aplicar",
-  "dateUnavailable": "Esta data não está disponível"
+  "dateUnavailable": "Esta data não está disponível",
+  "startTime": "Hora de início",
+  "endTime": "Hora de término"
 }

@@ -41,6 +41,24 @@ exported as `parseDateRange` and `formatDateRangeText`.
   min="2026-01-01" max="2026-12-31" value="2026-03-01/2026-03-31"></u-date-range-picker>
 ```
 
+### Date and time (`mode="datetime"`)
+
+`mode="datetime"` adds a start time and an end time under the calendar (labelled inputs). Each half of
+the value is then a complete ISO-8601 `DateTimeOffset` — seconds and the browser's local offset are
+always filled in — and `start`/`end` return those halves:
+
+```html
+<u-date-range-picker name="shift" label="Shift" mode="datetime"
+  value="2026-10-01T09:00:00+09:00/2026-10-01T18:00:00+09:00"></u-date-range-picker>
+```
+
+The first range picked covers its days whole (00:00 to 23:59), as do presets; after that, picking
+other days keeps the times already set. Changing a time updates that end at once (the calendar stays
+open); a start time set after the end on the same day swaps the two. The text box reads
+`2026-10-01 09:00 ~ 2026-10-31 18:00` and `2026-10-01 09:00 ~ 18:00` (a time alone ends on the first
+day); a day typed without a time keeps that end's time. `min`/`max` and `isDateDisabled` stay
+date-only. The reader and writer are exported as `parseDateTimeRange` and `formatDateTimeRangeText`.
+
 ### Disabled days
 
 `isDateDisabled` receives an ISO day and returns `true` to disable it. A disabled day cannot start or
@@ -110,9 +128,10 @@ picker.addEventListener('change', () => {
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
-| `value` | `string` | — | — | The range as `YYYY-MM-DD/YYYY-MM-DD` (start first) |
-| `start` | `string` (read-only) | — | — | First day of the range (ISO), `undefined` without a complete range |
-| `end` | `string` (read-only) | — | — | Last day of the range (ISO), `undefined` without a complete range |
+| `mode` | `'date' \| 'datetime'` | `'date'` | ✓ | `datetime` adds start and end times; each half becomes an ISO-8601 `DateTimeOffset` |
+| `value` | `string` | — | — | The range as `YYYY-MM-DD/YYYY-MM-DD` (start first), or two `DateTimeOffset`s in `mode="datetime"` |
+| `start` | `string` (read-only) | — | — | Start of the range (ISO day, or date-time in `mode="datetime"`), `undefined` without a complete range |
+| `end` | `string` (read-only) | — | — | End of the range (ISO day, or date-time in `mode="datetime"`), `undefined` without a complete range |
 | `min` | `string` | — | — | Earliest selectable day (ISO `YYYY-MM-DD`), inclusive |
 | `max` | `string` | — | — | Latest selectable day (ISO `YYYY-MM-DD`), inclusive |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
@@ -165,6 +184,8 @@ Validation: `required` with no value → `valueMissing`; a value that is not two
 | `calendar-grid` | A date grid |
 | `calendar-week` | One week row inside a date grid |
 | `day` | A date cell button |
+| `calendar-time` | The row holding the start and end time inputs (`mode="datetime"` only) |
+| `time-input` | A time-of-day input (`mode="datetime"` only) |
 | `calendar-footer` | The row holding the "Clear" quick action |
 | `presets` | The list of quick ranges beside the calendar |
 | `preset` | One quick-range button |

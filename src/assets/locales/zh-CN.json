@@ -54,5 +54,7 @@
   "confirm": "确定",
   "cancel": "取消",
   "apply": "应用",
-  "dateUnavailable": "该日期不可选"
+  "dateUnavailable": "该日期不可选",
+  "startTime": "开始时间",
+  "endTime": "结束时间"
 }
