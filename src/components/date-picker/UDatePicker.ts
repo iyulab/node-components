@@ -1,4 +1,5 @@
 import { html, PropertyValues } from "lit";
+import type { FieldSize } from '../input/UInput.js';
 import { customElement, property, query, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import '../button/UButton.js';
@@ -97,6 +98,9 @@ export type DatePickerMode = 'date' | 'datetime';
 @customElement('u-date-picker')
 export class UDatePicker extends UFormControlElement<string> {
   static styles = [super.styles, pickerStyles, styles];
+
+  /** 크기 — 다른 필드·버튼과 같은 세 단(`sm` 12px · `md` = `--u-density`(14px) · `lg` 16px). */
+  @property({ type: String, reflect: true }) size: FieldSize = 'md';
 
   /** `date` (default) selects a calendar day only. `datetime` also captures a time-of-day and
    *  the value becomes a complete ISO-8601 `DateTimeOffset` string. */

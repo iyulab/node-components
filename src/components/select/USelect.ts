@@ -1,4 +1,5 @@
 import { html, PropertyValues } from "lit";
+import type { FieldAppearance, FieldSize } from '../input/UInput.js';
 import { customElement, property, query, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import '../field/UField.js';
@@ -12,7 +13,6 @@ import { UOption } from "../option/UOption.js";
 import { UPopover } from "../popover/UPopover.js";
 import { styles } from "./USelect.styles.js";
 
-export type SelectVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
 
 /**
  * 드롭다운 목록에서 값을 선택하는 폼 컨트롤 컴포넌트입니다.
@@ -53,7 +53,14 @@ export class USelect extends UFormControlElement<string | string[]> {
   static styles = [ super.styles, styles ];
 
   /** 트리거 영역의 스타일 변형 */
-  @property({ type: String, reflect: true }) variant: SelectVariant = 'outlined';
+  /** 외형 정도 */
+  @property({ type: String, reflect: true }) appearance: FieldAppearance = 'outlined';
+  /**
+   * 크기 — 버튼의 `size` 와 같은 세 단(`sm` 12px · `md` 기본 = `--u-density`(14px) · `lg` 16px).
+   * 상자 높이는 글자 크기에서 파생된다(1.5em 줄 + 필드 상자 여백 × 2 + 테두리) — 같은 `size` 의 버튼과
+   * 한 줄에 서도록. 테마는 필드 상자 토큰(`--u-field-padding-block`)으로 단마다 높이를 다듬는다.
+   */
+  @property({ type: String, reflect: true }) size: FieldSize = 'md';
   /** 다중 선택 여부 */
   @property({ type: Boolean, reflect: true }) multiple: boolean = false;
   /** 검색 가능 여부 */

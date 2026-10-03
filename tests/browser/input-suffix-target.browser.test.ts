@@ -38,7 +38,13 @@ function contentRight(el: Element) {
   return rect(el).right - parseFloat(cs.borderRightWidth) - parseFloat(cs.paddingRight);
 }
 
+/**
+ * 아래 기하 단언(글리프 16 · 간격 4/8)은 **16px 글자**를 전제한다 — 2.0 부터 필드의 기본(`md`)은
+ * `--u-density`(14px)라, 크기를 명시하지 않은 필드는 `size="lg"`(16px)로 올려 같은 기하를 잰다.
+ * 14px·12px 에서도 받는 영역이 24 를 넘는지는 맨 아래 «크기 무관» 블록이 따로 잰다.
+ */
 async function mount(html: string): Promise<void> {
+  html = html.replace(/<u-(input|select)(?![^>]*size=)/g, '<u-$1 size="lg"');
   document.body.innerHTML = `<div style="padding:40px">${html}</div>`;
   await new Promise((r) => setTimeout(r, 80));
 }
@@ -155,8 +161,8 @@ describe('u-input 접미 아이콘 — 모두 24×24 · 글리프는 1em', () =>
   });
 
   it('🔴좌우 여백이 0 인 변형도 24 다 — 컨테이너가 오른쪽에 0.25em 을 내준다', async () => {
-    for (const variant of ['underlined', 'borderless']) {
-      await mount(`<u-input variant="${variant}" clearable value="abc" style="width:200px"></u-input>`);
+    for (const variant of ['underlined', 'plain']) {
+      await mount(`<u-input appearance="${variant}" clearable value="abc" style="width:200px"></u-input>`);
       const host = document.querySelector('u-input')!;
       const [clear] = buttons(host);
       const container = shadow(host).querySelector('.container')!;
@@ -210,3 +216,24 @@ describe('u-select 지우기 — 받는 영역만 넓히고 보이는 것은 그
     expect(host.value).toBe('');
   });
 });
+
+describe('접미 아이콘 받는 영역은 글자 크기와 무관하게 ≥ 24 (WCAG 2.5.8)', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+  });
+  for (const size of ['sm', 'md', 'lg'] as const) {
+    it(`u-input size="${size}" — 지우기·비밀번호 토글이 둘 다 ≥ 24`, async () => {
+      await mount(`<u-input size="${size}" type="password" clearable value="abc" style="width:240px"></u-input>`);
+      const host = document.querySelector('u-input')!;
+      const targets = buttons(host);
+      expect(targets.length).toBeGreaterThanOrEqual(2);
+      for (const t of targets) {
+        const r = rect(t);
+        expect(Math.round(r.width), `${size} width`).toBeGreaterThanOrEqual(24);
+        expect(Math.round(r.height), `${size} height`).toBeGreaterThanOrEqual(24);
+        expect(edgesHit(host, t), `${size} 좌·우·위·아래`).toEqual([true, true, true, true]);
+      }
+    });
+  }
+});
+

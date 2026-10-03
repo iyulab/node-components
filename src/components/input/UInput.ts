@@ -18,7 +18,10 @@ export type InputType = 'text' | 'password' | 'email' | 'tel' | 'url' | 'search'
 export type InputModeOption = 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
 export type EnterKeyHint = 'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send';
 export type AutoCapitalize = 'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters';
-export type InputVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
+/** 외형 정도 — `outlined`(기본) · `soft` 중립 틴트 면 · `underlined` 밑줄만 · `plain` 외형 없음. */
+export type FieldAppearance = 'outlined' | 'soft' | 'underlined' | 'plain';
+/** 필드 크기 — 버튼의 `size` 와 같은 세 단. */
+export type FieldSize = 'sm' | 'md' | 'lg';
 
 /**
  * 사용자 입력을 받는 텍스트 입력 필드 컴포넌트입니다.
@@ -62,8 +65,8 @@ export type InputVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
 export class UInput extends UFormControlElement<string> {
   static styles = [ super.styles, styles ];
 
-  /** 입력 필드 표시 열수 (문자 수 기준) */
-  @property({ type: String, reflect: true }) variant: InputVariant = 'outlined';
+  /** 외형 정도 */
+  @property({ type: String, reflect: true }) appearance: FieldAppearance = 'outlined';
   /** 전체 지우기 버튼 표시 여부 */
   @property({ type: Boolean, reflect: true }) clearable: boolean = false;
   /** input 요소의 type 속성. 외부 `u-input[type="..."]` 스타일 훅을 위해 reflect 한다 (URadio.type 과 동일). */
@@ -94,8 +97,12 @@ export class UInput extends UFormControlElement<string> {
   @property({ type: String }) autocapitalize: AutoCapitalize = 'off';
   /** 자동 완성 기능 설정 */
   @property({ type: String }) autocomplete?: AutoFill;
-  /** 입력 필드 표시 열수 (문자 수 기준) */
-  @property({ type: Number }) size?: number;
+  /**
+   * 크기 — 버튼의 `size` 와 같은 세 단(`sm` 12px · `md` 기본 = `--u-density`(14px) · `lg` 16px).
+   * 상자 높이는 글자 크기에서 파생된다(1.5em 줄 + 필드 상자 여백 × 2 + 테두리) — 같은 `size` 의 버튼과
+   * 한 줄에 서도록. 테마는 필드 상자 토큰(`--u-field-padding-block`)으로 단마다 높이를 다듬는다.
+   */
+  @property({ type: String, reflect: true }) size: FieldSize = 'md';
   /** placeholder 텍스트 */
   @property({ type: String }) placeholder?: string;
   /** 유효성 검사 패턴 (정규식) */
@@ -168,7 +175,6 @@ export class UInput extends UFormControlElement<string> {
             autocomplete=${ifDefined(this.autocomplete)}
             inputmode=${ifDefined(this.inputmode ?? (isNumber ? 'decimal' : undefined))}
             enterkeyhint=${ifDefined(this.enterkeyhint)}
-            size=${ifDefined(this.size)}
             pattern=${ifDefined(this.pattern)}
             placeholder=${ifDefined(this.placeholder)}
             .value=${live(isNumber ? this.numberText : (this.value || ''))}

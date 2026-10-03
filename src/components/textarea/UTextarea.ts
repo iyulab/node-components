@@ -1,4 +1,5 @@
 import { html, PropertyValues } from "lit";
+import type { FieldAppearance, FieldSize } from '../input/UInput.js';
 import { customElement, property, query } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { live } from "lit/directives/live.js";
@@ -9,7 +10,6 @@ import { Locale } from "../../utilities/Locale.js";
 import type { AutoCapitalize, EnterKeyHint, InputModeOption } from "../input/UInput.js";
 import { styles } from "./UTextarea.styles.js";
 
-type TextareaVariant = 'outlined' | 'filled' | 'underlined' | 'borderless';
 type TextareaResize = 'none' | 'vertical' | 'horizontal' | 'both' | 'auto';
 
 /**
@@ -33,7 +33,14 @@ export class UTextarea extends UFormControlElement<string> {
   static styles = [ super.styles, styles ];
 
   /** 스타일 변형 */
-  @property({ type: String, reflect: true }) variant: TextareaVariant = 'outlined';
+  /** 외형 정도 */
+  @property({ type: String, reflect: true }) appearance: FieldAppearance = 'outlined';
+  /**
+   * 크기 — 버튼의 `size` 와 같은 세 단(`sm` 12px · `md` 기본 = `--u-density`(14px) · `lg` 16px).
+   * 상자 높이는 글자 크기에서 파생된다(1.5em 줄 + 필드 상자 여백 × 2 + 테두리) — 같은 `size` 의 버튼과
+   * 한 줄에 서도록. 테마는 필드 상자 토큰(`--u-field-padding-block`)으로 단마다 높이를 다듬는다.
+   */
+  @property({ type: String, reflect: true }) size: FieldSize = 'md';
   /** 리사이즈 모드 */
   @property({ type: String, reflect: true }) resize: TextareaResize = 'auto';
   /** 최소 행 수 */

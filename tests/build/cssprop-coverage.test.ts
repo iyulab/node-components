@@ -34,6 +34,7 @@ const INTERNAL: Record<string, string> = {
   // 다른 선언 토큰들에서 계산되는 파생값 — 단독으로 덮으면 트랙 기하와 어긋난다.
   '--switch-move-width': '--switch-track-width/--switch-thumb-size/--switch-thumb-offset 에서 계산',
   '--_splitter-box': 'u-split-panel 핸들 박스 = max(--splitter-size, --splitter-hit-size) 에서 계산',
+  '--_target-pad': 'u-input·u-select 접미 아이콘 받는 여백 = max(0.25em, 12px − 0.5em) — 글자 크기와 무관하게 24px 를 보장하는 식',
 
   // 장식 축(`color=` 속성)의 내부 슬롯. `color` 속성이 공개 API 이고 이 슬롯들은 그
   // 구현이다 — 공개하면 hue 스케일의 현재 형태(5슬롯)에 영구히 묶인다. 소비자가
@@ -46,7 +47,7 @@ const INTERNAL: Record<string, string> = {
   '--tag-hue-text-outlined': 'u-tag 장식 축 내부 슬롯 (color= 구현)',
   '--checkbox-hue': 'u-checkbox 장식 축 내부 슬롯 (color= 구현)',
 
-  // 역할 축이 추가로 쓰는 슬롯. 장식 축은 이 슬롯을 비워 두고 variant 규칙의 폴백으로
+  // 역할 축이 추가로 쓰는 슬롯. 장식 축은 이 슬롯을 비워 두고 appearance 규칙의 폴백으로
   // 떨어진다 — 그래서 장식 축 렌더가 변하지 않는다. 같은 이유로 내부다: 소비자가 만질
   // 것은 `color` 속성이거나 시트의 역할 토큰이지 이 슬롯이 아니다.
   '--tag-hue-on-solid': 'u-tag 역할 축 내부 슬롯 — 채운 면 위의 글자',

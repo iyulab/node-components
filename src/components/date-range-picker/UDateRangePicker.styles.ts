@@ -6,7 +6,6 @@ export const styles = css`
     display: var(--u-date-range-picker-display, inline-block);
     width: var(--u-date-range-picker-width, auto);
     color: var(--u-txt-color, #212121);
-    font-size: inherit;
     font-family: var(--u-font-base);
   }
 
@@ -96,5 +95,16 @@ export const styles = css`
   }
   .calendar-button {
     cursor: pointer;
+  }
+
+  /* === Size — 다른 필드·버튼과 같은 세 단 === */
+  :host {
+    font-size: var(--u-density, 14px);
+  }
+  :host([size="sm"]) {
+    font-size: 12px;
+  }
+  :host([size="lg"]) {
+    font-size: 16px;
   }
 `;

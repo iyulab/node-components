@@ -1,4 +1,5 @@
 import { html, PropertyValues } from "lit";
+import type { FieldSize } from '../input/UInput.js';
 import { customElement, property, query, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import '../button/UButton.js';
@@ -89,6 +90,9 @@ function parseInterval(value?: string): { start: string; end: string } | undefin
 @customElement('u-date-range-picker')
 export class UDateRangePicker extends UFormControlElement<string> {
   static styles = [super.styles, pickerStyles, styles];
+
+  /** 크기 — 다른 필드·버튼과 같은 세 단(`sm` 12px · `md` = `--u-density`(14px) · `lg` 16px). */
+  @property({ type: String, reflect: true }) size: FieldSize = 'md';
 
   /** Earliest selectable day (ISO `YYYY-MM-DD`), inclusive. */
   @property({ type: String }) min?: string;

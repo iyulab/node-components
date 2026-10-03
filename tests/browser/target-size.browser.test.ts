@@ -424,12 +424,12 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
     // 좌우 여백이 0 인 변형 — 맨 뒤 아이콘이 오른쪽으로 넓힐 자리가 없다(컨테이너가 `overflow: hidden` 이라 넓혀도 잘린다).
     {
       state: '지우기 · 밑줄',
-      html: '<u-input variant="underlined" clearable value="abc" style="width:200px"></u-input>',
+      html: '<u-input appearance="underlined" clearable value="abc" style="width:200px"></u-input>',
       targets: () => suffixButtons('u-input'),
     },
     {
       state: '지우기 · 테두리 없음',
-      html: '<u-input variant="borderless" clearable value="abc" style="width:200px"></u-input>',
+      html: '<u-input appearance="plain" clearable value="abc" style="width:200px"></u-input>',
       targets: () => suffixButtons('u-input'),
     },
   ],

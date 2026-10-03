@@ -7,7 +7,6 @@ export const styles = css`
     display: var(--u-textarea-display, inline-block);
     width: var(--u-textarea-width, auto);
     color: var(--u-txt-color, #212121);
-    font-size: inherit;
     font-family: var(--u-font-base);
   }
 
@@ -35,34 +34,34 @@ export const styles = css`
     box-shadow: 0 0 0 1px var(--u-input-border-color-invalid, #C62828);
   }
 
-  /* ===== Variant: filled ===== */
-  :host([variant="filled"]) .container {
+  /* ===== Appearance: soft (중립 틴트 면) ===== */
+  :host([appearance="soft"]) .container {
     border-color: transparent;
     background-color: var(--u-neutral-200, #EEEEEE);
     border-radius: var(--u-field-radius, 0.25em) var(--u-field-radius, 0.25em) 0 0;
     border-bottom: 2px solid var(--u-input-border-color, #E0E0E0);
   }
-  :host([variant="filled"][readonly]) .container,
-  :host([variant="filled"]:disabled) .container {
+  :host([appearance="soft"][readonly]) .container,
+  :host([appearance="soft"]:disabled) .container {
     background-color: var(--u-bg-color-disabled, #FAFAFA);
     border-bottom-color: var(--u-border-color-weak, #EEEEEE);
   }
-  :host([variant="filled"]:not([readonly]):not(:disabled)) .container:hover {
+  :host([appearance="soft"]:not([readonly]):not(:disabled)) .container:hover {
     box-shadow: none;
     background-color: var(--u-neutral-300, #E0E0E0);
     border-bottom-color: var(--u-input-border-color-hover, #BDBDBD);
   }
-  :host([variant="filled"]:not([readonly]):not(:disabled)) .container:focus-within {
+  :host([appearance="soft"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-focus, #1565C0);
   }
-  :host([variant="filled"][invalid]:not([readonly]):not(:disabled)) .container {
+  :host([appearance="soft"][invalid]:not([readonly]):not(:disabled)) .container {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-invalid, #C62828);
   }
 
-  /* ===== Variant: underlined ===== */
-  :host([variant="underlined"]) .container {
+  /* ===== Appearance: underlined ===== */
+  :host([appearance="underlined"]) .container {
     border: none;
     border-radius: var(--u-radius-none, 0);
     background-color: transparent;
@@ -70,35 +69,35 @@ export const styles = css`
     padding-right: 0;
     border-bottom: 1px solid var(--u-input-border-color, #E0E0E0);
   }
-  :host([variant="underlined"][readonly]) .container,
-  :host([variant="underlined"]:disabled) .container {
+  :host([appearance="underlined"][readonly]) .container,
+  :host([appearance="underlined"]:disabled) .container {
     background-color: transparent;
     border-bottom-color: var(--u-border-color-weak, #EEEEEE);
   }
-  :host([variant="underlined"]:not([readonly]):not(:disabled)) .container:hover {
+  :host([appearance="underlined"]:not([readonly]):not(:disabled)) .container:hover {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-hover, #BDBDBD);
   }
-  :host([variant="underlined"]:not([readonly]):not(:disabled)) .container:focus-within {
+  :host([appearance="underlined"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-focus, #1565C0);
     border-bottom-width: 2px;
   }
-  :host([variant="underlined"][invalid]:not([readonly]):not(:disabled)) .container {
+  :host([appearance="underlined"][invalid]:not([readonly]):not(:disabled)) .container {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-invalid, #C62828);
   }
 
-  /* ===== Variant: borderless ===== */
-  :host([variant="borderless"]) .container {
+  /* ===== Appearance: plain (외형 없음) ===== */
+  :host([appearance="plain"]) .container {
     border: none;
     border-radius: var(--u-radius-none, 0);
     background-color: transparent;
     padding: 0;
     box-shadow: none;
   }
-  :host([variant="borderless"]:not([readonly]):not(:disabled)) .container:hover,
-  :host([variant="borderless"]:not([readonly]):not(:disabled)) .container:focus-within {
+  :host([appearance="plain"]:not([readonly]):not(:disabled)) .container:hover,
+  :host([appearance="plain"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
   }
 
@@ -161,5 +160,16 @@ export const styles = css`
     color: var(--u-txt-color-weak, #616161);
     font-size: 0.75em;
     line-height: 1.2;
+  }
+
+  /* === Size — 버튼과 같은 세 단. md 는 주변 글자 크기를 상속하지 않는다(버튼과 높이가 갈렸다). === */
+  :host {
+    font-size: var(--u-density, 14px);
+  }
+  :host([size="sm"]) {
+    font-size: 12px;
+  }
+  :host([size="lg"]) {
+    font-size: 16px;
   }
 `;

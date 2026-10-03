@@ -15,7 +15,6 @@ export const styles = css`
     display: var(--u-select-display, inline-block);
     width: var(--u-select-width, auto);
     color: var(--u-txt-color, #212121);
-    font-size: inherit;
     font-family: var(--u-font-base);
   }
 
@@ -53,34 +52,34 @@ export const styles = css`
     box-shadow: 0 0 0 1px var(--u-input-border-color-invalid, #C62828);
   }
 
-  /* ===== Variant: filled ===== */
-  :host([variant="filled"]) .container {
+  /* ===== Appearance: soft (중립 틴트 면) ===== */
+  :host([appearance="soft"]) .container {
     border: none;
     border-radius: var(--u-field-radius, 0.25em) var(--u-field-radius, 0.25em) 0 0;
     border-bottom: 2px solid var(--u-input-border-color, #E0E0E0);
     background-color: var(--u-neutral-200, #EEEEEE);
   }
-  :host([variant="filled"][readonly]) .container,
-  :host([variant="filled"]:disabled) .container {
+  :host([appearance="soft"][readonly]) .container,
+  :host([appearance="soft"]:disabled) .container {
     background-color: var(--u-bg-color-disabled, #FAFAFA);
     border-bottom-color: var(--u-border-color-weak, #EEEEEE);
   }
-  :host([variant="filled"]:not([readonly]):not(:disabled)) .container:hover {
+  :host([appearance="soft"]:not([readonly]):not(:disabled)) .container:hover {
     box-shadow: none;
     background-color: var(--u-neutral-300, #E0E0E0);
     border-bottom-color: var(--u-input-border-color-hover, #BDBDBD);
   }
-  :host([variant="filled"]:not([readonly]):not(:disabled)) .container:focus-within {
+  :host([appearance="soft"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-focus, #1565C0);
   }
-  :host([variant="filled"][invalid]:not([readonly]):not(:disabled)) .container {
+  :host([appearance="soft"][invalid]:not([readonly]):not(:disabled)) .container {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-invalid, #C62828);
   }
 
-  /* ===== Variant: underlined ===== */
-  :host([variant="underlined"]) .container {
+  /* ===== Appearance: underlined ===== */
+  :host([appearance="underlined"]) .container {
     border: none;
     border-radius: var(--u-radius-none, 0);
     background-color: transparent;
@@ -88,35 +87,35 @@ export const styles = css`
     padding-right: 0;
     border-bottom: 1px solid var(--u-input-border-color, #E0E0E0);
   }
-  :host([variant="underlined"][readonly]) .container,
-  :host([variant="underlined"]:disabled) .container {
+  :host([appearance="underlined"][readonly]) .container,
+  :host([appearance="underlined"]:disabled) .container {
     background-color: transparent;
     border-bottom-color: var(--u-border-color-weak, #EEEEEE);
   }
-  :host([variant="underlined"]:not([readonly]):not(:disabled)) .container:hover {
+  :host([appearance="underlined"]:not([readonly]):not(:disabled)) .container:hover {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-hover, #BDBDBD);
   }
-  :host([variant="underlined"]:not([readonly]):not(:disabled)) .container:focus-within {
+  :host([appearance="underlined"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-focus, #1565C0);
     border-bottom-width: 2px;
   }
-  :host([variant="underlined"][invalid]:not([readonly]):not(:disabled)) .container {
+  :host([appearance="underlined"][invalid]:not([readonly]):not(:disabled)) .container {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-invalid, #C62828);
   }
 
-  /* ===== Variant: borderless ===== */
-  :host([variant="borderless"]) .container {
+  /* ===== Appearance: plain (외형 없음) ===== */
+  :host([appearance="plain"]) .container {
     border: none;
     border-radius: var(--u-radius-none, 0);
     background-color: transparent;
     padding: 0;
     box-shadow: none;
   }
-  :host([variant="borderless"]:not([readonly]):not(:disabled)) .container:hover,
-  :host([variant="borderless"]:not([readonly]):not(:disabled)) .container:focus-within {
+  :host([appearance="plain"]:not([readonly]):not(:disabled)) .container:hover,
+  :host([appearance="plain"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
   }
 
@@ -176,9 +175,13 @@ export const styles = css`
      위아래는 컨테이너 여백(0.3em) 쪽으로 넓힌다. 음수 여백이라 배치·트리거 높이는 그대로다 — 트리거의 줄은
      1em 이라 세로 패딩만 주면 트리거가 8px 커진다. */
   .suffix-item[role="button"] {
+    /* 받는 여백 = u-input 과 같은 식 — 글자 크기와 무관하게 ≥ 24px */
+    --_target-pad: max(0.25em, calc(12px - 0.5em));
     box-sizing: content-box;
-    margin: -0.25em -0.25em -0.25em 0;
-    padding: 0.25em;
+    /* 오른쪽은 펼침 화살표와 종전처럼 0.25em 만 맞댄다 — 글자가 작아 늘어난 폭은 왼쪽(값 글자 쪽, 타깃 아님)으로 넓힌다.
+       16px 에서는 P = 0.25em 이라 종전 배치와 같다. */
+    margin: calc(-1 * var(--_target-pad)) -0.25em calc(-1 * var(--_target-pad)) calc(0.25em - var(--_target-pad));
+    padding: var(--_target-pad);
   }
 
   /* 드롭다운 패널 — 옵션 텍스트가 길어도 팝오버가 앵커보다 넓어지지 않도록 고정 너비로
@@ -206,11 +209,24 @@ export const styles = css`
   }
   .search-input input {
     all: unset;
+    /* 포인터를 받는 것은 이 입력이다 — 글자 크기와 무관하게 24px 이상(WCAG 2.5.8). */
+    min-block-size: 24px;
     flex: 1;
     min-width: 0;
     line-height: 1.5;
   }
   .search-input input::placeholder {
     color: var(--u-txt-color-weak, #616161);
+  }
+
+  /* === Size — 버튼과 같은 세 단. md 는 주변 글자 크기를 상속하지 않는다(버튼과 높이가 갈렸다). === */
+  :host {
+    font-size: var(--u-density, 14px);
+  }
+  :host([size="sm"]) {
+    font-size: 12px;
+  }
+  :host([size="lg"]) {
+    font-size: 16px;
   }
 `;

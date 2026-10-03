@@ -17,6 +17,7 @@
   | `u-badge` | `variant="pill"` · `"dot"` · `"square"` | `shape=` same values (`variant` there was a shape, not an appearance) |
   | `u-alert` · `Toast` options | `variant="solid"` · `"filled"` · `"outlined"` · `"glass"` | `appearance="soft"` · `"soft"` · `"outlined"` · `"soft"` — the old `solid` was a tint with an outline, not a solid fill, so both tints are `soft` (tint, no outline); `glass` is removed |
   | `u-checkbox` | `variant="filled"` · `"outline"` | `appearance="solid"` · `"outlined"` |
+  | `u-input` · `u-select` · `u-textarea` | `variant="outlined"` · `"filled"` · `"underlined"` · `"borderless"` | `appearance="outlined"` · `"soft"` · `"underlined"` · `"plain"` |
   | `u-radio` | `variant="filled"` · `"outlined"` · `"soft"` | `appearance="solid"` · `"outlined"` · `"soft"` |
 
   `u-icon-button` and `u-copy-button` default to `appearance="plain"` (was `variant="ghost"`).
@@ -28,6 +29,14 @@
   set `color="neutral"` explicitly is now a grey button (drop the attribute or use `primary` for the
   old look). `plain` and `link` buttons keep body/link text for `primary` and `neutral` and take the
   colour for every other value, as before.
+- 🔴**Text fields take `size="sm|md|lg"` like buttons, and `md` no longer inherits the font size.**
+  `u-input`, `u-select`, `u-textarea`, `u-date-picker` and `u-date-range-picker` render at
+  `--u-density` (14px) by default — 12px for `sm`, 16px for `lg` — so a field and a button of the same
+  size share a height (fields used to inherit the surrounding font size and grew taller than the
+  button beside them in larger text). `u-input`'s old `size` (the native character-width number) is
+  removed — set the width with `--u-input-width`. Suffix icons (clear, password toggle, steppers,
+  the select's clear) keep a 24×24 target at every size: their padding is
+  `max(0.25em, 12px − 0.5em)` (unchanged at 16px), where it used to be 0.25em and fell to 21px at 14px.
 - 🔴**`u-checkbox`: the default `color` is `primary`, and `blue` is blue.** The old default `blue` had no
   rule of its own and painted the brand colour — the word meant "no colour set". A bare checkbox looks
   the same; one that set `color="blue"` explicitly now gets the palette blue. The `--checkbox-fill-color`

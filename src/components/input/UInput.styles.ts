@@ -13,7 +13,6 @@ export const styles = css`
     display: var(--u-input-display, inline-block);
     width: var(--u-input-width, auto);
     color: var(--u-txt-color, #212121);
-    font-size: inherit;
     font-family: var(--u-font-base);
   }
 
@@ -44,34 +43,34 @@ export const styles = css`
     box-shadow: 0 0 0 1px var(--u-input-border-color-invalid, #C62828);
   }
 
-  /* ===== Variant: filled ===== */
-  :host([variant="filled"]) .container {
+  /* ===== Appearance: soft (중립 틴트 면) ===== */
+  :host([appearance="soft"]) .container {
     border: none;
     border-radius: var(--u-field-radius, 0.25em) var(--u-field-radius, 0.25em) 0 0;
     border-bottom: 2px solid var(--u-input-border-color, #E0E0E0);
     background-color: var(--u-neutral-200, #EEEEEE);
   }
-  :host([variant="filled"][readonly]) .container,
-  :host([variant="filled"]:disabled) .container {
+  :host([appearance="soft"][readonly]) .container,
+  :host([appearance="soft"]:disabled) .container {
     background-color: var(--u-bg-color-disabled, #FAFAFA);
     border-bottom-color: var(--u-border-color-weak, #EEEEEE);
   }
-  :host([variant="filled"]:not([readonly]):not(:disabled)) .container:hover {
+  :host([appearance="soft"]:not([readonly]):not(:disabled)) .container:hover {
     box-shadow: none;
     background-color: var(--u-neutral-300, #E0E0E0);
     border-bottom-color: var(--u-input-border-color-hover, #BDBDBD);
   }
-  :host([variant="filled"]:not([readonly]):not(:disabled)) .container:focus-within {
+  :host([appearance="soft"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-focus, #1565C0);
   }
-  :host([variant="filled"][invalid]:not([readonly]):not(:disabled)) .container {
+  :host([appearance="soft"][invalid]:not([readonly]):not(:disabled)) .container {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-invalid, #C62828);
   }
 
-  /* ===== Variant: underlined ===== */
-  :host([variant="underlined"]) .container {
+  /* ===== Appearance: underlined ===== */
+  :host([appearance="underlined"]) .container {
     padding-left: 0;
     padding-right: 0;
     border: none;
@@ -79,35 +78,36 @@ export const styles = css`
     border-bottom: 1px solid var(--u-input-border-color, #E0E0E0);
     background-color: transparent;
   }
-  :host([variant="underlined"][readonly]) .container,
-  :host([variant="underlined"]:disabled) .container {
+  :host([appearance="underlined"][readonly]) .container,
+  :host([appearance="underlined"]:disabled) .container {
     background-color: transparent;
     border-bottom-color: var(--u-border-color-weak, #EEEEEE);
   }
-  :host([variant="underlined"]:not([readonly]):not(:disabled)) .container:hover {
+  :host([appearance="underlined"]:not([readonly]):not(:disabled)) .container:hover {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-hover, #BDBDBD);
   }
-  :host([variant="underlined"]:not([readonly]):not(:disabled)) .container:focus-within {
+  :host([appearance="underlined"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-focus, #1565C0);
     border-bottom-width: 2px;
   }
-  :host([variant="underlined"][invalid]:not([readonly]):not(:disabled)) .container {
+  :host([appearance="underlined"][invalid]:not([readonly]):not(:disabled)) .container {
     box-shadow: none;
     border-bottom-color: var(--u-input-border-color-invalid, #C62828);
   }
 
-  /* ===== Variant: borderless ===== */
-  :host([variant="borderless"]) .container {
+  /* ===== Appearance: plain (외형 없음) ===== */
+  :host([appearance="plain"]) .container {
     border: none;
     border-radius: var(--u-radius-none, 0);
     background-color: transparent;
-    padding: 0;
+    /* 세로는 접미 아이콘의 24px 받는 영역이 잘리지 않을 만큼만 — 16px 에서 0, 14px 에서 1.5px. */
+    padding: max(0px, calc(12px - 0.75em)) 0;
     box-shadow: none;
   }
-  :host([variant="borderless"]:not([readonly]):not(:disabled)) .container:hover,
-  :host([variant="borderless"]:not([readonly]):not(:disabled)) .container:focus-within {
+  :host([appearance="plain"]:not([readonly]):not(:disabled)) .container:hover,
+  :host([appearance="plain"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
   }
 
@@ -182,15 +182,19 @@ export const styles = css`
      ⚠종전에는 간격이 0.25em 이라 «맨 뒤 아이콘만» 24 였고 나란히 놓인 쌍·스테퍼는 24 에 못 미쳤다 — 그것을 고치는 대가가
      아이콘 사이가 4px 벌어지는 것이다(스테퍼 글리프도 0.85em → 1em).
      content-box 는 아이콘 자신의 box-sizing 과 무관하게 글리프를 1em 로 둔다. */
+  /* ★받는 여백 P = max(0.25em, 12px − 0.5em) — 글리프(1em) + 2P 가 **글자 크기와 무관하게 ≥ 24px** 다.
+     16px 에서는 종전과 같은 0.25em(4px)이고, 14px(md 기본)에서 5px, 12px(sm)에서 6px 로 늘어난다.
+     2.0 전에는 0.25em 고정이라 16px 에서만 24 였다 — 14px 본문을 쓰는 앱에서는 21px(미달)이었다. */
   .suffix-item[role="button"] {
+    --_target-pad: max(0.25em, calc(12px - 0.5em));
     box-sizing: content-box;
-    margin: -0.25em -0.25em -0.25em 0.25em;
-    padding: 0.25em;
+    margin: calc(-1 * var(--_target-pad)) calc(-1 * var(--_target-pad)) calc(-1 * var(--_target-pad)) var(--_target-pad);
+    padding: var(--_target-pad);
   }
-  /* 좌우 여백이 0 인 변형(underlined · borderless)은 맨 뒤 아이콘이 오른쪽으로 넓힐 자리가 없다 — 컨테이너에 0.25em 을 준다(그만큼만). */
-  :host([variant="underlined"]) .container,
-  :host([variant="borderless"]) .container {
-    padding-right: 0.25em;
+  /* 좌우 여백이 0 인 변형(underlined · plain)은 맨 뒤 아이콘이 오른쪽으로 넓힐 자리가 없다 — 컨테이너에 그만큼만 준다. */
+  :host([appearance="underlined"]) .container,
+  :host([appearance="plain"]) .container {
+    padding-right: max(0.25em, calc(12px - 0.5em));
   }
 
   u-popover {
@@ -204,5 +208,16 @@ export const styles = css`
     box-shadow: var(--u-shadow-lg, 0 4px 12px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.06));
     overflow-x: auto;
     overflow-y: auto;
+  }
+
+  /* === Size — 버튼과 같은 세 단. md 는 주변 글자 크기를 상속하지 않는다(버튼과 높이가 갈렸다). === */
+  :host {
+    font-size: var(--u-density, 14px);
+  }
+  :host([size="sm"]) {
+    font-size: 12px;
+  }
+  :host([size="lg"]) {
+    font-size: 16px;
   }
 `;
