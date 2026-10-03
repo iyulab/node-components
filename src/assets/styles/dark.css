@@ -224,6 +224,10 @@
      올림면(neutral-300) 4.16 · active 면(neutral-400) 3.15 로 미달이었다.
      neutral-800(#B0B0B0) = 8.64 · 6.62 · 5.01. 본문(neutral-900)과의 대비비 1.46. */
   --u-txt-color-weak:        var(--u-neutral-800);
+  /* ★Third text step — metadata, units, secondary columns, an empty value's dash: text that
+     must stay readable (5.0 on the surface) but should recede behind -weak. Not a placeholder or a
+     disabled colour (those are -disabled). */
+  --u-txt-color-weaker:      var(--u-neutral-700);
   --u-txt-color-strong:      var(--u-neutral-1000);
 
   --u-link-txt-color:        var(--u-primary-color-strong);
