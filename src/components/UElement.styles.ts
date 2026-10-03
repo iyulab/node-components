@@ -22,11 +22,11 @@ export const styles = css`
    * 즉 키보드 사용자가 다크 테마에서 포커스 위치를 알기 어려웠다. -strong 은
    * 라이트 5.75 · 다크 5.32 로 두 테마 모두 통과한다. */
   :host(:focus-visible) {
-    outline: 2px solid var(--u-primary-color-strong, #1565C0);
+    outline: 2px solid var(--u-focus-ring-color, #1565C0);
     outline-offset: 2px;
   }
   :focus-visible {
-    outline: 2px solid var(--u-primary-color-strong, #1565C0);
+    outline: 2px solid var(--u-focus-ring-color, #1565C0);
     outline-offset: 2px;
   }
 

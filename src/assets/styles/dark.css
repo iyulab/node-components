@@ -1,3 +1,22 @@
+/*
+ * 🔴Cascade layers — `@layer iyu.base, iyu.house;`
+ *
+ *   iyu.base   this sheet (neutral defaults every component can render with)
+ *   iyu.house  a house theme such as `@iyulab/house-style`
+ *   (none)     the application's own CSS — unlayered, so it always wins
+ *
+ * Unlayered styles beat every layer regardless of specificity or source order, so an
+ * application overrides a token with a plain `:root { --u-… }` — no `:root:root` or
+ * `:not([theme])` tricks, and no dependence on when `Theme.init()` injects this sheet.
+ * ⚠That includes dark mode: an unlayered `:root` override applies in both themes. Scope it
+ * with `:root[theme="dark"]` (or `:root:not([theme="dark"])`) when the value is mode-specific.
+ *
+ * The order statement is repeated by every sheet that joins a layer, so whichever loads
+ * first fixes the same order.
+ */
+@layer iyu.base, iyu.house;
+
+@layer iyu.base {
 :root[theme="dark"] {
   color-scheme: dark;
 
@@ -236,12 +255,24 @@
   --u-input-border-color-focus:   var(--u-primary-color-strong);
   --u-input-border-color-invalid: var(--u-danger-color-strong);
 
+  /* Focus ring — a graphic drawn over the background, so it must clear 3:1 against it
+     (WCAG 1.4.11). Defaults to the primary text step; a theme whose primary is a neutral
+     ink can point it at an interaction hue instead. */
+  --u-focus-ring-color:      var(--u-primary-color-strong);
+
   /* Background Colors */
   --u-bg-color:              var(--u-neutral-100);
   --u-bg-color-inverse:      var(--u-neutral-0);
   --u-bg-color-hover:        var(--u-neutral-300);
   --u-bg-color-active:       var(--u-neutral-400);
   --u-bg-color-disabled:     var(--u-neutral-100);
+
+  /* ★Canvas — the application background **behind** surfaces (page body, shell side
+     panels). `--u-bg-color` is the surface: components paint their own face with it
+     (buttons, menu items, options, tags, table bodies, sheets), so tinting it to make a
+     page background greys every control inside a white card. Paint the page with this
+     token instead and keep `--u-bg-color` as the surface. */
+  --u-canvas-bg-color:       var(--u-neutral-50);
 
   /* 면 높이 — 상세는 light.css 참조. 다크는 **바탕보다 밝은 쪽**이 위다.
      neutral-300(#2A2A2A)은 바탕(#121212) 대비 1.42 로, 소비 측이 오버라이드로 쓰던
@@ -480,3 +511,5 @@
     --u-duration-slow:    0ms;
   }
 }
+
+} /* @layer iyu.base */

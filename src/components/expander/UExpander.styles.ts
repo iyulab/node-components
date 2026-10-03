@@ -39,7 +39,7 @@ export const styles = css`
     cursor: default;
   }
   .header:focus-visible {
-    outline: 2px solid var(--u-primary-color-strong, #1565C0);
+    outline: 2px solid var(--u-focus-ring-color, #1565C0);
     outline-offset: -2px;
   }
 

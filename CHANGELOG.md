@@ -1,5 +1,25 @@
 # Changelog
 
+## [Unreleased] — 2.0.0
+
+### Changed (breaking)
+
+- **The built-in token sheets live in a cascade layer: `@layer iyu.base, iyu.house;`.** `light.css`
+  and `dark.css` (static import or `Theme.init()`) declare the order and put every token in
+  `iyu.base`. Unlayered application CSS now beats the defaults regardless of specificity, load
+  order or `Theme.init()` timing; a house theme sits in `iyu.house` between the two.
+  **Migration:** a plain `:root { --u-… }` override now also applies in dark mode — the dark
+  palette no longer wins by specificity. Scope mode-specific values with `:root[theme="dark"]`.
+  Selectors written only to win the specificity race (`:root:root`, `:root:not([theme="dark"])`)
+  still work and can be simplified.
+
+### Added
+
+- **`--u-canvas-bg-color`** — the application background behind surfaces (page body, shell side
+  panels). `--u-bg-color` stays the surface components paint their own face with.
+- **`--u-focus-ring-color`** — every focus outline reads it (default `--u-primary-color-strong`),
+  so a theme with a neutral ink primary can keep focus on an interaction hue.
+
 ## [1.57.1] - 2026-10-03
 
 ### Fixed

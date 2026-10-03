@@ -10,7 +10,7 @@
 `dark.css` 는 같은 이름을 같은 구조로 정의하며 **값만** 다릅니다 — 다크 대응을 위해
 컴포넌트나 소비자가 할 일은 없습니다.
 
-**역할 25 · 스케일 19 · 시맨틱 111 · 팔레트 111**
+**역할 25 · 스케일 19 · 시맨틱 113 · 팔레트 111**
 
 ---
 
@@ -158,11 +158,13 @@
 | `--u-input-border-color-hover` | `var(--u-neutral-400)` |
 | `--u-input-border-color-focus` | `var(--u-primary-color-strong)` |
 | `--u-input-border-color-invalid` | `var(--u-danger-color-strong)` |
+| `--u-focus-ring-color` | `var(--u-primary-color-strong)` |
 | `--u-bg-color` | `var(--u-neutral-0)` |
 | `--u-bg-color-inverse` | `var(--u-neutral-900)` |
 | `--u-bg-color-hover` | `var(--u-neutral-100)` |
 | `--u-bg-color-active` | `var(--u-neutral-200)` |
 | `--u-bg-color-disabled` | `var(--u-neutral-50)` |
+| `--u-canvas-bg-color` | `var(--u-neutral-50)` |
 | `--u-bg-color-raised` | `var(--u-neutral-50)` |
 | `--u-bg-color-raised-hover` | `var(--u-bg-color-hover)` |
 | `--u-primary-bg-color` | `var(--u-blue-0)` |

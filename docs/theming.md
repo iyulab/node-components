@@ -244,12 +244,14 @@ already-published renders; unifying it is a visual change, not a naming one.
 threshold (dark: 3.07 vs 5.17), so the default is not a defect — but the explicit value is the
 safer one in dark.
 
-### Surfaces — three different jobs
+### Surfaces — four different jobs
 
-Backgrounds are not one axis. Three families exist because they answer different questions:
+Backgrounds are not one axis. Four families exist because they answer different questions:
 
 ```
---u-bg-color[-hover|-active|-disabled]   interaction state of a surface
+--u-canvas-bg-color                      the application background behind surfaces —
+                                         page body, shell side panels
+--u-bg-color[-hover|-active|-disabled]   a surface and its interaction state
 --u-bg-color-raised                      chrome adjacent to the page — toolbars, table
                                          headers, footers, pagination
 --u-panel-bg-color                       a container floating above the page — cards,
@@ -268,8 +270,19 @@ The last three look similar in light and diverge in dark, which is where mixing 
   four; yellow's tint strength is asymmetric between themes and matching the *number* would have
   made the light surface nearly invisible.
 
+**Paint the page with `--u-canvas-bg-color`, not `--u-bg-color`.** Components fill their own face
+with `--u-bg-color` (buttons, menu items, options, tags, table bodies, drawers), so tinting it to
+get a grey page turns every control inside a white card grey as well.
+
 Do not express elevation with `--u-bg-color-hover` — it is an interaction state, and a raised
 surface that is also hoverable would have nothing left to say.
+
+### Focus ring
+
+`--u-focus-ring-color` draws every keyboard focus outline. It defaults to
+`--u-primary-color-strong`; a theme whose primary is a neutral ink (black buttons) usually points
+it at an interaction hue so focus stays distinct from content. Keep it at 3:1 against the
+background (WCAG 1.4.11).
 
 ### Deriving your own steps
 
@@ -334,35 +347,43 @@ You can override any token — palette primitives included:
 }
 ```
 
-**Load your sheet however you like: a plain static `import` is enough.** The built-in sheets are
-inserted *ahead of* the document's other styles, so anything you load wins at equal specificity
-no matter when it arrives. You do not need to sequence your override after `Theme.init()`.
+### Cascade layers — who wins
 
-> ⚠ **Before 1.44.0 you did**, and it failed quietly if you didn't. The built-in sheets were
-> appended to the end of `<head>`, while a static import is placed by the bundler while the
-> document parses — so the defaults landed *last* and won, and an override sheet did nothing at
-> all. There was no error and no warning, and if your sheet happened to agree with the defaults
-> on some tokens it read as *partially applied* rather than as ignored. If you are on an older
-> version, either upgrade or keep loading your sheet after `await Theme.init(...)`.
+The built-in token sheets live in a cascade layer, and the order is declared up front:
 
-⚠ **Specificity still decides.** These are all `:root` rules, so a `:where(:root)` wrapper — or
-anything else that drops specificity to 0 — loses to the built-in sheet regardless of order.
+```css
+@layer iyu.base, iyu.house;
+```
 
-**In dark mode the same holds for the scale tokens** — radius, spacing, the type scale, motion
-and fonts. `dark.css` declares those at the same specificity as `:root`, so one `:root` override
-applies in both modes. **Colors are different on purpose:** the dark palette and the colors derived
-from it are scoped to `:root[theme="dark"]` and win over a plain `:root` rule, so a light-tuned
-color override does not leak into dark. To override a color in dark mode too, declare it there:
+| Layer | Holds | Wins over |
+|---|---|---|
+| *(unlayered)* | your application's CSS | everything below — regardless of specificity or load order |
+| `iyu.house` | a house theme such as `@iyulab/house-style` | the built-in defaults |
+| `iyu.base` | `light.css` · `dark.css` (built-in defaults) | — |
+
+**Load your sheet however you like: a plain static `import` is enough, and a plain `:root` rule is
+enough.** Unlayered CSS beats every layer, so neither source order nor `Theme.init()` timing nor
+selector specificity matters. A theme package that wants to sit *between* the defaults and the
+application declares the same order statement and puts its rules in `@layer iyu.house { … }`.
+
+🔴 **That includes dark mode.** The dark palette is scoped to `:root[theme="dark"]` *inside*
+`iyu.base`, so a plain unlayered `:root` override now applies in both themes. When a value is
+mode-specific, scope it yourself:
 
 ```css
 :root { --u-primary-color: #0B5FFF; }
 :root[theme="dark"] { --u-primary-color: #5B9BFF; }
 ```
 
-> ⚠ **Before 1.44.1 the scale tokens were scoped like the colors**, so a `:root` override of
-> radius or the type scale — including `@iyulab/enterprise`'s preset — silently lost in dark
-> mode, and `prefers-reduced-motion` was ignored there because the durations were redeclared at
-> the higher specificity.
+> ⚠ **Before 2.0.0 the built-in sheets were unlayered.** Overrides had to win by specificity —
+> colors in dark mode needed `:root[theme="dark"]` or higher, which is why some applications carry
+> selectors like `:root:root` or `:root:not([theme="dark"])`. Those still work but are no longer
+> needed; and a light-only `:root` color override that used to stop at dark mode by accident now
+> reaches it — scope it as above.
+
+⚠ **`!important` reverses layer order.** An `!important` declaration in a lower layer beats an
+`!important` one in a higher layer, and important layered declarations beat important unlayered
+ones. The built-in sheets contain none; keep overrides free of `!important` and the table above holds.
 
 Or override per-component via CSS custom properties:
 
