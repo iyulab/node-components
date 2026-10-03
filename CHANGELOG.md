@@ -50,6 +50,12 @@
   the same; one that set `color="blue"` explicitly now gets the palette blue. The `--checkbox-fill-color`
   hook is removed for the same reason as the tag's: every colour fills the checkbox's own slot.
 - **`u-spinner`: `color="neutral"` is grey** (it had no rule and drew in the brand colour).
+- **`u-button`: a `soft` button in a role colour (`primary`·`info`·`success`·`warning`·`danger`) uses
+  the role's surface token `--u-{role}-bg-color`**, the same surface a `soft` tag or alert of that
+  colour uses, and deepens it on hover/active. It used to mix 12% of the fill colour into the
+  background, so a `soft warning` button was almost white next to a `soft warning` tag. Decorative
+  colours keep the 12% mix. A coloured `plain` button now hovers onto that surface instead of the
+  neutral grey hover, so the colour stays the signal while the pointer is on it.
 - 🔴**`u-tag` / `u-chip`: `color="neutral"` (the default) is grey; the decorative `gray` is removed.**
   A bare tag was a brand tint and a grey label needed `color="gray"`; now a bare tag is the grey label
   and a brand-tinted one is `color="primary"`. Replace `color="gray"` with `color="neutral"` (or

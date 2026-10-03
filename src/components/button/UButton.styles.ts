@@ -61,31 +61,41 @@ export const styles = css`
     --btn-color: var(--u-primary-color, #1976D2);
     --btn-color-strong: var(--u-primary-color-strong, #1565C0);
     --btn-txt-color: var(--u-primary-txt-color, #FFFFFF);
+    --btn-color-surface: var(--u-primary-bg-color, #E3F2FD);
   }
   :host([color="info"]) {
     --btn-color: var(--u-info-color, #1976D2);
     --btn-color-strong: var(--u-info-color-strong, #1565C0);
     --btn-txt-color: var(--u-info-txt-color, #FFFFFF);
+    --btn-color-surface: var(--u-info-bg-color, #E3F2FD);
   }
   :host([color="success"]) {
     --btn-color: var(--u-success-color, #2E7D32);
     --btn-color-strong: var(--u-success-color-strong, #1B5E20);
     --btn-txt-color: var(--u-success-txt-color, #FFFFFF);
+    --btn-color-surface: var(--u-success-bg-color, #E8F5E9);
   }
   :host([color="warning"]) {
     --btn-color: var(--u-warning-color, #FDD835);
     --btn-color-strong: var(--u-warning-color-strong, #8A4A00);
     --btn-txt-color: var(--u-warning-txt-color, #000000);
+    --btn-color-surface: var(--u-warning-bg-color, #FFF59D);
   }
   :host([color="danger"]) {
     --btn-color: var(--u-danger-color, #D32F2F);
     --btn-color-strong: var(--u-danger-color-strong, #C62828);
     --btn-txt-color: var(--u-danger-txt-color, #FFFFFF);
+    --btn-color-surface: var(--u-danger-bg-color, #FFEBEE);
   }
 
   /* 역할 축의 link 는 쉬는 상태가 **이미 대비로 선택된 단**(-strong)이라 더 어둡게 하면
      계약을 벗어난다. 강조는 밑줄이 맡는다 — neutral link 가 쓰는 어법과 같다.
-     장식 축은 종전대로 혼합 파생을 유지한다. */
+     장식 축은 종전대로 혼합 파생을 유지한다.
+
+     ★soft 면도 같은 이유로 역할 층에서 읽는다 — --u-{role}-bg-color 는 «그 위 본문 대비가
+     보증된 유채색 표면» 이고, 태그·알림의 soft 가 이미 그 토큰을 쓴다. 혼합 12% 로 두면 같은
+     «soft warning» 이 태그와 버튼에서 다른 면이 되고(노랑 12% 는 거의 흰색), 다크 짝도 따로
+     놀았다. hover/active 는 그 면 위에 면 색을 더 섞어 진해지는 방향으로 파생한다. */
   :host([color="primary"]),
   :host([color="info"]),
   :host([color="success"]),
@@ -93,6 +103,8 @@ export const styles = css`
   :host([color="danger"]) {
     --btn-color-strong-hover: var(--btn-color-strong);
     --btn-color-strong-active: var(--btn-color-strong);
+    --btn-color-surface-hover: color-mix(in srgb, var(--btn-color) 18%, var(--btn-color-surface));
+    --btn-color-surface-active: color-mix(in srgb, var(--btn-color) 30%, var(--btn-color-surface));
   }
 
   /* === Color tokens (장식 축) === */
@@ -232,11 +244,14 @@ export const styles = css`
   :host([appearance="plain"][color]:not([color="primary"]):not([color="neutral"])) {
     color: var(--btn-color-strong);
   }
+  /* 호버 면도 그 색의 soft 면이다 — 회색 호버는 «색이 유일한 신호» 를 누르는 순간 지운다. */
   :host([appearance="plain"][color]:not([color="primary"]):not([color="neutral"]):hover) {
     color: var(--btn-color-strong-hover);
+    background-color: var(--btn-color-surface);
   }
   :host([appearance="plain"][color]:not([color="primary"]):not([color="neutral"]):active) {
     color: var(--btn-color-strong-active);
+    background-color: var(--btn-color-surface-hover);
   }
 
   /* link: 링크 스타일 (기본 primary·neutral 에서는 링크 색)

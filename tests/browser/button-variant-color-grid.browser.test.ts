@@ -1,6 +1,8 @@
 import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import '../../src/assets/styles/light.css';
 import '../../src/components/button/UButton.js';
+import '../../src/components/tag/UTag.js';
+import { userEvent } from 'vitest/browser';
 
 /**
  * **variant × color 격자** — 색 축이 *모든* variant 에 닿는가.
@@ -113,6 +115,47 @@ describe('u-button appearance × color 격자', () => {
       .getPropertyValue('--u-danger-color-strong').trim();
     document.body.appendChild(probe);
     expect(paintedColor(el, 'color')).toBe(getComputedStyle(probe).color);
+  });
+
+  it('역할 색의 soft 면은 역할 표면 토큰이다 — 같은 soft 태그와 같은 면', async () => {
+    // 혼합 12% 로 두면 노랑은 거의 흰색이 되고, 같은 «soft warning» 이 태그와 버튼에서 갈린다.
+    for (const color of ['warning', 'danger', 'success'] as const) {
+      const btn = await mount({ appearance: 'soft', color });
+      const tag = document.createElement('u-tag') as HTMLElement & { updateComplete: Promise<unknown> };
+      tag.setAttribute('appearance', 'soft');
+      tag.setAttribute('color', color);
+      tag.textContent = '태그';
+      document.body.appendChild(tag);
+      await tag.updateComplete;
+      const probe = document.createElement('div');
+      probe.style.backgroundColor = getComputedStyle(document.documentElement)
+        .getPropertyValue(`--u-${color}-bg-color`).trim();
+      document.body.appendChild(probe);
+      expect(paintedColor(btn, 'host-bg'), color).toBe(getComputedStyle(probe).backgroundColor);
+      const tagProbe = document.createElement('div');
+      tagProbe.style.backgroundColor = getComputedStyle(tag).getPropertyValue('--tag-bg-color').trim();
+      document.body.appendChild(tagProbe);
+      expect(getComputedStyle(tagProbe).backgroundColor, `${color} tag`).toBe(paintedColor(btn, 'host-bg'));
+    }
+  });
+
+  it('색을 가진 plain 은 호버 면도 그 색이다 — 회색 호버가 위험 신호를 지우지 않는다', async () => {
+    const danger = await mount({ appearance: 'plain', color: 'danger' });
+    const bare = await mount({ appearance: 'plain' });
+    // 호스트에 `transition: all` 이 있어 호버 직후는 중간값이다 — 끝난 뒤 잰다.
+    const settle = () => new Promise((r) => setTimeout(r, 400));
+    await userEvent.hover(danger);
+    await settle();
+    const dangerHover = paintedColor(danger, 'host-bg');
+    await userEvent.hover(bare);
+    await settle();
+    const bareHover = paintedColor(bare, 'host-bg');
+    const probe = document.createElement('div');
+    probe.style.backgroundColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--u-danger-bg-color').trim();
+    document.body.appendChild(probe);
+    expect(dangerHover).toBe(getComputedStyle(probe).backgroundColor);
+    expect(dangerHover).not.toBe(bareHover);
   });
 
   it('🔴기본 color 는 primary — 맨 버튼은 브랜드 면이고 `color="primary"` 와 같다', async () => {

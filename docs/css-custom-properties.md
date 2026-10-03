@@ -52,9 +52,9 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--btn-color-strong-active` | 바탕 위 글자 active (기본: 70% + black · 역할 값은 고정) |
 | `--btn-color-hover` | solid 배경 hover (기본: --btn-color 85% + black) |
 | `--btn-color-active` | solid 배경 active (기본: --btn-color 70% + black) |
-| `--btn-color-surface` | soft 배경 (기본: --btn-color 12% + 배경색) |
-| `--btn-color-surface-hover` | soft 배경 hover (기본: 22%) |
-| `--btn-color-surface-active` | soft 배경 active (기본: 32%) |
+| `--btn-color-surface` | soft 배경 (역할 색: --u-{role}-bg-color · 그 밖: --btn-color 12% + 배경색) |
+| `--btn-color-surface-hover` | soft 배경 hover (역할 색: 면에 --btn-color 18% · 그 밖: 22%) |
+| `--btn-color-surface-active` | soft 배경 active (역할 색: 면에 --btn-color 30% · 그 밖: 32%) |
 | `--btn-color-border` | 테두리 (기본: --btn-color 45% + 배경색) |
 | `--btn-color-border-hover` | 테두리 hover (기본: 60%) |
 | `--btn-color-border-active` | 테두리 active (기본: 75%) |

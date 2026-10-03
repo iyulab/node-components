@@ -82,7 +82,7 @@ Versatile button with multiple appearances. Renders as an `<a>` element when `hr
 | `--btn-txt-color` | Text color on the fill, read by `appearance="solid"` (default `#fff`, or `--u-{role}-txt-color` when a semantic `color` is set) |
 | `--btn-color-strong` | Text color on the surrounding page background, read by `appearance="link"` and `"plain"` — opposite contrast need from the fill, so it's a separate token (default: same as `--btn-color`, or `--u-{role}-color-strong` for a semantic `color`) |
 | `--btn-color-hover` / `--btn-color-active` | `solid` background hover/active (default: `--btn-color` at 85%/70% + black) |
-| `--btn-color-surface` / `-hover` / `-active` | `soft` background states (default: `--btn-color` at 12%/22%/32%) |
+| `--btn-color-surface` / `-hover` / `-active` | `soft` background states — role colors (`primary`·`info`·`success`·`warning`·`danger`) use `--u-{role}-bg-color` and deepen it with 18%/30% of `--btn-color`; other colors mix `--btn-color` at 12%/22%/32%. A colored `plain` button hovers onto the same surface |
 | `--btn-color-border` / `-hover` / `-active` | Border states (default: `--btn-color` at 45%/60%/75%) |
 | `--btn-color-outline-hover` / `-active` | `outlined`/`plain` background hover/active (default: 6%/12%) |
 | `--btn-color-strong-hover` / `-active` | `link` text hover/active — the role value itself doesn't move; hover adds an underline instead (default: `--btn-color-strong` at 85%/70% + black) |
