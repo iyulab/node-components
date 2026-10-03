@@ -22,6 +22,11 @@
   and an empty value's dash (readable on the surface: 4.6 light · 5.0 dark).
 - **`dot` on `u-tag`** — a small leading mark in the text colour (`part="dot"`, `--tag-dot-size`), for
   status labels repeated down a table column. The status `icon` wins when both are set.
+- **Field box tokens** — `--u-field-padding-block` (0.3em), `--u-field-padding-inline` (0.6em) and
+  `--u-field-radius` (0.25em), read by `u-input`, `u-select`, `u-textarea`, `u-date-picker`,
+  `u-date-range-picker` and the calendar trigger. They were em literals a theme could not reach; a theme
+  now sets form density in one place (height = 1.5em line + 2 × block padding + 2px). Defaults
+  unchanged.
 - **`--u-focus-ring-color`** — every focus outline reads it (default `--u-primary-color-strong`),
   so a theme with a neutral ink primary can keep focus on an interaction hue.
 

@@ -9,7 +9,7 @@ const read = (p: string) => readFileSync(join(root, 'src/assets/styles', p), 'ut
  * `dark.css` 의 두 블록 — 무엇이 어디 사는가.
  *
  *   `:root[theme="dark"]`         (0,1,1)  모드에 따라 값이 달라지는 것 — 색·그림자
- *   `:root:where([theme="dark"])` (0,1,0)  모드와 무관한 스케일 — 반경·여백·글자·모션·글꼴
+ *   `:root:where([theme="dark"])` (0,1,0)  모드와 무관한 스케일 — 반경·여백·글자·모션·글꼴·필드 상자
  *
  * 뒤의 것이 앞 블록에 있으면 `:root` 로 선언한 하우스·소비자 층이 다크 모드에서만 조용히
  * 진다. 그리고 지속시간이 앞 블록에 있으면 light.css 의 `prefers-reduced-motion`
@@ -19,7 +19,7 @@ const read = (p: string) => readFileSync(join(root, 'src/assets/styles', p), 'ut
  * 사실이 아니라 설계 지식이다(값이 우연히 같은 색도 있다). 대신 그 목록이 **실제로** 모드
  * 무관인지(라이트와 값이 같은지)를 여기서 대조한다.
  */
-const SCALE = /^--u-(radius|space|text|duration|ease|font|layer)-/;
+const SCALE = /^--u-(radius|space|text|duration|ease|font|layer|field)-/;
 
 function declarations(css: string): Map<string, string> {
   const m = new Map<string, string>();

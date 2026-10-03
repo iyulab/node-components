@@ -47,7 +47,7 @@ export const styles = css`
     font-size: 0.9em;
     padding: 2px 6px;
     border: 1px solid var(--u-input-border-color, #E0E0E0);
-    border-radius: 0.25em;
+    border-radius: var(--u-field-radius, 0.25em);
     background-color: var(--u-input-bg-color, #FFFFFF);
     color: var(--u-txt-color, #212121);
   }

@@ -22,9 +22,9 @@ export const styles = css`
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 0.3em 0.6em;
+    padding: var(--u-field-padding-block, 0.3em) var(--u-field-padding-inline, 0.6em);
     border: 1px solid var(--u-input-border-color, #E0E0E0);
-    border-radius: 0.25em;
+    border-radius: var(--u-field-radius, 0.25em);
     background-color: var(--u-input-bg-color, #FFFFFF);
     transition: border-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), box-shadow var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     overflow: hidden;
@@ -47,7 +47,7 @@ export const styles = css`
   /* ===== Variant: filled ===== */
   :host([variant="filled"]) .container {
     border: none;
-    border-radius: 0.25em 0.25em 0 0;
+    border-radius: var(--u-field-radius, 0.25em) var(--u-field-radius, 0.25em) 0 0;
     border-bottom: 2px solid var(--u-input-border-color, #E0E0E0);
     background-color: var(--u-neutral-200, #EEEEEE);
   }

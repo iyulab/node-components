@@ -284,6 +284,24 @@ surface that is also hoverable would have nothing left to say.
 it at an interaction hue so focus stays distinct from content. Keep it at 3:1 against the
 background (WCAG 1.4.11).
 
+### Field box
+
+Text-entry controls — `u-input`, `u-select`, `u-textarea`, the date pickers — share one box:
+
+```
+--u-field-padding-block    0.3em    height = 1.5em line + 2 × this + 2px border
+--u-field-padding-inline   0.6em
+--u-field-radius           0.25em
+```
+
+Set them on `:root` for the whole app, or on a container for one context — a form that wants taller
+fields than a toolbar:
+
+```css
+:root      { --u-field-padding-block: 4.5px; --u-field-radius: 6px; }   /* 32px at 14px text */
+.edit-form { --u-field-padding-block: 8.5px; }                          /* 40px */
+```
+
 ### Deriving your own steps
 
 Role tokens are palette aliases, not computed values — components may use `color-mix()` locally,

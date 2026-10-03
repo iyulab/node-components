@@ -321,6 +321,13 @@
   --u-input-border-color-focus:   var(--u-primary-color-strong);
   --u-input-border-color-invalid: var(--u-danger-color-strong);
 
+  /* ★Field box — the text-entry controls (input, select, textarea, date pickers, file input)
+     share one box so a theme sets form density in one place. Defaults are em-relative: the
+     box scales with the control's font size. Height = 1.5em line + 2 × block padding + 2px. */
+  --u-field-padding-block:   0.3em;
+  --u-field-padding-inline:  0.6em;
+  --u-field-radius:          0.25em;
+
   /* Focus ring — a graphic drawn over the background, so it must clear 3:1 against it
      (WCAG 1.4.11). Defaults to the primary text step; a theme whose primary is a neutral
      ink can point it at an interaction hue instead. */

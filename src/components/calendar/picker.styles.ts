@@ -10,9 +10,9 @@ export const styles = css`
     flex-direction: row;
     align-items: center;
     gap: 0.4em;
-    padding: 0.3em 0.6em;
+    padding: var(--u-field-padding-block, 0.3em) var(--u-field-padding-inline, 0.6em);
     border: 1px solid var(--u-input-border-color, #E0E0E0);
-    border-radius: 0.25em;
+    border-radius: var(--u-field-radius, 0.25em);
     background-color: var(--u-input-bg-color, #FFFFFF);
     cursor: pointer;
     transition: border-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
