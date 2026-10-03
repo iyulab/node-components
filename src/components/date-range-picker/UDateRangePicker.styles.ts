@@ -78,4 +78,23 @@ export const styles = css`
       border-block-end: 1px solid var(--u-border-color-weak, #EEEEEE);
     }
   }
+
+  /* The trigger is a text box — it takes the container's room and reads like its text. */
+  .text-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+  }
+  .text-input::placeholder {
+    color: var(--u-txt-color-weak, #616161);
+  }
+  .calendar-button {
+    cursor: pointer;
+  }
 `;

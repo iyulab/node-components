@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { Locale } from '../../src/utilities/Locale.js';
-import { formatNumber, formatCurrency, formatDate, formatDateRange, parseNumber, parseDate, formatDateText, dateTextPattern, parseDateTime, formatDateTimeText } from '../../src/utilities/format.js';
+import { formatNumber, formatCurrency, formatDate, formatDateRange, parseNumber, parseDate, formatDateText, dateTextPattern, parseDateTime, formatDateTimeText, parseDateRange, formatDateRangeText } from '../../src/utilities/format.js';
 
 describe('format utilities', () => {
   afterEach(() => Locale.set('en'));
@@ -218,6 +218,31 @@ describe('format utilities', () => {
       expect(formatDateTimeText('2026-10-02T14:05')).toBe('2026-10-02 14:05');
       expect(formatDateTimeText('2026-10-02T14:05:00+09:00', 'locale', 'de')).toBe('02.10.2026 14:05');
       expect(parseDateTime(formatDateTimeText('2026-10-02T14:05', 'locale', 'de'), { format: 'locale', locale: 'de' })).toBe('2026-10-02T14:05');
+    });
+  });
+  describe('parseDateRange / formatDateRangeText', () => {
+    const ref = new Date(2026, 9, 3);
+    it.each([
+      ['2026-10-01 ~ 2026-10-31', ['2026-10-01', '2026-10-31']],
+      ['2026-10-01~2026-10-31', ['2026-10-01', '2026-10-31']],
+      ['2026-10-01 – 10-31', ['2026-10-01', '2026-10-31']],
+      ['2026-10-01 - 2026-10-31', ['2026-10-01', '2026-10-31']],
+      ['2026-10-01/2026-10-31', ['2026-10-01', '2026-10-31']],
+      ['2026-10-31 ~ 2026-10-01', ['2026-10-01', '2026-10-31']],
+      ['2026-10-05', ['2026-10-05', '2026-10-05']],
+      ['2025-12-20 ~ 01-05', ['2025-12-20', '2026-01-05']],
+      ['2026-10-31 ~ 2026-01-05', ['2026-01-05', '2026-10-31']],
+    ])('reads %j', (text, expected) => {
+      const r = parseDateRange(text, { referenceDate: ref });
+      expect(r ? [r.start, r.end] : null).toEqual(expected);
+    });
+    it.each(['', 'soon', '2026-10-01 ~ soon', '2026-10-01 ~ 2026-10-02 ~ 2026-10-03'])('does not read %j', (text) => {
+      expect(parseDateRange(text, { referenceDate: ref })).toBeNull();
+    });
+    it('round-trips in a locale order', () => {
+      const text = formatDateRangeText('2026-10-01', '2026-10-31', 'locale', 'de');
+      expect(text).toBe('01.10.2026 – 31.10.2026');
+      expect(parseDateRange(text, { format: 'locale', locale: 'de' })).toEqual({ start: '2026-10-01', end: '2026-10-31' });
     });
   });
 });

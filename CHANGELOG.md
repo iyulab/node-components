@@ -1,5 +1,25 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`u-date-range-picker` takes a typed range.** The field is a text box like `u-date-picker`'s: type
+  `2026-10-01 ~ 2026-10-31` (also `–`, ` - `, the ISO interval with `/`, a short second day such as
+  `10-31`, or one day for a one-day range) and press Enter or leave the field. A second day without a
+  year that would fall before the first runs into the next year (`2025-12-20 ~ 01-05`). It shows
+  `YYYY-MM-DD – YYYY-MM-DD` in every browser language; `format="locale"` uses the locale's numeric
+  order. Clicking the field opens the calendar and keeps the caret in the text box; ArrowDown or
+  Alt+ArrowDown moves into the calendar. Text that is not a range clears the value and reports
+  `badInput`. New CSS part `input`.
+- **`parseDateRange`, `formatDateRangeText`** next to `parseDate`.
+
+### Changed
+
+- **`u-date-range-picker`: the trigger text is `YYYY-MM-DD – YYYY-MM-DD`** (was the locale's joined
+  range, e.g. `Mar 6 – Apr 3, 2026`) so that what is shown can be typed back, and a click keeps focus
+  in the text box — the same as `u-date-picker`.
+
 ## [1.56.0] - 2026-10-03
 
 ### Added

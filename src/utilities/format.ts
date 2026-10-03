@@ -276,3 +276,45 @@ export function formatDateTimeText(isoLocal: string, format: DateTextFormat = 'i
   const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(isoLocal);
   return m ? `${formatDateText(m[1], format, locale)} ${m[2]}` : isoLocal;
 }
+
+/** Separators read between the two days of a typed range: `~`, en/em dash, or ` - ` with spaces. */
+const RANGE_SEPARATOR = /\s*[~–—]\s*|\s+-\s+/;
+
+/**
+ * Reads a period of days as people type it — `2026-10-01 ~ 2026-10-31`, `2026-10-01 – 10-31`,
+ * the ISO interval `2026-10-01/2026-10-31`, or a single day (a one-day range) — and returns
+ * `{ start, end }` as ISO dates, earlier first, or `null`. Each day is read by {@link parseDate}; a
+ * short second day (`10-31`) takes the first day's year, or the next year when it would otherwise
+ * fall before the first day (`2025-12-20 ~ 01-05`).
+ */
+export function parseDateRange(
+  text: string,
+  options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date } = {},
+): { start: string; end: string } | null {
+  const t = text.trim();
+  if (!t) return null;
+  let parts = t.split(RANGE_SEPARATOR);
+  if (parts.length === 1) {
+    const iso = /^(\d{4}-\d{2}-\d{2})\/(\d{4}-\d{2}-\d{2})$/.exec(t);
+    if (iso) parts = [iso[1], iso[2]];
+  }
+  if (parts.length > 2) return null;
+  const start = parseDate(parts[0], options);
+  if (!start) return null;
+  if (parts.length === 1) return { start, end: start };
+  const [y, m, d] = start.split('-').map(Number);
+  let end = parseDate(parts[1], { ...options, referenceDate: new Date(y, m - 1, d) });
+  if (!end) return null;
+  // A second day typed without a year that falls before the first runs into the next year
+  // (`2025-12-20 ~ 01-05` ends on 2026-01-05) — read that way, not as a reversed range.
+  if (end < start && !/\d{4}/.test(parts[1])) {
+    end = parseDate(parts[1], { ...options, referenceDate: new Date(y + 1, 0, 1) });
+    if (!end) return null;
+  }
+  return start <= end ? { start, end } : { start: end, end: start };
+}
+
+/** Writes a period as `{start} – {end}`, each day as {@link formatDateText} writes it. */
+export function formatDateRangeText(start: string, end: string, format: DateTextFormat = 'iso', locale?: LocaleTag): string {
+  return `${formatDateText(start, format, locale)} – ${formatDateText(end, format, locale)}`;
+}

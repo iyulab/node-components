@@ -24,6 +24,15 @@ code is put in order (no `change`).
 
 > The calendar week always starts on Sunday, regardless of locale.
 
+**Typing a range.** The field is a text box: type `2026-10-01 ~ 2026-10-31` (also `–`, ` - `, the ISO
+interval `2026-10-01/2026-10-31`, a short second day such as `10-31` — the first day's year, or the
+next year when it would fall before the first day — or one day for a one-day range) and press Enter
+or leave the field. It shows `YYYY-MM-DD – YYYY-MM-DD` in every browser language; `format="locale"`
+uses the locale's numeric order for each day. Clicking the field opens the calendar and keeps the
+caret in the text box; ArrowDown (or Alt+ArrowDown) moves into the calendar. Text that is not a range
+clears the value and reports `badInput` (the text stays to be fixed). The reader and writer are
+exported as `parseDateRange` and `formatDateRangeText`.
+
 ```html
 <u-date-range-picker name="ordered" label="Ordered"></u-date-range-picker>
 
@@ -88,7 +97,8 @@ picker.addEventListener('change', () => {
 | `min` | `string` | — | — | Earliest selectable day (ISO `YYYY-MM-DD`), inclusive |
 | `max` | `string` | — | — | Latest selectable day (ISO `YYYY-MM-DD`), inclusive |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
-| `placeholder` | `string` | — | — | Placeholder text |
+| `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type) |
+| `format` | `'iso' \| 'locale'` | `'iso'` | ✓ | How the text box writes and reads each day |
 | `presets` | `Array<DateRangePresetName \| DateRangePreset>` | `[]` | — | Quick ranges beside the calendar; attribute form is space-separated built-in names |
 | `disabled` | `boolean` | `false` | ✓ | Disable |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
@@ -123,6 +133,7 @@ Validation: `required` with no value → `valueMissing`; a value that is not two
 |------|-------------|
 | `field` | The `u-field` element |
 | `container` | The element wrapping the trigger area |
+| `input` | The text box |
 | `popover` | The popover element showing the calendar |
 | `calendar` | The calendar container |
 | `calendar-month` | One month block |

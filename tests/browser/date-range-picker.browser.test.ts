@@ -3,7 +3,6 @@ import { userEvent } from 'vitest/browser';
 import '../../src/components/date-range-picker/UDateRangePicker.js';
 import type { UDateRangePicker } from '../../src/components/date-range-picker/UDateRangePicker.js';
 import { Locale } from '../../src/utilities/Locale.js';
-import { formatDateRange } from '../../src/utilities/format.js';
 import { resolvePresets } from '../../src/components/date-range-picker/presets.js';
 
 /** 달력 격자는 내부 `u-calendar` 의 섀도 안에 있다. */
@@ -31,6 +30,15 @@ async function open(el: UDateRangePicker) {
   await settle(el);
 }
 
+/** The keyboard way in: ArrowDown in the text box opens the calendar and moves focus into it
+ *  (a click opens it too but leaves the caret in the text box). */
+async function openByKeyboard(el: UDateRangePicker) {
+  (el.shadowRoot!.querySelector('.text-input') as HTMLInputElement).focus();
+  await userEvent.keyboard('{ArrowDown}');
+  await settle(el);
+  await new Promise(r => setTimeout(r, 30));
+}
+
 const isOpen = (el: UDateRangePicker) => el.shadowRoot!.querySelector('u-popover')!.hasAttribute('open');
 const day = (el: UDateRangePicker, iso: string) =>
   cal(el).querySelector(`button.day[data-iso="${iso}"]`) as HTMLButtonElement;
@@ -48,7 +56,7 @@ describe('u-date-range-picker', () => {
 
   it('열면 두 달을 보여 주고, 대화상자 이름이 «기간 선택» 이다', async () => {
     const el = await mount('<u-date-range-picker value="2026-03-06/2026-03-12"></u-date-range-picker>');
-    await open(el);
+    await openByKeyboard(el);
     expect(isOpen(el)).toBe(true);
     const titles = Array.from(cal(el).querySelectorAll('.calendar-title')).map(t => t.textContent);
     expect(titles).toEqual(['March 2026', 'April 2026']);
@@ -67,7 +75,7 @@ describe('u-date-range-picker', () => {
     expect([el.start, el.end]).toEqual(['2026-03-05', '2026-04-03']);
     expect(changes).toBe(1);
     expect(isOpen(el)).toBe(false);
-    expect(el.shadowRoot!.activeElement).toBe(el.shadowRoot!.querySelector('.container'));
+    expect(el.shadowRoot!.activeElement).toBe(el.shadowRoot!.querySelector('.text-input'));
   });
 
   it('🔴뒤에 고른 날이 앞서면 그것이 시작이다 — 뒤집힌 범위는 만들어지지 않는다', async () => {
@@ -87,10 +95,12 @@ describe('u-date-range-picker', () => {
     expect(changes).toBe(0);
   });
 
-  it('트리거는 로케일이 이은 범위 문구를 보여 준다', async () => {
+  it('텍스트 칸은 ISO 두 날을 보여 주고, format="locale" 이면 로케일 숫자 순서다', async () => {
     const el = await mount('<u-date-range-picker value="2026-03-06/2026-04-03"></u-date-range-picker>');
-    const text = el.shadowRoot!.querySelector('.text-content')!.textContent!.trim();
-    expect(text).toBe(formatDateRange('2026-03-06', '2026-04-03', undefined, 'en'));
+    expect((el.shadowRoot!.querySelector('.text-input') as HTMLInputElement).value).toBe('2026-03-06 – 2026-04-03');
+    el.format = 'locale';
+    await settle(el);
+    expect((el.shadowRoot!.querySelector('.text-input') as HTMLInputElement).value).toBe('03/06/2026 – 04/03/2026');
   });
 
   it('폼에 한 필드로 실린다', async () => {
@@ -144,7 +154,7 @@ describe('u-date-range-picker', () => {
 
   it('🔴Escape: 반쯤 고른 범위가 있으면 첫 번째는 그것만 버리고, 두 번째가 닫는다', async () => {
     const el = await mount('<u-date-range-picker value="2026-03-06/2026-03-12"></u-date-range-picker>');
-    await open(el);
+    await openByKeyboard(el);
     await userEvent.keyboard('{Enter}');
     await settle(el);
     await userEvent.keyboard('{Escape}');
@@ -255,6 +265,49 @@ describe('u-date-range-picker', () => {
       } finally {
         warn.mockRestore();
       }
+    });
+  });
+  describe('직접 입력', () => {
+    const box = (el: UDateRangePicker) => el.shadowRoot!.querySelector('.text-input') as HTMLInputElement;
+
+    it('친 범위를 Enter 로 확정한다 — 짧은 둘째 날은 첫 날의 해, 거꾸로 친 범위는 바로잡는다', async () => {
+      const el = await mount('<u-date-range-picker></u-date-range-picker>');
+      let changes = 0;
+      el.addEventListener('change', () => changes++);
+      box(el).focus();
+      await userEvent.keyboard('2026-10-01 ~ 10-31{Enter}');
+      await settle(el);
+      expect(el.value).toBe('2026-10-01/2026-10-31');
+      expect(box(el).value).toBe('2026-10-01 – 2026-10-31');
+      expect(changes).toBe(1);
+
+      await userEvent.tripleClick(box(el));
+      await userEvent.keyboard('2026-12-31 - 2026-12-01{Enter}');
+      await settle(el);
+      expect(el.value).toBe('2026-12-01/2026-12-31');
+    });
+
+    it('날짜 하나는 하루짜리 범위다 · 범위가 아닌 텍스트는 값을 비우고 badInput', async () => {
+      const el = await mount('<u-date-range-picker value="2026-03-06/2026-03-12"></u-date-range-picker>');
+      await userEvent.tripleClick(box(el));
+      await userEvent.keyboard('20261005{Enter}');
+      await settle(el);
+      expect(el.value).toBe('2026-10-05/2026-10-05');
+
+      await userEvent.tripleClick(box(el));
+      await userEvent.keyboard('2026-10-01 ~ soon{Enter}');
+      await settle(el);
+      expect(el.value).toBeUndefined();
+      expect(el.validity?.badInput).toBe(true);
+      expect(box(el).value).toBe('2026-10-01 ~ soon');
+    });
+
+    it('클릭은 달력을 열고 커서는 칸에 남는다', async () => {
+      const el = await mount('<u-date-range-picker value="2026-03-06/2026-03-12"></u-date-range-picker>');
+      await userEvent.click(box(el));
+      await settle(el);
+      expect(isOpen(el)).toBe(true);
+      expect(el.shadowRoot!.activeElement).toBe(box(el));
     });
   });
 });

@@ -9,7 +9,7 @@ import '../popover/UPopover.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
-import { formatDateRange } from "../../utilities/format.js";
+import { dateTextPattern, formatDateRangeText, parseDateRange, type DateTextFormat } from "../../utilities/format.js";
 import { UCalendar, type CalendarRangeSelectDetail } from "../calendar/UCalendar.js";
 import { parseISODate } from "../calendar/dates.js";
 import { styles as pickerStyles } from "../calendar/picker.styles.js";
@@ -38,6 +38,13 @@ function parseInterval(value?: string): { start: string; end: string } | undefin
  * `start` and `end` read the two halves. The picker never holds a reversed range — choosing the
  * earlier day second makes it the start, and a reversed value set from code is put in order.
  *
+ * The field is a text box: type `2026-10-01 ~ 2026-10-31` (also `–`, ` - `, the ISO interval with
+ * `/`, a short second day such as `10-31`, or one day for a one-day range) and press Enter or leave
+ * the field. It shows `YYYY-MM-DD – YYYY-MM-DD` whatever the browser language, or the locale's
+ * numeric order with `format="locale"`. Clicking the field opens the calendar and keeps the caret
+ * in the text box; ArrowDown (or Alt+ArrowDown) moves into the calendar. Text that is not a range
+ * clears the value and reports `badInput`.
+ *
  * The calendar shows two months. The first day chosen is an anchor and the range previews up to
  * the day under the pointer or keyboard focus; the second day completes the range, fires
  * `change` and closes the calendar. Escape while an anchor is set drops it; Escape again closes.
@@ -55,6 +62,7 @@ function parseInterval(value?: string): { start: string; end: string } | undefin
  * Exposes a `:state(open)` custom state while the calendar is showing.
  *
  * @csspart field - the u-field element
+ * @csspart input - the text box
  * @csspart container - the element wrapping the trigger area
  * @csspart popover - the popover element showing the calendar
  * @csspart calendar - the calendar container
@@ -87,8 +95,11 @@ export class UDateRangePicker extends UFormControlElement<string> {
   @property({ type: String }) max?: string;
   /** Whether to show the clear button */
   @property({ type: Boolean, reflect: true }) clearable: boolean = false;
-  /** Placeholder text (shown on the trigger when there is no value) */
+  /** Placeholder text (shown when there is no value). Defaults to the pattern to type. */
   @property({ type: String }) placeholder?: string;
+  /** How the text box writes and reads each day: `iso` (default, `YYYY-MM-DD` in every language) or
+   *  `locale` (the active locale's numeric order). ISO is read in both. The value is ISO either way. */
+  @property({ type: String, reflect: true }) format: DateTextFormat = 'iso';
   /**
    * Quick ranges listed beside the calendar, in display order — built-in names and app-defined
    * `{ label, range }` presets. As an attribute: space-separated built-in names
@@ -117,6 +128,12 @@ export class UDateRangePicker extends UFormControlElement<string> {
   private readonly calendarId = `u-date-range-picker-calendar-${Math.random().toString(36).slice(2, 8)}`;
 
   @state() private open: boolean = false;
+  /** What the person is typing, until it is committed; `null` shows the value. */
+  @state() private draft: string | null = null;
+  /** The committed text was not a range — the value is empty and validity reports `badInput`. */
+  @state() private badText = false;
+  /** Set when the calendar opens by keyboard (or its button): focus then moves into the grid. */
+  private focusCalendarOnOpen = false;
 
   protected willUpdate(changed: PropertyValues): void {
     super.willUpdate(changed);
@@ -144,16 +161,18 @@ export class UDateRangePicker extends UFormControlElement<string> {
       // The calendar renders only while open, so a stale half-picked range never survives a
       // reopen. Focus waits for the popover's own update (it is `visibility: hidden` until then).
       const calendar = this.calendarEl;
-      calendar?.showDate(this.start ?? new Date());
-      this.popoverEl?.updateComplete.then(() => calendar?.focusDay());
+      const typed = this.draft !== null ? parseDateRange(this.draft, { format: this.format }) : null;
+      calendar?.showDate(typed?.start ?? this.start ?? new Date());
+      const moveFocus = this.focusCalendarOnOpen;
+      this.focusCalendarOnOpen = false;
+      if (moveFocus) this.popoverEl?.updateComplete.then(() => calendar?.focusDay());
     }
   }
 
   render() {
     const range = parseInterval(this.value);
-    const displayText = range
-      ? formatDateRange(range.start, range.end)
-      : this.value ?? '';
+    const shown = range ? formatDateRangeText(range.start, range.end, this.format) : this.value ?? '';
+    const pattern = dateTextPattern(this.format);
     return html`
       <u-field part="field"
         ?required=${this.required}
@@ -163,17 +182,25 @@ export class UDateRangePicker extends UFormControlElement<string> {
         .description=${this.description}
         .validationMessage=${this.validationMessage}
       >
-        <div class="container" part="container"
-          tabindex=${this.effectivelyDisabled ? '-1' : '0'}
-          role="combobox"
-          aria-disabled=${ifDefined(this.effectivelyDisabled ? 'true' : undefined)}
-          aria-haspopup="dialog"
-          aria-expanded=${this.open}
-          aria-label=${ifDefined(this.resolvedAriaLabel)}
-          aria-description=${ifDefined(this.resolvedAriaDescription)}
-          aria-controls=${this.calendarId}
-        >
-          <span class="text-content ${!displayText ? 'placeholder' : ''}">${displayText || this.placeholder || ''}</span>
+        <div class="container" part="container" @click=${this.handleContainerClick}>
+          <input class="text-input" part="input"
+            type="text"
+            autocomplete="off"
+            role="combobox"
+            aria-haspopup="dialog"
+            aria-expanded=${this.open}
+            aria-controls=${this.calendarId}
+            aria-label=${ifDefined(this.resolvedAriaLabel)}
+            aria-description=${ifDefined(this.resolvedAriaDescription)}
+            aria-invalid=${this.badText ? 'true' : 'false'}
+            placeholder=${this.placeholder ?? `${pattern} – ${pattern}`}
+            .value=${this.draft ?? shown}
+            ?disabled=${this.effectivelyDisabled}
+            ?readonly=${this.readonly}
+            @input=${this.handleTextInput}
+            @keydown=${this.handleTextKeydown}
+            @blur=${this.commitText}
+          />
           <u-icon class="suffix-item"
             ?hidden=${!this.clearable || !this.value || this.effectivelyDisabled || this.readonly}
             role="button"
@@ -184,9 +211,14 @@ export class UDateRangePicker extends UFormControlElement<string> {
             @click=${this.handleClearClick}
             @keydown=${this.handleClearKeydown}
           ></u-icon>
-          <u-icon class="suffix-item"
+          <u-icon class="suffix-item calendar-button"
+            role="button"
+            tabindex="-1"
+            aria-label=${Locale.getValue('chooseDateRange')}
+            ?hidden=${this.effectivelyDisabled || this.readonly}
             lib="internal"
             name="calendar"
+            @click=${this.handleCalendarButtonClick}
           ></u-icon>
         </div>
       </u-field>
@@ -196,7 +228,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
         role="dialog"
         aria-label=${Locale.getValue('chooseDateRange')}
         for=".container"
-        trigger="click"
+        trigger="manual"
         strategy="fixed"
         placement="bottom-start"
         offset="4"
@@ -265,11 +297,78 @@ export class UDateRangePicker extends UFormControlElement<string> {
   private commitRange(start: string, end: string): void {
     const next = `${start}/${end}`;
     const changed = next !== this.value;
+    this.draft = null;
+    this.badText = false;
     this.value = next;
     if (changed) this.emitChange();
     this.popoverEl?.hide();
-    this.containerEl?.focus();
+    this.textInputEl?.focus();
   }
+
+  private get textInputEl(): HTMLInputElement | null {
+    return this.renderRoot.querySelector('.text-input');
+  }
+
+  private openCalendar(focusGrid: boolean): void {
+    if (this.effectivelyDisabled || this.readonly) return;
+    if (this.open) {
+      if (focusGrid) void this.calendarEl?.focusDay();
+      return;
+    }
+    this.focusCalendarOnOpen = focusGrid;
+    if (this.containerEl) void this.popoverEl?.show(this.containerEl);
+  }
+
+  /** A click on the field (not on its clear or calendar button) opens the calendar and keeps the caret in the text box. */
+  private handleContainerClick = (e: MouseEvent) => {
+    if ((e.target as HTMLElement).closest?.('u-icon')) return;
+    const input = this.textInputEl;
+    if (input && this.renderRoot instanceof ShadowRoot && this.renderRoot.activeElement !== input) input.focus();
+    this.openCalendar(false);
+  };
+
+  private handleCalendarButtonClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (this.open) {
+      void this.popoverEl?.hide();
+      this.textInputEl?.focus();
+    } else {
+      this.openCalendar(true);
+    }
+  };
+
+  private handleTextInput = (e: Event) => {
+    this.draft = (e.target as HTMLInputElement).value;
+    const typed = parseDateRange(this.draft, { format: this.format });
+    if (typed && this.open) this.calendarEl?.showDate(typed.start);
+  };
+
+  /** ArrowDown / Alt+ArrowDown opens the calendar and moves into it; Enter commits what was typed. */
+  private handleTextKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.commitText();
+      this.openCalendar(true);
+    } else if (e.key === 'Enter' && !e.isComposing) {
+      this.commitText();
+    }
+  };
+
+  /** Turns the typed text into the value — empty clears it; text that is not a range clears it and
+   *  reports `badInput` (the text stays to be fixed); a range reaching outside `min`/`max` is kept
+   *  and reported as out of range. */
+  private commitText = () => {
+    if (this.draft === null) return;
+    const text = this.draft;
+    const range = parseDateRange(text, { format: this.format });
+    this.badText = !!text.trim() && range === null;
+    const next = range ? `${range.start}/${range.end}` : undefined;
+    const changed = next !== this.value;
+    this.value = next;
+    this.draft = this.badText ? text : null;
+    if (changed) this.emitChange();
+    else if (this.badText && !this.novalidate) this.validate();
+  };
 
   /** Escape that reaches the picker closes the calendar — the calendar keeps the first Escape
    *  for itself while a range is half picked. */
@@ -277,7 +376,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
     if (e.key !== 'Escape') return;
     e.preventDefault();
     this.popoverEl?.hide();
-    this.containerEl?.focus();
+    this.textInputEl?.focus();
   };
 
   private handlePopoverShow = () => {
@@ -292,17 +391,19 @@ export class UDateRangePicker extends UFormControlElement<string> {
     e.preventDefault();
     e.stopPropagation();
     this.resetValue();
-    this.containerEl?.focus();
+    this.textInputEl?.focus();
   };
 
   private handleFooterResetClick = () => {
     this.resetValue();
     this.popoverEl?.hide();
-    this.containerEl?.focus();
+    this.textInputEl?.focus();
   };
 
   private resetValue(): void {
     const hadValue = !!this.value;
+    this.draft = null;
+    this.badText = false;
     this.value = undefined;
     if (hadValue) this.emitChange();
   }
@@ -325,7 +426,10 @@ export class UDateRangePicker extends UFormControlElement<string> {
     let message = '';
     const range = parseInterval(this.value);
 
-    if (this.required && !this.value) {
+    if (this.badText) {
+      flags = { badInput: true };
+      message = Locale.getValue('badInput');
+    } else if (this.required && !this.value) {
       flags = { valueMissing: true };
       message = Locale.getValue('valueMissing');
     } else if (this.value && !range) {
@@ -339,22 +443,23 @@ export class UDateRangePicker extends UFormControlElement<string> {
       message = Locale.getValue('rangeOverflow', { max: this.max });
     }
 
-    this.commit(flags, message, this.containerEl ?? undefined);
+    this.commit(flags, message, this.textInputEl ?? this.containerEl ?? undefined);
   }
 
   public reset(): void {
     this.value = undefined;
+    this.draft = null;
+    this.badText = false;
     this.invalid = false;
   }
 
-  /** `.container` is a div — no native `disabled`, so a disabled picker ignores `focus()` here. */
   public focus(options?: FocusOptions): void {
     if (this.effectivelyDisabled) return;
-    this.containerEl?.focus(options);
+    this.textInputEl?.focus(options);
   }
 
   public blur(): void {
-    this.containerEl?.blur();
+    this.textInputEl?.blur();
   }
 }
 
