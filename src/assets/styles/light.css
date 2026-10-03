@@ -334,7 +334,7 @@
      (buttons, menu items, options, tags, table bodies, sheets), so tinting it to make a
      page background greys every control inside a white card. Paint the page with this
      token instead and keep `--u-bg-color` as the surface. */
-  --u-canvas-bg-color:       var(--u-neutral-50);
+  --u-canvas-bg-color:       var(--u-neutral-100);  /* one step below raised chrome (50) and surfaces (0) */
 
   /* ★면 높이 — 바탕에 인접해 있으면서 한 단 구분되는 크롬 면(툴바·표 헤더·푸터).
      상호작용 상태(-hover/-active/-disabled)와 **다른 축**이다. 상태 이름에 높이를

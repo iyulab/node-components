@@ -15,8 +15,9 @@
 
 ### Added
 
-- **`--u-canvas-bg-color`** — the application background behind surfaces (page body, shell side
-  panels). `--u-bg-color` stays the surface components paint their own face with.
+- **`--u-canvas-bg-color`** — the application background behind surfaces (page body). Light default
+  `neutral-100`, one step below raised chrome (`neutral-50`) and surfaces (`neutral-0`).
+  `--u-bg-color` stays the surface components paint their own face with.
 - **`--u-focus-ring-color`** — every focus outline reads it (default `--u-primary-color-strong`),
   so a theme with a neutral ink primary can keep focus on an interaction hue.
 

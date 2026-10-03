@@ -164,7 +164,7 @@
 | `--u-bg-color-hover` | `var(--u-neutral-100)` |
 | `--u-bg-color-active` | `var(--u-neutral-200)` |
 | `--u-bg-color-disabled` | `var(--u-neutral-50)` |
-| `--u-canvas-bg-color` | `var(--u-neutral-50)` |
+| `--u-canvas-bg-color` | `var(--u-neutral-100)` |
 | `--u-bg-color-raised` | `var(--u-neutral-50)` |
 | `--u-bg-color-raised-hover` | `var(--u-bg-color-hover)` |
 | `--u-primary-bg-color` | `var(--u-blue-0)` |
