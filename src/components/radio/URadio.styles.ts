@@ -46,8 +46,8 @@ export const styles = css`
     padding: 0;
   }
 
-  /* Default + Filled */
-  :host([type="default"][variant="filled"]) ::slotted(u-option) {
+  /* Default + Solid */
+  :host([type="default"][appearance="solid"]) ::slotted(u-option) {
     --option-color-active: #fff;
     --option-border-color-active: var(--radio-color);
     --option-background-color-active: var(--radio-color);
@@ -57,7 +57,7 @@ export const styles = css`
   }
 
   /* Default + Outlined */
-  :host([type="default"][variant="outlined"]) ::slotted(u-option) {
+  :host([type="default"][appearance="outlined"]) ::slotted(u-option) {
     --option-color-active: var(--radio-color-active);
     --option-border-color-active: var(--radio-color);
     --option-background-color-active: transparent;
@@ -66,8 +66,8 @@ export const styles = css`
     --option-background-color-active-interactive: transparent;
   }
 
-  /* Button + Filled */
-  :host([type="button"][variant="filled"]) ::slotted(u-option) {
+  /* Button + Solid */
+  :host([type="button"][appearance="solid"]) ::slotted(u-option) {
     --option-color-active: #fff;
     --option-border-color-active: var(--radio-color);
     --option-background-color-active: var(--radio-color);
@@ -77,7 +77,7 @@ export const styles = css`
   }
 
   /* Button + Outlined */
-  :host([type="button"][variant="outlined"]) ::slotted(u-option) {
+  :host([type="button"][appearance="outlined"]) ::slotted(u-option) {
     --option-color-active: var(--radio-color-active);
     --option-border-color-active: var(--radio-color);
     --option-background-color-active: transparent;
@@ -87,41 +87,41 @@ export const styles = css`
   }
 
   /* === Button - Horizontal 배치 === */
-  :host([type="button"]:not([variant="soft"])[orientation="horizontal"]) ::slotted(u-option:first-child) {
+  :host([type="button"]:not([appearance="soft"])[orientation="horizontal"]) ::slotted(u-option:first-child) {
     border-radius: 0.35em 0 0 0.35em;
   }
-  :host([type="button"]:not([variant="soft"])[orientation="horizontal"]) ::slotted(u-option:last-child) {
+  :host([type="button"]:not([appearance="soft"])[orientation="horizontal"]) ::slotted(u-option:last-child) {
     border-radius: 0 0.35em 0.35em 0;
   }
-  :host([type="button"]:not([variant="soft"])[orientation="horizontal"]) ::slotted(u-option:not(:last-child)) {
+  :host([type="button"]:not([appearance="soft"])[orientation="horizontal"]) ::slotted(u-option:not(:last-child)) {
     border-right: 1px solid var(--u-neutral-300, #E0E0E0);
   }
 
   /* === Button - Vertical 배치 === */
-  :host([type="button"]:not([variant="soft"])[orientation="vertical"]) ::slotted(u-option) {
+  :host([type="button"]:not([appearance="soft"])[orientation="vertical"]) ::slotted(u-option) {
     width: 100%;
     justify-content: center;
   }
-  :host([type="button"]:not([variant="soft"])[orientation="vertical"]) ::slotted(u-option:first-child) {
+  :host([type="button"]:not([appearance="soft"])[orientation="vertical"]) ::slotted(u-option:first-child) {
     border-radius: 0.35em 0.35em 0 0;
   }
-  :host([type="button"]:not([variant="soft"])[orientation="vertical"]) ::slotted(u-option:last-child) {
+  :host([type="button"]:not([appearance="soft"])[orientation="vertical"]) ::slotted(u-option:last-child) {
     border-radius: 0 0 0.35em 0.35em;
   }
-  :host([type="button"]:not([variant="soft"])[orientation="vertical"]) ::slotted(u-option:not(:last-child)) {
+  :host([type="button"]:not([appearance="soft"])[orientation="vertical"]) ::slotted(u-option:not(:last-child)) {
     border-bottom: 1px solid var(--u-neutral-300, #E0E0E0);
   }
 
   /* === Button + Soft — a segmented control ===
      A quiet track; the picked segment rises onto the surface. No joined borders. */
-  :host([type="button"][variant="soft"]) .container {
+  :host([type="button"][appearance="soft"]) .container {
     gap: 2px;
     padding: 2px;
     border-color: transparent;
     border-radius: var(--u-radius-lg, 6px);
     background-color: var(--u-bg-color-raised, #FAFAFA);
   }
-  :host([type="button"][variant="soft"]) ::slotted(u-option) {
+  :host([type="button"][appearance="soft"]) ::slotted(u-option) {
     justify-content: center;
     border-color: transparent;
     border-radius: var(--u-radius-md, 4px);
@@ -134,7 +134,7 @@ export const styles = css`
     --option-border-color-active-interactive: transparent;
     --option-background-color-active-interactive: var(--u-bg-color, #FFFFFF);
   }
-  :host([type="button"][variant="soft"]) ::slotted(u-option[selected]) {
+  :host([type="button"][appearance="soft"]) ::slotted(u-option[selected]) {
     box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04));
     font-weight: 600;
   }

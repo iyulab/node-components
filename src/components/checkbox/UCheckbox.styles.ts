@@ -2,7 +2,6 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --checkbox-fill-color: var(--u-primary-color, #1976D2);
     --checkbox-color: inherit;
     --checkbox-border-color: var(--u-input-border-color, #E0E0E0);
     --checkbox-background-color: var(--u-input-bg-color, #FFFFFF);
@@ -46,21 +45,21 @@ export const styles = css`
     --checkbox-border-color: var(--u-input-border-color-hover, #BDBDBD);
   }
 
-  /* === Variant: filled - 배경 채움 === */
-  :host([variant="filled"][checked]),
-  :host([variant="filled"][indeterminate]) {
+  /* === solid — 배경 채움 === */
+  :host([appearance="solid"][checked]),
+  :host([appearance="solid"][indeterminate]) {
     /* 체크 표시가 **채운 면 위**에 선다 — 역할 축에서만 on-color 로 갈린다(장식 축은 폴백). */
     --checkbox-color: var(--checkbox-hue-on-fill, var(--u-neutral-100, #F5F5F5));
-    --checkbox-border-color: var(--checkbox-hue, var(--checkbox-fill-color));
-    --checkbox-background-color: var(--checkbox-hue, var(--checkbox-fill-color));
+    --checkbox-border-color: var(--checkbox-hue);
+    --checkbox-background-color: var(--checkbox-hue);
   }
 
-  /* === Variant: outline - 테두리만 === */
-  :host([variant="outline"][checked]),
-  :host([variant="outline"][indeterminate]) {
+  /* === outlined — 테두리만 === */
+  :host([appearance="outlined"][checked]),
+  :host([appearance="outlined"][indeterminate]) {
     /* 여기서는 같은 표시가 **바탕 위**에 선다 — 면 단이 아니라 -strong 이 맡는다. */
-    --checkbox-color: var(--checkbox-hue-strong, var(--checkbox-hue, var(--checkbox-fill-color)));
-    --checkbox-border-color: var(--checkbox-hue, var(--checkbox-fill-color));
+    --checkbox-color: var(--checkbox-hue-strong, var(--checkbox-hue));
+    --checkbox-border-color: var(--checkbox-hue);
     --checkbox-background-color: transparent;
   }
 
@@ -96,11 +95,14 @@ export const styles = css`
   }
 
   /* ==========================================================================
-     장식 축 — color= 는 hue 슬롯만 채운다. variant 규칙이 폴백과 함께 읽는다.
-     기본값 blue 는 규칙이 없다 = 슬롯이 비어 브랜드 훅(--checkbox-fill-color)을 탄다.
-     u-tag 와 같은 방식이다 — 슬롯이 채워지면 color= 가 최종 권한을 갖는다.
-     즉 blue 는 장식 축의 한 값이 아니라 "색을 지정하지 않음" 의 표기다.
+     장식 축 — color= 는 hue 슬롯만 채운다. appearance 규칙이 그것을 읽는다.
+     2.0 전에는 기본값 blue 에 규칙이 없어 «브랜드 경로»를 탔다(blue 가 파랑이 아니라 «색 미지정»의
+     표기였다). 이제 기본값은 primary(역할 축)이고 blue 는 다른 장식 색처럼 파랑이다 — 모든 색이 슬롯을
+     채우므로 «빈 슬롯»용 채움 훅(--checkbox-fill-color)은 폐지했다.
      ========================================================================== */
+  :host([color="blue"]) {
+    --checkbox-hue: var(--u-blue-600, #1E88E5);
+  }
   :host([color="green"]) {
     --checkbox-hue: var(--u-green-600, #43A047);
   }

@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 32개 · 프로퍼티 140개**
+**컴포넌트 32개 · 프로퍼티 139개**
 
 ## `<u-alert>`
 
@@ -72,10 +72,9 @@ u-button.cta { --btn-color: #0f9d58; }
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--checkbox-color` | 체크 표시 색상 (outline variant) |
+| `--checkbox-color` | 체크 표시 색상 (outlined) |
 | `--checkbox-border-color` | 체크박스 테두리 색상 |
-| `--checkbox-background-color` | 체크박스 배경색 (filled variant) |
-| `--checkbox-fill-color` | 체크된 상태의 채움색 (기본: --u-primary-color) |
+| `--checkbox-background-color` | 체크박스 배경색 (solid) |
 
 ## `<u-date-picker>`
 

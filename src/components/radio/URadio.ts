@@ -9,7 +9,8 @@ import { UOption } from "../option/UOption.js";
 import { styles } from "./URadio.styles.js";
 
 export type RadioType = "default" | "button";
-export type RadioVariant = "filled" | "outlined" | "soft";
+/** 외형 정도 — `solid` 선택 칸 채움(기본) · `outlined` · `soft`(버튼형 전용 — 세그먼트 컨트롤). */
+export type RadioAppearance = "solid" | "outlined" | "soft";
 export type RadioOrientation = "vertical" | "horizontal";
 
 /**
@@ -33,10 +34,10 @@ export class URadio extends UFormControlElement<string> {
   /** 라디오 유형 */
   @property({ type: String, reflect: true }) type: RadioType = "default";
   /**
-   * 스타일 변형. `soft` 는 `type="button"` 전용 — 옅은 트랙 위에서 선택된 칸만 표면으로 떠오르는
+   * 외형 정도. `soft` 는 `type="button"` 전용 — 옅은 트랙 위에서 선택된 칸만 표면으로 떠오르는
    * **세그먼트 컨트롤** 모양이다(보기 전환·수준 선택처럼 화면의 «모드»를 고를 때).
    */
-  @property({ type: String, reflect: true }) variant: RadioVariant = "filled";
+  @property({ type: String, reflect: true }) appearance: RadioAppearance = "solid";
   /** 배치 방향 */
   @property({ type: String, reflect: true }) orientation: RadioOrientation = "vertical";
 

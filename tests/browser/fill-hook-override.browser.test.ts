@@ -1,32 +1,19 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import '../../src/assets/styles/light.css';
 import '../../src/components/tag/UTag.js';
 import '../../src/components/checkbox/UCheckbox.js';
 
 /**
- * 매트릭스를 접을 때 두 가지 방법이 있었고, **관측 가능한 차이**가 있다.
+ * 색 슬롯 — `color=` 가 **언제나** 최종 권한이다.
  *
- *  - `u-tag`      — 색 규칙이 **별도 슬롯**(`--tag-hue-solid`)을 채우고 appearance 가 그것을 읽는다.
- *                   2.0 부터는 **모든 색이 슬롯을 채운다**(기본 `neutral` 도 무채색 슬롯) — 그래서
- *                   «슬롯이 비면 쓰이던» `--tag-fill-color` 훅은 죽은 경로가 되어 폐지했다.
- *  - `u-checkbox` — 같은 방식(`--checkbox-hue`) + 슬롯이 빌 때의 채움색 훅.
- *
- * ⚠**처음에는 달랐다.** `u-checkbox` 를 접을 때 색 규칙이 채움색 훅 자체를 덮게 했더니,
- * 그 훅이 공개 `@cssprop` 이고 **호스트 요소에 대해서는 문서 작성자 스타일이 `:host()` 를
- * 이기므로**(이 페이즈 전체가 딛고 있는 비대칭), 소비자 CSS 가 `color=` 를 이겨 버렸다.
- * 리팩터 **전**에는 색 규칙이 훅이 아니라 소비되는 프로퍼티를 직접 세팅했으므로 그렇지
- * 않았다 — 즉 그것은 의미론 회귀였다. 슬롯 방식으로 되돌려 원래 동작과 `u-tag` 를 함께
- * 맞췄다. 이 테스트가 그 회귀를 막는다.
+ * `u-tag`(`--tag-hue-*`)·`u-checkbox`(`--checkbox-hue*`)는 색 규칙이 슬롯을 채우고 외형 규칙이
+ * 슬롯을 읽는다. 2.0 전에는 «슬롯이 빈» 경로가 있었다 — 태그의 기본 `neutral`·체크박스의 기본
+ * `blue` 는 규칙이 없어 채움 훅(`--tag-fill-color`·`--checkbox-fill-color`)을 거쳐 **브랜드**로
+ * 칠해졌다. 즉 낱말(`neutral`·`blue`)이 제 뜻이 아니라 «색 미지정»을 뜻했다.
+ * 이제 모든 값이 슬롯을 채우고 그 훅은 폐지됐다. 이 파일이 «빈 슬롯 경로가 되살아나지 않는다»를 지킨다.
  */
-describe('채움색 훅 오버라이드 vs color= (두 붕괴 방식의 차이)', () => {
-  let sheet: HTMLStyleElement;
-
-  beforeEach(() => {
-    document.body.replaceChildren();
-    sheet = document.createElement('style');
-    document.head.appendChild(sheet);
-  });
-  afterEach(() => sheet.remove());
+describe('색 슬롯 — 빈 슬롯 경로가 없다', () => {
+  beforeEach(() => document.body.replaceChildren());
 
   const token = (n: string) =>
     getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -39,28 +26,38 @@ describe('채움색 훅 오버라이드 vs color= (두 붕괴 방식의 차이)'
     return el;
   }
 
-  it('u-checkbox: 소비자가 --checkbox-fill-color 를 덮어도 color= 가 이긴다 (슬롯 방식)', async () => {
-    sheet.textContent = 'u-checkbox { --checkbox-fill-color: rgb(255, 0, 128); }';
-    const el = await mount('u-checkbox', { color: 'green', variant: 'filled', checked: '' });
-    expect(
-      getComputedStyle(el).getPropertyValue('--checkbox-border-color').trim(),
-      'color="green" 이 유지돼야 한다 — 슬롯이 채워져 폴백이 발화하지 않는다',
-    ).toBe(token('--u-green-600'));
+  it('맨 태그(기본 neutral)도 슬롯을 채운다 — 무채색이지 브랜드가 아니다', async () => {
+    const tag = await mount('u-tag', { appearance: 'solid' });
+    expect(getComputedStyle(tag).getPropertyValue('--tag-hue-solid').trim()).not.toBe('');
+    expect(getComputedStyle(tag).getPropertyValue('--tag-bg-color').trim()).toBe(token('--u-neutral-700'));
   });
 
-  it('color 를 지정하지 않은(기본 blue) 경우에는 채움색 훅이 먹는다', async () => {
-    // 슬롯 방식의 반대 방향 확인 — 슬롯이 비면 폴백이 발화해야 한다.
-    sheet.textContent = 'u-checkbox { --checkbox-fill-color: rgb(255, 0, 128); }';
-    const cb = await mount('u-checkbox', { variant: 'filled', checked: '' }); // color 기본 = blue
-    expect(getComputedStyle(cb).getPropertyValue('--checkbox-border-color').trim()).toBe('rgb(255, 0, 128)');
+  it('맨 체크박스(기본 primary)는 브랜드를, blue 는 파랑을 칠한다', async () => {
+    const bare = await mount('u-checkbox', { checked: '' });
+    expect(bare.getAttribute('color')).toBe('primary');
+    expect(getComputedStyle(bare).getPropertyValue('--checkbox-border-color').trim()).toBe(token('--u-primary-color'));
+    const blue = await mount('u-checkbox', { color: 'blue', checked: '' });
+    expect(getComputedStyle(blue).getPropertyValue('--checkbox-border-color').trim()).toBe(token('--u-blue-600'));
   });
 
-  it('훅을 덮지 않으면 둘 다 color= 를 따른다', async () => {
+  it('폐지된 채움 훅을 덮어도 아무것도 바뀌지 않는다', async () => {
+    const sheet = document.createElement('style');
+    sheet.textContent = 'u-tag { --tag-fill-color: rgb(255, 0, 128); } u-checkbox { --checkbox-fill-color: rgb(255, 0, 128); }';
+    document.head.appendChild(sheet);
+    try {
+      const tag = await mount('u-tag', { appearance: 'solid' });
+      const cb = await mount('u-checkbox', { checked: '' });
+      expect(getComputedStyle(tag).getPropertyValue('--tag-bg-color').trim()).not.toBe('rgb(255, 0, 128)');
+      expect(getComputedStyle(cb).getPropertyValue('--checkbox-border-color').trim()).not.toBe('rgb(255, 0, 128)');
+    } finally {
+      sheet.remove();
+    }
+  });
+
+  it('색을 주면 둘 다 color= 를 따른다', async () => {
     const tag = await mount('u-tag', { color: 'green', appearance: 'solid' });
-    const cb = await mount('u-checkbox', { color: 'green', variant: 'filled', checked: '' });
-    expect(getComputedStyle(tag).getPropertyValue('--tag-bg-color').trim())
-      .toBe(token('--u-green-500'));
-    expect(getComputedStyle(cb).getPropertyValue('--checkbox-border-color').trim())
-      .toBe(token('--u-green-600'));
+    const cb = await mount('u-checkbox', { color: 'green', appearance: 'solid', checked: '' });
+    expect(getComputedStyle(tag).getPropertyValue('--tag-bg-color').trim()).toBe(token('--u-green-500'));
+    expect(getComputedStyle(cb).getPropertyValue('--checkbox-border-color').trim()).toBe(token('--u-green-600'));
   });
 });

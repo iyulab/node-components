@@ -127,8 +127,8 @@ describe('color 역할 축', () => {
   it('u-checkbox — 같은 체크 표시가 면 위(filled)와 바탕 위(outline)에서 다른 단을 받는다', async () => {
     const wrong: string[] = [];
     for (const role of ROLES) {
-      const filled = await mount('u-checkbox', { variant: 'filled', color: role, checked: '' });
-      const outline = await mount('u-checkbox', { variant: 'outline', color: role, checked: '' });
+      const filled = await mount('u-checkbox', { appearance: 'solid', color: role, checked: '' });
+      const outline = await mount('u-checkbox', { appearance: 'outlined', color: role, checked: '' });
       const box = (el: HTMLElement) =>
         getComputedStyle(el.shadowRoot!.querySelector('.checkbox') as Element);
 

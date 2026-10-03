@@ -8,7 +8,8 @@ import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import { styles } from "./UCheckbox.styles.js";
 
-export type CheckboxVariant = "filled" | "outline";
+/** 외형 정도 — `solid` 체크 칸을 색으로 채움(기본) · `outlined` 테두리와 체크 표시만 색. */
+export type CheckboxAppearance = "solid" | "outlined";
 /** 역할 축(`primary`…`danger`, 의미 · 리브랜딩을 따라옴)과 장식 축(`blue`…, 색 자체 · 면역)이 병존한다. */
 export type CheckboxColor =
   | "primary" | "info" | "success" | "warning" | "danger"
@@ -26,22 +27,20 @@ export type CheckboxColor =
  * @csspart label - 라벨 텍스트 요소
  * @csspart description - 설명 텍스트 요소
  * 
- * @cssprop --checkbox-color - 체크 표시 색상 (outline variant)
+ * @cssprop --checkbox-color - 체크 표시 색상 (outlined)
  * @cssprop --checkbox-border-color - 체크박스 테두리 색상
- * @cssprop --checkbox-background-color - 체크박스 배경색 (filled variant)
+ * @cssprop --checkbox-background-color - 체크박스 배경색 (solid)
  *
  * @event change - 체크 상태 변경 시 발생
- *
- * @cssprop --checkbox-fill-color - 체크된 상태의 채움색 (기본: --u-primary-color)
- */
+ * */
 @customElement('u-checkbox')
 export class UCheckbox extends UFormControlElement<string> {
   static styles = [ super.styles, styles ];
 
-  /** 스타일 변형 */
-  @property({ type: String, reflect: true }) variant: CheckboxVariant = "filled";
-  /** 체크박스 강조 색상 */
-  @property({ type: String, reflect: true }) color: CheckboxColor = "blue";
+  /** 외형 정도 — `solid`(기본) · `outlined` */
+  @property({ type: String, reflect: true }) appearance: CheckboxAppearance = "solid";
+  /** 체크박스 강조 색상 — 기본 `primary`(브랜드를 따른다) */
+  @property({ type: String, reflect: true }) color: CheckboxColor = "primary";
   /** 중간 상태 */
   @property({ type: Boolean, reflect: true }) indeterminate: boolean = false;
   /** 체크 여부 */

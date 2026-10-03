@@ -16,6 +16,8 @@
   | `u-tag` · `u-chip` | `variant="solid"` · `"filled"` · `"surface"` · `"outlined"` | `appearance="solid"` · `"soft"` · `"soft"` · `"outlined"` (new: `"plain"` — coloured text only) |
   | `u-badge` | `variant="pill"` · `"dot"` · `"square"` | `shape=` same values (`variant` there was a shape, not an appearance) |
   | `u-alert` · `Toast` options | `variant="solid"` · `"filled"` · `"outlined"` · `"glass"` | `appearance="soft"` · `"soft"` · `"outlined"` · `"soft"` — the old `solid` was a tint with an outline, not a solid fill, so both tints are `soft` (tint, no outline); `glass` is removed |
+  | `u-checkbox` | `variant="filled"` · `"outline"` | `appearance="solid"` · `"outlined"` |
+  | `u-radio` | `variant="filled"` · `"outlined"` · `"soft"` | `appearance="solid"` · `"outlined"` · `"soft"` |
 
   `u-icon-button` and `u-copy-button` default to `appearance="plain"` (was `variant="ghost"`).
   `u-tag` and `u-chip` default to `appearance="soft"` (was `variant="filled"`).
@@ -26,6 +28,10 @@
   set `color="neutral"` explicitly is now a grey button (drop the attribute or use `primary` for the
   old look). `plain` and `link` buttons keep body/link text for `primary` and `neutral` and take the
   colour for every other value, as before.
+- 🔴**`u-checkbox`: the default `color` is `primary`, and `blue` is blue.** The old default `blue` had no
+  rule of its own and painted the brand colour — the word meant "no colour set". A bare checkbox looks
+  the same; one that set `color="blue"` explicitly now gets the palette blue. The `--checkbox-fill-color`
+  hook is removed for the same reason as the tag's: every colour fills the checkbox's own slot.
 - 🔴**`u-tag` / `u-chip`: `color="neutral"` (the default) is grey; the decorative `gray` is removed.**
   A bare tag was a brand tint and a grey label needed `color="gray"`; now a bare tag is the grey label
   and a brand-tinted one is `color="primary"`. Replace `color="gray"` with `color="neutral"` (or

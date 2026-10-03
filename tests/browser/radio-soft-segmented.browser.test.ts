@@ -4,7 +4,7 @@ import '../../src/components/option/UOption.js';
 import type { URadio } from '../../src/components/radio/URadio.js';
 
 /**
- * `u-radio type="button" variant="soft"` — a segmented control: a quiet track, the picked segment
+ * `u-radio type="button" appearance="soft"` — a segmented control: a quiet track, the picked segment
  * rises onto the surface. Measured with computed values; joined-border geometry of the other
  * button variants must not leak in.
  */
@@ -12,7 +12,7 @@ const made: HTMLElement[] = [];
 async function group(value = 'b'): Promise<URadio> {
   const el = document.createElement('u-radio') as URadio;
   el.setAttribute('type', 'button');
-  el.setAttribute('variant', 'soft');
+  el.setAttribute('appearance', 'soft');
   el.setAttribute('orientation', 'horizontal');
   el.innerHTML = '<u-option value="a">A</u-option><u-option value="b">B</u-option><u-option value="c">C</u-option>';
   document.body.appendChild(el);
