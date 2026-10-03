@@ -52,14 +52,14 @@ describe('폼 컨트롤 host.focus()/.blur() 위임 — UInput.focus()와 같은
     expect(document.activeElement).toBe(input);
   });
 
-  it('UDatePicker — host.focus()가 .container로 위임되고 .blur()로 해제된다', async () => {
+  it('UDatePicker — host.focus()가 텍스트 칸으로 위임되고 .blur()로 해제된다', async () => {
     const el = document.createElement('u-date-picker') as UDatePicker;
     document.body.appendChild(el);
     await el.updateComplete;
 
     el.focus();
     expect(document.activeElement).toBe(el);
-    expect(el.shadowRoot?.activeElement).toBe(el.shadowRoot!.querySelector('.container'));
+    expect(el.shadowRoot?.activeElement).toBe(el.shadowRoot!.querySelector('.text-input'));
 
     el.blur();
     expect(el.shadowRoot?.activeElement).toBeNull();

@@ -167,3 +167,81 @@ export function parseNumber(text: string, locale?: LocaleTag): number | null {
   const value = Number(`${negative ? '-' : ''}${digits || '0'}.${fracPart || '0'}`);
   return Number.isFinite(value) ? value : null;
 }
+
+/** How a date is written in a text field: ISO `YYYY-MM-DD`, or the locale's numeric order (`10/02/2026`, `02.10.2026`). */
+export type DateTextFormat = 'iso' | 'locale';
+
+type DatePart = 'year' | 'month' | 'day';
+
+/** The year/month/day order and separator the locale's numeric date uses (`en-US` → month/day/year · `/`). */
+function numericDateLayout(locale: LocaleTag): { order: DatePart[]; separator: string } {
+  const parts = new Intl.DateTimeFormat(locale, { year: 'numeric', month: '2-digit', day: '2-digit' })
+    .formatToParts(new Date(2026, 9, 2));
+  const order = parts.filter(p => p.type === 'year' || p.type === 'month' || p.type === 'day').map(p => p.type as DatePart);
+  const separator = parts.find(p => p.type === 'literal')?.value ?? '-';
+  return { order, separator };
+}
+
+/**
+ * Writes an ISO `YYYY-MM-DD` date the way {@link parseDate} reads it back: `iso` keeps it as is;
+ * `locale` uses the locale's numeric order with two-digit month and day (`10/02/2026` in `en-US`,
+ * `02.10.2026` in `de`). A string that is not an ISO date is returned unchanged.
+ */
+export function formatDateText(iso: string, format: DateTextFormat = 'iso', locale?: LocaleTag): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (!m || format === 'iso') return iso;
+  return new Intl.DateTimeFormat(locale ?? Locale.get(), { year: 'numeric', month: '2-digit', day: '2-digit' })
+    .format(new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+}
+
+/** The pattern a person should type for `format` — `YYYY-MM-DD`, or e.g. `MM/DD/YYYY` for `locale` in `en-US`. */
+export function dateTextPattern(format: DateTextFormat = 'iso', locale?: LocaleTag): string {
+  if (format === 'iso') return 'YYYY-MM-DD';
+  const { order, separator } = numericDateLayout(locale ?? Locale.get());
+  const token: Record<DatePart, string> = { year: 'YYYY', month: 'MM', day: 'DD' };
+  return order.map(p => token[p]).join(separator);
+}
+
+/**
+ * Reads a date the way people type it into a field and returns it as ISO `YYYY-MM-DD`, or `null`
+ * when the text is not a real date (`2026-02-30` is `null`). Accepted, whatever `format` is:
+ * - `2026-10-02`, `2026/10/02`, `2026.10.02`, `2026. 10. 2.` — a four-digit first part is year-month-day;
+ * - `20261002` — eight digits are year, month, day.
+ *
+ * `format` decides the rest: with `iso`, three parts are year-month-day and two parts (`10-02`)
+ * are month-day; with `locale`, both follow the locale's numeric order (`10/02/2026` and `10/02`
+ * in `en-US`, `02.10.2026` and `2.10` in `de`). Two parts take the year of `referenceDate`
+ * (today by default). Two-digit years are not read.
+ */
+export function parseDate(
+  text: string,
+  options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date } = {},
+): string | null {
+  const t = text.trim().replace(/\.$/, '');
+  if (!t) return null;
+  let y: number, mo: number, d: number;
+  const compact = /^(\d{4})(\d{2})(\d{2})$/.exec(t);
+  const parts = compact ? null : t.split(/\s*[-/.]\s*|\s+/);
+  if (compact) {
+    [y, mo, d] = [Number(compact[1]), Number(compact[2]), Number(compact[3])];
+  } else {
+    if (!parts || parts.some(p => !/^\d{1,4}$/.test(p))) return null;
+    const order: DatePart[] = options.format === 'locale'
+      ? numericDateLayout(options.locale ?? Locale.get()).order
+      : ['year', 'month', 'day'];
+    let layout: DatePart[];
+    if (parts.length === 3) layout = parts[0].length === 4 ? ['year', 'month', 'day'] : order;
+    else if (parts.length === 2) layout = order.filter(p => p !== 'year');
+    else return null;
+    const read: Partial<Record<DatePart, string>> = {};
+    layout.forEach((p, i) => { read[p] = parts[i]; });
+    if (read.year !== undefined && read.year.length !== 4) return null;
+    if (read.month!.length > 2 || read.day!.length > 2) return null;
+    y = read.year !== undefined ? Number(read.year) : (options.referenceDate ?? new Date()).getFullYear();
+    mo = Number(read.month);
+    d = Number(read.day);
+  }
+  const date = new Date(y, mo - 1, d);
+  if (date.getFullYear() !== y || date.getMonth() !== mo - 1 || date.getDate() !== d) return null;
+  return `${String(y).padStart(4, '0')}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}

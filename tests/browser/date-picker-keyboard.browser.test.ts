@@ -20,10 +20,14 @@ function createDatePicker(attrs: Record<string, string> = {}): UDatePicker {
   return el;
 }
 
+/** Opens the calendar the keyboard way — ArrowDown in the text box moves into the grid (a click
+ *  opens it too but leaves the caret in the text box, so the person can keep typing). */
 async function openWithFocus(el: UDatePicker): Promise<HTMLButtonElement> {
-  const container = el.shadowRoot!.querySelector('.container') as HTMLElement;
-  container.click();
+  const input = el.shadowRoot!.querySelector('.text-input') as HTMLInputElement;
+  input.focus();
+  input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, composed: true }));
   await settle(el);
+  await new Promise(r => setTimeout(r, 30));
   return cal(el).activeElement as HTMLButtonElement;
 }
 
@@ -128,7 +132,7 @@ describe('UDatePicker — 키보드 내비게이션', () => {
     await settle(el);
 
     expect(el.shadowRoot!.querySelector('u-popover')!.hasAttribute('open')).toBe(false);
-    expect(el.shadowRoot!.activeElement).toBe(el.shadowRoot!.querySelector('.container'));
+    expect(el.shadowRoot!.activeElement).toBe(el.shadowRoot!.querySelector('.text-input'));
   });
 
   it('범위 밖 날짜에서 Enter 를 눌러도 선택되지 않는다', async () => {

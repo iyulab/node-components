@@ -18,6 +18,25 @@ export const styles = css`
     width: var(--date-picker-popover-width);
   }
 
+  /* mode="date": the trigger is a text box — it takes the container's room and reads like its text. */
+  .text-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+  }
+  .text-input::placeholder {
+    color: var(--u-txt-color-weak, #616161);
+  }
+  .calendar-button {
+    cursor: pointer;
+  }
+
   .calendar-time {
     display: flex;
     justify-content: flex-end;

@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { Locale } from '../../src/utilities/Locale.js';
-import { formatNumber, formatCurrency, formatDate, formatDateRange, parseNumber } from '../../src/utilities/format.js';
+import { formatNumber, formatCurrency, formatDate, formatDateRange, parseNumber, parseDate, formatDateText, dateTextPattern } from '../../src/utilities/format.js';
 
 describe('format utilities', () => {
   afterEach(() => Locale.set('en'));
@@ -152,6 +152,49 @@ describe('format utilities', () => {
           expect(parseNumber(formatNumber(n, { maximumFractionDigits: 3 }, locale), locale), `${locale} ${n}`).toBe(n);
         }
       }
+    });
+  });
+  describe('parseDate', () => {
+    const ref = new Date(2026, 9, 3);
+    it.each([
+      ['2026-10-02', 'iso', 'en', '2026-10-02'],
+      ['2026/10/2', 'iso', 'en', '2026-10-02'],
+      ['2026. 10. 2.', 'iso', 'ko', '2026-10-02'],
+      ['20261002', 'iso', 'en', '2026-10-02'],
+      ['10-02', 'iso', 'en', '2026-10-02'],
+      ['  2026-10-02 ', 'iso', 'en', '2026-10-02'],
+      // locale order — and ISO still reads
+      ['10/02/2026', 'locale', 'en-US', '2026-10-02'],
+      ['10/2', 'locale', 'en-US', '2026-10-02'],
+      ['02.10.2026', 'locale', 'de', '2026-10-02'],
+      ['2.10', 'locale', 'de', '2026-10-02'],
+      ['2026-10-02', 'locale', 'de', '2026-10-02'],
+    ])('reads %s (%s, %s) as %s', (text, format, locale, expected) => {
+      expect(parseDate(text, { format: format as 'iso' | 'locale', locale, referenceDate: ref })).toBe(expected);
+    });
+
+    it.each(['', 'abc', '2026-02-30', '2026-13-01', '26-10-02', '2026-10', '10/02/26', '2026-10-02x', '1-2-3-4'])(
+      'does not read %j', (text) => {
+        expect(parseDate(text, { referenceDate: ref })).toBeNull();
+      });
+  });
+
+  describe('formatDateText / dateTextPattern', () => {
+    it('writes ISO as is, and the locale numeric order on request', () => {
+      expect(formatDateText('2026-10-02')).toBe('2026-10-02');
+      expect(formatDateText('2026-10-02', 'locale', 'en-US')).toBe('10/02/2026');
+      expect(formatDateText('2026-10-02', 'locale', 'de')).toBe('02.10.2026');
+      expect(formatDateText('not-a-date', 'locale', 'de')).toBe('not-a-date');
+    });
+    it('round-trips through parseDate', () => {
+      for (const locale of ['en-US', 'de', 'ko', 'ja', 'fr']) {
+        expect(parseDate(formatDateText('2026-10-02', 'locale', locale), { format: 'locale', locale })).toBe('2026-10-02');
+      }
+    });
+    it('names the pattern to type', () => {
+      expect(dateTextPattern()).toBe('YYYY-MM-DD');
+      expect(dateTextPattern('locale', 'en-US')).toBe('MM/DD/YYYY');
+      expect(dateTextPattern('locale', 'de')).toBe('DD.MM.YYYY');
     });
   });
 });

@@ -1,5 +1,29 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`u-date-picker` takes a typed date.** In `mode="date"` the field is now a text box: type
+  `2026-10-02`, `2026/10/2`, `20261002` or `10-02` (this year) and press Enter or leave the field.
+  It shows the date as `YYYY-MM-DD` whatever the browser language — the native date input follows
+  the browser's UI language instead (`10/02/2026` in an English browser), which is why a picker that
+  could not be typed into was the only way to get a stable format. `format="locale"` shows and reads
+  the locale's numeric order (`10/02/2026` in `en-US`, `02.10.2026` in `de`); ISO is read either way.
+  Clicking the field opens the calendar and leaves the caret in the text box; ArrowDown or
+  Alt+ArrowDown moves into the calendar. Text that is not a date clears the value and reports
+  `badInput`, as the native date input does; a date outside `min`/`max` is kept and reported as out
+  of range. New CSS part `input`. `mode="datetime"` is unchanged.
+- **`parseDate`, `formatDateText`, `dateTextPattern`** — the text box's reader and writer, exported
+  next to `parseNumber`: `parseDate('20261002')` is `'2026-10-02'`, `parseDate('2026-02-30')` is `null`.
+
+### Changed
+
+- **`u-date-picker` in `mode="date"`: the trigger text is `YYYY-MM-DD`** (was the locale's medium
+  date, e.g. `Oct 2, 2026`) so that what is shown can be typed back. Use `format="locale"` for the
+  locale's numeric order. A click no longer moves focus into the calendar — it stays in the text box
+  so the person can type; the keyboard path into the calendar is ArrowDown.
+
 ## [1.54.0] - 2026-10-02
 
 ### Added

@@ -65,14 +65,17 @@ describe('UDatePicker — 달력 렌더 + 마우스 선택', () => {
     expect(title).toContain(String(today.getFullYear()));
   });
 
-  it('값이 있으면 트리거에 로케일 포맷으로 표시된다', async () => {
+  it('값이 있으면 텍스트 칸에 ISO 로(format="locale" 이면 로케일 숫자 순서로) 표시된다', async () => {
+    Locale.set('en');
     const el = createDatePicker({ value: '2026-02-24' });
-    document.body.appendChild(el);
+    const localeEl = createDatePicker({ value: '2026-02-24', format: 'locale' });
+    document.body.append(el, localeEl);
     await settle(el);
+    await settle(localeEl);
 
-    const text = el.shadowRoot!.querySelector('.text-content')!.textContent!.trim();
-    expect(text.length).toBeGreaterThan(0);
-    expect(text).not.toBe('');
+    expect(el.shadowRoot!.querySelector<HTMLInputElement>('.text-input')!.value).toBe('2026-02-24');
+    expect(localeEl.shadowRoot!.querySelector<HTMLInputElement>('.text-input')!.value)
+      .toBe(new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(2026, 1, 24)));
   });
 
   it('날짜 셀 클릭으로 값이 설정되고 change 가 발화하며 팝오버가 닫힌다', async () => {

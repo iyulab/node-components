@@ -14,6 +14,16 @@ value is unconditionally valid regardless of how coarse the time input was). For
 
 > The calendar week always starts on Sunday, regardless of locale.
 
+**Typing a date (`mode="date"`).** The field is a text box. Type `2026-10-02`, `2026/10/2`,
+`20261002`, or just `10-02` (this year), then press Enter or leave the field. The text shows as
+`YYYY-MM-DD` in every browser language; `format="locale"` shows and reads the locale's numeric
+order instead (`10/02/2026` in `en-US`, `02.10.2026` in `de` — ISO is still read). Clicking the
+field opens the calendar and keeps the caret in the text box; ArrowDown (or Alt+ArrowDown) moves
+into the calendar. Text that is not a date clears the value and reports `badInput` (the text stays
+so it can be fixed); a date outside `min`/`max` is kept and reported as out of range.
+The parser and formatter are exported as `parseDate`, `formatDateText` and `dateTextPattern`.
+`mode="datetime"` keeps the calendar-only trigger.
+
 The calendar popover has a footer with a "Today" quick-action button (selects today's date —
 in `mode="datetime"` this also sets the time to right now — disabled when today falls outside
 `min`/`max`) and, when `clearable` and a value is set, a "Clear" button next to it. Picking a
@@ -41,7 +51,8 @@ day preserves whatever time-of-day was already set; only the "Today" button over
 | `min` | `string` | — | — | Minimum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
 | `max` | `string` | — | — | Maximum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
-| `placeholder` | `string` | — | — | Placeholder text |
+| `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type in `mode="date"`, e.g. `YYYY-MM-DD`) |
+| `format` | `'iso' \| 'locale'` | `'iso'` | ✓ | How the `mode="date"` text box writes and reads a date |
 | `disabled` | `boolean` | `false` | ✓ | Disable |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
 | `required` | `boolean` | `false` | ✓ | Required |
@@ -55,7 +66,7 @@ day preserves whatever time-of-day was already set; only the "Today" button over
 
 | Event | Description |
 |-------|-------------|
-| `change` | Fires when the user clicks a date cell, confirms via keyboard, changes the time input (`mode="datetime"`, once a date is set), or clicks the clear button. Programmatic value assignment does not fire it. |
+| `change` | Fires when the user clicks a date cell, confirms via keyboard, commits typed text (Enter or leaving the field, when the value changes), changes the time input (`mode="datetime"`, once a date is set), or clicks the clear button. Programmatic value assignment does not fire it. |
 
 ## Methods
 
@@ -72,6 +83,7 @@ day preserves whatever time-of-day was already set; only the "Today" button over
 |------|-------------|
 | `field` | The `u-field` element |
 | `container` | The element wrapping the trigger area |
+| `input` | The text box (`mode="date"` only) |
 | `popover` | The popover element showing the calendar |
 | `calendar` | The calendar container |
 | `calendar-header` | The month navigation header |

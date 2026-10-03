@@ -151,7 +151,9 @@ describe('UDatePicker — mode="datetime"', () => {
     await settle(dateEl);
     await settle(dtEl);
 
-    const dateText = dateEl.shadowRoot!.querySelector('.text-content')!.textContent!.trim();
+    // date mode is a text box showing the ISO date; datetime mode is the formatted trigger text.
+    const dateText = dateEl.shadowRoot!.querySelector<HTMLInputElement>('.text-input')!.value;
+    expect(dateText).toBe('2026-02-24');
     const dtText = dtEl.shadowRoot!.querySelector('.text-content')!.textContent!.trim();
     expect(dtText.length).toBeGreaterThan(dateText.length);
   });

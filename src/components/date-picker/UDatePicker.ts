@@ -9,7 +9,7 @@ import '../popover/UPopover.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
-import { formatDate } from "../../utilities/format.js";
+import { dateTextPattern, formatDate, formatDateText, parseDate, type DateTextFormat } from "../../utilities/format.js";
 import { UCalendar } from "../calendar/UCalendar.js";
 import { isOutOfRange, parseISODate, toISODate } from "../calendar/dates.js";
 import { UPopover } from "../popover/UPopover.js";
@@ -45,7 +45,12 @@ export type DatePickerMode = 'date' | 'datetime';
 
 /**
  * A single-date(-time)-selection form control. In `mode="date"` (default) the value follows
- * the same convention as the native `input[type=date]`: an ISO `YYYY-MM-DD` string. In
+ * the same convention as the native `input[type=date]`: an ISO `YYYY-MM-DD` string, and the
+ * field is a text box — type `2026-10-02`, `20261002` or `10-02` (this year) and press Enter or
+ * leave the field; the calendar is a helper. The text shows as `YYYY-MM-DD` whatever the browser
+ * language, or in the locale's numeric order with `format="locale"`. Clicking the field opens the
+ * calendar and keeps typing in the field; ArrowDown (or Alt+ArrowDown) moves into the calendar.
+ * Text that is not a date clears the value and reports `badInput`, like the native input. In
  * `mode="datetime"` the value is a complete ISO-8601 `DateTimeOffset` string
  * (`YYYY-MM-DDTHH:mm:ss±HH:mm`) — the component always fills in seconds and the browser's
  * local UTC offset, so the value is unconditionally valid regardless of how coarse the time
@@ -63,6 +68,7 @@ export type DatePickerMode = 'date' | 'datetime';
  * as a CSS hook for consumers who want to react to the open/closed state from outside.
  *
  * @csspart field - the u-field element
+ * @csspart input - the text box (`mode="date"` only)
  * @csspart container - the element wrapping the trigger area
  * @csspart popover - the popover element showing the calendar
  * @csspart calendar - the calendar container
@@ -101,8 +107,13 @@ export class UDatePicker extends UFormControlElement<string> {
   @property({ type: String }) max?: string;
   /** Whether to show the clear button */
   @property({ type: Boolean, reflect: true }) clearable: boolean = false;
-  /** Placeholder text (shown on the trigger when there is no value) */
+  /** Placeholder text (shown on the trigger when there is no value). In `mode="date"` it defaults
+   *  to the pattern to type (`YYYY-MM-DD`). */
   @property({ type: String }) placeholder?: string;
+  /** How the `mode="date"` text box writes and reads a date: `iso` (default, `YYYY-MM-DD` in every
+   *  language) or `locale` (the active locale's numeric order, e.g. `10/02/2026` in `en-US`). ISO
+   *  and `20261002` are read in both. The value is ISO either way. */
+  @property({ type: String, reflect: true }) format: DateTextFormat = 'iso';
 
   @query('.container', true) containerEl?: HTMLElement;
   @query('u-popover', true) popoverEl?: UPopover;
@@ -115,6 +126,13 @@ export class UDatePicker extends UFormControlElement<string> {
   /** Time-of-day for the next selection while no `value` exists yet (`mode="datetime"` only) —
    *  once `value` is set, the time input reads/writes its time portion directly instead. */
   @state() private pendingTime: string = '00:00';
+  /** What the person is typing in the `mode="date"` text box, until it is committed; `null` shows the value. */
+  @state() private draft: string | null = null;
+  /** The committed text was not a date — the value is empty and validity reports `badInput`. */
+  @state() private badText = false;
+  /** Set when the calendar opens by keyboard (or its button): focus then moves into the grid. A click
+   *  in the text box opens it too, but leaves the caret where the person is typing. */
+  private focusCalendarOnOpen = false;
 
   protected updated(changed: PropertyValues): void {
     super.updated(changed);
@@ -134,9 +152,12 @@ export class UDatePicker extends UFormControlElement<string> {
       // popover's own update cycle, which runs after this one — focusing a day button before
       // that resolves is a no-op because it is still `visibility: hidden`.
       const calendar = this.calendarEl;
-      const base = this.value ? toISODate(splitValue(this.value).date) : toISODate(new Date());
+      const typed = this.draft !== null ? parseDate(this.draft, { format: this.format }) : null;
+      const base = typed ?? (this.value ? toISODate(splitValue(this.value).date) : toISODate(new Date()));
       calendar?.showDate(base);
-      this.popoverEl?.updateComplete.then(() => calendar?.focusDay());
+      const moveFocus = this.mode !== 'date' || this.focusCalendarOnOpen;
+      this.focusCalendarOnOpen = false;
+      if (moveFocus) this.popoverEl?.updateComplete.then(() => calendar?.focusDay());
     }
   }
 
@@ -147,6 +168,7 @@ export class UDatePicker extends UFormControlElement<string> {
     const displayText = this.value
       ? formatDate(this.value, this.mode === 'datetime' ? { dateStyle: 'medium', timeStyle: 'short' } : undefined)
       : '';
+    const textEntry = this.mode === 'date';
     return html`
       <u-field part="field"
         ?required=${this.required}
@@ -156,7 +178,26 @@ export class UDatePicker extends UFormControlElement<string> {
         .description=${this.description}
         .validationMessage=${this.validationMessage}
       >
-        <div class="container" part="container"
+        ${textEntry ? html`<div class="container" part="container" @click=${this.handleContainerClick}>
+          <input class="text-input" part="input"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            role="combobox"
+            aria-haspopup="dialog"
+            aria-expanded=${this.open}
+            aria-controls=${this.calendarId}
+            aria-label=${ifDefined(this.resolvedAriaLabel)}
+            aria-description=${ifDefined(this.resolvedAriaDescription)}
+            aria-invalid=${this.badText ? 'true' : 'false'}
+            placeholder=${this.placeholder ?? dateTextPattern(this.format)}
+            .value=${this.draft ?? (this.value ? formatDateText(toISODate(splitValue(this.value).date), this.format) : '')}
+            ?disabled=${this.effectivelyDisabled}
+            ?readonly=${this.readonly}
+            @input=${this.handleTextInput}
+            @keydown=${this.handleTextKeydown}
+            @blur=${this.commitText}
+          />` : html`<div class="container" part="container"
           tabindex=${this.effectivelyDisabled ? '-1' : '0'}
           role="combobox"
           aria-disabled=${ifDefined(this.effectivelyDisabled ? 'true' : undefined)}
@@ -166,7 +207,7 @@ export class UDatePicker extends UFormControlElement<string> {
           aria-description=${ifDefined(this.resolvedAriaDescription)}
           aria-controls=${this.calendarId}
         >
-          <span class="text-content ${!displayText ? 'placeholder' : ''}">${displayText || this.placeholder || ''}</span>
+          <span class="text-content ${!displayText ? 'placeholder' : ''}">${displayText || this.placeholder || ''}</span>`}
           <u-icon class="suffix-item"
             ?hidden=${!this.clearable || !this.value || this.effectivelyDisabled || this.readonly}
             role="button"
@@ -177,10 +218,18 @@ export class UDatePicker extends UFormControlElement<string> {
             @click=${this.handleClearClick}
             @keydown=${this.handleClearKeydown}
           ></u-icon>
-          <u-icon class="suffix-item"
+          ${textEntry ? html`<u-icon class="suffix-item calendar-button"
+            role="button"
+            tabindex="-1"
+            aria-label=${Locale.getValue('chooseDate')}
+            ?hidden=${this.effectivelyDisabled || this.readonly}
             lib="internal"
             name="calendar"
-          ></u-icon>
+            @click=${this.handleCalendarButtonClick}
+          ></u-icon>` : html`<u-icon class="suffix-item"
+            lib="internal"
+            name="calendar"
+          ></u-icon>`}
         </div>
       </u-field>
 
@@ -189,7 +238,7 @@ export class UDatePicker extends UFormControlElement<string> {
         role="dialog"
         aria-label=${Locale.getValue('chooseDate')}
         for=".container"
-        trigger="click"
+        trigger=${textEntry ? 'manual' : 'click'}
         strategy="fixed"
         placement="bottom-start"
         offset="4"
@@ -257,7 +306,7 @@ export class UDatePicker extends UFormControlElement<string> {
     if (this.mode === 'datetime') this.pendingTime = time;
     if (changed) this.emitChange();
     this.popoverEl?.hide();
-    this.containerEl?.focus();
+    (this.textInputEl ?? this.containerEl)?.focus();
   }
 
   /** Time input change — only commits into `value` once a date already exists (matches native
@@ -278,13 +327,82 @@ export class UDatePicker extends UFormControlElement<string> {
     this.selectDay(parseISODate(e.detail.date));
   };
 
+  private get textInputEl(): HTMLInputElement | null {
+    return this.renderRoot.querySelector('.text-input');
+  }
+
+  private openCalendar(focusGrid: boolean): void {
+    if (this.effectivelyDisabled || this.readonly) return;
+    if (this.open) {
+      if (focusGrid) void this.calendarEl?.focusDay();
+      return;
+    }
+    this.focusCalendarOnOpen = focusGrid;
+    if (this.containerEl) void this.popoverEl?.show(this.containerEl);
+  }
+
+  private handleTextInput = (e: Event) => {
+    this.draft = (e.target as HTMLInputElement).value;
+    // Follow the typing in an open calendar, so the month shows the date being entered.
+    const typed = parseDate(this.draft, { format: this.format });
+    if (typed && this.open) this.calendarEl?.showDate(typed);
+  };
+
+  /** A click anywhere on the field (not on its clear or calendar button) opens the calendar and
+   *  puts the caret in the text box — the person can pick a day or keep typing. */
+  private handleContainerClick = (e: MouseEvent) => {
+    if ((e.target as HTMLElement).closest?.('u-icon')) return;
+    const input = this.textInputEl;
+    if (input && this.renderRoot instanceof ShadowRoot && this.renderRoot.activeElement !== input) input.focus();
+    this.openCalendar(false);
+  };
+
+  private handleCalendarButtonClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (this.open) {
+      void this.popoverEl?.hide();
+      this.textInputEl?.focus();
+    } else {
+      this.openCalendar(true);
+    }
+  };
+
+  /** ArrowDown / Alt+ArrowDown opens the calendar and moves into it (the combobox convention);
+   *  Enter commits what was typed. Escape is the popover layer's — it closes the calendar. */
+  private handleTextKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.commitText();
+      this.openCalendar(true);
+    } else if (e.key === 'Enter' && !e.isComposing) {
+      this.commitText();
+    }
+  };
+
+  /** Turns the typed text into the value. Empty text clears it; text that is not a date also clears
+   *  it and reports `badInput` (the native date input does the same); a date outside `min`/`max` is
+   *  kept and reported as out of range — the person typed it, so it is not silently dropped. */
+  private commitText = () => {
+    if (this.draft === null) return;
+    const text = this.draft;
+    const iso = parseDate(text, { format: this.format });
+    this.badText = !!text.trim() && iso === null;
+    const next = iso ? buildValue(parseISODate(iso), this.mode, this.pendingTime) : undefined;
+    const changed = next !== this.value;
+    this.value = next;
+    // A date is shown in the field's format again; text that is not a date stays as typed to be fixed.
+    this.draft = this.badText ? text : null;
+    if (changed) this.emitChange();
+    else if (this.badText && !this.novalidate) this.validate();
+  };
+
   /** Escape inside the grid closes the calendar and returns focus to the trigger — the grid
    *  itself does not know it lives in a popover, so the picker owns this. */
   private handleCalendarKeydown = (e: KeyboardEvent) => {
     if (e.key !== 'Escape') return;
     e.preventDefault();
     this.popoverEl?.hide();
-    this.containerEl?.focus();
+    (this.textInputEl ?? this.containerEl)?.focus();
   };
 
   private handlePopoverShow = () => {
@@ -299,7 +417,7 @@ export class UDatePicker extends UFormControlElement<string> {
     e.preventDefault();
     e.stopPropagation();
     this.resetValue();
-    this.containerEl?.focus();
+    (this.textInputEl ?? this.containerEl)?.focus();
   };
 
   /** "오늘" 퀵액션 — 달력이 이미 `data-today` 로 표시 중인 날을 실제로 선택하는 것뿐이라
@@ -320,11 +438,13 @@ export class UDatePicker extends UFormControlElement<string> {
   private handleFooterResetClick = () => {
     this.resetValue();
     this.popoverEl?.hide();
-    this.containerEl?.focus();
+    (this.textInputEl ?? this.containerEl)?.focus();
   };
 
   private resetValue(): void {
     const hadValue = !!this.value;
+    this.draft = null;
+    this.badText = false;
     this.value = undefined;
     if (hadValue) this.emitChange();
   }
@@ -347,7 +467,10 @@ export class UDatePicker extends UFormControlElement<string> {
     let flags: ValidityStateFlags = {};
     let message = '';
 
-    if (this.required && !this.value) {
+    if (this.badText) {
+      flags = { badInput: true };
+      message = Locale.getValue('badInput');
+    } else if (this.required && !this.value) {
       flags = { valueMissing: true };
       message = Locale.getValue('valueMissing');
     } else if (this.value && this.min && splitValue(this.value).date.getTime() < parseISODate(this.min).getTime()) {
@@ -358,11 +481,13 @@ export class UDatePicker extends UFormControlElement<string> {
       message = Locale.getValue('rangeOverflow', { max: this.max });
     }
 
-    this.commit(flags, message, this.containerEl ?? undefined);
+    this.commit(flags, message, this.textInputEl ?? this.containerEl ?? undefined);
   }
 
   public reset(): void {
     this.value = undefined;
+    this.draft = null;
+    this.badText = false;
     this.invalid = false;
   }
 
@@ -371,11 +496,11 @@ export class UDatePicker extends UFormControlElement<string> {
    *  네이티브 `disabled` `<input>`에서 얻는 것과 같은 no-op을 여기서 직접 재현한다. */
   public focus(options?: FocusOptions): void {
     if (this.effectivelyDisabled) return;
-    this.containerEl?.focus(options);
+    (this.textInputEl ?? this.containerEl)?.focus(options);
   }
 
   public blur(): void {
-    this.containerEl?.blur();
+    (this.textInputEl ?? this.containerEl)?.blur();
   }
 }
 
