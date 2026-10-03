@@ -262,6 +262,38 @@ describe('format utilities', () => {
       const r = parseDateTimeRange(text, { referenceDate: ref });
       expect(r ? [r.start, r.end] : null).toEqual(expected);
     });
+    it.each([
+      ['2026-10-01 3:00 PM', 'en', '2026-10-01T15:00'],
+      ['2026-10-01 3:00pm', 'en', '2026-10-01T15:00'],
+      ['2026-10-01 3:05 p.m.', 'en', '2026-10-01T15:05'],
+      ['2026-10-01 PM 3:00', 'en', '2026-10-01T15:00'],
+      ['2026-10-01 12:00 AM', 'en', '2026-10-01T00:00'],
+      ['2026-10-01 12:30 PM', 'en', '2026-10-01T12:30'],
+      ['2026-10-01 오후 3:00', 'ko', '2026-10-01T15:00'],
+      ['2026-10-01 오전 9:30', 'ko', '2026-10-01T09:30'],
+      ['2026. 10. 1. 오후 3:00', 'ko', '2026-10-01T15:00'],
+      ['2026-10-01 3:00 PM', 'ko', '2026-10-01T15:00'],
+      ['2026-10-01午後3:00', 'ja', '2026-10-01T15:00'],
+      ['2026-10-01 下午 3:00', 'zh-CN', '2026-10-01T15:00'],
+      ['2026-10-01 上午 11:59', 'zh-TW', '2026-10-01T11:59'],
+    ] as const)('reads the 12-hour time %j (%s)', (text, locale, expected) => {
+      expect(parseDateTime(text, { locale })).toBe(expected);
+    });
+    it.each([
+      ['2026-10-01 13:00 PM', 'en'], ['2026-10-01 0:30 AM', 'en'], ['2026-10-01 오후 3:00 PM', 'ko'],
+      ['2026-10-01 3:00 XM', 'en'], ['2026-10-01 오후 3:00', 'en'],
+    ] as const)('does not read the 12-hour time %j (%s)', (text, locale) => {
+      expect(parseDateTime(text, { locale })).toBeNull();
+    });
+    it('takes the words of the active locale by default', () => {
+      Locale.set('ko');
+      expect(parseDateTime('2026-10-01 오후 3:00')).toBe('2026-10-01T15:00');
+    });
+    it('reads a 12-hour end time in a range', () => {
+      expect(parseDateTimeRange('2026-10-01 오전 9:00 ~ 오후 6:00', { locale: 'ko' }))
+        .toEqual({ start: '2026-10-01T09:00', end: '2026-10-01T18:00' });
+      expect(parseDateTime('2026-10-01 3:00:15 PM', { seconds: true })).toBe('2026-10-01T15:00:15');
+    });
     it('keeps seconds with `seconds`', () => {
       expect(parseDateTimeRange('2026-10-01 09:00:15 ~ 18:00', { seconds: true }))
         .toEqual({ start: '2026-10-01T09:00:15', end: '2026-10-01T18:00:00' });

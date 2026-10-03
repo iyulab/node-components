@@ -86,7 +86,11 @@ export type LocaleMessageKey =
   | 'dateUnavailable'
   // 기간 피커 `mode="datetime"` 의 시간 칸 둘의 이름.
   | 'startTime'
-  | 'endTime';
+  | 'endTime'
+  // 12시간제 시각을 읽을 때 받는 오전·오후 낱말(`parseDateTime`) — 화면 문구가 아니라 읽기 어휘다.
+  // `Intl` 의 dayPeriod 는 엔진마다 다르다(Node 22 ICU 는 `ko` 에 `PM`, Chromium 은 `오후`).
+  | 'timeAm'
+  | 'timePm';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 
@@ -254,8 +258,8 @@ export class Locale {
    * 현재 활성 로케일 기준으로 메시지를 조회합니다.
    * `params`가 있으면 템플릿의 `{name}` 자리를 치환합니다.
    */
-  public static getValue(key: LocaleMessageKey, params?: Record<string, string | number>): string {
-    return interpolate(lookup(active, key), params);
+  public static getValue(key: LocaleMessageKey, params?: Record<string, string | number>, locale?: LocaleTag): string {
+    return interpolate(lookup(locale ?? active, key), params);
   }
 
   /**

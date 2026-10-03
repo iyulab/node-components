@@ -56,5 +56,7 @@
   "apply": "Apply",
   "dateUnavailable": "This date is not available",
   "startTime": "Start time",
-  "endTime": "End time"
+  "endTime": "End time",
+  "timeAm": "AM",
+  "timePm": "PM"
 }

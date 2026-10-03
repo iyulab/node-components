@@ -22,7 +22,9 @@ field opens the calendar and keeps the caret in the text box; ArrowDown (or Alt+
 into the calendar. Text that is not a date clears the value and reports `badInput` (the text stays
 so it can be fixed); a date outside `min`/`max` is kept and reported as out of range.
 In `mode="datetime"` the text box takes a time after the date (`2026-10-02 14:30`, `9:05`, seconds
-dropped) and shows `YYYY-MM-DD HH:mm`; typing only a date keeps the time already set.
+dropped unless `seconds` is set) and shows `YYYY-MM-DD HH:mm`; typing only a date keeps the time
+already set. 12-hour times are read too — `3:00 PM`, `3:00pm`, `p.m. 3:00`, `오후 3:00`, `午後3:00`,
+`下午 3:00` (`12 AM` is midnight) — and shown in 24-hour form; the value is the same either way.
 The parser and formatter are exported as `parseDate`, `parseDateTime`, `formatDateText`,
 `formatDateTimeText` and `dateTextPattern`.
 

@@ -73,6 +73,24 @@ describe('seconds — u-date-picker mode="datetime"', () => {
   });
 });
 
+describe('12시간제 읽기 — 값·표시는 24시간 그대로', () => {
+  beforeEach(() => { Locale.set('ko'); document.body.innerHTML = ''; });
+  afterEach(() => { Locale.set('en'); document.body.innerHTML = ''; });
+
+  it('u-date-picker 가 «오후 3:00» 을 15:00 으로 읽고 24시간으로 보인다', async () => {
+    const el = await mount<UDatePicker>('<u-date-picker mode="datetime"></u-date-picker>', 'u-date-picker');
+    await type(el, '2026-10-01 오후 3:00');
+    expect(el.value).toBe(toDateTimeOffset('2026-10-01', '15:00'));
+    expect(text(el).value).toBe('2026-10-01 15:00');
+  });
+
+  it('u-date-range-picker 가 «오전 9:00 ~ 오후 6:00» 을 읽는다', async () => {
+    const el = await mount<UDateRangePicker>('<u-date-range-picker mode="datetime"></u-date-range-picker>', 'u-date-range-picker');
+    await type(el, '2026-10-01 오전 9:00 ~ 오후 6:00');
+    expect(el.value).toBe(`${toDateTimeOffset('2026-10-01', '09:00')}/${toDateTimeOffset('2026-10-01', '18:00')}`);
+  });
+});
+
 describe('seconds — u-date-range-picker mode="datetime"', () => {
   beforeEach(() => { Locale.set('en'); document.body.innerHTML = ''; });
   afterEach(() => { document.body.innerHTML = ''; });

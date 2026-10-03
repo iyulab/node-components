@@ -56,5 +56,7 @@
   "apply": "تطبيق",
   "dateUnavailable": "هذا التاريخ غير متاح",
   "startTime": "وقت البدء",
-  "endTime": "وقت الانتهاء"
+  "endTime": "وقت الانتهاء",
+  "timeAm": "ص",
+  "timePm": "م"
 }

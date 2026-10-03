@@ -258,16 +258,71 @@ export function parseDateTime(
   options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date; defaultTime?: string; seconds?: boolean } = {},
 ): string | null {
   const t = text.trim();
-  const m = /^(.*?)(?:[T\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/.exec(t);
+  const words = meridiemWords(options.locale ?? Locale.get());
+  // The time follows a space or `T` — or directly, when it opens with a word that is not Latin
+  // letters (`2026-10-01午後3:00`; after a date, the `a` of `am` would read as text).
+  const joined = words.unspaced ? `|(?=${words.unspaced})` : '';
+  const m = new RegExp(`^(.*?)(?:(?:[T\\s]+${joined})(${words.timeOfDay}))?$`, 'iu').exec(t);
   if (!m) return null;
   const date = parseDate(m[1], options);
   if (!date) return null;
-  if (m[2] === undefined) {
-    const fallback = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(options.defaultTime ?? '00:00');
-    return fallback ? `${date}T${timeText(fallback[1], fallback[2], fallback[3], options.seconds)}` : null;
+  const time = readTimeOfDay(m[2] ?? options.defaultTime ?? '00:00', words);
+  return time ? `${date}T${timeText(time.h, time.m, time.s, options.seconds)}` : null;
+}
+
+interface MeridiemWords {
+  /** Lower-cased, dot-less morning words → `false`, afternoon words → `true`. */
+  pm: Map<string, boolean>;
+  /** Alternation of every word (as typed — case-insensitive, dots optional in Latin ones). */
+  any: string;
+  /** Alternation of the words that may follow a date with no space, or `''`. */
+  unspaced: string;
+  /** A time of day: `H:mm`, `H:mm:ss`, optionally with a word before or after. */
+  timeOfDay: string;
+}
+
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * The morning/afternoon words read around a time: the locale's own (`timeAm`/`timePm` in its locale
+ * table — `오전`/`오후`, `午前`/`午後`, `上午`/`下午` …) and English `AM`/`PM` (also `a.m.`/`p.m.`).
+ * Not `Intl`'s day period: engines disagree on it (Node's ICU writes `PM` for `ko`, Chromium `오후`).
+ */
+function meridiemWords(locale: LocaleTag): MeridiemWords {
+  const pm = new Map<string, boolean>([['am', false], ['pm', true]]);
+  for (const [key, isPm] of [['timeAm', false], ['timePm', true]] as const) {
+    const word = Locale.getValue(key, undefined, locale).trim().toLowerCase().replace(/\./g, '');
+    if (word) pm.set(word, isPm);
   }
-  if (Number(m[2]) > 23 || Number(m[3]) > 59 || Number(m[4] ?? 0) > 59) return null;
-  return `${date}T${timeText(m[2], m[3], m[4], options.seconds)}`;
+  const latin = (w: string) => /^[a-z]+$/.test(w);
+  // A Latin word may carry dots after each letter (`p.m.`); others are matched as written.
+  const pattern = (w: string) => latin(w) ? w.split('').map(c => `${escapeRegExp(c)}\\.?`).join('') : escapeRegExp(w);
+  const any = [...pm.keys()].map(pattern).join('|');
+  const unspaced = [...pm.keys()].filter(w => !latin(w)).map(escapeRegExp).join('|');
+  return {
+    pm, any, unspaced,
+    timeOfDay: String.raw`(?:(?:${any})\s*)?\d{1,2}:\d{2}(?::\d{2})?(?:\s*(?:${any}))?`,
+  };
+}
+
+/**
+ * Reads a time of day — `9:05`, `09:05:30`, and the 12-hour forms `3:00 PM`, `3:00pm`, `p.m. 3:00`, or
+ * the locale's own words before or after (`Intl` day periods) — as 24-hour parts, or `null`. With a
+ * morning/afternoon word the hour must be 1–12 (`12 AM` is midnight, `12 PM` noon); without one 0–23.
+ */
+function readTimeOfDay(text: string, words: MeridiemWords): { h: string; m: string; s?: string } | null {
+  const r = new RegExp(String.raw`^(?:(${words.any})\s*)?(\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*(${words.any}))?$`, 'iu')
+    .exec(text.trim());
+  if (!r || (r[1] && r[5])) return null;
+  const marker = r[1] ?? r[5];
+  let h = Number(r[2]);
+  if (marker) {
+    const pm = words.pm.get(marker.toLowerCase().replace(/\./g, ''));
+    if (pm === undefined || h < 1 || h > 12) return null;
+    h = (h % 12) + (pm ? 12 : 0);
+  }
+  if (h > 23 || Number(r[3]) > 59 || Number(r[4] ?? 0) > 59) return null;
+  return { h: String(h), m: r[3], s: r[4] };
 }
 
 /** `HH:mm`, or `HH:mm:ss` with `seconds` (`:00` when there are none). */
@@ -328,8 +383,6 @@ export function formatDateRangeText(start: string, end: string, format: DateText
   return `${formatDateText(start, format, locale)} – ${formatDateText(end, format, locale)}`;
 }
 
-const TIME_ONLY = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/;
-
 /**
  * Reads a period with times of day — `2026-10-01 09:00 ~ 2026-10-31 18:00`, `2026-10-01 09:00 ~ 18:00`
  * (a time alone ends on the first day), the ISO interval `2026-10-01T09:00/2026-10-31T18:00`, or the
@@ -363,7 +416,7 @@ export function parseDateTimeRange(
     return { start, end: sameDayEnd < start ? start : sameDayEnd };
   }
   let end: string | null;
-  const timeOnly = TIME_ONLY.exec(parts[1].trim());
+  const timeOnly = new RegExp(`^${meridiemWords(options.locale ?? Locale.get()).timeOfDay}$`, 'iu').test(parts[1].trim());
   if (timeOnly) {
     end = parseDateTime(`${startDay} ${parts[1].trim()}`, options);
   } else {

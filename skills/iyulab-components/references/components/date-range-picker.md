@@ -56,7 +56,8 @@ The first range picked covers its days whole (00:00 to 23:59), as do presets; af
 other days keeps the times already set. Changing a time updates that end at once (the calendar stays
 open); a start time set after the end on the same day swaps the two. The text box reads
 `2026-10-01 09:00 ~ 2026-10-31 18:00` and `2026-10-01 09:00 ~ 18:00` (a time alone ends on the first
-day); a day typed without a time keeps that end's time. `min`/`max` and `isDateDisabled` stay
+day); a day typed without a time keeps that end's time. 12-hour times are read as well
+(`2026-10-01 오전 9:00 ~ 오후 6:00`, `9:00 AM ~ 6:00 PM`) and shown in 24-hour form. `min`/`max` and `isDateDisabled` stay
 date-only. The reader and writer are exported as `parseDateTimeRange` and `formatDateTimeRangeText`.
 Add `seconds` to enter times to the second: the inputs and the text box show `HH:mm:ss`, and a whole
 day runs from `00:00:00` to `23:59:59`.

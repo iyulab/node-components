@@ -56,5 +56,7 @@
   "apply": "Áp dụng",
   "dateUnavailable": "Ngày này không khả dụng",
   "startTime": "Giờ bắt đầu",
-  "endTime": "Giờ kết thúc"
+  "endTime": "Giờ kết thúc",
+  "timeAm": "SA",
+  "timePm": "CH"
 }

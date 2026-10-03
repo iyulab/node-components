@@ -30,6 +30,15 @@
   before. `parseDateTime` / `parseDateTimeRange` take `seconds: true` to keep them, and
   `formatDateTimeText` / `formatDateTimeRangeText` take a `seconds` argument to write them.
 
+- **12-hour times are read.** `parseDateTime` and `parseDateTimeRange` — and so the text boxes of
+  `u-date-picker` / `u-date-range-picker` in `mode="datetime"`, and other readers built on them — take
+  `3:00 PM`, `3:00pm`, `p.m. 3:00` in every locale, and the locale's own words before or after the
+  time (`오후 3:00` in `ko`, `午後3:00` in `ja`, `下午 3:00` in `zh-CN` …; `12 AM` is midnight, `12 PM`
+  noon). The words come from the new locale keys `timeAm` / `timePm`. The value and the shown text
+  stay 24-hour.
+- **`Locale.getValue(key, params, locale)`** resolves a message for a given locale (along its
+  fallback chain) instead of the active one.
+
 ### Changed
 
 - **`u-carousel[autoplay]` starts stopped for users who prefer reduced motion.** With

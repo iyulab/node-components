@@ -56,5 +56,7 @@
   "apply": "套用",
   "dateUnavailable": "此日期無法選取",
   "startTime": "開始時間",
-  "endTime": "結束時間"
+  "endTime": "結束時間",
+  "timeAm": "上午",
+  "timePm": "下午"
 }
