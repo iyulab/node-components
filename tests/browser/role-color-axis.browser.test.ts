@@ -93,7 +93,7 @@ describe('color 역할 축', () => {
   it('u-tag solid / u-badge — 면과 전경이 쌍으로 온다', async () => {
     const wrong: string[] = [];
     for (const role of ROLES) {
-      const tag = await mount('u-tag', { variant: 'solid', color: role });
+      const tag = await mount('u-tag', { appearance: 'solid', color: role });
       const ts = getComputedStyle(tag);
       if (ts.backgroundColor !== normalize(token(`--u-${role}-color`)))
         wrong.push(`u-tag ${role} 면`);

@@ -172,19 +172,19 @@ describe(':host 레이아웃 vs 문서 CSS 리셋', () => {
     expect((await make(true)).borderTopWidth, 'borderless 는 테두리가 없어야 한다').toBe('0px');
   });
 
-  it('u-badge variant="dot" 은 여백이 0 이다 (래퍼 도입 후에도)', async () => {
+  it('u-badge shape="dot" 은 여백이 0 이다 (래퍼 도입 후에도)', async () => {
     // 네거티브 컨트롤 — 위 루프가 "여백 > 0" 만 보므로, 의도적으로 0인 케이스가
     // 함께 살아 있는지 확인해야 배선이 뭉개지지 않았음을 안다.
     const el = document.createElement('u-badge') as HTMLElement & {
       updateComplete: Promise<unknown>;
     };
-    el.setAttribute('variant', 'dot');
+    el.setAttribute('shape', 'dot');
     document.body.appendChild(el);
     await el.updateComplete;
 
     const base = el.shadowRoot!.querySelector<HTMLElement>('[part="base"]');
     // dot 은 render() 가 nothing 을 반환하므로 래퍼 자체가 없다.
-    expect(base, 'dot variant 는 콘텐츠를 렌더하지 않는다').toBeNull();
+    expect(base, 'dot shape 는 콘텐츠를 렌더하지 않는다').toBeNull();
     expect(Math.round(el.getBoundingClientRect().width), 'dot 크기가 유지돼야 한다')
       .toBeGreaterThan(0);
   });

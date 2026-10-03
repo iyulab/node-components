@@ -69,8 +69,8 @@ describe('상태 아이콘 축 — 색 없이 구분', () => {
     });
   }
 
-  it('u-badge: variant="dot" 는 콘텐츠를 렌더하지 않으므로 아이콘도 없다', async () => {
-    const el = await mount('u-badge', { icon: '', color: 'danger', variant: 'dot' });
+  it('u-badge: shape="dot" 는 콘텐츠를 렌더하지 않으므로 아이콘도 없다', async () => {
+    const el = await mount('u-badge', { icon: '', color: 'danger', shape: 'dot' });
     expect(el.shadowRoot!.querySelector('.icon')).toBeNull();
   });
 

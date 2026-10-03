@@ -6,18 +6,18 @@ import { statusIcon } from "../../utilities/statusIcon.js";
 import { styles } from "./UTag.styles.js";
 import '../icon/UIcon.js';
 
-export type TagVariant = "solid" | "surface" | "filled" | "outlined";
+/** 외형 정도 — `solid` 꽉 찬 면 · `soft` 옅은 틴트(기본) · `outlined` 테두리 · `plain` 글자만. */
+export type TagAppearance = "solid" | "soft" | "outlined" | "plain";
 /**
  * 두 축이 병존한다 — **역할 축**(`primary`·`info`·`success`·`warning`·`danger`)은 *의미*를
  * 말하고 리브랜딩을 따라오며 대비 계약을 물려받는다. **장식 축**(`blue`·`purple` …)은
- * *색 자체*를 말하고 리브랜딩에 의도적으로 면역이다.
+ * *색 자체*를 말하고 리브랜딩에 의도적으로 면역이다. `neutral`(기본)은 **무채색**이다.
  */
 export type TagColor =
   | "neutral"
   | "primary" | "info" | "success" | "warning" | "danger"
   | "blue" | "green" | "yellow" | "red"
-  | "orange" | "teal" | "cyan" | "purple" | "pink"
-  | "gray";
+  | "orange" | "teal" | "cyan" | "purple" | "pink";
 
 /**
  * 레이블, 카테고리, 상태 등을 표시하는 태그 컴포넌트입니다.
@@ -34,7 +34,6 @@ export type TagColor =
  * @cssprop --tag-color - 텍스트 색상
  * @cssprop --tag-bg-color - 배경 색상
  * @cssprop --tag-border-color - 테두리 색상
- * @cssprop --tag-fill-color - variant 별 채움 기준색 (기본: --u-primary-color)
  * @cssprop --tag-padding-block - 세로 여백
  * @cssprop --tag-padding-inline - 가로 여백
  * @cssprop --tag-gap - prefix/본문/suffix 사이 간격
@@ -44,8 +43,8 @@ export type TagColor =
 export class UTag extends UElement {
   static styles = [ super.styles, styles ];
 
-  /** 태그의 스타일 변형을 설정합니다. */
-  @property({ type: String, reflect: true }) variant: TagVariant = "filled";
+  /** 외형 정도 */
+  @property({ type: String, reflect: true }) appearance: TagAppearance = "soft";
   /** 태그의 색상을 설정합니다. */
   @property({ type: String, reflect: true }) color: TagColor = "neutral";
   /** 태그를 둥글게 표시합니다. */

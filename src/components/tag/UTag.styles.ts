@@ -2,7 +2,6 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --tag-fill-color: var(--u-primary-color, #1976D2);
     --tag-color: var(--u-neutral-800, #424242);
     --tag-bg-color: var(--u-neutral-100, #F5F5F5);
     --tag-border-color: transparent;
@@ -15,7 +14,7 @@ export const styles = css`
 
      슬롯이 여섯인 이유는 자리마다 대비 요구가 다르기 때문이다(실측, 두 테마 전건 AA):
        solid    면 --u-{role}-color        + 그 위 글자 --u-{role}-txt-color   (4.60~15.05)
-       surface  연한 면 --u-{role}-bg-color + 그 위 글자 --u-{role}-color-strong (4.58~7.00)
+       soft     연한 면 --u-{role}-bg-color + 그 위 글자 --u-{role}-color-strong (4.58~7.00)
        outlined 바탕 위 글자 --u-{role}-color-strong                            (계약 검사 대상)
      ========================================================================== */
   :host([color="primary"]) {
@@ -63,13 +62,12 @@ export const styles = css`
      장식 축 — 색 슬롯 매핑
      color="purple" 에는 역할 의미가 없다(장식이다). 그래서 역할 토큰이 아니라
      팔레트를 직접 읽으며, 브랜드 오버라이드에 의도적으로 면역이다.
-     아래 9개 규칙이 hue 슬롯을 채우고, variant 규칙이 그것을 소비한다.
-     슬롯이 비면(color="neutral") variant 규칙의 폴백 = 브랜드 경로를 탄다.
+     아래 규칙이 hue 슬롯을 채우고, appearance 규칙이 그것을 소비한다.
      ========================================================================== */
-  /* gray — 장식 축의 무채색. «neutral» 은 브랜드 경로(위 주석)라 «회색 레이블» 을 낼 방법이 없었다
-     («대기 중» 같은 상태가 «info» 와 같은 파랑으로 칠해졌다). 중립 램프를 읽되 명도 때문에 두 자리를
-     한 단 진하게 쓴다: solid 면은 흰 글자 대비로 700, 연한 면은 흰 바탕·올림면과 구별되게 200. */
-  :host([color="gray"]) {
+  /* neutral — 무채색(기본). 2.0 전에는 neutral 이 «브랜드 경로»였고 회색 레이블은 장식 축 gray 로만
+     낼 수 있었다 — 같은 낱말이 배지·체크박스에서는 회색이라 뜻이 정반대였다. 중립 램프를 읽되 명도 때문에
+     두 자리를 한 단 진하게 쓴다: solid 면은 흰 글자 대비로 700, 연한 면은 흰 바탕·올림면과 구별되게 200. */
+  :host([color="neutral"]) {
     --tag-hue-solid: var(--u-neutral-700, #616161);
     --tag-hue-line: var(--u-neutral-300, #E0E0E0);
     --tag-hue-surface: var(--u-neutral-200, #EEEEEE);
@@ -141,34 +139,34 @@ export const styles = css`
     --tag-hue-text-outlined: var(--u-pink-600, #D81B60);
   }
 
-  /* Variant: solid (강한 채움, 색 미지정 시 --tag-fill-color = 브랜드) */
-  :host([variant="solid"]) {
+  /* solid — 강한 채움 */
+  :host([appearance="solid"]) {
     /* 면 위의 글자. 장식 축은 슬롯이 비어 흰색으로 떨어진다(현행 보존) — 역할 축에서만
        갈린다. warning 이 그 이유다: 노란 면 위의 흰 글자는 읽히지 않는다. */
     --tag-color: var(--tag-hue-on-solid, var(--u-neutral-0, #FFFFFF));
-    --tag-bg-color: var(--tag-hue-solid, var(--tag-fill-color));
-    --tag-border-color: var(--tag-hue-solid, var(--tag-fill-color));
+    --tag-bg-color: var(--tag-hue-solid);
+    --tag-border-color: var(--tag-hue-solid);
   }
 
-  /* Variant: surface (채우기 + 테두리, 기본 색상은 --u-primary-color) */
-  :host([variant="surface"]) {
-    --tag-color: var(--tag-hue-text, color-mix(in srgb, var(--tag-fill-color) 70%, black));
-    --tag-bg-color: var(--tag-hue-surface, color-mix(in srgb, var(--tag-fill-color) 15%, var(--u-bg-color, #FFFFFF)));
-    --tag-border-color: var(--tag-hue-line, color-mix(in srgb, var(--tag-fill-color) 40%, var(--u-bg-color, #FFFFFF)));
-  }
-
-  /* Variant: filled (채우기만, 테두리 없음, 기본 색상은 --u-primary-color) */
-  :host([variant="filled"]) {
-    --tag-color: var(--tag-hue-text, color-mix(in srgb, var(--tag-fill-color) 70%, black));
-    --tag-bg-color: var(--tag-hue-surface, color-mix(in srgb, var(--tag-fill-color) 15%, var(--u-bg-color, #FFFFFF)));
+  /* soft — 옅은 틴트, 테두리 없음 (기본) */
+  :host([appearance="soft"]) {
+    --tag-color: var(--tag-hue-text);
+    --tag-bg-color: var(--tag-hue-surface);
     --tag-border-color: transparent;
   }
 
-  /* Variant: outlined (테두리만, 기본 색상은 --u-primary-color) */
-  :host([variant="outlined"]) {
-    --tag-color: var(--tag-hue-text-outlined, color-mix(in srgb, var(--tag-fill-color) 85%, black));
+  /* outlined — 테두리만 */
+  :host([appearance="outlined"]) {
+    --tag-color: var(--tag-hue-text-outlined);
     --tag-bg-color: transparent;
-    --tag-border-color: var(--tag-hue-line, color-mix(in srgb, var(--tag-fill-color) 40%, var(--u-bg-color, #FFFFFF)));
+    --tag-border-color: var(--tag-hue-line);
+  }
+
+  /* plain — 외형 없음: 색 글자만 */
+  :host([appearance="plain"]) {
+    --tag-color: var(--tag-hue-text-outlined);
+    --tag-bg-color: transparent;
+    --tag-border-color: transparent;
   }
 
   :host {

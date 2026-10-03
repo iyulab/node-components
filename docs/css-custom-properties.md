@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 32개 · 프로퍼티 141개**
+**컴포넌트 32개 · 프로퍼티 140개**
 
 ## `<u-alert>`
 
@@ -34,8 +34,8 @@ u-button.cta { --btn-color: #0f9d58; }
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--badge-padding-block` | 세로 여백 (`variant="dot"` 은 콘텐츠를 렌더하지 않아 적용되지 않는다) |
-| `--badge-padding-inline` | 가로 여백 (`variant="dot"` 은 콘텐츠를 렌더하지 않아 적용되지 않는다) |
+| `--badge-padding-block` | 세로 여백 (`shape="dot"` 은 콘텐츠를 렌더하지 않아 적용되지 않는다) |
+| `--badge-padding-inline` | 가로 여백 (`shape="dot"` 은 콘텐츠를 렌더하지 않아 적용되지 않는다) |
 
 ## `<u-button>`
 
@@ -284,7 +284,6 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--tag-color` | 텍스트 색상 |
 | `--tag-bg-color` | 배경 색상 |
 | `--tag-border-color` | 테두리 색상 |
-| `--tag-fill-color` | variant 별 채움 기준색 (기본: --u-primary-color) |
 | `--tag-padding-block` | 세로 여백 |
 | `--tag-padding-inline` | 가로 여백 |
 | `--tag-gap` | prefix/본문/suffix 사이 간격 |

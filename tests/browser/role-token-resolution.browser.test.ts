@@ -125,9 +125,8 @@ describe('역할 토큰 브라우저 해석', () => {
 
   it('--u-primary-color 오버라이드가 장식 축(color=X)에는 침범하지 않는다', async () => {
     // 네거티브 컨트롤 — 브랜딩이 `color="green"` 까지 물들이면 장식 API 가 깨진 것이다.
-    // (`--tag-fill-color` 는 `color=` 미지정 시의 브랜드 경로이므로 primary 를 따르는 게 정상.
-    //  장식 축이 실제로 세팅하는 것은 `--tag-bg-color`/`--tag-border-color` 다.)
-    const tag = await mount('u-tag', { color: 'green', variant: 'solid' });
+    // (장식 축이 실제로 세팅하는 것은 `--tag-bg-color`/`--tag-border-color` 다.)
+    const tag = await mount('u-tag', { color: 'green', appearance: 'solid' });
     const before = px(tag, '--tag-bg-color');
     expect(before, '장식 축 값이 비어 있다 — 이 테스트가 공허하게 통과하고 있다').not.toBe('');
     expect(before, 'color="green" 이 green 팔레트를 쓰지 않는다').toBe(tokenOf('--u-green-500'));

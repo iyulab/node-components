@@ -16,24 +16,25 @@ import '../../src/components/tag/UTag.js';
 
 const COLORS = ['blue', 'green', 'yellow', 'red', 'orange', 'teal', 'cyan', 'purple', 'pink'] as const;
 
-/** [variant][prop] = shade — yellow 예외는 아래 YELLOW 로 덮는다 */
+/** [appearance][prop] = shade — yellow 예외는 아래 YELLOW 로 덮는다 (2.0: surface·filled → soft) */
 const MATRIX: Record<string, Record<string, number>> = {
   solid: { '--tag-bg-color': 500, '--tag-border-color': 500 },
-  surface: { '--tag-color': 800, '--tag-bg-color': 100, '--tag-border-color': 300 },
-  filled: { '--tag-color': 800, '--tag-bg-color': 100 },
+  soft: { '--tag-color': 800, '--tag-bg-color': 100 },
   outlined: { '--tag-color': 600, '--tag-border-color': 300 },
+  plain: { '--tag-color': 600 },
 };
 const YELLOW: Record<string, Record<string, number>> = {
   solid: { '--tag-bg-color': 600, '--tag-border-color': 600 },
   outlined: { '--tag-color': 700 },
+  plain: { '--tag-color': 700 },
 };
 
 const token = (name: string) =>
   getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
-async function mount(variant: string, color: string) {
+async function mount(appearance: string, color: string) {
   const el = document.createElement('u-tag') as HTMLElement & { updateComplete: Promise<unknown> };
-  el.setAttribute('variant', variant);
+  el.setAttribute('appearance', appearance);
   el.setAttribute('color', color);
   el.textContent = 'Tag';
   document.body.appendChild(el);
@@ -41,14 +42,14 @@ async function mount(variant: string, color: string) {
   return el;
 }
 
-describe('u-tag 장식 매트릭스 (variant × color)', () => {
+describe('u-tag 장식 매트릭스 (appearance × color)', () => {
   beforeAll(() => {
     expect(token('--u-blue-500'), '이 테스트는 토큰 시트를 전제한다').not.toBe('');
   });
   afterEach(() => document.body.replaceChildren());
 
   for (const variant of Object.keys(MATRIX)) {
-    it(`variant="${variant}" 의 9색이 전부 자기 팔레트 단을 쓴다`, async () => {
+    it(`appearance="${variant}" 의 9색이 전부 자기 팔레트 단을 쓴다`, async () => {
       const wrong: string[] = [];
       for (const color of COLORS) {
         const el = await mount(variant, color);
@@ -66,46 +67,39 @@ describe('u-tag 장식 매트릭스 (variant × color)', () => {
     });
   }
 
-  it('color="neutral" 은 매트릭스가 아니라 브랜드 경로(--tag-fill-color)를 탄다', async () => {
-    // 네거티브 컨트롤 — 매트릭스를 접을 때 `[color]` 로 뭉뚱그리면 neutral 까지 삼켜
-    // 브랜드 오버라이드 경로가 죽는다. `color` 는 reflect 되므로 항상 존재한다.
-    const el = await mount('solid', 'neutral');
-    expect(getComputedStyle(el).getPropertyValue('--tag-bg-color').trim())
-      .toBe(token('--u-primary-color'));
-
-    document.documentElement.style.setProperty('--u-primary-color', 'rgb(255, 0, 128)');
-    expect(
-      getComputedStyle(el).getPropertyValue('--tag-bg-color').trim(),
-      'neutral 태그가 브랜드 색을 따르지 않는다',
-    ).toBe('rgb(255, 0, 128)');
-    document.documentElement.style.removeProperty('--u-primary-color');
-  });
-
-  it('color="gray" 는 중립 램프를 읽는다 — solid 700 · surface/filled 면 200 · 글자 800 · 선 300 · outlined 글자 700', async () => {
+  it('🔴color="neutral"(기본)은 무채색이다 — solid 700 · soft 면 200 · 글자 800 · 선 300 · outlined 글자 700', async () => {
+    // 2.0 전에는 neutral 이 브랜드 경로였고 회색은 `gray` 였다 — 배지·체크박스의 neutral(회색)과 뜻이 반대였다.
     const expect_: Record<string, Record<string, string>> = {
       solid: { '--tag-bg-color': '--u-neutral-700', '--tag-border-color': '--u-neutral-700' },
-      surface: { '--tag-color': '--u-neutral-800', '--tag-bg-color': '--u-neutral-200', '--tag-border-color': '--u-neutral-300' },
-      filled: { '--tag-color': '--u-neutral-800', '--tag-bg-color': '--u-neutral-200' },
+      soft: { '--tag-color': '--u-neutral-800', '--tag-bg-color': '--u-neutral-200' },
       outlined: { '--tag-color': '--u-neutral-700', '--tag-border-color': '--u-neutral-300' },
     };
     const wrong: string[] = [];
-    for (const [variant, props] of Object.entries(expect_)) {
-      const el = await mount(variant, 'gray');
+    for (const [appearance, props] of Object.entries(expect_)) {
+      const el = await mount(appearance, 'neutral');
       for (const [prop, tok] of Object.entries(props)) {
         const actual = getComputedStyle(el).getPropertyValue(prop).trim();
-        if (actual !== token(tok)) wrong.push(`${variant} ${prop}: ${actual} ≠ ${tok}(${token(tok)})`);
+        if (actual !== token(tok)) wrong.push(`${appearance} ${prop}: ${actual} ≠ ${tok}(${token(tok)})`);
       }
       el.remove();
     }
     expect(wrong).toEqual([]);
   });
 
-  it('⚪NEGATIVE — gray 는 브랜드 오버라이드에 면역이다(neutral 과 다르다)', async () => {
-    const el = await mount('filled', 'gray');
+  it('⚪NEGATIVE — neutral 은 브랜드 오버라이드에 면역이다 (브랜드는 primary)', async () => {
+    const el = await mount('soft', 'neutral');
     const before = getComputedStyle(el).getPropertyValue('--tag-bg-color').trim();
     document.documentElement.style.setProperty('--u-primary-color', 'rgb(255, 0, 128)');
     expect(getComputedStyle(el).getPropertyValue('--tag-bg-color').trim()).toBe(before);
     document.documentElement.style.removeProperty('--u-primary-color');
+  });
+
+  it('맨 태그는 soft · neutral 이다', async () => {
+    const el = document.createElement('u-tag') as HTMLElement & { updateComplete: Promise<unknown> };
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.getAttribute('appearance')).toBe('soft');
+    expect(el.getAttribute('color')).toBe('neutral');
   });
 
   it('색 지정 태그는 브랜드 오버라이드에 면역이다', async () => {

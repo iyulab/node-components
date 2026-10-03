@@ -15,7 +15,7 @@ export const styles = css`
     user-select: none;
   }
 
-  /* === Variant (형태) === */
+  /* === Shape === */
   /* 여백은 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */
   .base {
     box-sizing: border-box;
@@ -30,13 +30,13 @@ export const styles = css`
     border-radius: inherit;
   }
 
-  :host([variant="square"]) {
+  :host([shape="square"]) {
     border-radius: 0.2em;
   }
-  :host([variant="pill"]) {
+  :host([shape="pill"]) {
     border-radius: var(--u-radius-pill, 9999px);
   }
-  :host([variant="dot"]) {
+  :host([shape="dot"]) {
     width: 0.6em;
     height: 0.6em;
     min-width: 0.6em;

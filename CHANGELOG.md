@@ -13,14 +13,22 @@
   |---|---|---|
   | `u-button` · `u-button-group` · `u-icon-button` · `u-copy-button` | `variant="solid"` · `"filled"` · `"surface"` · `"outlined"` · `"ghost"` · `"link"` | `appearance="solid"` · `"soft"` · `"soft"` · `"outlined"` · `"plain"` · `"link"` |
   | `Dialog` action options | `{ variant }` | `{ appearance }` |
+  | `u-tag` · `u-chip` | `variant="solid"` · `"filled"` · `"surface"` · `"outlined"` | `appearance="solid"` · `"soft"` · `"soft"` · `"outlined"` (new: `"plain"` — coloured text only) |
+  | `u-badge` | `variant="pill"` · `"dot"` · `"square"` | `shape=` same values (`variant` there was a shape, not an appearance) |
 
   `u-icon-button` and `u-copy-button` default to `appearance="plain"` (was `variant="ghost"`).
+  `u-tag` and `u-chip` default to `appearance="soft"` (was `variant="filled"`).
 - 🔴**`color="neutral"` means achromatic (grey) everywhere; the brand colour is `primary`.** Before,
   `neutral` on `u-button` was the brand path (its default) while on `u-badge`/`u-checkbox` it was
   grey. `u-button`'s default `color` is now `primary` — a bare button looks the same; a button that
   set `color="neutral"` explicitly is now a grey button (drop the attribute or use `primary` for the
   old look). `plain` and `link` buttons keep body/link text for `primary` and `neutral` and take the
   colour for every other value, as before.
+- 🔴**`u-tag` / `u-chip`: `color="neutral"` (the default) is grey; the decorative `gray` is removed.**
+  A bare tag was a brand tint and a grey label needed `color="gray"`; now a bare tag is the grey label
+  and a brand-tinted one is `color="primary"`. Replace `color="gray"` with `color="neutral"` (or
+  drop it). The `--tag-fill-color` hook is removed — every colour fills the tag's own slots now, so
+  the fallback it fed could no longer be reached.
 
 - **The built-in token sheets live in a cascade layer: `@layer iyu.base, iyu.house;`.** `light.css`
   and `dark.css` (static import or `Theme.init()`) declare the order and put every token in

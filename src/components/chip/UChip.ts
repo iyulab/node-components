@@ -6,7 +6,7 @@ import '../button/UButton.js';
 import '../tooltip/UTooltip.js';
 
 import { UElement } from "../UElement.js";
-import { type TagVariant, type TagColor } from "../tag/UTag.js";
+import { type TagAppearance, type TagColor } from "../tag/UTag.js";
 import { styles } from "./UChip.styles.js";
 import { type PickEventDetail } from "../../events/PickEvent.js";
 import { type RemoveEventDetail } from "../../events/RemoveEvent.js";
@@ -33,7 +33,7 @@ export class UChip extends UElement {
   static styles = [super.styles, styles];
 
   /** 칩의 스타일 변형 */
-  @property({ type: String, reflect: true }) variant: TagVariant = 'filled';
+  @property({ type: String, reflect: true }) appearance: TagAppearance = 'soft';
   /** 칩의 색상 */
   @property({ type: String, reflect: true }) color: TagColor = 'neutral';
   /** 둥근 모서리 여부 */
@@ -50,7 +50,7 @@ export class UChip extends UElement {
   render() {
     return html`
       <u-tag part="tag"
-        .variant=${this.variant}
+        .appearance=${this.appearance}
         .color=${this.color}
         .rounded=${this.rounded}
         @click=${this.handleTagClick}
@@ -68,7 +68,7 @@ export class UChip extends UElement {
         <u-button class="remove-btn" part="remove" slot="suffix"
           ?hidden=${!this.removable}
           rounded
-          variant="ghost"
+          appearance="plain"
           aria-label=${Locale.getValue('remove')}
           @click=${this.handleRemoveClick}>
           <u-icon lib="internal" name="x"></u-icon>
