@@ -87,28 +87,55 @@ export const styles = css`
   }
 
   /* === Button - Horizontal 배치 === */
-  :host([type="button"][orientation="horizontal"]) ::slotted(u-option:first-child) {
+  :host([type="button"]:not([variant="soft"])[orientation="horizontal"]) ::slotted(u-option:first-child) {
     border-radius: 0.35em 0 0 0.35em;
   }
-  :host([type="button"][orientation="horizontal"]) ::slotted(u-option:last-child) {
+  :host([type="button"]:not([variant="soft"])[orientation="horizontal"]) ::slotted(u-option:last-child) {
     border-radius: 0 0.35em 0.35em 0;
   }
-  :host([type="button"][orientation="horizontal"]) ::slotted(u-option:not(:last-child)) {
+  :host([type="button"]:not([variant="soft"])[orientation="horizontal"]) ::slotted(u-option:not(:last-child)) {
     border-right: 1px solid var(--u-neutral-300, #E0E0E0);
   }
 
   /* === Button - Vertical 배치 === */
-  :host([type="button"][orientation="vertical"]) ::slotted(u-option) {
+  :host([type="button"]:not([variant="soft"])[orientation="vertical"]) ::slotted(u-option) {
     width: 100%;
     justify-content: center;
   }
-  :host([type="button"][orientation="vertical"]) ::slotted(u-option:first-child) {
+  :host([type="button"]:not([variant="soft"])[orientation="vertical"]) ::slotted(u-option:first-child) {
     border-radius: 0.35em 0.35em 0 0;
   }
-  :host([type="button"][orientation="vertical"]) ::slotted(u-option:last-child) {
+  :host([type="button"]:not([variant="soft"])[orientation="vertical"]) ::slotted(u-option:last-child) {
     border-radius: 0 0 0.35em 0.35em;
   }
-  :host([type="button"][orientation="vertical"]) ::slotted(u-option:not(:last-child)) {
+  :host([type="button"]:not([variant="soft"])[orientation="vertical"]) ::slotted(u-option:not(:last-child)) {
     border-bottom: 1px solid var(--u-neutral-300, #E0E0E0);
+  }
+
+  /* === Button + Soft — a segmented control ===
+     A quiet track; the picked segment rises onto the surface. No joined borders. */
+  :host([type="button"][variant="soft"]) .container {
+    gap: 2px;
+    padding: 2px;
+    border-color: transparent;
+    border-radius: var(--u-radius-lg, 6px);
+    background-color: var(--u-bg-color-raised, #FAFAFA);
+  }
+  :host([type="button"][variant="soft"]) ::slotted(u-option) {
+    justify-content: center;
+    border-color: transparent;
+    border-radius: var(--u-radius-md, 4px);
+    color: var(--u-txt-color-weak, #616161);
+    --option-border-color-interactive: transparent;
+    --option-color-active: var(--u-txt-color, #212121);
+    --option-border-color-active: transparent;
+    --option-background-color-active: var(--u-bg-color, #FFFFFF);
+    --option-color-active-interactive: var(--u-txt-color, #212121);
+    --option-border-color-active-interactive: transparent;
+    --option-background-color-active-interactive: var(--u-bg-color, #FFFFFF);
+  }
+  :host([type="button"][variant="soft"]) ::slotted(u-option[selected]) {
+    box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04));
+    font-weight: 600;
   }
 `;

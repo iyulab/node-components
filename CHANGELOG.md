@@ -13,6 +13,12 @@
   Selectors written only to win the specificity race (`:root:root`, `:root:not([theme="dark"])`)
   still work and can be simplified.
 
+### Fixed
+
+- **`u-radio type="button"`: its options are radios to assistive technology.** The button style
+  hides the radio marker, and the option took its role from the marker — so a `radiogroup` held
+  `role="option"` items with `aria-selected`. The role now follows the group.
+
 ### Added
 
 - **`--u-canvas-bg-color`** — the application background behind surfaces (page body). Light default
@@ -27,6 +33,9 @@
   `u-date-range-picker` and the calendar trigger. They were em literals a theme could not reach; a theme
   now sets form density in one place (height = 1.5em line + 2 × block padding + 2px). Defaults
   unchanged.
+- **`variant="soft"` on `u-radio type="button"`** — a segmented control: a quiet track (`--u-bg-color-raised`),
+  the picked segment rises onto the surface with a light shadow; no joined borders. For switching a
+  view or picking a level.
 - **`--u-focus-ring-color`** — every focus outline reads it (default `--u-primary-color-strong`),
   so a theme with a neutral ink primary can keep focus on an interaction hue.
 

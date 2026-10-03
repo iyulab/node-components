@@ -60,7 +60,9 @@ export class UOption extends UElement {
     // 그 외 listbox(u-select/u-input combobox) 에서는 role=option + aria-selected.
     // (부모 컨테이너의 role=radiogroup/listbox 와 자식 role 이 짝을 이뤄야 스크린리더가
     //  이름만 있고 비어 보이는 위젯으로 읽지 않는다.)
-    const isRadio = this.marker === 'radio';
+    // ⚠역할은 «표식 모양»이 아니라 «소속 그룹»이 정한다 — `u-radio type="button"` 은 동그라미 표식을
+    //   숨기려고 marker 를 비우지만 여전히 radiogroup 이다(종전에는 그 안에 role=option 이 놓였다).
+    const isRadio = this.marker === 'radio' || this.parentElement?.localName === 'u-radio';
     this.setAttribute('role', isRadio ? 'radio' : 'option');
     this.removeAttribute(isRadio ? 'aria-selected' : 'aria-checked');
     this.setAttribute(isRadio ? 'aria-checked' : 'aria-selected', String(this.selected));
