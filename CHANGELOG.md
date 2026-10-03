@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **`u-date-picker`: picking a day after typing shows the picked day.** Text typed into the field but
+  not yet committed stayed in the box after a day was picked in the calendar (or the time changed), so
+  the field showed the half-typed text while the value was the picked day. `u-date-range-picker` already
+  cleared it; both pickers now share one implementation of the text box.
+
 ## [1.57.0] - 2026-10-03
 
 ### Added

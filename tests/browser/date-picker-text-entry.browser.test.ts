@@ -184,4 +184,18 @@ describe('UDatePicker — 직접 입력(mode="date")', () => {
     expect(el.value).toBeUndefined();
     expect(el.validity!.badInput).toBe(true);
   });
+  it('치다가 달력에서 날을 고르면 고른 날이 칸에 보인다 — 친 텍스트가 남지 않는다', async () => {
+    const el = mount({ value: '2026-02-15' });
+    await settle(el);
+    await userEvent.tripleClick(input(el));
+    await userEvent.keyboard('2026-02-1');
+    await settle(el);
+    expect(popoverOpen(el)).toBe(true);
+
+    (cal(el).querySelector('button.day[data-iso="2026-02-20"]') as HTMLButtonElement).click();
+    await settle(el);
+
+    expect(el.value).toBe('2026-02-20');
+    expect(input(el).value).toBe('2026-02-20');
+  });
 });
