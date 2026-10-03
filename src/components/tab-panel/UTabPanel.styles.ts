@@ -79,124 +79,124 @@ export const styles = css`
     overflow: auto;
   }
 
-  /* Variant: line */
+  /* Appearance: line */
 
-  :host([variant="line"]) ::slotted(u-tab[active]) {
+  :host([appearance="line"]) ::slotted(u-tab[active]) {
     position: relative;
     color: var(--tab-panel-color);
   }
-  :host([variant="line"]) ::slotted(u-tab[active])::after {
+  :host([appearance="line"]) ::slotted(u-tab[active])::after {
     content: '';
     position: absolute;
     background-color: var(--tab-panel-color);
   }
 
-  :host([variant="line"][placement="top"]) .header {
+  :host([appearance="line"][placement="top"]) .header {
     border-bottom: 1px solid var(--u-border-color, #E0E0E0);
   }
-  :host([variant="line"][placement="top"]) ::slotted(u-tab[active])::after {
+  :host([appearance="line"][placement="top"]) ::slotted(u-tab[active])::after {
     height: 2px;
     bottom: 0;
     left: 0;
     right: 0;
   }
 
-  :host([variant="line"][placement="bottom"]) .header {
+  :host([appearance="line"][placement="bottom"]) .header {
     border-top: 1px solid var(--u-border-color, #E0E0E0);
   }
-  :host([variant="line"][placement="bottom"]) ::slotted(u-tab[active])::after {
+  :host([appearance="line"][placement="bottom"]) ::slotted(u-tab[active])::after {
     height: 2px;
     top: 0;
     left: 0;
     right: 0;
   }
 
-  :host([variant="line"][placement="left"]) .header {
+  :host([appearance="line"][placement="left"]) .header {
     border-right: 1px solid var(--u-border-color, #E0E0E0);
   }
-  :host([variant="line"][placement="left"]) ::slotted(u-tab[active])::after {
+  :host([appearance="line"][placement="left"]) ::slotted(u-tab[active])::after {
     width: 2px;
     right: 0;
     top: 0;
     bottom: 0;
   }
 
-  :host([variant="line"][placement="right"]) .header {
+  :host([appearance="line"][placement="right"]) .header {
     border-left: 1px solid var(--u-border-color, #E0E0E0);
   }
-  :host([variant="line"][placement="right"]) ::slotted(u-tab[active])::after {
+  :host([appearance="line"][placement="right"]) ::slotted(u-tab[active])::after {
     width: 2px;
     left: 0;
     top: 0;
     bottom: 0;
   }
 
-  /* Variant: card */
+  /* Appearance: card */
 
-  :host([variant="card"]) ::slotted(u-tab) {
+  :host([appearance="card"]) ::slotted(u-tab) {
     background-color: var(--u-neutral-100, #F5F5F5);
   }
-  :host([variant="card"]) ::slotted(u-tab[active]) {
+  :host([appearance="card"]) ::slotted(u-tab[active]) {
     color: var(--u-txt-color, #212121);
     background-color: var(--u-neutral-0, #FFFFFF);
   }
 
-  :host([variant="card"][placement="top"]) ::slotted(u-tab) {
+  :host([appearance="card"][placement="top"]) ::slotted(u-tab) {
     border-bottom: 1px solid var(--u-border-color, #E0E0E0);
     border-right: 1px solid var(--u-border-color, #E0E0E0);
   }
-  :host([variant="card"][placement="top"]) ::slotted(u-tab[active]) {
+  :host([appearance="card"][placement="top"]) ::slotted(u-tab[active]) {
     border-bottom: none;
   }
 
-  :host([variant="card"][placement="bottom"]) ::slotted(u-tab) {
+  :host([appearance="card"][placement="bottom"]) ::slotted(u-tab) {
     border-top: 1px solid var(--u-border-color, #E0E0E0);
     border-right: 1px solid var(--u-border-color, #E0E0E0);
   }
-  :host([variant="card"][placement="bottom"]) ::slotted(u-tab[active]) {
+  :host([appearance="card"][placement="bottom"]) ::slotted(u-tab[active]) {
     border-top: none;
   }
 
-  :host([variant="card"][placement="left"]) ::slotted(u-tab) {
+  :host([appearance="card"][placement="left"]) ::slotted(u-tab) {
     border-right: 1px solid var(--u-border-color, #E0E0E0);
     border-bottom: 1px solid var(--u-border-color, #E0E0E0);
   }
-  :host([variant="card"][placement="left"]) ::slotted(u-tab[active]) {
+  :host([appearance="card"][placement="left"]) ::slotted(u-tab[active]) {
     border-right: none;
   }
 
-  :host([variant="card"][placement="right"]) ::slotted(u-tab) {
+  :host([appearance="card"][placement="right"]) ::slotted(u-tab) {
     border-left: 1px solid var(--u-border-color, #E0E0E0);
     border-bottom: 1px solid var(--u-border-color, #E0E0E0);
   }
-  :host([variant="card"][placement="right"]) ::slotted(u-tab[active]) {
+  :host([appearance="card"][placement="right"]) ::slotted(u-tab[active]) {
     border-left: none;
   }
 
-  /* Variant: pill */
+  /* Appearance: pill */
 
-  :host([variant="pill"]) .nav {
+  :host([appearance="pill"]) .nav {
     gap: 0.25em;
     padding: 0.25em;
     background-color: var(--u-neutral-100, #F5F5F5);
     border-radius: var(--u-radius-xl, 8px);
   }
-  :host([variant="pill"]) ::slotted(u-tab) {
+  :host([appearance="pill"]) ::slotted(u-tab) {
     border: 1px solid transparent;
     border-radius: var(--u-radius-lg, 6px);
   }
-  :host([variant="pill"]) ::slotted(u-tab[active]) {
+  :host([appearance="pill"]) ::slotted(u-tab[active]) {
     border-color: var(--u-border-color, #E0E0E0);
     background-color: var(--u-neutral-0, #FFFFFF);
     box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04));
   }
 
-  /* Variant: plain */
+  /* Appearance: plain */
 
-  :host([variant="plain"]) .nav {
+  :host([appearance="plain"]) .nav {
     gap: 0.25em;
   }
-  :host([variant="plain"]) ::slotted(u-tab[active]) {
+  :host([appearance="plain"]) ::slotted(u-tab[active]) {
     color: var(--tab-panel-color);
     font-weight: 600;
   }

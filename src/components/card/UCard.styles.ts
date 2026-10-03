@@ -29,8 +29,9 @@ export const styles = css`
   :host([orientation="horizontal"]) {
     flex-direction: row;
   }
-  :host([borderless]) {
+  :host([appearance="plain"]) {
     --card-border-width: 0;
+    box-shadow: none;
   }
   :host([shadowless]) {
     box-shadow: none;

@@ -18,6 +18,11 @@
   | `u-alert` · `Toast` options | `variant="solid"` · `"filled"` · `"outlined"` · `"glass"` | `appearance="soft"` · `"soft"` · `"outlined"` · `"soft"` — the old `solid` was a tint with an outline, not a solid fill, so both tints are `soft` (tint, no outline); `glass` is removed |
   | `u-checkbox` | `variant="filled"` · `"outline"` | `appearance="solid"` · `"outlined"` |
   | `u-input` · `u-select` · `u-textarea` | `variant="outlined"` · `"filled"` · `"underlined"` · `"borderless"` | `appearance="outlined"` · `"soft"` · `"underlined"` · `"plain"` |
+  | `u-card` | boolean `borderless` | `appearance="plain"` — no border and no shadow (default `outlined`); `shadowless` stays |
+  | `u-menu` | boolean `borderless` | `appearance="plain"` (default `outlined`) |
+  | `u-tab-panel` | `variant="line"` · `"card"` · `"pill"` · `"plain"` | `appearance=` same values |
+  | `u-divider` | `variant="solid"` · `"dashed"` · `"dotted"` | `line=` same values (a line style, not an appearance) |
+  | `u-text` | `variant` | unchanged — the only remaining `variant`, the typography step |
   | `u-radio` | `variant="filled"` · `"outlined"` · `"soft"` | `appearance="solid"` · `"outlined"` · `"soft"` |
 
   `u-icon-button` and `u-copy-button` default to `appearance="plain"` (was `variant="ghost"`).

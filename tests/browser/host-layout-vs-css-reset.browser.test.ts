@@ -137,9 +137,9 @@ describe(':host 레이아웃 vs 문서 CSS 리셋', () => {
     }
   });
 
-  it('u-card[borderless] 는 테두리가 제거된다', async () => {
+  it('u-card[appearance="plain"] 는 테두리가 제거된다', async () => {
     const el = document.createElement('u-card') as HTMLElement & { updateComplete: Promise<unknown> };
-    el.setAttribute('borderless', '');
+    el.setAttribute('appearance', 'plain');
     document.body.appendChild(el);
     await el.updateComplete;
     const inner = el.shadowRoot!.querySelector<HTMLElement>('[part="base"]')!;
@@ -158,18 +158,18 @@ describe(':host 레이아웃 vs 문서 CSS 리셋', () => {
     expect(cs.borderTopColor, 'soft 의 테두리는 투명해야 한다').toBe('rgba(0, 0, 0, 0)');
   });
 
-  it('u-menu 의 테두리가 내부 래퍼로 이전된 뒤에도 유지되고, borderless 는 제거된다', async () => {
-    const make = async (borderless: boolean) => {
+  it('u-menu 의 테두리가 내부 래퍼로 이전된 뒤에도 유지되고, appearance="plain" 은 제거된다', async () => {
+    const make = async (plain: boolean) => {
       const el = document.createElement('u-menu') as HTMLElement & {
         updateComplete: Promise<unknown>;
       };
-      if (borderless) el.setAttribute('borderless', '');
+      if (plain) el.setAttribute('appearance', 'plain');
       document.body.appendChild(el);
       await el.updateComplete;
       return getComputedStyle(el.shadowRoot!.querySelector<HTMLElement>('[part="base"]')!);
     };
     expect((await make(false)).borderTopWidth, '기본 메뉴는 테두리를 그려야 한다').toBe('1px');
-    expect((await make(true)).borderTopWidth, 'borderless 는 테두리가 없어야 한다').toBe('0px');
+    expect((await make(true)).borderTopWidth, 'plain 은 테두리가 없어야 한다').toBe('0px');
   });
 
   it('u-badge shape="dot" 은 여백이 0 이다 (래퍼 도입 후에도)', async () => {

@@ -27,11 +27,11 @@ export const styles = css`
     padding: var(--divider-spacing) 0;
   }
 
-  /* variant */
-  :host([variant="dashed"]) .line {
+  /* line */
+  :host([line="dashed"]) .line {
     border-top-style: dashed;
   }
-  :host([variant="dotted"]) .line {
+  :host([line="dotted"]) .line {
     border-top-style: dotted;
   }
 
@@ -85,10 +85,10 @@ export const styles = css`
     border-left: var(--divider-size) solid var(--divider-color);
   }
 
-  :host([vertical][variant="dashed"]) .line {
+  :host([vertical][line="dashed"]) .line {
     border-left-style: dashed;
   }
-  :host([vertical][variant="dotted"]) .line {
+  :host([vertical][line="dotted"]) .line {
     border-left-style: dotted;
   }
 

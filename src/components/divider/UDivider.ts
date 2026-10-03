@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators.js";
 import { UElement } from "../UElement.js";
 import { styles } from "./UDivider.styles.js";
 
-export type DividerVariant = 'solid' | 'dashed' | 'dotted';
+export type DividerLine = 'solid' | 'dashed' | 'dotted';
 export type DividerAlign = 'start' | 'center' | 'end';
 
 /**
@@ -27,8 +27,8 @@ export class UDivider extends UElement {
 
   /** 수직 방향 여부 (기본값 수평) */
   @property({ type: Boolean, reflect: true }) vertical = false;
-  /** 선의 색상 */
-  @property({ type: String, reflect: true }) variant: DividerVariant = 'solid';
+  /** 선 모양 */
+  @property({ type: String, reflect: true }) line: DividerLine = 'solid';
   /** 슬롯 콘텐츠 정렬 위치 */
   @property({ type: String, reflect: true }) align: DividerAlign = 'center';
 

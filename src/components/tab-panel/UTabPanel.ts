@@ -6,7 +6,8 @@ import { UTab } from "../tab/UTab.js";
 import { UPanel } from "../panel/UPanel.js";
 import { styles } from "./UTabPanel.styles.js";
 
-export type TabPanelVariant = 'line' | 'card' | 'pill' | 'plain';
+/** 탭 띠의 외형 — `line`(기본) · `card` · `pill` · `plain`(외형 없음 — 공통 어휘). */
+export type TabPanelAppearance = 'line' | 'card' | 'pill' | 'plain';
 export type TabPanelPlacement = 'top' | 'bottom' | 'left' | 'right';
 
 /**
@@ -33,7 +34,7 @@ export class UTabPanel extends UElement {
   /** 탭 비활성화 여부 */
   @property({ type: Boolean, reflect: true }) disabled = false;
   /** 탭 스타일 변형 */
-  @property({ type: String, reflect: true }) variant: TabPanelVariant = 'line';
+  @property({ type: String, reflect: true }) appearance: TabPanelAppearance = 'line';
   /** 탭 위치 */
   @property({ type: String, reflect: true }) placement: TabPanelPlacement = 'top';
   /** 선택된 탭값 */

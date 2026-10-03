@@ -5,6 +5,7 @@ import { UElement } from "../UElement.js";
 import { styles } from "./UCard.styles.js";
 
 export type CardOrientation = 'vertical' | 'horizontal';
+export type CardAppearance = 'outlined' | 'plain';
 
 /**
  * 콘텐츠를 카드 형태로 표시하는 컴포넌트입니다.
@@ -20,7 +21,7 @@ export type CardOrientation = 'vertical' | 'horizontal';
  * @csspart header - 헤더 영역 컨테이너
  * @csspart body - 본문 영역 컨테이너
  * @csspart footer - 푸터 영역 컨테이너
- * @cssprop --card-border-width - 테두리 두께 (`borderless` 는 0)
+ * @cssprop --card-border-width - 테두리 두께 (`appearance="plain"` 은 0)
  * @cssprop --card-border-color - 테두리 색
  */
 @customElement('u-card')
@@ -31,8 +32,8 @@ export class UCard extends UElement {
   @property({ type: String, reflect: true }) orientation: CardOrientation = 'vertical';
   /** 그림자 제거 여부 */
   @property({ type: Boolean, reflect: true }) shadowless = false;
-  /** 테두리 제거 여부 */
-  @property({ type: Boolean, reflect: true }) borderless = false;
+  /** 외형 정도 — `outlined`(기본: 테두리 + 높이 그림자) · `plain`(테두리·그림자 없음 — 배치만) */
+  @property({ type: String, reflect: true }) appearance: CardAppearance = 'outlined';
   /** 마우스 오버 효과 적용 여부 */
   @property({ type: Boolean, reflect: true }) hoverable = false;
 

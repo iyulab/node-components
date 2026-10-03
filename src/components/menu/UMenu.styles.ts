@@ -27,7 +27,7 @@ export const styles = css`
     border: var(--menu-border-width) solid var(--menu-border-color);
     border-radius: inherit;
   }
-  :host([borderless]) {
+  :host([appearance="plain"]) {
     --menu-padding: 0;
     --menu-border-width: 0;
     border-radius: var(--u-radius-none, 0);

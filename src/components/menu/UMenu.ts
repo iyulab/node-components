@@ -6,6 +6,7 @@ import { UMenuItem, type MenuItemIndicator, type MenuItemAlign } from "../menu-i
 import { styles } from "./UMenu.styles.js";
 
 export type MenuSelection = 'none' | 'single' | 'multiple';
+export type MenuAppearance = 'outlined' | 'plain';
 
 /**
  * 메뉴 아이템의 선택, 키보드 탐색, 속성 전파를 관리하는 메뉴 컴포넌트입니다.
@@ -13,8 +14,8 @@ export type MenuSelection = 'none' | 'single' | 'multiple';
  * @slot - 메뉴 아이템 (u-menu-item, u-divider)
  *
  * @cssprop --menu-indent-size - 하위 메뉴 아이템의 들여쓰기 크기 (기본값: 20px)
- * @cssprop --menu-padding - 내부 여백 (`borderless` 는 0)
- * @cssprop --menu-border-width - 테두리 두께 (`borderless` 는 0)
+ * @cssprop --menu-padding - 내부 여백 (`appearance="plain"` 은 0)
+ * @cssprop --menu-border-width - 테두리 두께 (`appearance="plain"` 은 0)
  * @cssprop --menu-border-color - 테두리 색
  * 
  * @event change - 선택된 아이템이 변경될 때 발생
@@ -23,8 +24,8 @@ export type MenuSelection = 'none' | 'single' | 'multiple';
 export class UMenu extends UElement {
   static styles = [ super.styles, styles ];
 
-  /** 테두리 없는 여부 */
-  @property({ type: Boolean, reflect: true }) borderless: boolean = false;
+  /** 외형 정도 — `outlined`(기본) · `plain`(테두리·여백 없음 — 다른 표면 안에 넣을 때) */
+  @property({ type: String, reflect: true }) appearance: MenuAppearance = 'outlined';
   /** 선택 모드 */
   @property({ type: String, reflect: true }) selection: MenuSelection = 'none';
   /** 키보드 탐색 시 순환 여부 */

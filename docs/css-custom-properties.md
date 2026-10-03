@@ -65,7 +65,7 @@ u-button.cta { --btn-color: #0f9d58; }
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--card-border-width` | 테두리 두께 (`borderless` 는 0) |
+| `--card-border-width` | 테두리 두께 (`appearance="plain"` 은 0) |
 | `--card-border-color` | 테두리 색 |
 
 ## `<u-checkbox>`
@@ -127,8 +127,8 @@ u-button.cta { --btn-color: #0f9d58; }
 | 프로퍼티 | 설명 |
 |---|---|
 | `--menu-indent-size` | 하위 메뉴 아이템의 들여쓰기 크기 (기본값: 20px) |
-| `--menu-padding` | 내부 여백 (`borderless` 는 0) |
-| `--menu-border-width` | 테두리 두께 (`borderless` 는 0) |
+| `--menu-padding` | 내부 여백 (`appearance="plain"` 은 0) |
+| `--menu-border-width` | 테두리 두께 (`appearance="plain"` 은 0) |
 | `--menu-border-color` | 테두리 색 |
 
 ## `<u-menu-item>`
