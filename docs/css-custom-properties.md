@@ -41,20 +41,20 @@ u-button.cta { --btn-color: #0f9d58; }
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--u-primary-color` | color="neutral"일 때 버튼 기준색. 지정 시 hover/active/surface 톤이 color-mix()로 자동 파생. |
+| `--u-primary-color` | 기본(color="primary") 버튼의 기준색. 지정 시 hover/active/soft 톤이 color-mix()로 자동 파생. |
 | `--btn-padding-block` | 내부 버튼의 상하 여백 (기본: 0.5em) |
-| `--btn-padding-inline` | 내부 버튼의 좌우 여백 (기본: 1em, variant="link"는 0). ⚠1.20.0 에서 0.5em → 1em. 세로와 같은 값이라 글자가 테두리에 붙어 있었다. 최소높이는 상하 여백에서 파생되므로(`1.5em + 상하×2 + 2px`) 이 값을 덮어도 높이는 안 변한다. |
-| `--btn-border-color` | 내부 버튼의 테두리 색. variant/hover/active 규칙이 이 값을 정한다 (기본: transparent) |
+| `--btn-padding-inline` | 내부 버튼의 좌우 여백 (기본: 1em, appearance="link"는 0). ⚠1.20.0 에서 0.5em → 1em. 세로와 같은 값이라 글자가 테두리에 붙어 있었다. 최소높이는 상하 여백에서 파생되므로(`1.5em + 상하×2 + 2px`) 이 값을 덮어도 높이는 안 변한다. |
+| `--btn-border-color` | 내부 버튼의 테두리 색. appearance/hover/active 규칙이 이 값을 정한다 (기본: transparent) |
 | `--btn-color` | 버튼의 **면** 색. 아래 파생 토큰이 전부 이 값에서 color-mix()로 계산된다 — 보통 이것 하나만 덮으면 된다. |
-| `--btn-txt-color` | 그 **면 위**의 글자색 — variant="solid" 가 읽는다 (기본: #fff · 역할 값 지정 시 --u-{role}-txt-color) |
-| `--btn-color-strong` | **바탕 위**의 글자색 — variant="link" 가 읽는다. 면과 요구가 반대라 슬롯이 따로 있다 (기본: --btn-color 와 동일 · 역할 값 지정 시 --u-{role}-color-strong) |
+| `--btn-txt-color` | 그 **면 위**의 글자색 — appearance="solid" 가 읽는다 (기본: #fff · 역할 값 지정 시 --u-{role}-txt-color) |
+| `--btn-color-strong` | **바탕 위**의 글자색 — appearance="link"·"plain" 이 읽는다. 면과 요구가 반대라 슬롯이 따로 있다 (기본: --btn-color 와 동일 · 역할 값 지정 시 --u-{role}-color-strong) |
 | `--btn-color-strong-hover` | 바탕 위 글자 hover (기본: 85% + black · 역할 값은 움직이지 않고 밑줄로 강조) |
 | `--btn-color-strong-active` | 바탕 위 글자 active (기본: 70% + black · 역할 값은 고정) |
 | `--btn-color-hover` | solid 배경 hover (기본: --btn-color 85% + black) |
 | `--btn-color-active` | solid 배경 active (기본: --btn-color 70% + black) |
-| `--btn-color-surface` | surface 배경 (기본: --btn-color 12% + 배경색) |
-| `--btn-color-surface-hover` | surface 배경 hover (기본: 22%) |
-| `--btn-color-surface-active` | surface 배경 active (기본: 32%) |
+| `--btn-color-surface` | soft 배경 (기본: --btn-color 12% + 배경색) |
+| `--btn-color-surface-hover` | soft 배경 hover (기본: 22%) |
+| `--btn-color-surface-active` | soft 배경 active (기본: 32%) |
 | `--btn-color-border` | 테두리 (기본: --btn-color 45% + 배경색) |
 | `--btn-color-border-hover` | 테두리 hover (기본: 60%) |
 | `--btn-color-border-active` | 테두리 active (기본: 75%) |

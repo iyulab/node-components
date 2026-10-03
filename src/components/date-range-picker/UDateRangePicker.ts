@@ -269,7 +269,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
           ></u-calendar>
           ${this.clearable && this.value ? html`
             <div class="calendar-footer" part="calendar-footer">
-              <u-button variant="ghost" size="sm" @click=${this.handleFooterResetClick}>${Locale.getValue('clear')}</u-button>
+              <u-button appearance="plain" size="sm" @click=${this.handleFooterResetClick}>${Locale.getValue('clear')}</u-button>
             </div>
           ` : ''}
         </div>

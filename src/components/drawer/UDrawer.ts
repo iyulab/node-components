@@ -43,7 +43,7 @@ export class UDrawer extends UOverlayElement {
           ?hidden=${!this.hasHeader && !this.closable}>
           <slot name="header" @slotchange=${this.handleHeaderSlotChange}></slot>
           <u-button class="close-btn" part="close-btn"
-            variant="ghost"
+            appearance="plain"
             ?hidden=${!this.closable}
             aria-label=${Locale.getValue('close')}
             @click=${() => this.requestClose('button')}>

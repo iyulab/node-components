@@ -35,14 +35,14 @@ describe('Dialog 기본 버튼 문구', () => {
     await labels();
     const [cancel, confirm] = [...document.body.querySelector('u-dialog')!.querySelectorAll('u-button')];
     expect(confirm.getAttribute('color')).toBe('danger');
-    expect(cancel.getAttribute('color')).toBe('neutral');
+    expect(cancel.getAttribute('color')).toBe('primary');
   });
 
   it('NEGATIVE: confirmColor 가 없으면 확인 버튼은 기본색이다', async () => {
     void Dialog.confirm('ok?');
     await labels();
     const confirm = [...document.body.querySelector('u-dialog')!.querySelectorAll('u-button')][1];
-    expect(confirm.getAttribute('color')).toBe('neutral');
+    expect(confirm.getAttribute('color')).toBe('primary');
   });
 
   it('NEGATIVE: 명시한 문구는 로케일보다 우선한다', async () => {

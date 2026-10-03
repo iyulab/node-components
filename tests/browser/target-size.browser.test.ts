@@ -368,8 +368,8 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   'u-button': [
     { state: '기본', html: '<u-button>OK</u-button>' },
     // `sm` 은 크기 축(font-size 12px — 여백·최소 높이가 em 이라 비례한다)이다. 달력의 «Today» 가 정확히 이
-    // 조합(`variant="ghost" size="sm"`)으로 그려진다 — 그래서 여기서 잰다.
-    { state: 'sm', html: '<u-button variant="ghost" size="sm">Today</u-button>' },
+    // 조합(`appearance="plain" size="sm"`)으로 그려진다 — 그래서 여기서 잰다.
+    { state: 'sm', html: '<u-button appearance="plain" size="sm">Today</u-button>' },
     // 가장 좁은 `sm` — 아이콘만 든 버튼(글자 폭에 기대지 못한다).
     { state: 'sm 아이콘', html: '<u-button size="sm" aria-label="Close"><u-icon name="close"></u-icon></u-button>' },
   ],

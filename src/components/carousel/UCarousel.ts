@@ -160,7 +160,7 @@ export class UCarousel extends UElement {
 
       <u-button part="prev-button" class="nav-button prev"
         ?hidden=${!this.navigation || (!this.loop && this.index <= 0)}
-        variant="ghost"
+        appearance="plain"
         rounded
         aria-label=${Locale.getValue('previousSlide')}
         @click=${this.prev}>
@@ -168,7 +168,7 @@ export class UCarousel extends UElement {
       </u-button>
       <u-button part="next-button" class="nav-button next"
         ?hidden=${!this.navigation || (!this.loop && this.index >= this.maxIndex)}
-        variant="ghost"
+        appearance="plain"
         rounded
         aria-label=${Locale.getValue('nextSlide')}
         @click=${this.next}>

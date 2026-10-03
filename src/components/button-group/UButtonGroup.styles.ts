@@ -26,8 +26,8 @@ export const styles = css`
     z-index: 1;
   }
 
-  :host([variant="ghost"]),
-  :host([variant="link"]) {
+  :host([appearance="plain"]),
+  :host([appearance="link"]) {
     gap: var(--u-space-3xs, 2px);
   }
 `;

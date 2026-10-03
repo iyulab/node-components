@@ -7,10 +7,10 @@ export const styles = css`
     font-size: 20px;
   }
 
-  :host([variant="solid"]) {
+  :host([appearance="solid"]) {
     color: #fff;
   }
-  :host([variant="link"]) {
+  :host([appearance="link"]) {
     color: var(--u-link-txt-color, #1565C0);
   }
 

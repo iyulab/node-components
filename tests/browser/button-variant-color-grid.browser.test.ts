@@ -38,10 +38,12 @@ import '../../src/components/button/UButton.js';
  * 한 속성으로 전부 재려다 `solid` 의 글자색(항상 흰색)과 `outlined` 의 글자색(항상 중립)을
  * *"축이 안 닿는다"* 로 오판할 뻔했다 — **정당한 설계에 발화하는 쪽**의 실패다.
  */
+// 2.0: `variant` → `appearance`, `ghost` → `plain`, `filled` → `soft`(`surface` 폐지).
 const VARIANTS = [
   { name: 'solid', where: 'host-bg' },
+  { name: 'soft', where: 'host-bg' },
   { name: 'outlined', where: 'inner-border' },
-  { name: 'ghost', where: 'color' },
+  { name: 'plain', where: 'color' },
   { name: 'link', where: 'color' },
 ] as const;
 
@@ -64,7 +66,7 @@ function paintedColor(el: HTMLElement, where: string): string {
   return getComputedStyle(el).color;
 }
 
-describe('u-button variant × color 격자', () => {
+describe('u-button appearance × color 격자', () => {
   beforeEach(() => {
     window.scrollTo(0, 0);
   });
@@ -76,11 +78,11 @@ describe('u-button variant × color 격자', () => {
     it(`★${variant} 이 color 축을 따른다 — 역할별로 서로 다른 색이 나온다 (${where})`, async () => {
       const seen = new Map<string, string>();
       for (const color of COLORS) {
-        const el = await mount({ variant, color });
+        const el = await mount({ appearance: variant, color });
         seen.set(color, paintedColor(el, where));
       }
 
-      // 셋이 전부 같으면 축이 이 variant 에 닿지 않는 것이다 — ghost 가 정확히 그랬다.
+      // 셋이 전부 같으면 축이 이 외형에 닿지 않는 것이다 — 1.22.0 전 ghost(=plain)가 정확히 그랬다.
       const distinct = new Set(seen.values());
       expect(
         distinct.size,
@@ -91,8 +93,8 @@ describe('u-button variant × color 격자', () => {
 
   it('⚠color 를 주지 않은 렌더는 건드리지 않는다 (가산 변경)', async () => {
     // 색 축을 배선하면서 기본 인상이 바뀌면 그것은 가산이 아니라 시각 변경이다.
-    const bare = paintedColor(await mount({ variant: 'ghost' }), 'color');
-    const neutral = paintedColor(await mount({ variant: 'ghost', color: 'neutral' }), 'color');
+    const bare = paintedColor(await mount({ appearance: 'plain' }), 'color');
+    const neutral = paintedColor(await mount({ appearance: 'plain', color: 'neutral' }), 'color');
     expect(bare).toBe(neutral);
 
     // 그리고 그 값은 역할색이 아니라 본문 글자색이어야 한다.
@@ -103,13 +105,29 @@ describe('u-button variant × color 격자', () => {
     expect(bare).toBe(getComputedStyle(probe).color);
   });
 
-  it('ghost 의 색은 «면 단»이 아니라 «바탕 위 글자» 단이다', async () => {
+  it('plain 의 색은 «면 단»이 아니라 «바탕 위 글자» 단이다', async () => {
     // 면 단(-color)을 쓰면 흰 바탕에서 대비가 얕아진다. 역할 층이 그래서 단을 갈라 뒀다.
-    const el = await mount({ variant: 'ghost', color: 'danger' });
+    const el = await mount({ appearance: 'plain', color: 'danger' });
     const probe = document.createElement('div');
     probe.style.color = getComputedStyle(document.documentElement)
       .getPropertyValue('--u-danger-color-strong').trim();
     document.body.appendChild(probe);
     expect(paintedColor(el, 'color')).toBe(getComputedStyle(probe).color);
+  });
+
+  it('🔴기본 color 는 primary — 맨 버튼은 브랜드 면이고 `color="primary"` 와 같다', async () => {
+    const bare = await mount({});
+    expect(bare.getAttribute('color')).toBe('primary');
+    expect(bare.getAttribute('appearance')).toBe('solid');
+    const primary = await mount({ color: 'primary' });
+    expect(paintedColor(bare, 'host-bg')).toBe(paintedColor(primary, 'host-bg'));
+  });
+
+  it('🔴`neutral` 은 무채색 — 브랜드 면이 아니다 (배지·체크박스와 같은 뜻)', async () => {
+    const neutral = await mount({ color: 'neutral' });
+    const primary = await mount({ color: 'primary' });
+    expect(paintedColor(neutral, 'host-bg')).not.toBe(paintedColor(primary, 'host-bg'));
+    const [r, g, b] = paintedColor(neutral, 'host-bg').match(/\d+/g)!.map(Number);
+    expect(Math.max(r, g, b) - Math.min(r, g, b), '무채색이어야 한다').toBeLessThanOrEqual(8);
   });
 });

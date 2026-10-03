@@ -6,7 +6,11 @@ import '../spinner/USpinner.js';
 import { UElement } from "../UElement.js";
 import { styles } from "./UButton.styles.js";
 
-export type ButtonVariant = "solid" | "surface" | "filled" | "outlined" | "ghost" | "link";
+/**
+ * 외형 정도(chrome) — 컴포넌트 공통 어휘. `solid` 꽉 찬 면 · `soft` 옅은 틴트 면 · `outlined` 테두리 ·
+ * `plain` 외형 없음 · `link` 링크처럼(버튼류만).
+ */
+export type ButtonAppearance = "solid" | "soft" | "outlined" | "plain" | "link";
 export type ButtonType = "button" | "submit" | "reset";
 /**
  * 두 축이 한 속성에 병존한다.
@@ -39,26 +43,26 @@ export type ButtonSize = "sm" | "md" | "lg";
  * @csspart content - 콘텐츠 영역
  * @csspart mask - 로딩 마스크 영역
  *
- * @cssprop --u-primary-color - color="neutral"일 때 버튼 기준색. 지정 시 hover/active/surface 톤이 color-mix()로 자동 파생.
+ * @cssprop --u-primary-color - 기본(color="primary") 버튼의 기준색. 지정 시 hover/active/soft 톤이 color-mix()로 자동 파생.
  * @cssprop --btn-padding-block - 내부 버튼의 상하 여백 (기본: 0.5em)
- * @cssprop --btn-padding-inline - 내부 버튼의 좌우 여백 (기본: 1em, variant="link"는 0).
+ * @cssprop --btn-padding-inline - 내부 버튼의 좌우 여백 (기본: 1em, appearance="link"는 0).
  *   ⚠1.20.0 에서 0.5em → 1em. 세로와 같은 값이라 글자가 테두리에 붙어 있었다.
  *   최소높이는 상하 여백에서 파생되므로(`1.5em + 상하×2 + 2px`) 이 값을 덮어도 높이는 안 변한다.
- * @cssprop --btn-border-color - 내부 버튼의 테두리 색. variant/hover/active 규칙이 이 값을 정한다
+ * @cssprop --btn-border-color - 내부 버튼의 테두리 색. appearance/hover/active 규칙이 이 값을 정한다
  *   (기본: transparent)
  * @cssprop --btn-color - 버튼의 **면** 색. 아래 파생 토큰이 전부 이 값에서 color-mix()로 계산된다 —
  *   보통 이것 하나만 덮으면 된다.
- * @cssprop --btn-txt-color - 그 **면 위**의 글자색 — variant="solid" 가 읽는다
+ * @cssprop --btn-txt-color - 그 **면 위**의 글자색 — appearance="solid" 가 읽는다
  *   (기본: #fff · 역할 값 지정 시 --u-{role}-txt-color)
- * @cssprop --btn-color-strong - **바탕 위**의 글자색 — variant="link" 가 읽는다.
+ * @cssprop --btn-color-strong - **바탕 위**의 글자색 — appearance="link"·"plain" 이 읽는다.
  *   면과 요구가 반대라 슬롯이 따로 있다 (기본: --btn-color 와 동일 · 역할 값 지정 시 --u-{role}-color-strong)
  * @cssprop --btn-color-strong-hover - 바탕 위 글자 hover (기본: 85% + black · 역할 값은 움직이지 않고 밑줄로 강조)
  * @cssprop --btn-color-strong-active - 바탕 위 글자 active (기본: 70% + black · 역할 값은 고정)
  * @cssprop --btn-color-hover - solid 배경 hover (기본: --btn-color 85% + black)
  * @cssprop --btn-color-active - solid 배경 active (기본: --btn-color 70% + black)
- * @cssprop --btn-color-surface - surface 배경 (기본: --btn-color 12% + 배경색)
- * @cssprop --btn-color-surface-hover - surface 배경 hover (기본: 22%)
- * @cssprop --btn-color-surface-active - surface 배경 active (기본: 32%)
+ * @cssprop --btn-color-surface - soft 배경 (기본: --btn-color 12% + 배경색)
+ * @cssprop --btn-color-surface-hover - soft 배경 hover (기본: 22%)
+ * @cssprop --btn-color-surface-active - soft 배경 active (기본: 32%)
  * @cssprop --btn-color-border - 테두리 (기본: --btn-color 45% + 배경색)
  * @cssprop --btn-color-border-hover - 테두리 hover (기본: 60%)
  * @cssprop --btn-color-border-active - 테두리 active (기본: 75%)
@@ -76,14 +80,15 @@ export class UButton extends UElement {
    */
   static shadowRootOptions: ShadowRootInit = { ...UElement.shadowRootOptions, delegatesFocus: true };
 
-  /** 버튼 스타일 변형 */
-  @property({ type: String, reflect: true }) variant: ButtonVariant = "solid";
+  /** 외형 정도 — `solid`(기본) · `soft` · `outlined` · `plain` · `link` */
+  @property({ type: String, reflect: true }) appearance: ButtonAppearance = "solid";
   /**
-   * Semantic 색상. 기본값 `neutral`은 `--u-primary-color`(역할 토큰)로 렌더링된다 —
-   * 즉 브랜드 색을 덮으면 기본 버튼이 함께 따라온다.
-   * `link`는 neutral일 때 primary 계열 유지, 다른 색 지정 시 재정의. `ghost`는 영향받지 않음.
+   * 색. 기본값 `primary` 는 `--u-primary-color`(역할 토큰)로 칠한다 — 브랜드 색을 덮으면 기본 버튼이
+   * 함께 따라온다. `neutral` 은 **무채색**(회색) 버튼이다(모든 컴포넌트에서 같은 뜻).
+   * `plain`·`link` 는 글자만 있는 외형이라 기본(`primary`)·`neutral` 에서는 본문/링크 색을 쓰고,
+   * 그 밖의 색을 주면 글자가 그 색을 따른다.
    */
-  @property({ type: String, reflect: true }) color: ButtonColor = "neutral";
+  @property({ type: String, reflect: true }) color: ButtonColor = "primary";
   /** 버튼 크기. `font-size`만 변경하며 나머지는 `em` 단위라 비례 조정됨. */
   @property({ type: String, reflect: true }) size: ButtonSize = "md";
   /** 경계선 둥글게 여부 */

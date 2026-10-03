@@ -4,7 +4,7 @@ import '../components/input/UInput.js';
 
 import { UDialog } from '../components/dialog/UDialog.js';
 import type { DialogPlacement } from '../components/dialog/UDialog.js';
-import type { ButtonColor, ButtonVariant } from '../components/button/UButton.js';
+import type { ButtonColor, ButtonAppearance } from '../components/button/UButton.js';
 import type { CloseOnPolicy } from '../components/UOverlayElement.js';
 import type { UInput, InputType } from '../components/input/UInput.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
@@ -70,7 +70,7 @@ export interface DialogAction {
   /** 반환될 값 */
   value: string;
   /** 버튼 스타일 */
-  variant?: ButtonVariant;
+  appearance?: ButtonAppearance;
   /** 버튼 색 (기본: 버튼의 기본색) */
   color?: ButtonColor;
 }
@@ -102,7 +102,7 @@ export class Dialog {
       ...options,
       content: message,
       actions: [
-        { label: options?.cancelLabel || Locale.getValue('cancel'), value: 'cancel', variant: 'outlined' },
+        { label: options?.cancelLabel || Locale.getValue('cancel'), value: 'cancel', appearance: 'outlined' },
         { label: options?.confirmLabel || Locale.getValue('confirm'), value: 'confirm', color: options?.confirmColor },
       ],
     });
@@ -143,7 +143,7 @@ export class Dialog {
         </div>
       `,
       actions: [
-        { label: options?.cancelLabel || Locale.getValue('cancel'), value: 'cancel', variant: 'outlined' },
+        { label: options?.cancelLabel || Locale.getValue('cancel'), value: 'cancel', appearance: 'outlined' },
         { label: options?.confirmLabel || Locale.getValue('confirm'), value: 'confirm' },
       ],
     });
@@ -168,7 +168,7 @@ export class Dialog {
           <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
             ${actions.map(action => html`
               <u-button
-                variant=${action.variant || 'solid'}
+                appearance=${action.appearance || 'solid'}
                 color=${ifDefined(action.color)}
                 @click=${() => { closeValue = action.value; dialog.hide(); }}
               >${action.label}</u-button>

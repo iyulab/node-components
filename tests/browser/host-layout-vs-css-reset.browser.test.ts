@@ -67,13 +67,13 @@ describe(':host 레이아웃 vs 문서 CSS 리셋', () => {
     ).toBeGreaterThan(28);
   });
 
-  it('u-button 의 variant 테두리 색이 내부 요소로 이전된 뒤에도 유지된다', async () => {
-    // 테두리를 내부 요소가 그리게 바꿨으므로, :host([variant]) 가 정하는 색이
+  it('u-button 의 appearance 테두리 색이 내부 요소로 이전된 뒤에도 유지된다', async () => {
+    // 테두리를 내부 요소가 그리게 바꿨으므로, :host([appearance]) 가 정하는 색이
     // --btn-border-color 를 통해 실제로 도달하는지 확인한다.
     const btn = document.createElement('u-button') as HTMLElement & {
       updateComplete: Promise<unknown>;
     };
-    btn.setAttribute('variant', 'outlined');
+    btn.setAttribute('appearance', 'outlined');
     btn.textContent = 'Outlined';
     document.body.appendChild(btn);
     await btn.updateComplete;
@@ -81,7 +81,7 @@ describe(':host 레이아웃 vs 문서 CSS 리셋', () => {
     const inner = btn.shadowRoot!.querySelector<HTMLElement>('[part="button"]')!;
     const cs = getComputedStyle(inner);
     expect(cs.borderTopWidth, '내부 요소가 테두리를 그려야 한다').toBe('1px');
-    expect(cs.borderTopColor, 'variant 색이 전달돼야 한다').not.toBe('rgba(0, 0, 0, 0)');
+    expect(cs.borderTopColor, 'appearance 색이 전달돼야 한다').not.toBe('rgba(0, 0, 0, 0)');
   });
 
   // 래퍼(`part="base"`)를 도입한 컴포넌트들. 리셋 아래에서 여백이 살아 있어야 한다.

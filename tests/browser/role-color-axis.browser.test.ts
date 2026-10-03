@@ -56,7 +56,7 @@ describe('color 역할 축', () => {
   it('u-button solid — 면은 -color, 그 위 글자는 -txt-color 를 받는다', async () => {
     const wrong: string[] = [];
     for (const role of ROLES) {
-      const el = await mount('u-button', { variant: 'solid', color: role });
+      const el = await mount('u-button', { appearance: 'solid', color: role });
       const s = getComputedStyle(el);
       const bg = normalize(token(`--u-${role}-color`));
       const fg = normalize(token(`--u-${role}-txt-color`));
@@ -69,7 +69,7 @@ describe('color 역할 축', () => {
   it('★warning solid 의 글자는 흰색이 아니다 — 이 축이 존재하는 이유', async () => {
     // 장식 축은 어떤 색이든 면 위 글자가 흰색 고정이다. 역할 축이 그것을 물려받았다면
     // 노란 면 위의 흰 글자가 되어 읽히지 않는다. 이 단언이 그 회귀를 막는다.
-    const el = await mount('u-button', { variant: 'solid', color: 'warning' });
+    const el = await mount('u-button', { appearance: 'solid', color: 'warning' });
     const fg = getComputedStyle(el).color;
     expect(fg).not.toBe('rgb(255, 255, 255)');
     expect(fg).toBe(normalize(token('--u-warning-txt-color')));
@@ -80,7 +80,7 @@ describe('color 역할 축', () => {
     // 두 자리가 슬롯을 공유하지 않는다는 것을 계산값으로 못박는다.
     const wrong: string[] = [];
     for (const role of ROLES) {
-      const el = await mount('u-button', { variant: 'link', color: role });
+      const el = await mount('u-button', { appearance: 'link', color: role });
       const fg = getComputedStyle(el).color;
       const strong = normalize(token(`--u-${role}-color-strong`));
       const surface = normalize(token(`--u-${role}-color`));
@@ -115,8 +115,8 @@ describe('color 역할 축', () => {
     // `color="danger"` 는 따라와야 한다.
     document.documentElement.style.setProperty('--u-danger-color', 'rgb(1, 2, 3)');
 
-    const role = await mount('u-button', { variant: 'solid', color: 'danger' });
-    const decorative = await mount('u-button', { variant: 'solid', color: 'red' });
+    const role = await mount('u-button', { appearance: 'solid', color: 'danger' });
+    const decorative = await mount('u-button', { appearance: 'solid', color: 'red' });
 
     expect(getComputedStyle(role).backgroundColor, '역할 값이 브랜드를 따라오지 않는다')
       .toBe('rgb(1, 2, 3)');

@@ -4,6 +4,24 @@
 
 ### Changed (breaking)
 
+- 🔴**One appearance vocabulary — `variant` → `appearance`** (no aliases). Values mean the same thing
+  on every component: `solid` (filled with the colour) · `soft` (tint, no outline) · `outlined` ·
+  `plain` (no chrome) · `underlined` (fields only) · `link` (button family only). Migration, per
+  component:
+
+  | Component | Before | After |
+  |---|---|---|
+  | `u-button` · `u-button-group` · `u-icon-button` · `u-copy-button` | `variant="solid"` · `"filled"` · `"surface"` · `"outlined"` · `"ghost"` · `"link"` | `appearance="solid"` · `"soft"` · `"soft"` · `"outlined"` · `"plain"` · `"link"` |
+  | `Dialog` action options | `{ variant }` | `{ appearance }` |
+
+  `u-icon-button` and `u-copy-button` default to `appearance="plain"` (was `variant="ghost"`).
+- 🔴**`color="neutral"` means achromatic (grey) everywhere; the brand colour is `primary`.** Before,
+  `neutral` on `u-button` was the brand path (its default) while on `u-badge`/`u-checkbox` it was
+  grey. `u-button`'s default `color` is now `primary` — a bare button looks the same; a button that
+  set `color="neutral"` explicitly is now a grey button (drop the attribute or use `primary` for the
+  old look). `plain` and `link` buttons keep body/link text for `primary` and `neutral` and take the
+  colour for every other value, as before.
+
 - **The built-in token sheets live in a cascade layer: `@layer iyu.base, iyu.house;`.** `light.css`
   and `dark.css` (static import or `Theme.init()`) declare the order and put every token in
   `iyu.base`. Unlayered application CSS now beats the defaults regardless of specificity, load

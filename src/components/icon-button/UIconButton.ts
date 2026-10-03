@@ -8,7 +8,7 @@ import '../icon/UIcon.js';
 import '../tooltip/UTooltip.js';
 
 import { UElement } from "../UElement.js";
-import { type ButtonVariant } from "../button/UButton.js";
+import { type ButtonAppearance } from "../button/UButton.js";
 import { type IconLibrary } from "../icon/UIcon.js";
 import { styles } from "./UIconButton.styles.js";
 
@@ -29,7 +29,7 @@ export class UIconButton extends UElement {
   static shadowRootOptions: ShadowRootInit = { ...UElement.shadowRootOptions, delegatesFocus: true };
 
   /** 버튼 스타일 변형 */
-  @property({ type: String, reflect: true }) variant: ButtonVariant = "ghost";
+  @property({ type: String, reflect: true }) appearance: ButtonAppearance = "plain";
   /** 원형 표시 여부 */
   @property({ type: Boolean, reflect: true }) rounded = false;
   /** 비활성화 여부 */
@@ -75,7 +75,7 @@ export class UIconButton extends UElement {
         aria-label=${ifDefined(ariaLabel)}
         .disabled=${this.disabled}
         .loading=${this.loading}
-        .variant=${this.variant}
+        .appearance=${this.appearance}
         .rounded=${this.rounded}
         .href=${this.href}
         .target=${this.target}

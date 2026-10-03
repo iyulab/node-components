@@ -6,7 +6,7 @@ import '../icon-button/UIconButton.js';
 import '../button/UButton.js';
 import '../icon/UIcon.js';
 import { UElement } from '../UElement.js';
-import { type ButtonVariant } from '../button/UButton.js';
+import { type ButtonAppearance } from '../button/UButton.js';
 import { styles } from './UCopyButton.styles.js';
 import { Locale } from '../../utilities/Locale.js';
 
@@ -34,7 +34,7 @@ export class UCopyButton extends UElement {
   static shadowRootOptions: ShadowRootInit = { ...UElement.shadowRootOptions, delegatesFocus: true };
 
   /** 버튼 스타일 변형 */
-  @property({ type: String, reflect: true }) variant: ButtonVariant = 'ghost';
+  @property({ type: String, reflect: true }) appearance: ButtonAppearance = 'plain';
   /** 원형 표시 여부 */
   @property({ type: Boolean, reflect: true }) rounded = false;
   /** 비활성화 여부 */
@@ -63,7 +63,7 @@ export class UCopyButton extends UElement {
         <u-button part="button"
           exportparts="icon"
           ?disabled=${this.disabled}
-          .variant=${this.variant}
+          .appearance=${this.appearance}
           .rounded=${this.rounded}
           @click=${this.handleButtonClick}
         >
@@ -77,7 +77,7 @@ export class UCopyButton extends UElement {
       <u-icon-button part="button"
         exportparts="icon,tooltip"
         ?disabled=${this.disabled}
-        .variant=${this.variant}
+        .appearance=${this.appearance}
         .rounded=${this.rounded}
         .tooltipPlacement=${this.tooltipPlacement}
         .tooltipOffset=${this.tooltipOffset}

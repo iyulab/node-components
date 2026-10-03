@@ -284,9 +284,9 @@ export class UDatePicker extends UFormControlElement<string> {
     const todayDisabled = isOutOfRange(new Date(), this.min, this.max);
     return html`
       <div class="calendar-footer" part="calendar-footer">
-        <u-button variant="ghost" size="sm" ?disabled=${todayDisabled} @click=${this.handleTodayClick}>${Locale.getValue('today')}</u-button>
+        <u-button appearance="plain" size="sm" ?disabled=${todayDisabled} @click=${this.handleTodayClick}>${Locale.getValue('today')}</u-button>
         ${this.clearable && this.value ? html`
-          <u-button variant="ghost" size="sm" @click=${this.handleFooterResetClick}>${Locale.getValue('clear')}</u-button>
+          <u-button appearance="plain" size="sm" @click=${this.handleFooterResetClick}>${Locale.getValue('clear')}</u-button>
         ` : ''}
       </div>
     `;

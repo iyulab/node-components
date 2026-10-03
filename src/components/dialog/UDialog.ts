@@ -55,7 +55,7 @@ export class UDialog extends UOverlayElement {
             <slot name="header" @slotchange=${this.handleHeaderSlotChange}></slot>
             <div style="flex: 1;"></div>
             <u-button class="close-btn" part="close-btn"
-              variant="ghost"
+              appearance="plain"
               ?hidden=${!this.closable}
               aria-label=${Locale.getValue('close')}
               @click=${() => this.requestClose('button')}>

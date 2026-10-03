@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    /* --btn-color 하나만 정해지면 hover/active/surface/outline 톤이 전부 자동 파생 */
+    /* --btn-color 하나만 정해지면 hover/active/soft/outline 톤이 전부 자동 파생 */
     --btn-color: var(--u-primary-color, #1976D2);
 
     /* ★색 슬롯이 셋인 이유 — 같은 색이 세 자리에서 요구가 다르다.
@@ -96,6 +96,15 @@ export const styles = css`
   }
 
   /* === Color tokens (장식 축) === */
+  /* neutral — 무채색 버튼. 면 = 중립 램프 700, 그 위 글자 = 반전 글자, 바탕 위 글자 = 본문색.
+     (2.0 전에는 neutral 이 «기본 = 브랜드 경로»였다 — 같은 낱말이 배지·체크박스에서는 회색이라
+     뜻이 정반대였다. 브랜드는 이제 primary 다.) */
+  :host([color="neutral"]) {
+    --btn-color: var(--u-neutral-700, #616161);
+    --btn-txt-color: var(--u-txt-color-inverse, #FFFFFF);
+    --btn-color-strong: var(--u-txt-color, #212121);
+  }
+
   :host([color="blue"])   { --btn-color: var(--u-blue-600, #1E88E5); }
   :host([color="green"])  { --btn-color: var(--u-green-600, #43A047); }
   :host([color="red"])    { --btn-color: var(--u-red-600, #E53935); }
@@ -155,122 +164,107 @@ export const styles = css`
     display: none;
   }
 
-  /* === Variant styles === */
+  /* === Appearance === */
 
-  /* solid: 강한 채움 (기본 color="neutral") */
-  :host([variant="solid"]) {
+  /* solid: 강한 채움 (기본) */
+  :host([appearance="solid"]) {
     color: var(--btn-txt-color);
     background-color: var(--btn-color);
     --btn-border-color: var(--btn-color);
   }
-  :host([variant="solid"]:hover) {
+  :host([appearance="solid"]:hover) {
     background-color: var(--btn-color-hover);
     --btn-border-color: var(--btn-color-hover);
   }
-  :host([variant="solid"]:active) {
+  :host([appearance="solid"]:active) {
     background-color: var(--btn-color-active);
     --btn-border-color: var(--btn-color-active);
   }
 
-  /* surface: 채우기 + 경계 */
-  :host([variant="surface"]) {
-    color: var(--u-txt-color, #212121);
-    background-color: var(--btn-color-surface);
-    --btn-border-color: var(--btn-color-border);
-  }
-  :host([variant="surface"]:hover) {
-    background-color: var(--btn-color-surface-hover);
-    --btn-border-color: var(--btn-color-border-hover);
-  }
-  :host([variant="surface"]:active) {
-    background-color: var(--btn-color-surface-active);
-    --btn-border-color: var(--btn-color-border-active);
-  }
-
-  /* filled: 채우기만 */
-  :host([variant="filled"]) {
+  /* soft: 옅은 틴트 면, 테두리 없음 */
+  :host([appearance="soft"]) {
     color: var(--u-txt-color, #212121);
     background-color: var(--btn-color-surface);
     --btn-border-color: transparent;
   }
-  :host([variant="filled"]:hover) {
+  :host([appearance="soft"]:hover) {
     background-color: var(--btn-color-surface-hover);
   }
-  :host([variant="filled"]:active) {
+  :host([appearance="soft"]:active) {
     background-color: var(--btn-color-surface-active);
   }
 
   /* outlined: 경계만 */
-  :host([variant="outlined"]) {
+  :host([appearance="outlined"]) {
     color: var(--u-txt-color, #212121);
     --btn-border-color: var(--btn-color-border);
     background-color: transparent;
   }
-  :host([variant="outlined"]:hover) {
+  :host([appearance="outlined"]:hover) {
     --btn-border-color: var(--btn-color-border-hover);
     background-color: var(--btn-color-outline-hover);
   }
-  :host([variant="outlined"]:active) {
+  :host([appearance="outlined"]:active) {
     --btn-border-color: var(--btn-color-border-active);
     background-color: var(--btn-color-outline-active);
   }
 
-  /* ghost: transparent */
-  :host([variant="ghost"]) {
+  /* plain: 외형 없음 (chromeless) */
+  :host([appearance="plain"]) {
     color: var(--u-txt-color, #212121);
     --btn-border-color: transparent;
     background-color: transparent;
   }
-  :host([variant="ghost"]:hover) {
+  :host([appearance="plain"]:hover) {
     background-color: var(--u-bg-color-hover, #F5F5F5);
   }
-  :host([variant="ghost"]:active) {
+  :host([appearance="plain"]:active) {
     background-color: var(--u-bg-color-active, #EEEEEE);
   }
-  /* ghost + 명시적 non-neutral color: 글자색이 색 축을 따른다 (link 와 같은 어법)
-     ★**ghost 는 색이 «필요 없는» variant 가 아니라 색이 «유일한 신호»인 variant 다.**
+  /* plain + 기본(primary)·neutral 밖의 색: 글자색이 색 축을 따른다 (link 와 같은 어법)
+     ★**plain 은 색이 «필요 없는» 외형이 아니라 색이 «유일한 신호»인 외형이다.**
      면도 테두리도 없으므로 글자색이 사라지면 남는 구분이 없다 — 파괴적 액션을 ghost 로
      두는 화면에서 위험 신호가 통째로 없어진다.
-     ⚠종전에는 이 세 줄이 없어 color 속성을 무엇으로 주든 중립색이 나왔다. solid·outlined
+     ⚠1.22.0 전에는 이 세 줄이 없어 color 속성을 무엇으로 주든 중립색이 나왔다. solid·outlined
      는 따르고 link 도 아래에서 따르는데 여기만 빠져 있었다 — 축이 **한 자리에서만**
      끊긴 형태라, 12조합을 격자로 대조하기 전에는 드러나지 않는다.
      link 와 같은 이유로 면 슬롯(--btn-color)이 아니라 --btn-color-strong 을 읽는다. */
-  :host([variant="ghost"][color]:not([color="neutral"])) {
+  :host([appearance="plain"][color]:not([color="primary"]):not([color="neutral"])) {
     color: var(--btn-color-strong);
   }
-  :host([variant="ghost"][color]:not([color="neutral"]):hover) {
+  :host([appearance="plain"][color]:not([color="primary"]):not([color="neutral"]):hover) {
     color: var(--btn-color-strong-hover);
   }
-  :host([variant="ghost"][color]:not([color="neutral"]):active) {
+  :host([appearance="plain"][color]:not([color="primary"]):not([color="neutral"]):active) {
     color: var(--btn-color-strong-active);
   }
 
-  /* link: blue 링크 스타일 (기본값, color="neutral"일 때도 유지 — 기존 동작 보존)
+  /* link: 링크 스타일 (기본 primary·neutral 에서는 링크 색)
      ★종전 3단(weak → color → strong)은 쉬는 상태가 --u-primary-color-weak (흰 바탕 3.12)라
      링크 글자가 AA 미달이었고, 그 사이 토큰 층의 --u-link-txt-color 는 어디에서도 쓰이지
      않았다. 링크 색을 정의해 둔 토큰을 링크가 무시하고 있었던 셈이다.
      쉬는 상태를 그 토큰으로 되돌리고, 강조는 밑줄과 -strong 한 단으로 표현한다. */
-  :host([variant="link"]) {
+  :host([appearance="link"]) {
     color: var(--u-link-txt-color, #1565C0);
     --btn-border-color: transparent;
     background-color: transparent;
     --btn-padding-inline: 0;
   }
-  :host([variant="link"]:hover),
-  :host([variant="link"]:active) {
+  :host([appearance="link"]:hover),
+  :host([appearance="link"]:active) {
     color: var(--u-primary-color-strong, #1565C0);
     text-decoration: underline;
   }
-  /* link + 명시적 non-neutral color: 링크 자체 색상을 재정의 (예: 파괴적 액션 링크)
+  /* link + 기본(primary)·neutral 밖의 색: 링크 자체 색상을 재정의 (예: 파괴적 액션 링크)
      ★여기는 **바탕 위의 글자**다 — 면 슬롯(--btn-color)이 아니라 --btn-color-strong 을
      읽는다. 장식 축에서는 둘이 같은 값이라 렌더가 변하지 않고, 역할 축에서만 갈린다. */
-  :host([variant="link"][color]:not([color="neutral"])) {
+  :host([appearance="link"][color]:not([color="primary"]):not([color="neutral"])) {
     color: var(--btn-color-strong);
   }
-  :host([variant="link"][color]:not([color="neutral"]):hover) {
+  :host([appearance="link"][color]:not([color="primary"]):not([color="neutral"]):hover) {
     color: var(--btn-color-strong-hover);
   }
-  :host([variant="link"][color]:not([color="neutral"]):active) {
+  :host([appearance="link"][color]:not([color="primary"]):not([color="neutral"]):active) {
     color: var(--btn-color-strong-active);
   }
 
@@ -281,8 +275,8 @@ export const styles = css`
    * 호스트 요소에 대해서는 문서 작성자 스타일이 섀도의 :host 규칙을 이기기 때문이며,
    * 그 결과 버튼이 글자 높이만 남는다(에러는 없다). 내부 요소는 문서 리셋의 사정권 밖이다.
    *
-   * 테두리 색은 여전히 :host([variant=...]) 가 정한다 — --btn-border-color 로 내려보내므로
-   * variant/hover/active 규칙은 호스트에 그대로 남는다.
+   * 테두리 색은 여전히 :host([appearance=...]) 가 정한다 — --btn-border-color 로 내려보내므로
+   * appearance/hover/active 규칙은 호스트에 그대로 남는다.
    */
   button, a {
     all: unset;

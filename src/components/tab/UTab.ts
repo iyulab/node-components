@@ -62,7 +62,7 @@ export class UTab extends UElement {
 
         <u-button class="remove-btn" part="remove-btn"
         ?hidden=${!this.removable}
-        variant="ghost"
+        appearance="plain"
         aria-label=${Locale.getValue('closeTab')}
         @click=${this.handleRemoveClick}
       >
