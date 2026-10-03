@@ -15,7 +15,8 @@ import { styles } from "./UCarousel.styles.js";
  *
  * `autoplay` 이면 회전 제어 버튼(정지/시작)이 인디케이터 줄의 첫 자리에 그려진다. 포인터가 캐러셀 위에
  * 있는 동안은 잠시 멈추고, 키보드 초점이 안으로 들어오면 사용자가 다시 시작할 때까지 멈춘다
- * (WAI-ARIA APG Carousel · WCAG 2.2.2).
+ * (WAI-ARIA APG Carousel · WCAG 2.2.2). 사용자가 동작 줄이기(`prefers-reduced-motion: reduce`)를
+ * 켜 두었으면 정지 상태로 시작하고(시작 버튼으로 켤 수 있다), 보는 중에 그 설정이 켜지면 멈춘다.
  *
  * @csspart slides - 슬라이드 컨테이너
  * @csspart prev-button - 이전 버튼
@@ -58,6 +59,8 @@ export class UCarousel extends UElement {
   @state() private hovered = false;
 
   private autoplayTimer?: number;
+  /** `prefers-reduced-motion: reduce` 질의 — 연결된 동안만 듣는다. */
+  private reducedMotion?: MediaQueryList;
   private dragStartX = 0;
   private dragStartTime = 0;
   private pointerDown = false;
@@ -96,11 +99,15 @@ export class UCarousel extends UElement {
     this.addEventListener('focusin', this.handleFocusIn);
     this.addEventListener('pointerenter', this.handlePointerEnter);
     this.addEventListener('pointerleave', this.handlePointerLeave);
+    this.reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    this.reducedMotion?.addEventListener('change', this.handleReducedMotionChange);
     if (this.rotating) this.startAutoplay();
   }
 
   disconnectedCallback(): void {
     this.stopAutoplay();
+    this.reducedMotion?.removeEventListener('change', this.handleReducedMotionChange);
+    this.reducedMotion = undefined;
     this.removeEventListener('focusin', this.handleFocusIn);
     this.removeEventListener('pointerenter', this.handlePointerEnter);
     this.removeEventListener('pointerleave', this.handlePointerLeave);
@@ -110,9 +117,10 @@ export class UCarousel extends UElement {
   protected willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
-    // 자동 넘김을 새로 켜면 이전의 «사용자가 멈춤» 은 잊는다.
+    // 자동 넘김을 새로 켜면 이전의 «사용자가 멈춤» 은 잊는다 — 동작 줄이기를 켠 사용자에게는
+    // 정지 상태로 시작한다(움직임은 사용자가 시작 버튼으로 고른다).
     if (changedProperties.has('autoplay') && this.autoplay) {
-      this.rotationStopped = false;
+      this.rotationStopped = !!this.reducedMotion?.matches;
     }
 
     if (changedProperties.has('slidesPerView')) {
@@ -306,6 +314,12 @@ export class UCarousel extends UElement {
     if (origin instanceof Element && origin.matches(':focus-visible')) {
       this.rotationStopped = true;
     }
+  };
+
+  /** 보는 중에 동작 줄이기가 켜지면 멈춘다. 꺼질 때는 다시 시작하지 않는다 — 멈춘 것을 움직이게
+   *  하는 것은 사용자의 몫이다. */
+  private handleReducedMotionChange = (e: MediaQueryListEvent) => {
+    if (e.matches && this.autoplay) this.rotationStopped = true;
   };
 
   private handlePointerEnter = (e: PointerEvent) => {

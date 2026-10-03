@@ -24,7 +24,9 @@ Slide carousel. Each direct child element becomes one slide.
 With `autoplay`, the carousel renders a stop/start button as the first control of its indicator
 row (WCAG 2.2.2). Rotation pauses while the mouse is over the carousel and stops when keyboard focus
 moves into it, until the user presses start (WAI-ARIA APG carousel pattern). Slides are
-`aria-live="off"` while rotating and `polite` when stopped.
+`aria-live="off"` while rotating and `polite` when stopped. For a user who has asked for reduced
+motion (`prefers-reduced-motion: reduce`) the carousel starts stopped — the start button turns
+rotation on — and it stops if that setting is turned on while the page is open.
 
 ---
 

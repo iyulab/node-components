@@ -24,6 +24,12 @@
   `parseDateTimeRange` / `formatDateTimeRangeText`, new parts `calendar-time` / `time-input`, new
   locale keys `startTime` / `endTime`.
 
+### Changed
+
+- **`u-carousel[autoplay]` starts stopped for users who prefer reduced motion.** With
+  `prefers-reduced-motion: reduce`, rotation does not start on its own; the start button turns it on.
+  Turning the setting on while the page is open stops rotation.
+
 ### Fixed
 
 - **`u-date-picker mode="datetime"` takes the UTC offset of the chosen time, not of midnight.** On a
