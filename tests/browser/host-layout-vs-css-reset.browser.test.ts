@@ -122,7 +122,7 @@ describe(':host 레이아웃 vs 문서 CSS 리셋', () => {
       ['u-card', 'base', null],
     ] as const) {
       const el = document.createElement(tag) as HTMLElement & { updateComplete: Promise<unknown> };
-      if (variant) el.setAttribute('variant', variant);
+      if (variant) el.setAttribute('appearance', variant);
       document.body.appendChild(el);
       await el.updateComplete;
 
@@ -146,16 +146,16 @@ describe(':host 레이아웃 vs 문서 CSS 리셋', () => {
     expect(getComputedStyle(inner).borderTopWidth).toBe('0px');
   });
 
-  it('u-alert[variant="filled"] 의 테두리는 투명하게 유지된다', async () => {
-    // 네거티브 컨트롤 — filled 의 1px 테두리는 레이아웃 정합용이라 색이 도달하면 안 된다.
+  it('u-alert[appearance="soft"] 의 테두리는 투명하게 유지된다', async () => {
+    // 네거티브 컨트롤 — soft 의 1px 테두리는 레이아웃 정합용이라 색이 도달하면 안 된다.
     const el = document.createElement('u-alert') as HTMLElement & { updateComplete: Promise<unknown> };
-    el.setAttribute('variant', 'filled');
+    el.setAttribute('appearance', 'soft');
     el.setAttribute('status', 'error');
     document.body.appendChild(el);
     await el.updateComplete;
     const cs = getComputedStyle(el.shadowRoot!.querySelector<HTMLElement>('[part="container"]')!);
-    expect(cs.borderTopWidth, 'filled 도 1px 을 차지해야 한다(레이아웃 정합)').toBe('1px');
-    expect(cs.borderTopColor, 'filled 의 테두리는 투명해야 한다').toBe('rgba(0, 0, 0, 0)');
+    expect(cs.borderTopWidth, 'soft 도 1px 을 차지해야 한다(레이아웃 정합)').toBe('1px');
+    expect(cs.borderTopColor, 'soft 의 테두리는 투명해야 한다').toBe('rgba(0, 0, 0, 0)');
   });
 
   it('u-menu 의 테두리가 내부 래퍼로 이전된 뒤에도 유지되고, borderless 는 제거된다', async () => {

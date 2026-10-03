@@ -23,12 +23,12 @@ u-button.cta { --btn-color: #0f9d58; }
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--alert-background-color` | 배경색 (status에 따라 자동 설정, variant="outlined"는 transparent) |
-| `--alert-border-color` | 테두리 색상 (status에 따라 자동 설정, variant="filled"는 transparent) |
+| `--alert-background-color` | 배경색 (status에 따라 자동 설정, appearance="outlined"는 transparent) |
+| `--alert-border-color` | 테두리 색상 (status에 따라 자동 설정, appearance="soft"는 transparent) |
 | `--alert-icon-color` | 아이콘 색상 (status에 따라 자동 설정) |
 | `--alert-padding-block` | 세로 여백 |
 | `--alert-padding-inline` | 가로 여백 |
-| `--alert-border-width` | 테두리 두께 (variant 이 정한다) |
+| `--alert-border-width` | 테두리 두께 (appearance 가 정한다) |
 
 ## `<u-badge>`
 

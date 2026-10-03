@@ -15,9 +15,11 @@
   | `Dialog` action options | `{ variant }` | `{ appearance }` |
   | `u-tag` · `u-chip` | `variant="solid"` · `"filled"` · `"surface"` · `"outlined"` | `appearance="solid"` · `"soft"` · `"soft"` · `"outlined"` (new: `"plain"` — coloured text only) |
   | `u-badge` | `variant="pill"` · `"dot"` · `"square"` | `shape=` same values (`variant` there was a shape, not an appearance) |
+  | `u-alert` · `Toast` options | `variant="solid"` · `"filled"` · `"outlined"` · `"glass"` | `appearance="soft"` · `"soft"` · `"outlined"` · `"soft"` — the old `solid` was a tint with an outline, not a solid fill, so both tints are `soft` (tint, no outline); `glass` is removed |
 
   `u-icon-button` and `u-copy-button` default to `appearance="plain"` (was `variant="ghost"`).
   `u-tag` and `u-chip` default to `appearance="soft"` (was `variant="filled"`).
+  `u-alert` and toasts default to `appearance="soft"` (was `variant="solid"`, the same tint plus an outline).
 - 🔴**`color="neutral"` means achromatic (grey) everywhere; the brand colour is `primary`.** Before,
   `neutral` on `u-button` was the brand path (its default) while on `u-badge`/`u-checkbox` it was
   grey. `u-button`'s default `color` is now `primary` — a bare button looks the same; a button that

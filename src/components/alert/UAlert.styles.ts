@@ -66,36 +66,19 @@ export const styles = css`
     transition-delay: 0s;
   }
 
-  /* === Variant Styles === */
-  :host([variant="solid"]) {
+  /* === Appearance === */
+  /* soft: 상태색 틴트 면. 테두리는 레이아웃 정합용이라 항상 투명하다 — 색 훅이 도달하면 안 된다. */
+  :host([appearance="soft"]) {
     --alert-border-width: 1px;
     background-color: var(--alert-background-color);
   }
-  :host([variant="filled"]) {
-    --alert-border-width: 1px;
-    background-color: var(--alert-background-color);
-  }
-  /* filled 의 테두리는 레이아웃 정합용이라 항상 투명하다 — 색 훅이 도달하면 안 된다. */
-  :host([variant="filled"]) .container {
+  :host([appearance="soft"]) .container {
     border-color: transparent;
   }
-  :host([variant="outlined"]) {
+  /* outlined: 상태색 테두리, 투명 면 */
+  :host([appearance="outlined"]) {
     --alert-border-width: 1px;
     background-color: transparent;
-  }
-  /* From https://css.glass */
-  :host([variant="glass"]) {
-    --alert-border-width: 1px;
-    --alert-border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.2);
-    /* 유리 질감의 넉넉한 반경 — 반경 스케일에 면(surface)용 상단 단이 생기면서
-       리터럴 16px 이 스케일 안으로 들어왔다. 값은 그대로이고 출처만 축으로 옮긴다. */
-    border-radius: var(--u-radius-3xl, 16px);
-    /* ⚠**높이 축(--u-shadow-*)을 쓰지 않는다** — 이 값은 유리 질감 레시피의 일부이고
-       (30px 번짐 + backdrop-filter), 높이를 뜻하지 않는다. 축으로 접으면 질감이 사라진다. */
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
   }
 
   /* 여백/테두리는 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */

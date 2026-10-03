@@ -13,11 +13,16 @@ import { devWarnOnce } from '../../utilities/devWarning.js';
 /** 유효한 `u-alert` 상태 — 런타임 검증과 타입이 **같은 목록**을 보게 둔다. */
 export const ALERT_STATUSES = ["error", "warning", "success", "info", "notice"] as const;
 export type AlertStatus = (typeof ALERT_STATUSES)[number];
-export type AlertVariant = "solid" | "filled" | "outlined" | "glass";
+/**
+ * 외형 정도 — `soft` 상태색 틴트 면(기본) · `outlined` 상태색 테두리.
+ * (2.0 전의 `solid` 는 꽉 찬 면이 아니라 «틴트 + 테두리» 였고 `filled` 는 «틴트» 였다 — 공통 어휘의
+ * `solid`(꽉 찬 면)와 뜻이 달라 둘 다 `soft` 로 합쳤다. `glass` 는 외형 정도가 아니라 장식이라 폐지.)
+ */
+export type AlertAppearance = "soft" | "outlined";
 
 /**
  * 사용자에게 메시지를 표시하는 Alert 컴포넌트입니다.
- * 자동 닫힘 타이머, 닫기 버튼, 다양한 상태(status) 및 형태(variant)를 지원합니다.
+ * 자동 닫힘 타이머, 닫기 버튼, 다양한 상태(status) 및 외형(appearance)을 지원합니다.
  * open 속성이 토글될 때 opacity/scale 트랜지션으로 표시·숨김 처리됩니다.
  *
  * @slot - Alert 본문 콘텐츠
@@ -31,12 +36,12 @@ export type AlertVariant = "solid" | "filled" | "outlined" | "glass";
  * @csspart content - 스크롤 가능한 본문 영역
  * @csspart footer - 하단 슬롯 영역
  *
- * @cssprop --alert-background-color - 배경색 (status에 따라 자동 설정, variant="outlined"는 transparent)
- * @cssprop --alert-border-color - 테두리 색상 (status에 따라 자동 설정, variant="filled"는 transparent)
+ * @cssprop --alert-background-color - 배경색 (status에 따라 자동 설정, appearance="outlined"는 transparent)
+ * @cssprop --alert-border-color - 테두리 색상 (status에 따라 자동 설정, appearance="soft"는 transparent)
  * @cssprop --alert-icon-color - 아이콘 색상 (status에 따라 자동 설정)
  * @cssprop --alert-padding-block - 세로 여백
  * @cssprop --alert-padding-inline - 가로 여백
- * @cssprop --alert-border-width - 테두리 두께 (variant 이 정한다)
+ * @cssprop --alert-border-width - 테두리 두께 (appearance 가 정한다)
  *
  * @event show - Alert가 표시되기 직전 발생 (취소 가능)
  * @event hide - Alert가 닫히기 직전 발생 (취소 가능)
@@ -49,8 +54,8 @@ export class UAlert extends UElement {
   @property({ type: Boolean, reflect: true }) open: boolean = false;
   /** 닫기 버튼 표시 여부 */
   @property({ type: Boolean, reflect: true }) closable: boolean = false;
-  /** 형태 스타일 (solid, filled, outlined, glass) */
-  @property({ type: String, reflect: true }) variant: AlertVariant = 'solid';
+  /** 외형 정도 — `soft`(기본) · `outlined` */
+  @property({ type: String, reflect: true }) appearance: AlertAppearance = 'soft';
   /** 상태 (warning, error, info, success, notice) */
   @property({ type: String, reflect: true }) status?: AlertStatus;
   /** 타이틀 라벨 */
@@ -89,7 +94,7 @@ export class UAlert extends UElement {
             ${this.title || this.defaultTitle()}
           </div>
           <u-button class="close-btn" part="close-btn"
-            variant="ghost"
+            appearance="plain"
             ?hidden=${!this.closable}
             aria-label=${Locale.getValue('close')}
             @click=${this.hide}>

@@ -83,9 +83,7 @@ describe('높이(elevation) 축', () => {
   });
 
   it('★컴포넌트가 높이 그림자를 리터럴로 쓰지 않는다', () => {
-    // 예외는 하나뿐이고 그 자리에 근거가 적혀 있다: u-alert 의 glass variant 는
-    // 유리 질감 레시피(30px 번짐 + backdrop-filter)라 "높이"를 뜻하지 않는다.
-    const GLASS = 'src/components/alert/UAlert.styles.ts';
+    // 예외 없음 — 마지막 예외였던 u-alert 의 glass(유리 질감 레시피)는 2.0 에서 폐지됐다.
     const offenders: string[] = [];
     for (const rel of globSync('src/**/*.styles.ts', { cwd: root })) {
       const norm = rel.replace(/\\/g, '/');
@@ -94,7 +92,6 @@ describe('높이(elevation) 축', () => {
         const v = m[1].replace(/\s+/g, ' ').trim();
         // `0 0 0 …` 은 링(포커스·테두리)이지 높이가 아니다.
         if (/^0 0 0\b/.test(v) || v === 'none' || v.startsWith('var(--u-shadow-')) continue;
-        if (norm === GLASS && v.includes('30px')) continue;
         offenders.push(`${norm}: ${v}`);
       }
     }

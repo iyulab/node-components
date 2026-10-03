@@ -1,4 +1,4 @@
-import type { AlertVariant, AlertStatus } from "../components/alert/UAlert.js";
+import type { AlertAppearance, AlertStatus } from "../components/alert/UAlert.js";
 import { UAlert } from "../components/alert/UAlert.js";
 import { OverlayManager } from "./OverlayManager.js";
 
@@ -13,7 +13,7 @@ export interface ToastOptions {
   /** 토스트를 표시할 대상 엘리먼트 (기본: document.body) */
   target?: HTMLElement;
   /** 형태 스타일 */
-  variant?: AlertVariant;
+  appearance?: AlertAppearance;
   /** 알림 제목 */
   title?: string;
   /** 표시 화면 위치 */
@@ -94,7 +94,7 @@ export class Toast {
     const el = new UAlert();
     el.status = status;
     el.innerHTML = content || '';
-    el.variant = merged.variant || 'solid';
+    el.appearance = merged.appearance || 'soft';
     el.title = merged.title || '';
     el.closable = merged.closable ?? true;
     // duration 0 이하는 "자동으로 안 닫힘"을 의미(UAlert 자체 계약) — 필터링하지 않고 그대로 전달.
