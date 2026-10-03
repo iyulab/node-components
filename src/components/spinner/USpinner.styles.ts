@@ -16,6 +16,8 @@ export const styles = css`
   :host([color="success"]) { --spinner-indicator-color: var(--u-success-color-strong, #1B5E20); }
   :host([color="warning"]) { --spinner-indicator-color: var(--u-warning-color-strong, #8A4A00); }
   :host([color="danger"])  { --spinner-indicator-color: var(--u-danger-color-strong, #C62828); }
+  /* neutral — 무채색(모든 컴포넌트에서 같은 뜻). 바탕 위 그래픽이라 3단 글자색(4.6:1)을 읽는다. */
+  :host([color="neutral"]) { --spinner-indicator-color: var(--u-txt-color-weaker, #757575); }
 
   :host([color="blue"]) { --spinner-indicator-color: var(--u-blue-600, #1E88E5); }
   :host([color="green"]) { --spinner-indicator-color: var(--u-green-600, #43A047); }

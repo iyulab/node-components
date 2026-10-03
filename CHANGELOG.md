@@ -34,6 +34,9 @@
   set `color="neutral"` explicitly is now a grey button (drop the attribute or use `primary` for the
   old look). `plain` and `link` buttons keep body/link text for `primary` and `neutral` and take the
   colour for every other value, as before.
+  ⚠Because `color` reflects, every bare button now carries `color="primary"` — a selector like
+  `u-button[color="primary"]` that used to pick out the one explicitly-primary button now matches
+  them all; select by `appearance` or by your own hook instead.
 - 🔴**Text fields take `size="sm|md|lg"` like buttons, and `md` no longer inherits the font size.**
   `u-input`, `u-select`, `u-textarea`, `u-date-picker` and `u-date-range-picker` render at
   `--u-density` (14px) by default — 12px for `sm`, 16px for `lg` — so a field and a button of the same
@@ -46,6 +49,7 @@
   rule of its own and painted the brand colour — the word meant "no colour set". A bare checkbox looks
   the same; one that set `color="blue"` explicitly now gets the palette blue. The `--checkbox-fill-color`
   hook is removed for the same reason as the tag's: every colour fills the checkbox's own slot.
+- **`u-spinner`: `color="neutral"` is grey** (it had no rule and drew in the brand colour).
 - 🔴**`u-tag` / `u-chip`: `color="neutral"` (the default) is grey; the decorative `gray` is removed.**
   A bare tag was a brand tint and a grey label needed `color="gray"`; now a bare tag is the grey label
   and a brand-tinted one is `color="primary"`. Replace `color="gray"` with `color="neutral"` (or
@@ -81,7 +85,7 @@
   `u-date-range-picker` and the calendar trigger. They were em literals a theme could not reach; a theme
   now sets form density in one place (height = 1.5em line + 2 × block padding + 2px). Defaults
   unchanged.
-- **`variant="soft"` on `u-radio type="button"`** — a segmented control: a quiet track (`--u-bg-color-raised`),
+- **`appearance="soft"` on `u-radio type="button"`** — a segmented control: a quiet track (`--u-bg-color-raised`),
   the picked segment rises onto the surface with a light shadow; no joined borders. For switching a
   view or picking a level.
 - **`u-steps`** — a display-only progress line (complete · current · hold · upcoming) from `items` and
