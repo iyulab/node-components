@@ -52,5 +52,7 @@
   "closeTab": "탭 닫기",
   "breadcrumb": "탐색 경로",
   "confirm": "확인",
-  "cancel": "취소"
+  "cancel": "취소",
+  "stepComplete": "완료",
+  "stepOnHold": "보류"
 }

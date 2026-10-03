@@ -79,7 +79,11 @@ export type LocaleMessageKey =
   // `Dialog.confirm`/`prompt` 의 기본 버튼 문구. 종전에는 영어 리터럴이라 로케일을 바꾼 앱의
   // 한국어 본문 아래에 `Cancel`/`Confirm` 이 섰다.
   | 'confirm'
-  | 'cancel';
+  | 'cancel'
+  // `u-steps` 의 단계 상태 — 화면은 표식 모양·색으로 말하므로 보조기기에는 글자로 붙인다
+  // (현재 단계는 `aria-current="step"` 이 말한다).
+  | 'stepComplete'
+  | 'stepOnHold';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 

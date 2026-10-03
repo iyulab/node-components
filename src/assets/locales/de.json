@@ -52,5 +52,7 @@
   "closeTab": "Tab schließen",
   "breadcrumb": "Navigationspfad",
   "confirm": "Bestätigen",
-  "cancel": "Abbrechen"
+  "cancel": "Abbrechen",
+  "stepComplete": "Abgeschlossen",
+  "stepOnHold": "Angehalten"
 }

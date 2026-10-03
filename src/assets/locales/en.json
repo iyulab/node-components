@@ -52,5 +52,7 @@
   "closeTab": "Close tab",
   "breadcrumb": "Breadcrumb",
   "confirm": "Confirm",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "stepComplete": "Completed",
+  "stepOnHold": "On hold"
 }

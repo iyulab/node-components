@@ -52,5 +52,7 @@
   "closeTab": "Tutup tab",
   "breadcrumb": "Navigasi remah roti",
   "confirm": "Konfirmasi",
-  "cancel": "Batal"
+  "cancel": "Batal",
+  "stepComplete": "Selesai",
+  "stepOnHold": "Ditahan"
 }

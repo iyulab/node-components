@@ -52,5 +52,7 @@
   "closeTab": "ปิดแท็บ",
   "breadcrumb": "เส้นทางการนำทาง",
   "confirm": "ยืนยัน",
-  "cancel": "ยกเลิก"
+  "cancel": "ยกเลิก",
+  "stepComplete": "เสร็จสิ้น",
+  "stepOnHold": "พักไว้"
 }

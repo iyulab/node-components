@@ -52,5 +52,7 @@
   "closeTab": "إغلاق علامة التبويب",
   "breadcrumb": "مسار التنقل",
   "confirm": "تأكيد",
-  "cancel": "إلغاء"
+  "cancel": "إلغاء",
+  "stepComplete": "مكتمل",
+  "stepOnHold": "معلّق"
 }

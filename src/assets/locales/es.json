@@ -52,5 +52,7 @@
   "closeTab": "Cerrar pestaña",
   "breadcrumb": "Ruta de navegación",
   "confirm": "Confirmar",
-  "cancel": "Cancelar"
+  "cancel": "Cancelar",
+  "stepComplete": "Completado",
+  "stepOnHold": "En espera"
 }

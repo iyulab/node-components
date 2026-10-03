@@ -52,5 +52,7 @@
   "closeTab": "Đóng tab",
   "breadcrumb": "Đường dẫn điều hướng",
   "confirm": "Xác nhận",
-  "cancel": "Hủy"
+  "cancel": "Hủy",
+  "stepComplete": "Đã hoàn thành",
+  "stepOnHold": "Tạm dừng"
 }

@@ -43,6 +43,7 @@ export * from './components/skeleton/USkeleton.js';
 export * from './components/slider/USlider.js';
 export * from './components/spinner/USpinner.js';
 export * from './components/split-panel/USplitPanel.js';
+export * from './components/steps/USteps.js';
 export * from './components/switch/USwitch.js';
 export * from './components/tab/UTab.js';
 export * from './components/tab-panel/UTabPanel.js';

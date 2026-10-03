@@ -36,6 +36,10 @@
 - **`variant="soft"` on `u-radio type="button"`** — a segmented control: a quiet track (`--u-bg-color-raised`),
   the picked segment rises onto the surface with a light shadow; no joined borders. For switching a
   view or picking a level.
+- **`u-steps`** — a display-only progress line (complete · current · hold · upcoming) from `items` and
+  `current`; status by marker shape as well as colour, `aria-current="step"` and hidden status words
+  for assistive tech (new locale keys `stepComplete`, `stepOnHold` in all 14 locales). Stack one per
+  track with a `label`.
 - **`--u-focus-ring-color`** — every focus outline reads it (default `--u-primary-color-strong`),
   so a theme with a neutral ink primary can keep focus on an interaction hue.
 

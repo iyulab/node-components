@@ -121,6 +121,7 @@ carries the control's role, not on the host element. Native nodes use native `di
 - [`u-tag`](./references/components/tag.md) — Non-interactive label tag
 - [`u-icon`](./references/components/icon.md) — SVG icon from built-in or external icon library
 - [`u-text`](./references/components/text.md) — Semantic typography step; optional heading level
+- [`u-steps`](./references/components/steps.md) — Display-only progress line: complete, current, on-hold and upcoming steps
 
 ---
 

@@ -52,5 +52,7 @@
   "closeTab": "Fechar aba",
   "breadcrumb": "Trilha de navegação",
   "confirm": "Confirmar",
-  "cancel": "Cancelar"
+  "cancel": "Cancelar",
+  "stepComplete": "Concluído",
+  "stepOnHold": "Em espera"
 }
