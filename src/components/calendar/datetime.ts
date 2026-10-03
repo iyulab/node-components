@@ -11,17 +11,25 @@ export function localOffset(date: Date): string {
   return `${sign}${String(Math.floor(abs / 60)).padStart(2, '0')}:${String(abs % 60).padStart(2, '0')}`;
 }
 
-/** ISO day + `HH:mm` → `YYYY-MM-DDTHH:mm:00±HH:mm` (the offset of that local day and time). */
+/** ISO day + `HH:mm` or `HH:mm:ss` → `YYYY-MM-DDTHH:mm:ss±HH:mm` (the offset of that local day and time). */
 export function toDateTimeOffset(day: string, time: string): string {
-  const [h, m] = time.split(':').map(Number);
+  const [h, m, s = 0] = time.split(':').map(Number);
   const local = parseISODate(day);
-  local.setHours(h, m);
-  return `${day}T${time}:00${localOffset(local)}`;
+  local.setHours(h, m, s);
+  return `${day}T${normalizeTime(time, true)}${localOffset(local)}`;
 }
 
-/** Splits a value into its ISO day and its `HH:mm` (`00:00` when there is no time part). */
-export function splitDateTime(value: string): { day: string; time: string } {
+/** Splits a value into its ISO day and its time — `HH:mm`, or `HH:mm:ss` with `seconds`
+ *  (`00:00` when there is no time part). */
+export function splitDateTime(value: string, seconds = false): { day: string; time: string } {
   const [day, rest] = value.split('T');
-  const match = rest?.match(/^(\d{2}:\d{2})/);
-  return { day, time: match ? match[1] : '00:00' };
+  const match = rest?.match(/^\d{2}:\d{2}(?::\d{2})?/);
+  return { day, time: normalizeTime(match ? match[0] : '00:00', seconds) };
+}
+
+/** `HH:mm[:ss]` → `HH:mm`, or `HH:mm:ss` with `seconds` (`:00` added when missing). A time input
+ *  with a seconds step may report `14:30` for `14:30:00`, so both shapes come in. */
+export function normalizeTime(time: string, seconds: boolean): string {
+  const hm = time.slice(0, 5);
+  return seconds ? `${hm}:${time.slice(6, 8) || '00'}` : hm;
 }

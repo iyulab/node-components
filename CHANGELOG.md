@@ -24,6 +24,12 @@
   `parseDateTimeRange` / `formatDateTimeRangeText`, new parts `calendar-time` / `time-input`, new
   locale keys `startTime` / `endTime`.
 
+- **`seconds` on `u-date-picker` and `u-date-range-picker` (`mode="datetime"`): times to the second.**
+  The time inputs show seconds, the text box reads and shows `HH:mm:ss`, and in the range picker a
+  whole day ends at `23:59:59`. Without it, times stay to the minute and typed seconds are dropped, as
+  before. `parseDateTime` / `parseDateTimeRange` take `seconds: true` to keep them, and
+  `formatDateTimeText` / `formatDateTimeRangeText` take a `seconds` argument to write them.
+
 ### Changed
 
 - **`u-carousel[autoplay]` starts stopped for users who prefer reduced motion.** With

@@ -262,6 +262,19 @@ describe('format utilities', () => {
       const r = parseDateTimeRange(text, { referenceDate: ref });
       expect(r ? [r.start, r.end] : null).toEqual(expected);
     });
+    it('keeps seconds with `seconds`', () => {
+      expect(parseDateTimeRange('2026-10-01 09:00:15 ~ 18:00', { seconds: true }))
+        .toEqual({ start: '2026-10-01T09:00:15', end: '2026-10-01T18:00:00' });
+      expect(parseDateTimeRange('2026-10-01', { seconds: true, startTime: '00:00:00', endTime: '23:59:59' }))
+        .toEqual({ start: '2026-10-01T00:00:00', end: '2026-10-01T23:59:59' });
+      expect(parseDateTime('2026-10-01 09:05:30', { seconds: true })).toBe('2026-10-01T09:05:30');
+      expect(parseDateTime('2026-10-01 09:05:30')).toBe('2026-10-01T09:05');
+      expect(parseDateTime('2026-10-01 09:05:60', { seconds: true })).toBeNull();
+      expect(formatDateTimeText('2026-10-01T09:05:30+09:00', 'iso', undefined, true)).toBe('2026-10-01 09:05:30');
+      expect(formatDateTimeText('2026-10-01T09:05', 'iso', undefined, true)).toBe('2026-10-01 09:05:00');
+      expect(formatDateTimeRangeText('2026-10-01T09:00:15', '2026-10-01T18:00:00', 'iso', undefined, true))
+        .toBe('2026-10-01 09:00:15 – 2026-10-01 18:00:00');
+    });
     it('takes the default times it is given', () => {
       expect(parseDateTimeRange('2026-10-01 ~ 2026-10-02', { startTime: '09:00', endTime: '18:00' }))
         .toEqual({ start: '2026-10-01T09:00', end: '2026-10-02T18:00' });

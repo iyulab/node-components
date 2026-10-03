@@ -249,32 +249,41 @@ export function parseDate(
 /**
  * Reads a date and a time of day as people type them and returns local `YYYY-MM-DDTHH:mm`, or `null`.
  * The date part is anything {@link parseDate} reads; the time follows a space or `T` as `HH:mm`
- * (`9:05`, `09:05`, `09:05:30` — seconds are dropped). Text with only a date takes `defaultTime`
- * (`00:00` unless given). An hour above 23 or a minute above 59 is `null`.
+ * (`9:05`, `09:05`, `09:05:30` — seconds are dropped). With `seconds`, the result is
+ * `YYYY-MM-DDTHH:mm:ss` and typed seconds are kept (`:00` when none are typed). Text with only a date
+ * takes `defaultTime` (`00:00` unless given). An hour above 23, or a minute or second above 59, is `null`.
  */
 export function parseDateTime(
   text: string,
-  options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date; defaultTime?: string } = {},
+  options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date; defaultTime?: string; seconds?: boolean } = {},
 ): string | null {
   const t = text.trim();
-  const m = /^(.*?)(?:[T\s]+(\d{1,2}):(\d{2})(?::\d{2})?)?$/.exec(t);
+  const m = /^(.*?)(?:[T\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/.exec(t);
   if (!m) return null;
   const date = parseDate(m[1], options);
   if (!date) return null;
   if (m[2] === undefined) {
-    const fallback = options.defaultTime ?? '00:00';
-    return /^\d{2}:\d{2}$/.test(fallback) ? `${date}T${fallback}` : null;
+    const fallback = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(options.defaultTime ?? '00:00');
+    return fallback ? `${date}T${timeText(fallback[1], fallback[2], fallback[3], options.seconds)}` : null;
   }
-  const h = Number(m[2]);
-  const min = Number(m[3]);
-  if (h > 23 || min > 59) return null;
-  return `${date}T${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+  if (Number(m[2]) > 23 || Number(m[3]) > 59 || Number(m[4] ?? 0) > 59) return null;
+  return `${date}T${timeText(m[2], m[3], m[4], options.seconds)}`;
 }
 
-/** Writes local `YYYY-MM-DDTHH:mm` (or a longer ISO date-time) as `{date} HH:mm`, the date part as {@link formatDateText} writes it. */
-export function formatDateTimeText(isoLocal: string, format: DateTextFormat = 'iso', locale?: LocaleTag): string {
-  const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(isoLocal);
-  return m ? `${formatDateText(m[1], format, locale)} ${m[2]}` : isoLocal;
+/** `HH:mm`, or `HH:mm:ss` with `seconds` (`:00` when there are none). */
+function timeText(h: string, min: string, s: string | undefined, seconds?: boolean): string {
+  const hm = `${h.padStart(2, '0')}:${min}`;
+  return seconds ? `${hm}:${(s ?? '00').padStart(2, '0')}` : hm;
+}
+
+/**
+ * Writes local `YYYY-MM-DDTHH:mm` (or a longer ISO date-time) as `{date} HH:mm`, the date part as
+ * {@link formatDateText} writes it — `{date} HH:mm:ss` with `seconds`.
+ */
+export function formatDateTimeText(isoLocal: string, format: DateTextFormat = 'iso', locale?: LocaleTag, seconds = false): string {
+  const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})(:\d{2})?/.exec(isoLocal);
+  if (!m) return isoLocal;
+  return `${formatDateText(m[1], format, locale)} ${m[2]}${seconds ? m[3] ?? ':00' : ''}`;
 }
 
 /** Separators read between the two days of a typed range: `~`, en/em dash, or ` - ` with spaces. */
@@ -319,7 +328,7 @@ export function formatDateRangeText(start: string, end: string, format: DateText
   return `${formatDateText(start, format, locale)} – ${formatDateText(end, format, locale)}`;
 }
 
-const TIME_ONLY = /^(\d{1,2}):(\d{2})(?::\d{2})?$/;
+const TIME_ONLY = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/;
 
 /**
  * Reads a period with times of day — `2026-10-01 09:00 ~ 2026-10-31 18:00`, `2026-10-01 09:00 ~ 18:00`
@@ -328,11 +337,12 @@ const TIME_ONLY = /^(\d{1,2}):(\d{2})(?::\d{2})?$/;
  * earlier first, or `null`. A day typed without a time takes `startTime` (default `00:00`) at the
  * start and `endTime` (default `23:59`) at the end, so a period of days covers them whole; one day
  * alone runs from `startTime` to `endTime` that day. A short second day takes the first day's year,
- * or the next year when it would otherwise fall before the first day.
+ * or the next year when it would otherwise fall before the first day. With `seconds`, both ends are
+ * `YYYY-MM-DDTHH:mm:ss` (see {@link parseDateTime}).
  */
 export function parseDateTimeRange(
   text: string,
-  options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date; startTime?: string; endTime?: string } = {},
+  options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date; startTime?: string; endTime?: string; seconds?: boolean } = {},
 ): { start: string; end: string } | null {
   const t = text.trim();
   if (!t) return null;
@@ -348,7 +358,8 @@ export function parseDateTimeRange(
   if (!start) return null;
   const startDay = start.slice(0, 10);
   if (parts.length === 1) {
-    const sameDayEnd = `${startDay}T${endTime}`;
+    const sameDayEnd = parseDateTime(startDay, { ...options, defaultTime: endTime });
+    if (!sameDayEnd) return null;
     return { start, end: sameDayEnd < start ? start : sameDayEnd };
   }
   let end: string | null;
@@ -368,6 +379,6 @@ export function parseDateTimeRange(
 }
 
 /** Writes a period with times as `{start} – {end}`, each as {@link formatDateTimeText} writes it. */
-export function formatDateTimeRangeText(start: string, end: string, format: DateTextFormat = 'iso', locale?: LocaleTag): string {
-  return `${formatDateTimeText(start, format, locale)} – ${formatDateTimeText(end, format, locale)}`;
+export function formatDateTimeRangeText(start: string, end: string, format: DateTextFormat = 'iso', locale?: LocaleTag, seconds = false): string {
+  return `${formatDateTimeText(start, format, locale, seconds)} – ${formatDateTimeText(end, format, locale, seconds)}`;
 }

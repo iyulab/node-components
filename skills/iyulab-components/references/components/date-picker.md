@@ -84,6 +84,7 @@ starts from the value. Typing in the text box still commits on Enter or leaving 
 | `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type, e.g. `YYYY-MM-DD` or `YYYY-MM-DD HH:mm`) |
 | `format` | `'iso' \| 'locale'` | `'iso'` | ✓ | How the text box writes and reads the date part |
 | `confirm` | `boolean` | `false` | ✓ | Calendar picks wait for an Apply button (see «Apply to confirm») |
+| `seconds` | `boolean` | `false` | ✓ | `mode="datetime"`: enter the time to the second (`HH:mm:ss` in the text box, seconds in the time input). The value carries seconds either way |
 | `disabled` | `boolean` | `false` | ✓ | Disable |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
 | `required` | `boolean` | `false` | ✓ | Required |

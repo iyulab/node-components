@@ -16,7 +16,7 @@ import {
 import { UCalendar, type CalendarRangeSelectDetail } from "../calendar/UCalendar.js";
 import { DateTextController } from "../calendar/date-text-controller.js";
 import { parseISODate, type DateDisabledFn } from "../calendar/dates.js";
-import { splitDateTime, toDateTimeOffset } from "../calendar/datetime.js";
+import { normalizeTime, splitDateTime, toDateTimeOffset } from "../calendar/datetime.js";
 import type { DatePickerMode } from "../date-picker/UDatePicker.js";
 import { styles as pickerStyles } from "../calendar/picker.styles.js";
 import { UPopover } from "../popover/UPopover.js";
@@ -47,8 +47,6 @@ function reversed(start: string, end: string, mode: DatePickerMode): boolean {
 /** The ISO day of a half (`YYYY-MM-DD` either way). */
 const dayPart = (half: string) => half.slice(0, 10);
 
-/** Times a whole-day range takes in `mode="datetime"` — a preset or a first calendar pick. */
-const WHOLE_DAY = { start: '00:00', end: '23:59' };
 
 /**
  * A date-range form control — one field for a period such as "orders placed between".
@@ -152,6 +150,9 @@ export class UDateRangePicker extends UFormControlElement<string> {
   /** `date` (default) picks a period of days. `datetime` adds a start and an end time; each half of
    *  the value becomes a complete ISO-8601 `DateTimeOffset` (`…T09:00:00+09:00/…T18:00:00+09:00`). */
   @property({ type: String, reflect: true }) mode: DatePickerMode = 'date';
+  /** `mode="datetime"`: times are entered to the second — the time inputs show seconds, the text box
+   *  reads and shows `HH:mm:ss`, and a whole day ends at `23:59:59`. */
+  @property({ type: Boolean, reflect: true }) seconds: boolean = false;
 
   /** Start of the range — the ISO day, or in `mode="datetime"` the ISO date-time; `undefined` when
    *  there is no complete range. */
@@ -176,7 +177,13 @@ export class UDateRangePicker extends UFormControlElement<string> {
   @state() private staged?: string;
   /** `mode="datetime"`: the times the next range takes while there is none yet — once a range
    *  exists, the time inputs read and write its halves instead. */
-  @state() private pendingTimes = { ...WHOLE_DAY };
+  @state() private pendingTimes?: { start: string; end: string };
+
+  /** Times a whole-day range takes in `mode="datetime"` — a preset or a first calendar pick: from
+   *  the first minute (or second, with `seconds`) to the last. */
+  private get wholeDay(): { start: string; end: string } {
+    return this.seconds ? { start: '00:00:00', end: '23:59:59' } : { start: '00:00', end: '23:59' };
+  }
   /** The typed-range text box — what is being typed, committing it, opening the calendar. */
   private readonly textEntry = new DateTextController(this, {
     toValue: (text) => {
@@ -184,8 +191,8 @@ export class UDateRangePicker extends UFormControlElement<string> {
       const range = this.parseTyped(text);
       if (!range) return null;
       return this.build(dayPart(range.start), dayPart(range.end), {
-        start: range.start.slice(11, 16) || WHOLE_DAY.start,
-        end: range.end.slice(11, 16) || WHOLE_DAY.end,
+        start: range.start.slice(11) || this.wholeDay.start,
+        end: range.end.slice(11) || this.wholeDay.end,
       });
     },
     dayOf: (text) => {
@@ -196,7 +203,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
       const range = parseInterval(this.value, this.mode);
       if (!range) return this.value ?? '';
       return this.mode === 'datetime'
-        ? formatDateTimeRangeText(range.start, range.end, this.format)
+        ? formatDateTimeRangeText(range.start, range.end, this.format, undefined, this.seconds)
         : formatDateRangeText(range.start, range.end, this.format);
     },
     onChange: () => this.emitChange(),
@@ -229,8 +236,8 @@ export class UDateRangePicker extends UFormControlElement<string> {
   /** The times the working range has — or, without one, the ones the next range takes. */
   private workingTimes(): { start: string; end: string } {
     const range = parseInterval(this.working, this.mode);
-    if (this.mode !== 'datetime' || !range) return this.pendingTimes;
-    return { start: splitDateTime(range.start).time, end: splitDateTime(range.end).time };
+    if (this.mode !== 'datetime' || !range) return this.pendingTimes ?? this.wholeDay;
+    return { start: splitDateTime(range.start, true).time, end: splitDateTime(range.end, true).time };
   }
 
   /** The value for two days (and, in `mode="datetime"`, two times), earlier first. */
@@ -246,7 +253,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
   private parseTyped(text: string): { start: string; end: string } | null {
     if (this.mode !== 'datetime') return parseDateRange(text, { format: this.format });
     const times = this.workingTimes();
-    return parseDateTimeRange(text, { format: this.format, startTime: times.start, endTime: times.end });
+    return parseDateTimeRange(text, { format: this.format, startTime: times.start, endTime: times.end, seconds: this.seconds });
   }
 
   protected shouldValidate(changed: PropertyValues): boolean {
@@ -269,7 +276,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
   }
 
   render() {
-    const pattern = this.mode === 'datetime' ? `${dateTextPattern(this.format)} HH:mm` : dateTextPattern(this.format);
+    const pattern = this.mode === 'datetime' ? `${dateTextPattern(this.format)} ${this.seconds ? 'HH:mm:ss' : 'HH:mm'}` : dateTextPattern(this.format);
     return html`
       <u-field part="field"
         ?required=${this.required}
@@ -385,13 +392,15 @@ export class UDateRangePicker extends UFormControlElement<string> {
       <div class="calendar-time" part="calendar-time">
         <label class="time-field">${Locale.getValue('startTime')}
           <input type="time" class="time-input" part="time-input"
-            .value=${times.start}
+            step=${ifDefined(this.seconds ? '1' : undefined)}
+            .value=${normalizeTime(times.start, this.seconds)}
             @change=${(e: Event) => this.handleTimeChange('start', e)}
           />
         </label>
         <label class="time-field">${Locale.getValue('endTime')}
           <input type="time" class="time-input" part="time-input"
-            .value=${times.end}
+            step=${ifDefined(this.seconds ? '1' : undefined)}
+            .value=${normalizeTime(times.end, this.seconds)}
             @change=${(e: Event) => this.handleTimeChange('end', e)}
           />
         </label>
@@ -403,7 +412,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
    *  `confirm`; the calendar stays open); without one, the next range takes it. A start time set
    *  after the end on the same day swaps the two, as a reversed range always is. */
   private handleTimeChange(which: 'start' | 'end', e: Event): void {
-    const time = (e.target as HTMLInputElement).value || WHOLE_DAY[which];
+    const time = normalizeTime((e.target as HTMLInputElement).value || this.wholeDay[which], this.seconds);
     const times = { ...this.workingTimes(), [which]: time };
     this.pendingTimes = times;
     const range = parseInterval(this.working, this.mode);
@@ -424,9 +433,9 @@ export class UDateRangePicker extends UFormControlElement<string> {
       <div class="presets" part="presets" role="group" aria-label=${Locale.getValue('quickRanges')}>
         ${presets.map(p => html`
           <button type="button" class="preset" part="preset"
-            aria-pressed=${this.build(p.start, p.end, WHOLE_DAY) === this.working}
+            aria-pressed=${this.build(p.start, p.end, this.wholeDay) === this.working}
             ?disabled=${this.unavailable(p)}
-            @click=${() => this.commitRange(p.start, p.end, WHOLE_DAY)}
+            @click=${() => this.commitRange(p.start, p.end, this.wholeDay)}
           >${p.label}</button>
         `)}
       </div>

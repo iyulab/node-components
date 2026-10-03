@@ -58,6 +58,8 @@ open); a start time set after the end on the same day swaps the two. The text bo
 `2026-10-01 09:00 ~ 2026-10-31 18:00` and `2026-10-01 09:00 ~ 18:00` (a time alone ends on the first
 day); a day typed without a time keeps that end's time. `min`/`max` and `isDateDisabled` stay
 date-only. The reader and writer are exported as `parseDateTimeRange` and `formatDateTimeRangeText`.
+Add `seconds` to enter times to the second: the inputs and the text box show `HH:mm:ss`, and a whole
+day runs from `00:00:00` to `23:59:59`.
 
 ### Disabled days
 
@@ -139,6 +141,7 @@ picker.addEventListener('change', () => {
 | `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type) |
 | `format` | `'iso' \| 'locale'` | `'iso'` | ✓ | How the text box writes and reads each day |
 | `confirm` | `boolean` | `false` | ✓ | Calendar picks wait for an Apply button (see «Apply to confirm») |
+| `seconds` | `boolean` | `false` | ✓ | `mode="datetime"`: enter times to the second; a whole day ends at `23:59:59` |
 | `presets` | `Array<DateRangePresetName \| DateRangePreset>` | `[]` | — | Quick ranges beside the calendar; attribute form is space-separated built-in names |
 | `disabled` | `boolean` | `false` | ✓ | Disable |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
