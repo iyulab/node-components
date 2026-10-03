@@ -52,5 +52,6 @@
   "closeTab": "タブを閉じる",
   "breadcrumb": "パンくずリスト",
   "confirm": "OK",
-  "cancel": "キャンセル"
+  "cancel": "キャンセル",
+  "apply": "適用"
 }

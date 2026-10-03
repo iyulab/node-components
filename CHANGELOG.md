@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`confirm` on `u-date-picker` and `u-date-range-picker`: apply calendar picks with a button.** With
+  `confirm`, choosing a day, a time, a range, a preset, "Today" or "Clear value" in the calendar only
+  stages the choice; the footer adds Cancel and Apply. Apply commits it and fires `change` once;
+  Cancel, Escape or closing the calendar any other way drops it. Useful where a day and a time, or a
+  range adjusted several times, should reach the app as one change. Typing in the field still commits
+  on Enter or leaving it. New locale key `apply` in all built-in locales.
+
 ## [1.57.1] - 2026-10-03
 
 ### Fixed

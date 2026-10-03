@@ -32,6 +32,14 @@ in `mode="datetime"` this also sets the time to right now — disabled when toda
 day preserves whatever time-of-day was already set; only the "Today" button overrides the time.
 `min`/`max` are always date-only, even in `mode="datetime"` — time-of-day is never range-checked.
 
+### Apply to confirm
+
+With `confirm`, choosing in the calendar does not change the value yet: a day, the time, "Today"
+and "Clear value" only stage the choice, shown in the calendar, and the footer adds **Cancel** and
+**Apply**. Apply commits the staged choice (empty if "Clear value" was chosen), fires `change` once
+and closes; Cancel, Escape or closing the calendar any other way drops it, and the next opening
+starts from the value. Typing in the text box still commits on Enter or leaving the field.
+
 ```html
 <u-date-picker name="start-date" label="Start date"></u-date-picker>
 
@@ -40,6 +48,9 @@ day preserves whatever time-of-day was already set; only the "Today" button over
 
 <!-- Date + time, value is a full ISO-8601 DateTimeOffset string -->
 <u-date-picker name="sent-at" label="Sent at" mode="datetime"></u-date-picker>
+
+<!-- Day and time are applied together -->
+<u-date-picker name="due-at" label="Due at" mode="datetime" confirm></u-date-picker>
 ```
 
 ---
@@ -55,6 +66,7 @@ day preserves whatever time-of-day was already set; only the "Today" button over
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
 | `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type, e.g. `YYYY-MM-DD` or `YYYY-MM-DD HH:mm`) |
 | `format` | `'iso' \| 'locale'` | `'iso'` | ✓ | How the text box writes and reads the date part |
+| `confirm` | `boolean` | `false` | ✓ | Calendar picks wait for an Apply button (see «Apply to confirm») |
 | `disabled` | `boolean` | `false` | ✓ | Disable |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
 | `required` | `boolean` | `false` | ✓ | Required |
@@ -68,7 +80,7 @@ day preserves whatever time-of-day was already set; only the "Today" button over
 
 | Event | Description |
 |-------|-------------|
-| `change` | Fires when the user clicks a date cell, confirms via keyboard, commits typed text (Enter or leaving the field, when the value changes), changes the time input (`mode="datetime"`, once a date is set), or clicks the clear button. Programmatic value assignment does not fire it. |
+| `change` | Fires when the user clicks a date cell, confirms via keyboard, commits typed text (Enter or leaving the field, when the value changes), changes the time input (`mode="datetime"`, once a date is set), or clicks the clear button — with `confirm`, calendar picks fire it only when Apply commits a different value. Programmatic value assignment does not fire it. |
 
 ## Methods
 

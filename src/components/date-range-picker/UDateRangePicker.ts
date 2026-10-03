@@ -83,7 +83,8 @@ function parseInterval(value?: string): { start: string; end: string } | undefin
  * @cssprop --u-date-range-picker-width - host `width` (default: auto). Set `100%` where `block`
  *   alone does not stretch the host (e.g. inside a flex container).
  *
- * @event change - fires when the user completes a range or clears it. Programmatic value
+ * @event change - fires when the user completes a range or clears it (with `confirm`, when Apply
+ *   commits a different value). Programmatic value
  *   assignment does not fire it (same contract as native form controls).
  */
 @customElement('u-date-range-picker')
@@ -111,6 +112,11 @@ export class UDateRangePicker extends UFormControlElement<string> {
     converter: { fromAttribute: (v: string | null) => (v ?? '').split(/\s+/).filter(Boolean) },
   })
   presets: DateRangePresetOption[] = [];
+  /** Picks in the calendar wait for an Apply button instead of committing at once. Completing a
+   *  range, choosing a preset or "clear" inside the calendar only stages the choice; Apply commits
+   *  it, fires `change` and closes; Cancel, Escape or closing the calendar any other way drops it.
+   *  Typing in the text box still commits on Enter or leaving the field. */
+  @property({ type: Boolean, reflect: true }) confirm: boolean = false;
 
   /** First day of the range (ISO), or `undefined` when there is no complete range. */
   get start(): string | undefined {
@@ -129,6 +135,8 @@ export class UDateRangePicker extends UFormControlElement<string> {
   private readonly calendarId = `u-date-range-picker-calendar-${Math.random().toString(36).slice(2, 8)}`;
 
   @state() private open: boolean = false;
+  /** With `confirm`, the range chosen in the open calendar that Apply would commit. */
+  @state() private staged?: string;
   /** The typed-range text box — what is being typed, committing it, opening the calendar. */
   private readonly textEntry = new DateTextController(this, {
     toValue: (text) => {
@@ -158,6 +166,14 @@ export class UDateRangePicker extends UFormControlElement<string> {
       const range = parseInterval(this.value);
       if (range && range.start > range.end) this.value = `${range.end}/${range.start}`;
     }
+    // `confirm`: each opening starts from the value, and a value committed another way while the
+    // calendar is open (typed text) replaces what was staged.
+    if (this.open && (changed.has('open') || changed.has('value'))) this.staged = this.value;
+  }
+
+  /** What the open calendar shows and edits: the staged range with `confirm`, otherwise the value. */
+  private get working(): string | undefined {
+    return this.confirm && this.open ? this.staged : this.value;
   }
 
   protected shouldValidate(changed: PropertyValues): boolean {
@@ -252,6 +268,8 @@ export class UDateRangePicker extends UFormControlElement<string> {
   private renderCalendar() {
     const presets = resolvePresets(this.presets, new Date(), name =>
       devWarnOnce(`date-range-preset:${name}`, `u-date-range-picker: unknown preset "${name}" — it is not listed.`));
+    const working = parseInterval(this.working);
+    const showClear = this.clearable && !!this.working;
     return html`
       <div class="body">
         ${presets.length ? this.renderPresets(presets) : ''}
@@ -260,16 +278,24 @@ export class UDateRangePicker extends UFormControlElement<string> {
             exportparts="calendar-month, calendar-header, calendar-title, calendar-weekdays, calendar-grid, calendar-week, day"
             selection="range"
             visible-months="2"
-            .start=${this.start}
-            .end=${this.end}
+            .start=${working?.start}
+            .end=${working?.end}
             .min=${this.min}
             .max=${this.max}
             @range-select=${this.handleRangeSelect}
             @keydown=${this.handleCalendarKeydown}
           ></u-calendar>
-          ${this.clearable && this.value ? html`
+          ${showClear || this.confirm ? html`
             <div class="calendar-footer" part="calendar-footer">
-              <u-button variant="ghost" size="sm" @click=${this.handleFooterResetClick}>${Locale.getValue('clear')}</u-button>
+              ${showClear ? html`
+                <u-button variant="ghost" size="sm" @click=${this.handleFooterResetClick}>${Locale.getValue('clear')}</u-button>
+              ` : ''}
+              ${this.confirm ? html`
+                <span class="confirm-actions">
+                  <u-button variant="ghost" size="sm" @click=${this.handleCancelClick}>${Locale.getValue('cancel')}</u-button>
+                  <u-button size="sm" @click=${this.handleApplyClick}>${Locale.getValue('apply')}</u-button>
+                </span>
+              ` : ''}
             </div>
           ` : ''}
         </div>
@@ -282,7 +308,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
       <div class="presets" part="presets" role="group" aria-label=${Locale.getValue('quickRanges')}>
         ${presets.map(p => html`
           <button type="button" class="preset" part="preset"
-            aria-pressed=${`${p.start}/${p.end}` === this.value}
+            aria-pressed=${`${p.start}/${p.end}` === this.working}
             ?disabled=${this.outOfBounds(p)}
             @click=${() => this.commitRange(p.start, p.end)}
           >${p.label}</button>
@@ -301,9 +327,19 @@ export class UDateRangePicker extends UFormControlElement<string> {
     this.commitRange(e.detail.start, e.detail.end);
   };
 
-  /** A user-chosen range (calendar or preset): set it, announce it, close the calendar. */
+  /** A user-chosen range (calendar or preset): set it, announce it, close the calendar —
+   *  or, with `confirm`, stage it for Apply. */
   private commitRange(start: string, end: string): void {
-    const next = `${start}/${end}`;
+    if (this.confirm) {
+      this.staged = `${start}/${end}`;
+      return;
+    }
+    this.commitValue(`${start}/${end}`);
+  }
+
+  /** Commits `next` as the value (firing `change` when it differs), closes the calendar and
+   *  returns focus to the text box. */
+  private commitValue(next: string | undefined): void {
     const changed = next !== this.value;
     this.textEntry.clear();
     this.value = next;
@@ -341,7 +377,22 @@ export class UDateRangePicker extends UFormControlElement<string> {
   };
 
   private handleFooterResetClick = () => {
+    if (this.confirm) {
+      this.staged = undefined;
+      return;
+    }
     this.resetValue();
+    this.popoverEl?.hide();
+    this.textInputEl?.focus();
+  };
+
+  /** `confirm` 모드의 «적용» — 달력에서 고른 범위를 값으로 확정한다(비운 채면 값을 비운다). */
+  private handleApplyClick = () => {
+    this.commitValue(this.staged);
+  };
+
+  /** `confirm` 모드의 «취소» — 고른 것은 다음에 열 때 값에서 다시 시작하므로 닫기만 하면 버려진다. */
+  private handleCancelClick = () => {
     this.popoverEl?.hide();
     this.textInputEl?.focus();
   };

@@ -73,4 +73,11 @@ export const styles = css`
     margin-top: 4px;
     border-top: 1px solid var(--u-border-color-weak, #EEEEEE);
   }
+
+  /* confirm 모드의 취소·적용 — 줄 끝에 붙는다(빠른 동작이 없으면 혼자서도 오른쪽). */
+  .confirm-actions {
+    display: flex;
+    gap: 4px;
+    margin-inline-start: auto;
+  }
 `;

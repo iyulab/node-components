@@ -79,7 +79,9 @@ export type LocaleMessageKey =
   // `Dialog.confirm`/`prompt` 의 기본 버튼 문구. 종전에는 영어 리터럴이라 로케일을 바꾼 앱의
   // 한국어 본문 아래에 `Cancel`/`Confirm` 이 섰다.
   | 'confirm'
-  | 'cancel';
+  | 'cancel'
+  // 날짜 피커의 `confirm` 모드 — 달력에서 고른 것을 값으로 확정하는 버튼(취소는 `cancel`).
+  | 'apply';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 

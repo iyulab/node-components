@@ -41,6 +41,18 @@ exported as `parseDateRange` and `formatDateRangeText`.
   min="2026-01-01" max="2026-12-31" value="2026-03-01/2026-03-31"></u-date-range-picker>
 ```
 
+### Apply to confirm
+
+With `confirm`, choosing in the calendar does not change the value yet: a completed range, a preset
+and "Clear value" only stage the choice, shown in the calendar, and the footer adds **Cancel** and
+**Apply**. Apply commits the staged choice (empty if "Clear value" was chosen), fires `change` once
+and closes; Cancel, Escape or closing the calendar any other way drops it, and the next opening
+starts from the value. Typing in the text box still commits on Enter or leaving the field.
+
+```html
+<u-date-range-picker name="period" label="Period" presets="last7Days thisMonth" confirm></u-date-range-picker>
+```
+
 ### Quick ranges (presets)
 
 `presets` lists quick ranges beside the calendar (above it on a narrow screen), in the order given.
@@ -99,6 +111,7 @@ picker.addEventListener('change', () => {
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
 | `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type) |
 | `format` | `'iso' \| 'locale'` | `'iso'` | ✓ | How the text box writes and reads each day |
+| `confirm` | `boolean` | `false` | ✓ | Calendar picks wait for an Apply button (see «Apply to confirm») |
 | `presets` | `Array<DateRangePresetName \| DateRangePreset>` | `[]` | — | Quick ranges beside the calendar; attribute form is space-separated built-in names |
 | `disabled` | `boolean` | `false` | ✓ | Disable |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
@@ -116,7 +129,7 @@ Validation: `required` with no value → `valueMissing`; a value that is not two
 
 | Event | Description |
 |-------|-------------|
-| `change` | Fires when the user completes a range or clears it. Programmatic value assignment does not fire it. |
+| `change` | Fires when the user completes a range or clears it (with `confirm`, when Apply commits a different value). Programmatic value assignment does not fire it. |
 
 ## Methods
 
