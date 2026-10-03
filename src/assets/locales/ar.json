@@ -53,5 +53,6 @@
   "breadcrumb": "مسار التنقل",
   "confirm": "تأكيد",
   "cancel": "إلغاء",
-  "apply": "تطبيق"
+  "apply": "تطبيق",
+  "dateUnavailable": "هذا التاريخ غير متاح"
 }

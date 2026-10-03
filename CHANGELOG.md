@@ -10,6 +10,16 @@
   Cancel, Escape or closing the calendar any other way drops it. Useful where a day and a time, or a
   range adjusted several times, should reach the app as one change. Typing in the field still commits
   on Enter or leaving it. New locale key `apply` in all built-in locales.
+- **`isDateDisabled` on `u-date-picker` and `u-date-range-picker`: app rules for days that cannot be
+  chosen** — weekends, holidays, fully booked days. The function receives the ISO day; a disabled day
+  is drawn `aria-disabled`, cannot be picked, and turns "Today" (or a preset ending on it) off. A range
+  may run across a disabled day but cannot start or end on one. A typed or assigned value on a
+  disabled day reports `stepMismatch` with the new locale message `dateUnavailable`.
+
+### Fixed
+
+- **`u-date-picker` re-validates when `min` or `max` changes.** A value that a new bound put out of
+  range kept reporting valid until the value itself changed; `u-date-range-picker` already re-validated.
 
 ## [1.57.1] - 2026-10-03
 

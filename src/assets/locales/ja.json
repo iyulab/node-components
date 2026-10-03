@@ -53,5 +53,6 @@
   "breadcrumb": "パンくずリスト",
   "confirm": "OK",
   "cancel": "キャンセル",
-  "apply": "適用"
+  "apply": "適用",
+  "dateUnavailable": "この日付は選択できません"
 }

@@ -53,5 +53,6 @@
   "breadcrumb": "탐색 경로",
   "confirm": "확인",
   "cancel": "취소",
-  "apply": "적용"
+  "apply": "적용",
+  "dateUnavailable": "선택할 수 없는 날짜입니다"
 }

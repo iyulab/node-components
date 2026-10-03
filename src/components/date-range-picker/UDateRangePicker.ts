@@ -12,7 +12,7 @@ import { Locale } from "../../utilities/Locale.js";
 import { dateTextPattern, formatDateRangeText, parseDateRange, type DateTextFormat } from "../../utilities/format.js";
 import { UCalendar, type CalendarRangeSelectDetail } from "../calendar/UCalendar.js";
 import { DateTextController } from "../calendar/date-text-controller.js";
-import { parseISODate } from "../calendar/dates.js";
+import { parseISODate, type DateDisabledFn } from "../calendar/dates.js";
 import { styles as pickerStyles } from "../calendar/picker.styles.js";
 import { UPopover } from "../popover/UPopover.js";
 import { devWarnOnce } from "../../utilities/devWarning.js";
@@ -97,6 +97,11 @@ export class UDateRangePicker extends UFormControlElement<string> {
   @property({ type: String }) max?: string;
   /** Whether to show the clear button */
   @property({ type: Boolean, reflect: true }) clearable: boolean = false;
+  /** App rule for days that cannot be chosen — receives the ISO day, returns `true` to disable it.
+   *  Such a day cannot start or end a range, though a range may run across it (a week across a
+   *  weekend); a preset that starts or ends on one is disabled. A typed or assigned range that starts
+   *  or ends on one reports `stepMismatch`. Property only. */
+  @property({ attribute: false }) isDateDisabled?: DateDisabledFn;
   /** Placeholder text (shown when there is no value). Defaults to the pattern to type. */
   @property({ type: String }) placeholder?: string;
   /** How the text box writes and reads each day: `iso` (default, `YYYY-MM-DD` in every language) or
@@ -177,7 +182,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
   }
 
   protected shouldValidate(changed: PropertyValues): boolean {
-    return super.shouldValidate(changed) || changed.has('min') || changed.has('max');
+    return super.shouldValidate(changed) || changed.has('min') || changed.has('max') || changed.has('isDateDisabled');
   }
 
   protected updated(changed: PropertyValues): void {
@@ -282,6 +287,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
             .end=${working?.end}
             .min=${this.min}
             .max=${this.max}
+            .isDateDisabled=${this.isDateDisabled}
             @range-select=${this.handleRangeSelect}
             @keydown=${this.handleCalendarKeydown}
           ></u-calendar>
@@ -309,7 +315,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
         ${presets.map(p => html`
           <button type="button" class="preset" part="preset"
             aria-pressed=${`${p.start}/${p.end}` === this.working}
-            ?disabled=${this.outOfBounds(p)}
+            ?disabled=${this.unavailable(p)}
             @click=${() => this.commitRange(p.start, p.end)}
           >${p.label}</button>
         `)}
@@ -317,10 +323,16 @@ export class UDateRangePicker extends UFormControlElement<string> {
     `;
   }
 
-  /** A preset that reaches outside `min`/`max` is not offered — its label would promise more
-   *  than the picker may hold. */
-  private outOfBounds(p: { start: string; end: string }): boolean {
-    return (!!this.min && p.start < this.min) || (!!this.max && p.end > this.max);
+  /** A preset that reaches outside `min`/`max`, or starts or ends on a disabled day, is not
+   *  offered — its label would promise a range the calendar itself refuses. */
+  private unavailable(p: { start: string; end: string }): boolean {
+    return (!!this.min && p.start < this.min) || (!!this.max && p.end > this.max)
+      || this.endpointDisabled(p);
+  }
+
+  /** Whether `isDateDisabled` refuses either end of the range (the days between may be disabled). */
+  private endpointDisabled(p: { start: string; end: string }): boolean {
+    return !!this.isDateDisabled && (this.isDateDisabled(p.start) || this.isDateDisabled(p.end));
   }
 
   private handleRangeSelect = (e: CustomEvent<CalendarRangeSelectDetail>) => {
@@ -437,6 +449,10 @@ export class UDateRangePicker extends UFormControlElement<string> {
     } else if (range && this.max && parseISODate(range.end) > parseISODate(this.max)) {
       flags = { rangeOverflow: true };
       message = Locale.getValue('rangeOverflow', { max: this.max });
+    } else if (range && this.endpointDisabled(range)) {
+      // The native analogue is a date input's `step`: a readable day the control does not allow.
+      flags = { stepMismatch: true };
+      message = Locale.getValue('dateUnavailable');
     }
 
     this.commit(flags, message, this.textInputEl ?? this.containerEl ?? undefined);

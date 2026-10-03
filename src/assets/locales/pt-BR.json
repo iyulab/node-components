@@ -53,5 +53,6 @@
   "breadcrumb": "Trilha de navegação",
   "confirm": "Confirmar",
   "cancel": "Cancelar",
-  "apply": "Aplicar"
+  "apply": "Aplicar",
+  "dateUnavailable": "Esta data não está disponível"
 }

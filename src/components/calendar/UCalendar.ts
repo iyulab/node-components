@@ -7,8 +7,8 @@ import { UElement } from "../UElement.js";
 import { Locale, type LocaleTag } from "../../utilities/Locale.js";
 import { formatDate } from "../../utilities/format.js";
 import {
-  addDays, addMonths, daysInMonth, isOutOfRange, isSameDay, monthDiff, parseISODate,
-  startOfMonth, toISODate,
+  addDays, addMonths, daysInMonth, isDayUnavailable, isSameDay, monthDiff, parseISODate,
+  startOfMonth, toISODate, type DateDisabledFn,
 } from "./dates.js";
 import { styles } from "./UCalendar.styles.js";
 
@@ -102,6 +102,9 @@ export class UCalendar extends UElement {
   @property({ type: String }) min?: string;
   /** Latest selectable day (ISO), inclusive. */
   @property({ type: String }) max?: string;
+  /** App rule for days that cannot be chosen (ISO in, `true` = unavailable) — drawn and refused like
+   *  a day outside `min`/`max`. */
+  @property({ attribute: false }) isDateDisabled?: DateDisabledFn;
   /** How many consecutive months to show side by side. */
   @property({ type: Number, attribute: 'visible-months' }) visibleMonths: number = 1;
 
@@ -195,7 +198,7 @@ export class UCalendar extends UElement {
   }
 
   private renderDay(date: Date, range?: [Date, Date]) {
-    const outOfRange = isOutOfRange(date, this.min, this.max);
+    const unavailable = isDayUnavailable(date, this.min, this.max, this.isDateDisabled);
     const t = date.getTime();
     const inRange = !!range && t >= range[0].getTime() && t <= range[1].getTime();
     const selected = this.selection === 'range'
@@ -207,7 +210,7 @@ export class UCalendar extends UElement {
         data-iso=${toISODate(date)}
         tabindex=${isSameDay(date, this.focusedDate) ? 0 : -1}
         aria-selected=${selected}
-        aria-disabled=${outOfRange}
+        aria-disabled=${unavailable}
         ?data-today=${isSameDay(date, new Date())}
         ?data-in-range=${inRange}
         ?data-range-start=${!!range && isSameDay(date, range[0])}
@@ -226,7 +229,7 @@ export class UCalendar extends UElement {
   }
 
   private activate(date: Date): void {
-    if (isOutOfRange(date, this.min, this.max)) return;
+    if (isDayUnavailable(date, this.min, this.max, this.isDateDisabled)) return;
     if (this.selection !== 'range') {
       this.fire<CalendarDaySelectDetail>('day-select', { detail: { date: toISODate(date) } });
       return;

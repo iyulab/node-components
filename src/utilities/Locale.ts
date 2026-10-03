@@ -81,7 +81,9 @@ export type LocaleMessageKey =
   | 'confirm'
   | 'cancel'
   // 날짜 피커의 `confirm` 모드 — 달력에서 고른 것을 값으로 확정하는 버튼(취소는 `cancel`).
-  | 'apply';
+  | 'apply'
+  // 날짜 피커의 `isDateDisabled` 가 막은 날이 값이 됐을 때(타이핑·코드) — `stepMismatch` 의 문구.
+  | 'dateUnavailable';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 

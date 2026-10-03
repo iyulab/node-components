@@ -41,6 +41,13 @@ exported as `parseDateRange` and `formatDateRangeText`.
   min="2026-01-01" max="2026-12-31" value="2026-03-01/2026-03-31"></u-date-range-picker>
 ```
 
+### Disabled days
+
+`isDateDisabled` receives an ISO day and returns `true` to disable it. A disabled day cannot start or
+end a range, but a range may run across it — a working week still spans the weekend between. A preset
+whose range starts or ends on a disabled day is disabled. A typed or assigned range that starts or ends
+on one reports `stepMismatch` ("This date is not available").
+
 ### Apply to confirm
 
 With `confirm`, choosing in the calendar does not change the value yet: a completed range, a preset
@@ -109,6 +116,7 @@ picker.addEventListener('change', () => {
 | `min` | `string` | — | — | Earliest selectable day (ISO `YYYY-MM-DD`), inclusive |
 | `max` | `string` | — | — | Latest selectable day (ISO `YYYY-MM-DD`), inclusive |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
+| `isDateDisabled` | `(date: string) => boolean` | — | — | App rule for days that cannot start or end a range (ISO in, `true` = disabled). Property only; see «Disabled days» |
 | `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type) |
 | `format` | `'iso' \| 'locale'` | `'iso'` | ✓ | How the text box writes and reads each day |
 | `confirm` | `boolean` | `false` | ✓ | Calendar picks wait for an Apply button (see «Apply to confirm») |
@@ -123,7 +131,8 @@ picker.addEventListener('change', () => {
 | `validationMessage` | `string` | — | — | Custom validation message |
 
 Validation: `required` with no value → `valueMissing`; a value that is not two ISO days joined by `/`
-→ `badInput`; start before `min` → `rangeUnderflow`; end after `max` → `rangeOverflow`.
+→ `badInput`; start before `min` → `rangeUnderflow`; end after `max` → `rangeOverflow`; start or end on a day
+`isDateDisabled` refuses → `stepMismatch`.
 
 ## Events
 

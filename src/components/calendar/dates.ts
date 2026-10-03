@@ -41,6 +41,14 @@ export function monthDiff(a: Date, b: Date): number {
   return (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
 }
 
+/** 앱이 정하는 날짜별 비활성 규칙 — ISO `YYYY-MM-DD` 를 받아 고를 수 없으면 `true`. */
+export type DateDisabledFn = (date: string) => boolean;
+
+/** 고를 수 없는 날인가 — `min`/`max` 밖이거나 앱 규칙이 막았다. */
+export function isDayUnavailable(date: Date, min?: string, max?: string, isDateDisabled?: DateDisabledFn): boolean {
+  return isOutOfRange(date, min, max) || !!isDateDisabled?.(toISODate(date));
+}
+
 /** `min`/`max`(ISO 날짜, 둘 다 선택)를 벗어나는가 — 경계일은 포함이다. */
 export function isOutOfRange(date: Date, min?: string, max?: string): boolean {
   if (min && date.getTime() < parseISODate(min).getTime()) return true;

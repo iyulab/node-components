@@ -53,5 +53,6 @@
   "breadcrumb": "Breadcrumb",
   "confirm": "Confirm",
   "cancel": "Cancel",
-  "apply": "Apply"
+  "apply": "Apply",
+  "dateUnavailable": "This date is not available"
 }

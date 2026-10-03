@@ -53,5 +53,6 @@
   "breadcrumb": "Đường dẫn điều hướng",
   "confirm": "Xác nhận",
   "cancel": "Hủy",
-  "apply": "Áp dụng"
+  "apply": "Áp dụng",
+  "dateUnavailable": "Ngày này không khả dụng"
 }

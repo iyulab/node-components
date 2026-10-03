@@ -53,5 +53,6 @@
   "breadcrumb": "麵包屑導覽",
   "confirm": "確定",
   "cancel": "取消",
-  "apply": "套用"
+  "apply": "套用",
+  "dateUnavailable": "此日期無法選取"
 }

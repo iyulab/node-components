@@ -53,5 +53,6 @@
   "breadcrumb": "Ruta de navegación",
   "confirm": "Confirmar",
   "cancel": "Cancelar",
-  "apply": "Aplicar"
+  "apply": "Aplicar",
+  "dateUnavailable": "Esta fecha no está disponible"
 }

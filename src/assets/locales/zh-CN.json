@@ -53,5 +53,6 @@
   "breadcrumb": "面包屑导航",
   "confirm": "确定",
   "cancel": "取消",
-  "apply": "应用"
+  "apply": "应用",
+  "dateUnavailable": "该日期不可选"
 }

@@ -12,7 +12,7 @@ import { Locale } from "../../utilities/Locale.js";
 import { dateTextPattern, formatDateText, formatDateTimeText, parseDate, parseDateTime, type DateTextFormat } from "../../utilities/format.js";
 import { UCalendar } from "../calendar/UCalendar.js";
 import { DateTextController } from "../calendar/date-text-controller.js";
-import { isOutOfRange, parseISODate, toISODate } from "../calendar/dates.js";
+import { isDayUnavailable, parseISODate, toISODate, type DateDisabledFn } from "../calendar/dates.js";
 import { UPopover } from "../popover/UPopover.js";
 import { styles as pickerStyles } from "../calendar/picker.styles.js";
 import { styles } from "./UDatePicker.styles.js";
@@ -43,6 +43,7 @@ function splitValue(value: string): { date: Date; time: string } {
 }
 
 export type DatePickerMode = 'date' | 'datetime';
+export type { DateDisabledFn } from "../calendar/dates.js";
 
 /**
  * A single-date(-time)-selection form control. In `mode="date"` (default) the value follows
@@ -110,6 +111,10 @@ export class UDatePicker extends UFormControlElement<string> {
   @property({ type: String }) max?: string;
   /** Whether to show the clear button */
   @property({ type: Boolean, reflect: true }) clearable: boolean = false;
+  /** App rule for days that cannot be chosen — receives the ISO day, returns `true` to disable it
+   *  (weekends, holidays, fully booked days). Such days cannot be picked in the calendar ("Today" too);
+   *  a typed or assigned value on one reports `stepMismatch`. Property only. */
+  @property({ attribute: false }) isDateDisabled?: DateDisabledFn;
   /** Placeholder text (shown when there is no value). Defaults to the pattern to type
    *  (`YYYY-MM-DD`, or `YYYY-MM-DD HH:mm` in `mode="datetime"`). */
   @property({ type: String }) placeholder?: string;
@@ -156,6 +161,10 @@ export class UDatePicker extends UFormControlElement<string> {
     input: () => this.textInputEl,
     interactive: () => !this.effectivelyDisabled && !this.readonly,
   });
+
+  protected shouldValidate(changed: PropertyValues): boolean {
+    return super.shouldValidate(changed) || changed.has('min') || changed.has('max') || changed.has('isDateDisabled');
+  }
 
   protected willUpdate(changed: PropertyValues): void {
     super.willUpdate(changed);
@@ -277,6 +286,7 @@ export class UDatePicker extends UFormControlElement<string> {
           .value=${this.working ? toISODate(splitValue(this.working).date) : undefined}
           .min=${this.min}
           .max=${this.max}
+          .isDateDisabled=${this.isDateDisabled}
           @day-select=${this.handleDaySelect}
           @keydown=${this.handleCalendarKeydown}
         ></u-calendar>
@@ -301,7 +311,7 @@ export class UDatePicker extends UFormControlElement<string> {
   }
 
   private renderFooter() {
-    const todayDisabled = isOutOfRange(new Date(), this.min, this.max);
+    const todayDisabled = this.unavailable(new Date());
     return html`
       <div class="calendar-footer" part="calendar-footer">
         <u-button variant="ghost" size="sm" ?disabled=${todayDisabled} @click=${this.handleTodayClick}>${Locale.getValue('today')}</u-button>
@@ -318,12 +328,17 @@ export class UDatePicker extends UFormControlElement<string> {
     `;
   }
 
+  /** A day the calendar refuses — outside `min`/`max` or disabled by `isDateDisabled`. */
+  private unavailable(date: Date): boolean {
+    return isDayUnavailable(date, this.min, this.max, this.isDateDisabled);
+  }
+
   /** `timeOverride` lets a caller force the time-of-day (the "today" quick action wants
    *  "right now", overriding whatever time was previously set) — a plain day-cell click omits
    *  it, which preserves the existing time-of-day (or `pendingTime`) so switching the date
    *  alone doesn't clobber a time the user already picked. */
   private selectDay(date: Date, timeOverride?: string): void {
-    if (isOutOfRange(date, this.min, this.max)) return;
+    if (this.unavailable(date)) return;
     const time = timeOverride ?? (this.working ? splitValue(this.working).time : this.pendingTime);
     const iso = buildValue(date, this.mode, time);
     if (this.mode === 'datetime') this.pendingTime = time;
@@ -481,6 +496,10 @@ export class UDatePicker extends UFormControlElement<string> {
     } else if (this.value && this.max && splitValue(this.value).date.getTime() > parseISODate(this.max).getTime()) {
       flags = { rangeOverflow: true };
       message = Locale.getValue('rangeOverflow', { max: this.max });
+    } else if (this.value && this.isDateDisabled?.(toISODate(splitValue(this.value).date))) {
+      // The native analogue is a date input's `step`: a readable day the control does not allow.
+      flags = { stepMismatch: true };
+      message = Locale.getValue('dateUnavailable');
     }
 
     this.commit(flags, message, this.textInputEl ?? this.containerEl ?? undefined);

@@ -32,6 +32,22 @@ in `mode="datetime"` this also sets the time to right now — disabled when toda
 day preserves whatever time-of-day was already set; only the "Today" button overrides the time.
 `min`/`max` are always date-only, even in `mode="datetime"` — time-of-day is never range-checked.
 
+### Disabled days
+
+`min`/`max` bound the calendar; `isDateDisabled` removes days inside it — weekends, holidays, fully
+booked days. It receives the ISO day and returns `true` to disable it. A disabled day is drawn with
+`aria-disabled="true"` and cannot be picked (nor can "Today" when today is disabled). A typed or
+assigned value on a disabled day reports `stepMismatch` ("This date is not available") — the native
+date input reports the same flag for a readable day its `step` does not allow.
+
+```js
+const holidays = new Set(['2026-10-03', '2026-10-09']);
+picker.isDateDisabled = (date) => {
+  const day = new Date(`${date}T00:00`).getDay();
+  return day === 0 || day === 6 || holidays.has(date);
+};
+```
+
 ### Apply to confirm
 
 With `confirm`, choosing in the calendar does not change the value yet: a day, the time, "Today"
@@ -64,6 +80,7 @@ starts from the value. Typing in the text box still commits on Enter or leaving 
 | `min` | `string` | — | — | Minimum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
 | `max` | `string` | — | — | Maximum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
+| `isDateDisabled` | `(date: string) => boolean` | — | — | App rule for days that cannot be chosen (ISO in, `true` = disabled). Property only; see «Disabled days» |
 | `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type, e.g. `YYYY-MM-DD` or `YYYY-MM-DD HH:mm`) |
 | `format` | `'iso' \| 'locale'` | `'iso'` | ✓ | How the text box writes and reads the date part |
 | `confirm` | `boolean` | `false` | ✓ | Calendar picks wait for an Apply button (see «Apply to confirm») |
