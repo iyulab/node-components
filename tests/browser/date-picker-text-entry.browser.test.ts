@@ -161,4 +161,27 @@ describe('UDatePicker — 직접 입력(mode="date")', () => {
     expect(box.getAttribute('aria-controls')).toBe(el.shadowRoot!.querySelector('u-popover')!.id);
     expect(box.getAttribute('aria-label')).toBe('Order date');
   });
+  it('mode="datetime" 은 날짜와 시간을 친다 — 날짜만 치면 이미 정한 시간을 유지한다', async () => {
+    const el = mount({ mode: 'datetime', value: '2026-02-15T09:30:00+09:00' });
+    await settle(el);
+    expect(input(el).value).toBe('2026-02-15 09:30');
+    expect(input(el).placeholder).toBe('YYYY-MM-DD HH:mm');
+
+    await userEvent.tripleClick(input(el));
+    await userEvent.keyboard('2026-10-02 14:05{Enter}');
+    await settle(el);
+    expect(el.value!.startsWith('2026-10-02T14:05:00')).toBe(true);
+    expect(input(el).value).toBe('2026-10-02 14:05');
+
+    await userEvent.tripleClick(input(el));
+    await userEvent.keyboard('20261003{Enter}');
+    await settle(el);
+    expect(el.value!.startsWith('2026-10-03T14:05:00')).toBe(true);
+
+    await userEvent.tripleClick(input(el));
+    await userEvent.keyboard('2026-10-03 25:00{Enter}');
+    await settle(el);
+    expect(el.value).toBeUndefined();
+    expect(el.validity!.badInput).toBe(true);
+  });
 });

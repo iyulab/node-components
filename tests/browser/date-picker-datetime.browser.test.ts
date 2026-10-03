@@ -151,10 +151,10 @@ describe('UDatePicker — mode="datetime"', () => {
     await settle(dateEl);
     await settle(dtEl);
 
-    // date mode is a text box showing the ISO date; datetime mode is the formatted trigger text.
+    // Both modes are text boxes: the date alone, or the date and the wall-clock time it was written with.
     const dateText = dateEl.shadowRoot!.querySelector<HTMLInputElement>('.text-input')!.value;
+    const dtText = dtEl.shadowRoot!.querySelector<HTMLInputElement>('.text-input')!.value;
     expect(dateText).toBe('2026-02-24');
-    const dtText = dtEl.shadowRoot!.querySelector('.text-content')!.textContent!.trim();
-    expect(dtText.length).toBeGreaterThan(dateText.length);
+    expect(dtText).toBe('2026-02-24 09:30');
   });
 });

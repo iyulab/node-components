@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { Locale } from '../../src/utilities/Locale.js';
-import { formatNumber, formatCurrency, formatDate, formatDateRange, parseNumber, parseDate, formatDateText, dateTextPattern } from '../../src/utilities/format.js';
+import { formatNumber, formatCurrency, formatDate, formatDateRange, parseNumber, parseDate, formatDateText, dateTextPattern, parseDateTime, formatDateTimeText } from '../../src/utilities/format.js';
 
 describe('format utilities', () => {
   afterEach(() => Locale.set('en'));
@@ -195,6 +195,29 @@ describe('format utilities', () => {
       expect(dateTextPattern()).toBe('YYYY-MM-DD');
       expect(dateTextPattern('locale', 'en-US')).toBe('MM/DD/YYYY');
       expect(dateTextPattern('locale', 'de')).toBe('DD.MM.YYYY');
+    });
+  });
+  describe('parseDateTime / formatDateTimeText', () => {
+    const ref = new Date(2026, 9, 3);
+    it.each([
+      ['2026-10-02 14:05', '2026-10-02T14:05'],
+      ['2026-10-02T14:05', '2026-10-02T14:05'],
+      ['2026-10-02 9:05', '2026-10-02T09:05'],
+      ['2026-10-02 14:05:59', '2026-10-02T14:05'],
+      ['20261002 1405', null],
+      ['2026. 10. 2. 14:05', '2026-10-02T14:05'],
+      ['10-02 08:00', '2026-10-02T08:00'],
+      ['2026-10-02', '2026-10-02T07:30'],
+      ['2026-10-02 24:00', null],
+      ['2026-10-02 12:60', null],
+      ['14:05', null],
+    ])('reads %j as %j', (text, expected) => {
+      expect(parseDateTime(text, { referenceDate: ref, defaultTime: '07:30' })).toBe(expected);
+    });
+    it('writes {date} HH:mm and round-trips in a locale order', () => {
+      expect(formatDateTimeText('2026-10-02T14:05')).toBe('2026-10-02 14:05');
+      expect(formatDateTimeText('2026-10-02T14:05:00+09:00', 'locale', 'de')).toBe('02.10.2026 14:05');
+      expect(parseDateTime(formatDateTimeText('2026-10-02T14:05', 'locale', 'de'), { format: 'locale', locale: 'de' })).toBe('2026-10-02T14:05');
     });
   });
 });

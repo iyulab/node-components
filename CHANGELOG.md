@@ -1,5 +1,22 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`u-date-picker mode="datetime"` takes a typed date and time.** The field is the same text box as in
+  `mode="date"`: type `2026-10-02 14:30` (or `9:05`; seconds are dropped) and press Enter or leave the
+  field. It shows `YYYY-MM-DD HH:mm` whatever the browser language (`format="locale"` writes the date
+  part in the locale's numeric order). Typing only a date keeps the time already set. An impossible time
+  (`25:00`) clears the value and reports `badInput`. The value is still a full ISO-8601 `DateTimeOffset`.
+- **`parseDateTime`, `formatDateTimeText`** next to `parseDate`.
+
+### Changed
+
+- **`u-date-picker mode="datetime"`: the trigger text is `YYYY-MM-DD HH:mm`** (was the locale's medium
+  date and short time, e.g. `Oct 2, 2026, 2:30 PM`), and a click keeps focus in the text box — the same
+  as `mode="date"` since 1.55.0.
+
 ## [1.55.0] - 2026-10-03
 
 ### Added

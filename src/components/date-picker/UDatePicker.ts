@@ -9,7 +9,7 @@ import '../popover/UPopover.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
-import { dateTextPattern, formatDate, formatDateText, parseDate, type DateTextFormat } from "../../utilities/format.js";
+import { dateTextPattern, formatDateText, formatDateTimeText, parseDate, parseDateTime, type DateTextFormat } from "../../utilities/format.js";
 import { UCalendar } from "../calendar/UCalendar.js";
 import { isOutOfRange, parseISODate, toISODate } from "../calendar/dates.js";
 import { UPopover } from "../popover/UPopover.js";
@@ -45,12 +45,13 @@ export type DatePickerMode = 'date' | 'datetime';
 
 /**
  * A single-date(-time)-selection form control. In `mode="date"` (default) the value follows
- * the same convention as the native `input[type=date]`: an ISO `YYYY-MM-DD` string, and the
- * field is a text box — type `2026-10-02`, `20261002` or `10-02` (this year) and press Enter or
- * leave the field; the calendar is a helper. The text shows as `YYYY-MM-DD` whatever the browser
- * language, or in the locale's numeric order with `format="locale"`. Clicking the field opens the
- * calendar and keeps typing in the field; ArrowDown (or Alt+ArrowDown) moves into the calendar.
- * Text that is not a date clears the value and reports `badInput`, like the native input. In
+ * the same convention as the native `input[type=date]`: an ISO `YYYY-MM-DD` string. The field is a
+ * text box in both modes — type `2026-10-02`, `20261002` or `10-02` (this year), plus a time
+ * (`2026-10-02 14:30`) in `mode="datetime"`, and press Enter or leave the field; the calendar is a
+ * helper. The text shows as `YYYY-MM-DD` (`YYYY-MM-DD HH:mm`) whatever the browser language, or in
+ * the locale's numeric order with `format="locale"`. Clicking the field opens the calendar and keeps
+ * typing in the field; ArrowDown (or Alt+ArrowDown) moves into the calendar. Text that is not a date
+ * clears the value and reports `badInput`, like the native input. In
  * `mode="datetime"` the value is a complete ISO-8601 `DateTimeOffset` string
  * (`YYYY-MM-DDTHH:mm:ss±HH:mm`) — the component always fills in seconds and the browser's
  * local UTC offset, so the value is unconditionally valid regardless of how coarse the time
@@ -68,7 +69,7 @@ export type DatePickerMode = 'date' | 'datetime';
  * as a CSS hook for consumers who want to react to the open/closed state from outside.
  *
  * @csspart field - the u-field element
- * @csspart input - the text box (`mode="date"` only)
+ * @csspart input - the text box
  * @csspart container - the element wrapping the trigger area
  * @csspart popover - the popover element showing the calendar
  * @csspart calendar - the calendar container
@@ -107,12 +108,13 @@ export class UDatePicker extends UFormControlElement<string> {
   @property({ type: String }) max?: string;
   /** Whether to show the clear button */
   @property({ type: Boolean, reflect: true }) clearable: boolean = false;
-  /** Placeholder text (shown on the trigger when there is no value). In `mode="date"` it defaults
-   *  to the pattern to type (`YYYY-MM-DD`). */
+  /** Placeholder text (shown when there is no value). Defaults to the pattern to type
+   *  (`YYYY-MM-DD`, or `YYYY-MM-DD HH:mm` in `mode="datetime"`). */
   @property({ type: String }) placeholder?: string;
-  /** How the `mode="date"` text box writes and reads a date: `iso` (default, `YYYY-MM-DD` in every
-   *  language) or `locale` (the active locale's numeric order, e.g. `10/02/2026` in `en-US`). ISO
-   *  and `20261002` are read in both. The value is ISO either way. */
+  /** How the text box writes and reads the date: `iso` (default, `YYYY-MM-DD` in every language)
+   *  or `locale` (the active locale's numeric order, e.g. `10/02/2026` in `en-US`). ISO and
+   *  `20261002` are read in both. The time, in `mode="datetime"`, is always `HH:mm`. The value is
+   *  ISO either way. */
   @property({ type: String, reflect: true }) format: DateTextFormat = 'iso';
 
   @query('.container', true) containerEl?: HTMLElement;
@@ -126,7 +128,7 @@ export class UDatePicker extends UFormControlElement<string> {
   /** Time-of-day for the next selection while no `value` exists yet (`mode="datetime"` only) —
    *  once `value` is set, the time input reads/writes its time portion directly instead. */
   @state() private pendingTime: string = '00:00';
-  /** What the person is typing in the `mode="date"` text box, until it is committed; `null` shows the value. */
+  /** What the person is typing in the text box, until it is committed; `null` shows the value. */
   @state() private draft: string | null = null;
   /** The committed text was not a date — the value is empty and validity reports `badInput`. */
   @state() private badText = false;
@@ -152,23 +154,22 @@ export class UDatePicker extends UFormControlElement<string> {
       // popover's own update cycle, which runs after this one — focusing a day button before
       // that resolves is a no-op because it is still `visibility: hidden`.
       const calendar = this.calendarEl;
-      const typed = this.draft !== null ? parseDate(this.draft, { format: this.format }) : null;
+      const typed = this.draft !== null ? this.parseTyped(this.draft)?.date : undefined;
       const base = typed ?? (this.value ? toISODate(splitValue(this.value).date) : toISODate(new Date()));
       calendar?.showDate(base);
-      const moveFocus = this.mode !== 'date' || this.focusCalendarOnOpen;
+      const moveFocus = this.focusCalendarOnOpen;
       this.focusCalendarOnOpen = false;
       if (moveFocus) this.popoverEl?.updateComplete.then(() => calendar?.focusDay());
     }
   }
 
   render() {
-    // Routed through format.ts's `formatDate` directly (not this file's local `parseISODate`)
-    // so a malformed `value` attribute degrades to the raw string instead of throwing and
-    // blanking the whole component — `formatDate` owns that fallback.
-    const displayText = this.value
-      ? formatDate(this.value, this.mode === 'datetime' ? { dateStyle: 'medium', timeStyle: 'short' } : undefined)
+    const datetime = this.mode === 'datetime';
+    const shown = this.value
+      ? (datetime
+        ? formatDateTimeText(`${toISODate(splitValue(this.value).date)}T${splitValue(this.value).time}`, this.format)
+        : formatDateText(toISODate(splitValue(this.value).date), this.format))
       : '';
-    const textEntry = this.mode === 'date';
     return html`
       <u-field part="field"
         ?required=${this.required}
@@ -178,10 +179,10 @@ export class UDatePicker extends UFormControlElement<string> {
         .description=${this.description}
         .validationMessage=${this.validationMessage}
       >
-        ${textEntry ? html`<div class="container" part="container" @click=${this.handleContainerClick}>
+        <div class="container" part="container" @click=${this.handleContainerClick}>
           <input class="text-input" part="input"
             type="text"
-            inputmode="numeric"
+            inputmode=${datetime ? 'text' : 'numeric'}
             autocomplete="off"
             role="combobox"
             aria-haspopup="dialog"
@@ -190,24 +191,14 @@ export class UDatePicker extends UFormControlElement<string> {
             aria-label=${ifDefined(this.resolvedAriaLabel)}
             aria-description=${ifDefined(this.resolvedAriaDescription)}
             aria-invalid=${this.badText ? 'true' : 'false'}
-            placeholder=${this.placeholder ?? dateTextPattern(this.format)}
-            .value=${this.draft ?? (this.value ? formatDateText(toISODate(splitValue(this.value).date), this.format) : '')}
+            placeholder=${this.placeholder ?? (datetime ? `${dateTextPattern(this.format)} HH:mm` : dateTextPattern(this.format))}
+            .value=${this.draft ?? shown}
             ?disabled=${this.effectivelyDisabled}
             ?readonly=${this.readonly}
             @input=${this.handleTextInput}
             @keydown=${this.handleTextKeydown}
             @blur=${this.commitText}
-          />` : html`<div class="container" part="container"
-          tabindex=${this.effectivelyDisabled ? '-1' : '0'}
-          role="combobox"
-          aria-disabled=${ifDefined(this.effectivelyDisabled ? 'true' : undefined)}
-          aria-haspopup="dialog"
-          aria-expanded=${this.open}
-          aria-label=${ifDefined(this.resolvedAriaLabel)}
-          aria-description=${ifDefined(this.resolvedAriaDescription)}
-          aria-controls=${this.calendarId}
-        >
-          <span class="text-content ${!displayText ? 'placeholder' : ''}">${displayText || this.placeholder || ''}</span>`}
+          />
           <u-icon class="suffix-item"
             ?hidden=${!this.clearable || !this.value || this.effectivelyDisabled || this.readonly}
             role="button"
@@ -218,7 +209,7 @@ export class UDatePicker extends UFormControlElement<string> {
             @click=${this.handleClearClick}
             @keydown=${this.handleClearKeydown}
           ></u-icon>
-          ${textEntry ? html`<u-icon class="suffix-item calendar-button"
+          <u-icon class="suffix-item calendar-button"
             role="button"
             tabindex="-1"
             aria-label=${Locale.getValue('chooseDate')}
@@ -226,10 +217,7 @@ export class UDatePicker extends UFormControlElement<string> {
             lib="internal"
             name="calendar"
             @click=${this.handleCalendarButtonClick}
-          ></u-icon>` : html`<u-icon class="suffix-item"
-            lib="internal"
-            name="calendar"
-          ></u-icon>`}
+          ></u-icon>
         </div>
       </u-field>
 
@@ -238,7 +226,7 @@ export class UDatePicker extends UFormControlElement<string> {
         role="dialog"
         aria-label=${Locale.getValue('chooseDate')}
         for=".container"
-        trigger=${textEntry ? 'manual' : 'click'}
+        trigger="manual"
         strategy="fixed"
         placement="bottom-start"
         offset="4"
@@ -341,11 +329,23 @@ export class UDatePicker extends UFormControlElement<string> {
     if (this.containerEl) void this.popoverEl?.show(this.containerEl);
   }
 
+  /** The typed text as a date (ISO) and, in `mode="datetime"`, a time — or `null` when it is not one.
+   *  Typing only a date in `mode="datetime"` keeps the time already set (or the pending one). */
+  private parseTyped(text: string): { date: string; time: string } | null {
+    if (this.mode !== 'datetime') {
+      const date = parseDate(text, { format: this.format });
+      return date ? { date, time: this.pendingTime } : null;
+    }
+    const keep = this.value ? splitValue(this.value).time : this.pendingTime;
+    const dt = parseDateTime(text, { format: this.format, defaultTime: keep });
+    return dt ? { date: dt.slice(0, 10), time: dt.slice(11, 16) } : null;
+  }
+
   private handleTextInput = (e: Event) => {
     this.draft = (e.target as HTMLInputElement).value;
     // Follow the typing in an open calendar, so the month shows the date being entered.
-    const typed = parseDate(this.draft, { format: this.format });
-    if (typed && this.open) this.calendarEl?.showDate(typed);
+    const typed = this.parseTyped(this.draft);
+    if (typed && this.open) this.calendarEl?.showDate(typed.date);
   };
 
   /** A click anywhere on the field (not on its clear or calendar button) opens the calendar and
@@ -385,9 +385,10 @@ export class UDatePicker extends UFormControlElement<string> {
   private commitText = () => {
     if (this.draft === null) return;
     const text = this.draft;
-    const iso = parseDate(text, { format: this.format });
-    this.badText = !!text.trim() && iso === null;
-    const next = iso ? buildValue(parseISODate(iso), this.mode, this.pendingTime) : undefined;
+    const typed = this.parseTyped(text);
+    this.badText = !!text.trim() && typed === null;
+    const next = typed ? buildValue(parseISODate(typed.date), this.mode, typed.time) : undefined;
+    if (typed && this.mode === 'datetime') this.pendingTime = typed.time;
     const changed = next !== this.value;
     this.value = next;
     // A date is shown in the field's format again; text that is not a date stays as typed to be fixed.

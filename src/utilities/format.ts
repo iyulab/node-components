@@ -245,3 +245,34 @@ export function parseDate(
   if (date.getFullYear() !== y || date.getMonth() !== mo - 1 || date.getDate() !== d) return null;
   return `${String(y).padStart(4, '0')}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }
+
+/**
+ * Reads a date and a time of day as people type them and returns local `YYYY-MM-DDTHH:mm`, or `null`.
+ * The date part is anything {@link parseDate} reads; the time follows a space or `T` as `HH:mm`
+ * (`9:05`, `09:05`, `09:05:30` — seconds are dropped). Text with only a date takes `defaultTime`
+ * (`00:00` unless given). An hour above 23 or a minute above 59 is `null`.
+ */
+export function parseDateTime(
+  text: string,
+  options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date; defaultTime?: string } = {},
+): string | null {
+  const t = text.trim();
+  const m = /^(.*?)(?:[T\s]+(\d{1,2}):(\d{2})(?::\d{2})?)?$/.exec(t);
+  if (!m) return null;
+  const date = parseDate(m[1], options);
+  if (!date) return null;
+  if (m[2] === undefined) {
+    const fallback = options.defaultTime ?? '00:00';
+    return /^\d{2}:\d{2}$/.test(fallback) ? `${date}T${fallback}` : null;
+  }
+  const h = Number(m[2]);
+  const min = Number(m[3]);
+  if (h > 23 || min > 59) return null;
+  return `${date}T${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+}
+
+/** Writes local `YYYY-MM-DDTHH:mm` (or a longer ISO date-time) as `{date} HH:mm`, the date part as {@link formatDateText} writes it. */
+export function formatDateTimeText(isoLocal: string, format: DateTextFormat = 'iso', locale?: LocaleTag): string {
+  const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(isoLocal);
+  return m ? `${formatDateText(m[1], format, locale)} ${m[2]}` : isoLocal;
+}
