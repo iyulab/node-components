@@ -27,13 +27,13 @@ IconRegistry.register('my-icons', async (name: string) => {
 Resolver contract — the registry owns caching, so a resolver is a pure lookup:
 return `string` = success (cached) · return `undefined` = definitive not-found (negative-cached, not retried) · `throw` = transient error (not cached, retried on next lookup).
 
-`register()` ignores an already-registered `lib` name. To override a built-in library (e.g. air-gapped local bundle), call `unregister(lib)` first — this also evicts that library's cache.
+Registering an existing `lib` name replaces it — to override a built-in library (e.g. air-gapped local bundle), register it again. Replacing evicts that library's cache.
 
 ## API
 
 | Method | Description |
 |--------|-------------|
-| `IconRegistry.register(lib, resolver)` | Register an icon library (ignored if `lib` already registered) |
+| `IconRegistry.register(lib, resolver)` | Register an icon library; an existing `lib` is replaced (its cached entries are evicted) |
 | `IconRegistry.unregister(lib)` | Remove a library + evict its cached entries |
 | `IconRegistry.has(lib)` | Check if a library is registered |
 | `IconRegistry.resolve(lib, name)` | `Promise<string \| undefined>` — resolve SVG source (cached + in-flight dedupe) |

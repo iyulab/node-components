@@ -112,6 +112,11 @@ class IconRegistry {
   private static libs = new Map<string, IconResolver>();
   /** 동일 (lib, name)의 동시 리졸브를 하나의 요청으로 합치는 in-flight 맵입니다. */
   private static pending = new Map<string, Promise<string | undefined>>();
+  /**
+   * 라이브러리별 세대 — 교체·해제 때 올라간다. 그 전에 출발한 리졸브는 끝나도 캐시에 쓰지 않는다
+   * (옛 리졸버의 결과가 새 리졸버의 자리를 차지하지 않게).
+   */
+  private static generation = new Map<string, number>();
 
   /** 클래스 생성 방지 */
   private constructor() {}
@@ -125,22 +130,35 @@ class IconRegistry {
 
   /**
    * 지정된 아이콘 라이브러리를 등록합니다.
-   * 이미 등록된 라이브러리 이름인 경우, 기존 등록을 덮어쓰지 않고 무시합니다.
+   *
+   * 같은 이름이 이미 있으면 **교체**합니다 — 내장 라이브러리(`bootstrap` 등)를 로컬 리졸버로
+   * 바꾸는 것(폐쇄망)이 한 호출입니다. 교체하면 그 라이브러리의 캐시와 진행 중인 리졸브가
+   * 무효가 되어 옛 리졸버의 결과가 남지 않습니다. 같은 리졸버를 다시 넘기면 아무 일도 없습니다.
    */
   public static register(lib: string, resolver: IconResolver) {
-    if (!this.libs.has(lib)) {
-      this.libs.set(lib, resolver);
-    }
+    const current = this.libs.get(lib);
+    if (current === resolver) return;
+    this.libs.set(lib, resolver);
+    if (current) this.invalidate(lib);
   }
 
   /**
    * 지정된 아이콘 라이브러리를 등록 해제합니다.
-   * 해당 라이브러리의 캐시 항목도 함께 비웁니다 —
-   * `unregister` 후 다른 리졸버를 재등록할 때 이전 결과가 남지 않도록 하기 위함입니다.
+   * 해당 라이브러리의 캐시 항목과 진행 중인 리졸브도 함께 무효가 됩니다.
    */
   public static unregister(lib: string) {
     this.libs.delete(lib);
+    this.invalidate(lib);
+  }
+
+  /** 라이브러리의 캐시를 비우고 세대를 올려 진행 중인 리졸브가 결과를 쓰지 못하게 한다. */
+  private static invalidate(lib: string) {
     IconCache.clear(lib);
+    this.generation.set(lib, (this.generation.get(lib) ?? 0) + 1);
+    const prefix = `${lib}:`;
+    for (const key of this.pending.keys()) {
+      if (key.startsWith(prefix)) this.pending.delete(key);
+    }
   }
 
   /**
@@ -196,10 +214,12 @@ class IconRegistry {
     const inflight = this.pending.get(key);
     if (inflight) return inflight;
 
+    const generation = this.generation.get(lib) ?? 0;
     const task = (async () => {
       try {
         const svg = (await fn())?.trim();
-        IconCache.set(lib, name, svg);
+        // 그 사이 교체·해제됐으면 옛 리졸버의 결과다 — 이 호출자에게만 돌려주고 캐시에는 쓰지 않는다.
+        if ((this.generation.get(lib) ?? 0) === generation) IconCache.set(lib, name, svg);
         return svg;
       } catch (error) {
         // 일시 오류 — 캐시하지 않고 undefined로 종결. 다음 조회 시 재시도된다.
@@ -209,7 +229,9 @@ class IconRegistry {
     })();
 
     this.pending.set(key, task);
-    void task.finally(() => this.pending.delete(key));
+    void task.finally(() => {
+      if (this.pending.get(key) === task) this.pending.delete(key);
+    });
     return task;
   }
 }

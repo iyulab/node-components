@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { IconCache, IconRegistry } from '../../src/utilities/icons.js';
 
-// IconCache/IconRegistry는 static 싱글톤이고 register()는 중복 lib을 무시하므로,
+// IconCache/IconRegistry는 static 싱글톤이라 테스트 간 등록이 남는다 —
 // 각 테스트는 고유한 lib 이름을 사용하고 afterEach에서 캐시를 비운다.
 let libSeq = 0;
 function uniqueLib(): string {
@@ -11,6 +11,50 @@ function uniqueLib(): string {
 afterEach(() => {
   IconCache.clear();
   vi.unstubAllGlobals();
+});
+
+describe('IconRegistry.register — 같은 이름은 교체한다', () => {
+  it('🔴다시 등록하면 새 리졸버가 쓰이고 옛 캐시는 버려진다', async () => {
+    const lib = uniqueLib();
+    IconRegistry.register(lib, async () => '<svg>old</svg>');
+    expect(await IconRegistry.resolve(lib, 'logo')).toBe('<svg>old</svg>');
+
+    IconRegistry.register(lib, async () => '<svg>new</svg>');
+    expect(await IconRegistry.resolve(lib, 'logo')).toBe('<svg>new</svg>');
+  });
+
+  it('🔴교체 전에 출발한 리졸브는 결과를 캐시에 남기지 않는다', async () => {
+    const lib = uniqueLib();
+    let release!: (v: string) => void;
+    IconRegistry.register(lib, () => new Promise<string>(r => { release = r; }));
+    const inflight = IconRegistry.resolve(lib, 'logo');
+
+    IconRegistry.register(lib, async () => '<svg>new</svg>');
+    release('<svg>old</svg>');
+    expect(await inflight).toBe('<svg>old</svg>'); // 그 호출자에게만
+    expect(await IconRegistry.resolve(lib, 'logo')).toBe('<svg>new</svg>');
+  });
+
+  it('같은 리졸버를 다시 넘기면 캐시를 버리지 않는다', async () => {
+    const lib = uniqueLib();
+    const resolver = vi.fn(async () => '<svg>same</svg>');
+    IconRegistry.register(lib, resolver);
+    await IconRegistry.resolve(lib, 'logo');
+    IconRegistry.register(lib, resolver);
+    await IconRegistry.resolve(lib, 'logo');
+    expect(resolver).toHaveBeenCalledTimes(1);
+  });
+
+  it('unregister 도 진행 중인 리졸브가 캐시에 쓰지 못하게 한다', async () => {
+    const lib = uniqueLib();
+    let release!: (v: string) => void;
+    IconRegistry.register(lib, () => new Promise<string>(r => { release = r; }));
+    const inflight = IconRegistry.resolve(lib, 'logo');
+    IconRegistry.unregister(lib);
+    release('<svg>old</svg>');
+    await inflight;
+    expect(IconCache.has(lib, 'logo')).toBe(false);
+  });
 });
 
 describe('IconRegistry.resolve 캐싱 계약', () => {

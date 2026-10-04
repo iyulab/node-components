@@ -81,6 +81,12 @@
   string. A property the component declares now wins over the HTML attribute of the same name; DOM
   properties React does not model (`autofocus`) are still accepted. **Migration:** a value outside
   the documented union is now a type error — use one the component lists.
+- **`IconRegistry.register(lib, resolver)` replaces an existing library.** It used to ignore a name
+  that was already registered, so replacing a built-in CDN library with a local resolver silently did
+  nothing unless `unregister` came first. Replacing evicts the library's cached icons, and a lookup
+  still in flight with the old resolver no longer writes its result into the cache (`unregister`
+  gets the same guard). **Migration:** `unregister` + `register` still works; `register` alone is
+  enough. Code that relied on a second `register` being ignored now replaces the first.
 
 ### Fixed
 

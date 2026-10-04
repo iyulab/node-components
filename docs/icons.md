@@ -94,10 +94,9 @@ Do **not** return `undefined` for transient failures — let the error propagate
 
 ### Overriding a pre-registered library
 
-`register()` ignores a `lib` name that is already registered. To replace a built-in CDN library (e.g. to serve icons from a local bundle in an air-gapped network), unregister first — this also evicts that library's cached entries:
+Registering a `lib` name that already exists **replaces** it — to serve a built-in CDN library from a local bundle (e.g. in an air-gapped network), register it again. Replacing evicts that library's cached entries, and a lookup that was still in flight with the old resolver does not land in the cache:
 
 ```ts
-IconRegistry.unregister('bootstrap');
 IconRegistry.register('bootstrap', async (name) => {
   const res = await fetch(`/assets/bootstrap-icons/${name}.svg`);
   return res.ok ? res.text() : undefined;
