@@ -390,9 +390,16 @@ export const ${className} = createComponent({
     ? events.map(e => `'${e.reactName}'`).join(' | ')
     : 'never';
 
-  // Partial<Element> 은 DOM 프로퍼티(children: HTMLCollection 등)를 포함해 React 의 JSX
-  // children/이벤트/className 등과 충돌한다. keyof React.HTMLAttributes 를 제거해 컴포넌트
-  // 고유 prop만 남기고, React 친화 타입(children: ReactNode 포함)은 HTMLAttributes 가 제공한다.
+  // 엘리먼트 쪽 = `Partial<El>` 에서 React.HTMLAttributes 와 겹치는 키를 뺀 것. DOM 프로퍼티
+  // (children: HTMLCollection 등)는 거기서 빠지므로 React 의 JSX children/className 등과 충돌하지
+  // 않고, 그것들은 HTMLAttributes 가 React 친화 타입(children: ReactNode 포함)으로 제공한다.
+  // React 가 모르는 DOM 프로퍼티(`autofocus` 등)는 엘리먼트 쪽에 남는다.
+  //
+  // 🔴**단, 컴포넌트가 «스스로 선언한» prop(`OwnProps` = `HTMLElement` 에 없는 키)은 겹쳐도
+  // 엘리먼트 쪽이 이긴다** — 그 이름은 HTMLAttributes 쪽에서 뺀다.
+  // 종전에는 반대(`Omit<Partial<El>, keyof React.HTMLAttributes>`)라, React 가 HTML 속성으로도
+  // 아는 이름(`color` — 폐기된 `<font color>` 계열)의 정밀 타입이 `string` 으로 열렸다:
+  // 역할 축(`TagColor`·`ButtonColor` …)이 타입 검사를 통과하지 않는 값을 받았다.
   //
   // `React.RefAttributes` 를 반드시 교집합에 넣는다 — `ForwardRefExoticComponent<P>` 는 P 에
   // ref 를 자동으로 더해 주지 않는다. @lit/react 의 `ReactWebComponent` 자신이
@@ -400,9 +407,11 @@ export const ${className} = createComponent({
   // 이것을 빠뜨리면 **런타임은 되는데 타입만 거부하는** 괴리가 생긴다.
   const dts = `${dtsImports.join('\n')}
 
+type ${className}OwnProps = Omit<${className}Element, keyof HTMLElement>;
+
 export declare const ${className}: React.ForwardRefExoticComponent<
-  Omit<Partial<${className}Element>, keyof React.HTMLAttributes<${className}Element>>
-    & Omit<React.HTMLAttributes<${className}Element>, ${eventKeyUnion}>
+  Partial<Omit<${className}Element, Exclude<keyof React.HTMLAttributes<${className}Element>, keyof ${className}OwnProps>>>
+    & Omit<React.HTMLAttributes<${className}Element>, keyof ${className}OwnProps | ${eventKeyUnion}>
     & React.RefAttributes<${className}Element>
     & {
 ${eventTypes}  }

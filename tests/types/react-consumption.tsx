@@ -21,6 +21,7 @@
 import * as React from 'react';
 import {
   UButton,
+  UTag,
   USelect,
   UOption,
   type USelectProps,
@@ -60,3 +61,18 @@ export const WithRef = (): React.JSX.Element => {
   const ref = React.useRef<UButtonElement>(null);
   return <UButton ref={ref}>ref</UButton>;
 };
+
+/**
+ * 고유 prop 의 정밀 타입이 HTML 속성의 동명 정의에 지지 않는지 — `color` 는 React 가
+ * HTML 속성(`color?: string`)으로도 아는 이름이라, 종전 생성기는 역할 축 유니온을 버리고
+ * 아무 문자열이나 받았다. **부정 단언**이 핵심이다 — 받아야 할 것만 재면 이 구멍은 안 보인다.
+ */
+export const OwnPropBeatsHtmlAttribute = (): React.JSX.Element => (
+  <>
+    <UTag color="neutral">ok</UTag>
+    {/* @ts-expect-error — TagColor 에 없는 값 */}
+    <UTag color="gray">no</UTag>
+    {/* @ts-expect-error — ButtonColor 에 없는 값 */}
+    <UButton color="gray">no</UButton>
+  </>
+);

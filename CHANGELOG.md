@@ -75,6 +75,12 @@
   palette no longer wins by specificity. Scope mode-specific values with `:root[theme="dark"]`.
   Selectors written only to win the specificity race (`:root:root`, `:root:not([theme="dark"])`)
   still work and can be simplified.
+- **React wrapper props keep a component's own types where React also knows the name as an HTML
+  attribute.** `color` was typed as React's `color?: string`, so `<UTag color="gray">` compiled
+  although `gray` is not a `TagColor` — every role axis (`UButton`, `UBadge`, `UChip` …) accepted any
+  string. A property the component declares now wins over the HTML attribute of the same name; DOM
+  properties React does not model (`autofocus`) are still accepted. **Migration:** a value outside
+  the documented union is now a type error — use one the component lists.
 
 ### Fixed
 
