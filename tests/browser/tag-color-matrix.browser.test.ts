@@ -3,7 +3,7 @@ import '../../src/assets/styles/light.css';
 import '../../src/components/tag/UTag.js';
 
 /**
- * `u-tag` 의 `variant × color` 조합은 **장식 축**이다 — `color="purple"` 에는 역할 의미가
+ * `u-tag` 의 `appearance × color` 조합은 **장식 축**이다 — `color="purple"` 에는 역할 의미가
  * 없으므로 역할 토큰으로 흡수하면 공개 API 가 깨진다(`role-token-layer.test.ts` 가 감시).
  *
  * 이 테스트는 36조합의 **실제 렌더 색**을 팔레트 단으로 대조한다. 매트릭스를 접는
@@ -48,18 +48,18 @@ describe('u-tag 장식 매트릭스 (appearance × color)', () => {
   });
   afterEach(() => document.body.replaceChildren());
 
-  for (const variant of Object.keys(MATRIX)) {
-    it(`appearance="${variant}" 의 9색이 전부 자기 팔레트 단을 쓴다`, async () => {
+  for (const appearance of Object.keys(MATRIX)) {
+    it(`appearance="${appearance}" 의 9색이 전부 자기 팔레트 단을 쓴다`, async () => {
       const wrong: string[] = [];
       for (const color of COLORS) {
-        const el = await mount(variant, color);
+        const el = await mount(appearance, color);
         const cs = getComputedStyle(el);
-        for (const [prop, defaultShade] of Object.entries(MATRIX[variant])) {
-          const shade = (color === 'yellow' && YELLOW[variant]?.[prop]) || defaultShade;
+        for (const [prop, defaultShade] of Object.entries(MATRIX[appearance])) {
+          const shade = (color === 'yellow' && YELLOW[appearance]?.[prop]) || defaultShade;
           const actual = cs.getPropertyValue(prop).trim();
           const expected = token(`--u-${color}-${shade}`);
           if (actual !== expected) {
-            wrong.push(`${variant}/${color} ${prop}: ${actual} ≠ --u-${color}-${shade}(${expected})`);
+            wrong.push(`${appearance}/${color} ${prop}: ${actual} ≠ --u-${color}-${shade}(${expected})`);
           }
         }
       }

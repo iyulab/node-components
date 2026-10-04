@@ -281,10 +281,15 @@ surface that is also hoverable would have nothing left to say.
 
 ### Focus ring
 
-`--u-focus-ring-color` draws every keyboard focus outline. It defaults to
-`--u-primary-color-strong`; a theme whose primary is a neutral ink (black buttons) usually points
-it at an interaction hue so focus stays distinct from content. Keep it at 3:1 against the
-background (WCAG 1.4.11).
+`--u-focus-ring-color` draws every keyboard focus ring: the outline around buttons, links and
+other focusable parts, and the ring around a checkbox, switch, file-input trigger, slider thumb,
+calendar day or range preset. It defaults to `--u-primary-color-strong`; a theme whose primary is a
+neutral ink (black buttons) usually points it at an interaction hue so focus stays distinct from
+content. Keep it at 3:1 against the background (WCAG 1.4.11).
+
+A text field (input, select, textarea, the date pickers' field) shows focus on its own border
+rather than with a ring, and that border reads `--u-input-border-color-focus`. Set it to the same
+hue when the two should match.
 
 ### Field box
 

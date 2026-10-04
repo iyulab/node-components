@@ -51,11 +51,15 @@ changes**, because those targets are relative to the page background.
 > from `--u-primary-color-strong`, so they stay on the default ramp and the brand looks
 > half-applied. (The sheet derives no step from `--u-primary-color` — measured: 0 references.)
 
-> **Load that block however you like — a plain static `import` is enough.** Since 1.44.0 the
-> built-in sheets are inserted *ahead of* the document's other styles, so your override wins at
-> equal specificity whenever it arrives. Before 1.44.0 they were appended last and a static
-> import silently did nothing; on those versions, load your sheet after `await Theme.init(...)`.
-> Specificity still decides: a `:where(:root)` wrapper drops to 0 and loses regardless of order.
+> **Load that block however you like — a plain static `import` and a plain `:root` rule are
+> enough.** Since 2.0 the built-in sheets live in a cascade layer (`@layer iyu.base, iyu.house;`),
+> and unlayered application CSS beats every layer regardless of load order, `Theme.init()` timing
+> or selector specificity (a `:where(:root)` wrapper wins too). A house theme sits between the two
+> in `@layer iyu.house { … }`.
+>
+> 🔴 **That includes dark mode.** The dark palette is scoped to `:root[theme="dark"]` inside
+> `iyu.base`, so an unlayered `:root` override applies in both themes. Scope a mode-specific value
+> yourself with `:root[theme="dark"] { … }`.
 
 ## API
 

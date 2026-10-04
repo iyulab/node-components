@@ -5,7 +5,7 @@ import '../../src/components/tag/UTag.js';
 import { userEvent } from 'vitest/browser';
 
 /**
- * **variant × color 격자** — 색 축이 *모든* variant 에 닿는가.
+ * **appearance × color 격자** — 색 축이 *모든* appearance 에 닿는가.
  *
  * ## 왜 이 파일이 생겼나
  *
@@ -19,7 +19,7 @@ import { userEvent } from 'vitest/browser';
  * **행 사이를 비교**해야 구멍이 자리로 나타난다.
  *
  * ⇒ 그래서 이 테스트는 값을 단언하지 않고 **관계**를 단언한다:
- *   ⑴ 모든 variant 에서 `color` 를 바꾸면 **무언가 바뀐다**(축이 닿는다)
+ *   ⑴ 모든 appearance 에서 `color` 를 바꾸면 **무언가 바뀐다**(축이 닿는다)
  *   ⑵ 색을 주지 않은 기본 렌더는 **건드리지 않는다**(가산 변경)
  *
  * ## 왜 브라우저 프로젝트인가
@@ -28,7 +28,7 @@ import { userEvent } from 'vitest/browser';
  */
 
 /**
- * ⚠**variant 마다 축이 «나타나는 자리»가 다르다.** 실측(크로미움):
+ * ⚠**appearance 마다 축이 «나타나는 자리»가 다르다.** 실측(크로미움):
  *
  * ```
  * solid    호스트 background-color   neutral rgb(25,118,210) → danger rgb(211,47,47)
@@ -41,7 +41,7 @@ import { userEvent } from 'vitest/browser';
  * *"축이 안 닿는다"* 로 오판할 뻔했다 — **정당한 설계에 발화하는 쪽**의 실패다.
  */
 // 2.0: `variant` → `appearance`, `ghost` → `plain`, `filled` → `soft`(`surface` 폐지).
-const VARIANTS = [
+const APPEARANCES = [
   { name: 'solid', where: 'host-bg' },
   { name: 'soft', where: 'host-bg' },
   { name: 'outlined', where: 'inner-border' },
@@ -60,7 +60,7 @@ async function mount(attrs: Record<string, string>) {
   return el;
 }
 
-/** 이 variant 가 실제로 색을 칠하는 자리의 계산값. */
+/** 이 appearance 가 실제로 색을 칠하는 자리의 계산값. */
 function paintedColor(el: HTMLElement, where: string): string {
   if (where === 'host-bg') return getComputedStyle(el).backgroundColor;
   if (where === 'inner-border')
@@ -76,11 +76,11 @@ describe('u-button appearance × color 격자', () => {
     document.body.innerHTML = '';
   });
 
-  for (const { name: variant, where } of VARIANTS) {
-    it(`★${variant} 이 color 축을 따른다 — 역할별로 서로 다른 색이 나온다 (${where})`, async () => {
+  for (const { name: appearance, where } of APPEARANCES) {
+    it(`★${appearance} 이 color 축을 따른다 — 역할별로 서로 다른 색이 나온다 (${where})`, async () => {
       const seen = new Map<string, string>();
       for (const color of COLORS) {
-        const el = await mount({ appearance: variant, color });
+        const el = await mount({ appearance, color });
         seen.set(color, paintedColor(el, where));
       }
 
@@ -88,7 +88,7 @@ describe('u-button appearance × color 격자', () => {
       const distinct = new Set(seen.values());
       expect(
         distinct.size,
-        `${variant} 이 ${COLORS.join('/')} 에 같은 색을 낸다: ${[...seen].map(([k, v]) => `${k}=${v}`).join(' ')}`,
+        `${appearance} 이 ${COLORS.join('/')} 에 같은 색을 낸다: ${[...seen].map(([k, v]) => `${k}=${v}`).join(' ')}`,
       ).toBe(COLORS.length);
     });
   }

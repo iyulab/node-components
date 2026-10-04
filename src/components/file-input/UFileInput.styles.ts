@@ -36,8 +36,8 @@ export const styles = css`
   }
   .trigger:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 1px var(--u-input-border-color-focus, #1565C0),
-      0 0 0 3px color-mix(in srgb, var(--u-primary-color-strong, #1565C0) 22%, transparent);
+    box-shadow: 0 0 0 1px var(--u-focus-ring-color, #1565C0),
+      0 0 0 3px color-mix(in srgb, var(--u-focus-ring-color, #1565C0) 22%, transparent);
   }
   .trigger:disabled {
     color: var(--u-txt-color-weak, #616161);

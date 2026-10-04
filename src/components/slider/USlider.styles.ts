@@ -102,7 +102,7 @@ export const styles = css`
     box-shadow: var(--u-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.05));
   }
   .thumb:focus-visible .thumb-content {
-    box-shadow: 0 0 0 1px var(--slider-fill-color);
+    box-shadow: 0 0 0 2px var(--u-focus-ring-color, #1565C0);
   }
 
   /* 슬롯에 커스텀 엘리먼트가 들어오면 기본 스타일 제거 */

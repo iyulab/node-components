@@ -134,6 +134,13 @@ export const styles = css`
     --option-border-color-active-interactive: transparent;
     --option-background-color-active-interactive: var(--u-bg-color, #FFFFFF);
   }
+  /* The segments' borders are transparent and u-option drops its own outline, so focus needs a
+     ring of its own — in a radiogroup focus moves with the selection, and without this the focused
+     segment shows no change at all (WCAG 2.4.7). */
+  :host([type="button"][appearance="soft"]) ::slotted(u-option:focus-visible) {
+    outline: 2px solid var(--u-focus-ring-color, #1565C0);
+    outline-offset: 1px;
+  }
   :host([type="button"][appearance="soft"]) ::slotted(u-option[selected]) {
     box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04));
     font-weight: 600;

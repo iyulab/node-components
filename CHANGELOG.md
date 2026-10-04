@@ -17,13 +17,13 @@
   | `u-badge` | `variant="pill"` · `"dot"` · `"square"` | `shape=` same values (`variant` there was a shape, not an appearance) |
   | `u-alert` · `Toast` options | `variant="solid"` · `"filled"` · `"outlined"` · `"glass"` | `appearance="soft"` · `"soft"` · `"outlined"` · `"soft"` — the old `solid` was a tint with an outline, not a solid fill, so both tints are `soft` (tint, no outline); `glass` is removed |
   | `u-checkbox` | `variant="filled"` · `"outline"` | `appearance="solid"` · `"outlined"` |
-  | `u-input` · `u-select` · `u-textarea` | `variant="outlined"` · `"filled"` · `"underlined"` · `"borderless"` | `appearance="outlined"` · `"soft"` · `"underlined"` · `"plain"` |
+  | `u-input` · `u-select` · `u-textarea` | `variant="outlined"` · `"filled"` · `"underlined"` · `"borderless"` | `appearance="outlined"` · `"soft"` · `"underlined"` · `"plain"` — on a field `soft` is a tinted face that keeps a bottom border (the old `filled` look), so the focus line has somewhere to show |
   | `u-card` | boolean `borderless` | `appearance="plain"` — no border and no shadow (default `outlined`); `shadowless` stays |
   | `u-menu` | boolean `borderless` | `appearance="plain"` (default `outlined`) |
   | `u-tab-panel` | `variant="line"` · `"card"` · `"pill"` · `"plain"` | `appearance=` same values |
   | `u-divider` | `variant="solid"` · `"dashed"` · `"dotted"` | `line=` same values (a line style, not an appearance) |
   | `u-text` | `variant` | unchanged — the only remaining `variant`, the typography step |
-  | `u-radio` | `variant="filled"` · `"outlined"` · `"soft"` | `appearance="solid"` · `"outlined"` · `"soft"` |
+  | `u-radio` | `variant="filled"` · `"outlined"` | `appearance="solid"` · `"outlined"` (new: `"soft"` — a segmented control, `type="button"` only) |
 
   `u-icon-button` and `u-copy-button` default to `appearance="plain"` (was `variant="ghost"`).
   `u-tag` and `u-chip` default to `appearance="soft"` (was `variant="filled"`).
@@ -32,8 +32,12 @@
   `neutral` on `u-button` was the brand path (its default) while on `u-badge`/`u-checkbox` it was
   grey. `u-button`'s default `color` is now `primary` — a bare button looks the same; a button that
   set `color="neutral"` explicitly is now a grey button (drop the attribute or use `primary` for the
-  old look). `plain` and `link` buttons keep body/link text for `primary` and `neutral` and take the
-  colour for every other value, as before.
+  old look). `plain` and `link` buttons show body/link text for `primary` and `neutral` and take the
+  colour for every other value. ⚠**A brand-coloured plain button is no longer available:** in
+  1.x, `variant="ghost" color="primary"` drew brand-coloured text, but `primary` is now every
+  button's default, so `appearance="plain" color="primary"` draws body text like a bare plain
+  button. For brand-coloured text use `appearance="link"` (link colour), or `appearance="soft"`
+  for a tinted button.
   ⚠Because `color` reflects, every bare button now carries `color="primary"` — a selector like
   `u-button[color="primary"]` that used to pick out the one explicitly-primary button now matches
   them all; select by `appearance` or by your own hook instead.
@@ -60,7 +64,8 @@
   A bare tag was a brand tint and a grey label needed `color="gray"`; now a bare tag is the grey label
   and a brand-tinted one is `color="primary"`. Replace `color="gray"` with `color="neutral"` (or
   drop it). The `--tag-fill-color` hook is removed — every colour fills the tag's own slots now, so
-  the fallback it fed could no longer be reached.
+  the fallback it fed could no longer be reached. This includes the chips `u-select` draws for a
+  `multiple` selection: they are grey now.
 
 - **The built-in token sheets live in a cascade layer: `@layer iyu.base, iyu.house;`.** `light.css`
   and `dark.css` (static import or `Theme.init()`) declare the order and put every token in
@@ -98,8 +103,11 @@
   `current`; status by marker shape as well as colour, `aria-current="step"` and hidden status words
   for assistive tech (new locale keys `stepComplete`, `stepOnHold` in all 14 locales). Stack one per
   track with a `label`.
-- **`--u-focus-ring-color`** — every focus outline reads it (default `--u-primary-color-strong`),
-  so a theme with a neutral ink primary can keep focus on an interaction hue.
+- **`--u-focus-ring-color`** — every keyboard focus ring reads it (default `--u-primary-color-strong`):
+  outlines and the rings around checkbox, switch, file-input trigger, slider thumb, calendar days and
+  range presets. A text field shows focus on its own border instead, which reads
+  `--u-input-border-color-focus`. A theme with a neutral ink primary can keep focus on an
+  interaction hue by setting both.
 
 ## [1.58.0] - 2026-10-03
 

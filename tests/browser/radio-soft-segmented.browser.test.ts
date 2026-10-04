@@ -6,7 +6,7 @@ import type { URadio } from '../../src/components/radio/URadio.js';
 /**
  * `u-radio type="button" appearance="soft"` — a segmented control: a quiet track, the picked segment
  * rises onto the surface. Measured with computed values; joined-border geometry of the other
- * button variants must not leak in.
+ * button appearances must not leak in.
  */
 const made: HTMLElement[] = [];
 async function group(value = 'b'): Promise<URadio> {
@@ -71,5 +71,24 @@ describe('u-radio soft (segmented)', () => {
       expect(o.hasAttribute('aria-selected')).toBe(false);
     }
     expect(el.querySelector('u-option')!.getAttribute('aria-checked')).toBe('true');
+  });
+});
+
+describe('u-radio soft (segmented) — keyboard focus', () => {
+  it('🔴the focused segment shows a ring (borders are transparent and u-option drops its outline)', async () => {
+    const { userEvent } = await import('vitest/browser');
+    const before = document.createElement('button');
+    before.textContent = 'before';
+    document.body.appendChild(before);
+    made.push(before);
+    const el = await group('b');
+    before.focus();
+    await userEvent.tab();
+    const focused = document.activeElement as HTMLElement;
+    expect(focused?.tagName).toBe('U-OPTION');
+    expect(el.contains(focused)).toBe(true);
+    const cs = getComputedStyle(focused);
+    expect(cs.outlineStyle).toBe('solid');
+    expect(cs.outlineWidth).toBe('2px');
   });
 });

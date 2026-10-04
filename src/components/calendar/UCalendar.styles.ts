@@ -80,7 +80,7 @@ export const styles = css`
   }
   .day:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px var(--u-input-border-color-focus, #1565C0);
+    box-shadow: 0 0 0 2px var(--u-focus-ring-color, #1565C0);
   }
   .day[data-today] {
     font-weight: 700;

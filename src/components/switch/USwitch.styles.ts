@@ -64,8 +64,8 @@ export const styles = css`
   }
   input:focus-visible ~ .track {
     box-shadow:
-      0 0 0 1px var(--u-input-border-color-focus, #1565C0),
-      0 0 0 3px color-mix(in srgb, var(--u-primary-color-strong, #1565C0) 22%, transparent);
+      0 0 0 1px var(--u-focus-ring-color, #1565C0),
+      0 0 0 3px color-mix(in srgb, var(--u-focus-ring-color, #1565C0) 22%, transparent);
   }
 
   /* === 트랙 === */
