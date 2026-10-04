@@ -71,14 +71,18 @@ export class UIconButton extends UElement {
   }
 
   render() {
-    const aria = (name: string) => this.getAttribute(name) ?? undefined;
+    const ariaLabel = this.getAttribute('aria-label') ?? undefined;
+    const pressed = this.getAttribute('aria-pressed') ?? undefined;
+    const expanded = this.getAttribute('aria-expanded') ?? undefined;
+    const haspopup = this.getAttribute('aria-haspopup') ?? undefined;
+    const controls = this.getAttribute('aria-controls') ?? undefined;
     return html`
       <u-button part="button"
-        aria-label=${ifDefined(aria('aria-label'))}
-        aria-pressed=${ifDefined(aria('aria-pressed'))}
-        aria-expanded=${ifDefined(aria('aria-expanded'))}
-        aria-haspopup=${ifDefined(aria('aria-haspopup'))}
-        aria-controls=${ifDefined(aria('aria-controls'))}
+        aria-label=${ifDefined(ariaLabel)}
+        aria-pressed=${ifDefined(pressed)}
+        aria-expanded=${ifDefined(expanded)}
+        aria-haspopup=${ifDefined(haspopup)}
+        aria-controls=${ifDefined(controls)}
         .disabled=${this.disabled}
         .loading=${this.loading}
         .appearance=${this.appearance}
