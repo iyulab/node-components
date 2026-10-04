@@ -100,6 +100,12 @@ export const styles = css`
   :host([appearance="plain"]:not([readonly]):not(:disabled)) .container:focus-within {
     box-shadow: none;
   }
+  /* 외형이 없어도 포커스는 보여야 한다(WCAG 2.4.7) — 쉬는 동안은 아무것도 그리지 않고, 포커스가
+     들어오면 링을 그린다. 깜박이는 캐럿만으로는 «어디에 포커스가 있는가» 를 알리기 어렵다. */
+  :host([appearance="plain"]:not(:disabled)) .container:focus-within {
+    outline: 2px solid var(--u-focus-ring-color, #1565C0);
+    outline-offset: 2px;
+  }
 
   /* ===== Textarea 요소 ===== */
   textarea {

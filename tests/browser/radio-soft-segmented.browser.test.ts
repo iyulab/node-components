@@ -143,3 +143,27 @@ describe('u-radio — roving tabindex (APG radio group)', () => {
     expect(opts.map((o) => o.getAttribute('tabindex'))).toEqual(['0', '-1']);
   });
 });
+
+describe('u-radio — a single disabled option', () => {
+  it('🔴an option the consumer disabled stays disabled, is skipped as the tab stop, and survives the group toggling disabled', async () => {
+    const el = document.createElement('u-radio') as URadio;
+    el.innerHTML = '<u-option value="a" disabled>A</u-option><u-option value="b">B</u-option>';
+    document.body.appendChild(el);
+    made.push(el);
+    await el.updateComplete;
+    await new Promise((r) => setTimeout(r, 0));
+    await el.updateComplete;
+    const [a, b] = [...el.querySelectorAll('u-option')];
+    expect(a.disabled).toBe(true);
+    expect(b.disabled).toBe(false);
+    expect([a, b].map((o) => o.getAttribute('tabindex'))).toEqual(['-1', '0']);
+
+    el.disabled = true;
+    await el.updateComplete;
+    expect([a.disabled, b.disabled]).toEqual([true, true]);
+
+    el.disabled = false;
+    await el.updateComplete;
+    expect([a.disabled, b.disabled]).toEqual([true, false]);
+  });
+});

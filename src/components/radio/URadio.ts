@@ -54,7 +54,7 @@ export class URadio extends UFormControlElement<string> {
     if (['type','disabled','formDisabled','readonly'].some(k => changedProperties.has(k))) {
       this.options.forEach(option => {
         option.marker = this.type === 'button' ? undefined : 'radio';
-        option.disabled = this.effectivelyDisabled || this.readonly;
+        this.applyGroupDisabled(option);
       });
     }
     if (['value','options'].some(k => changedProperties.has(k))) {
@@ -131,9 +131,29 @@ export class URadio extends UFormControlElement<string> {
       option.addEventListener('keydown', this.handleOptionKeyDown);
       option.selected = option.value === this.value;
       option.marker = this.type === 'button' ? undefined : 'radio';
-      option.disabled = this.effectivelyDisabled || this.readonly;
+      this.applyGroupDisabled(option);
     }
     this.updateRoving();
+  }
+
+  /** 그룹이 막기 전의 옵션 자신의 `disabled` — 그룹이 풀리면 이것으로 돌아간다. */
+  private ownDisabled = new WeakMap<UOption, boolean>();
+
+  /**
+   * 그룹의 비활성·읽기 전용은 모든 옵션을 막는다. 그러나 **옵션 하나를 막은 소비자의 선언**은
+   * 그룹 상태가 덮어쓰면 안 된다 — 종전에는 `option.disabled = 그룹상태` 로 덮어 개별
+   * `<u-option disabled>` 가 무시됐다(네이티브 라디오는 그룹 안 하나만 막을 수 있다).
+   * 그룹이 막을 때 옵션 자신의 값을 기억해 두고, 풀릴 때 그 값으로 돌린다.
+   */
+  private applyGroupDisabled(option: UOption) {
+    const blocked = this.effectivelyDisabled || this.readonly;
+    if (blocked) {
+      if (!this.ownDisabled.has(option)) this.ownDisabled.set(option, option.disabled);
+      option.disabled = true;
+    } else if (this.ownDisabled.has(option)) {
+      option.disabled = this.ownDisabled.get(option)!;
+      this.ownDisabled.delete(option);
+    }
   }
 
   private cleanup(options: UOption[]) {

@@ -96,6 +96,13 @@
   selection together and fire `change` — the native radio group behaviour. Before, every option
   was a tab stop and arrows only moved focus. `focus()` now goes to that tab stop instead of the
   first option.
+- **A field with `appearance="plain"` shows focus.** It draws nothing at rest, but used to draw
+  nothing on focus either (since 1.x `borderless`), leaving only the caret; it now draws the focus
+  ring (`--u-focus-ring-color`) while focused. Applies to `u-input`, `u-select` and `u-textarea`.
+- **A single disabled option in `u-radio` stays disabled.** The group copied its own disabled state
+  onto every option, so `<u-option disabled>` inside an enabled group was clickable. The group now
+  blocks every option only while it is itself disabled or read-only, and restores each option's own
+  state afterwards.
 - **Every focus is visible on a soft segmented `u-radio`.** Its segments have no border and the
   option drops its outline, so the focused segment showed no change; it now draws the focus ring.
 
