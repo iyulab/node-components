@@ -84,6 +84,12 @@
 
 ### Fixed
 
+- **Reduced motion reaches two more places.** `u-tab-panel` scrolled a horizontal tab list on the
+  mouse wheel with `behavior: 'smooth'` regardless of `prefers-reduced-motion`; it now scrolls
+  instantly when the user asks for less motion. `u-progress-bar[striped]` kept its stripes moving;
+  the stripes now stand still (an indeterminate bar still moves — that motion says work is ongoing,
+  as a spinner's does).
+
 - **`u-radio type="button"`: its options are radios to assistive technology.** The button style
   hides the radio marker, and the option took its role from the marker — so a `radiogroup` held
   `role="option"` items with `aria-selected`. The role now follows the group.

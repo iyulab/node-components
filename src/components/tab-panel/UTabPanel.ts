@@ -204,7 +204,9 @@ export class UTabPanel extends UElement {
     if (!this.isVertical) {
       e.preventDefault();
       const target = e.currentTarget as HTMLElement;
-      target.scrollBy({ left: e.deltaY, behavior: 'smooth' });
+      // 동작 줄이기면 즉시 — 'smooth' 는 이 설정을 스스로 존중하지 않는다(엔진마다 다르다).
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      target.scrollBy({ left: e.deltaY, behavior: reduce ? 'auto' : 'smooth' });
     }
   }
 }

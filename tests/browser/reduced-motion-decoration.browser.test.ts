@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import '../../src/components/skeleton/USkeleton.js';
 import '../../src/components/spinner/USpinner.js';
+import '../../src/components/progress-bar/UProgressBar.js';
 
 /**
  * `prefers-reduced-motion: reduce` 에서 **무엇이 멈추고 무엇이 멈추지 않는가.**
@@ -57,6 +58,18 @@ describe('prefers-reduced-motion — 장식과 신호를 가른다', () => {
     // 사용자는 진행 중인지 알 수 없게 된다.
     const el = await mount('u-spinner');
     expect(reduceRules(el).map(r => r.cssText)).toEqual([]);
+    el.remove();
+  });
+
+  it('🔴진행 막대: 줄무늬 흐름은 멈추고 불확정 이동은 남는다', async () => {
+    const el = await mount('u-progress-bar', { striped: '', indeterminate: '' });
+    const rules = reduceRules(el).filter((r): r is CSSStyleRule => r instanceof CSSStyleRule);
+    const striped = rules.find(r => r.selectorText === ':host([striped]) .indicator');
+    expect(striped?.style.getPropertyValue('animation-name'), '줄무늬 정지 규칙이 없다').toBe('none');
+    const both = rules.find(r => r.selectorText === ':host([striped][indeterminate]) .indicator');
+    const names = both?.style.getPropertyValue('animation-name') ?? '';
+    expect(names, '불확정 이동까지 멈췄다').toContain('indeterminate-move');
+    expect(names, '줄무늬가 불확정과 함께 남았다').not.toContain('striped-move');
     el.remove();
   });
 

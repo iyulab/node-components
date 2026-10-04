@@ -69,6 +69,17 @@ export const styles = css`
       striped-move 1s linear infinite;
   }
 
+  /* 동작 줄이기: 줄무늬의 흐름은 장식이라 멈춘다(줄무늬 자체는 남는다). 불확정 이동은
+     «진행 중» 이라는 신호라 남긴다 — 스피너와 같은 갈림(장식은 멈추고 신호는 유지). */
+  @media (prefers-reduced-motion: reduce) {
+    :host([striped]) .indicator {
+      animation: none;
+    }
+    :host([striped][indeterminate]) .indicator {
+      animation: indeterminate-move 2s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+    }
+  }
+
   /* === Indicator Bar === */
   .indicator {
     position: absolute;
