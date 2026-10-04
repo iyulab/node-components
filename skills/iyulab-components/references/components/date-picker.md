@@ -22,7 +22,9 @@ field opens the calendar and keeps the caret in the text box; ArrowDown (or Alt+
 into the calendar. Text that is not a date clears the value and reports `badInput` (the text stays
 so it can be fixed); a date outside `min`/`max` is kept and reported as out of range.
 In `mode="datetime"` the text box takes a time after the date (`2026-10-02 14:30`, `9:05`, seconds
-dropped) and shows `YYYY-MM-DD HH:mm`; typing only a date keeps the time already set.
+dropped unless `seconds` is set) and shows `YYYY-MM-DD HH:mm`; typing only a date keeps the time
+already set. 12-hour times are read too — `3:00 PM`, `3:00pm`, `p.m. 3:00`, `오후 3:00`, `午後3:00`,
+`下午 3:00` (`12 AM` is midnight) — and shown in 24-hour form; the value is the same either way.
 The parser and formatter are exported as `parseDate`, `parseDateTime`, `formatDateText`,
 `formatDateTimeText` and `dateTextPattern`.
 
@@ -32,6 +34,30 @@ in `mode="datetime"` this also sets the time to right now — disabled when toda
 day preserves whatever time-of-day was already set; only the "Today" button overrides the time.
 `min`/`max` are always date-only, even in `mode="datetime"` — time-of-day is never range-checked.
 
+### Disabled days
+
+`min`/`max` bound the calendar; `isDateDisabled` removes days inside it — weekends, holidays, fully
+booked days. It receives the ISO day and returns `true` to disable it. A disabled day is drawn with
+`aria-disabled="true"` and cannot be picked (nor can "Today" when today is disabled). A typed or
+assigned value on a disabled day reports `stepMismatch` ("This date is not available") — the native
+date input reports the same flag for a readable day its `step` does not allow.
+
+```js
+const holidays = new Set(['2026-10-03', '2026-10-09']);
+picker.isDateDisabled = (date) => {
+  const day = new Date(`${date}T00:00`).getDay();
+  return day === 0 || day === 6 || holidays.has(date);
+};
+```
+
+### Apply to confirm
+
+With `confirm`, choosing in the calendar does not change the value yet: a day, the time, "Today"
+and "Clear value" only stage the choice, shown in the calendar, and the footer adds **Cancel** and
+**Apply**. Apply commits the staged choice (empty if "Clear value" was chosen), fires `change` once
+and closes; Cancel, Escape or closing the calendar any other way drops it, and the next opening
+starts from the value. Typing in the text box still commits on Enter or leaving the field.
+
 ```html
 <u-date-picker name="start-date" label="Start date"></u-date-picker>
 
@@ -40,6 +66,9 @@ day preserves whatever time-of-day was already set; only the "Today" button over
 
 <!-- Date + time, value is a full ISO-8601 DateTimeOffset string -->
 <u-date-picker name="sent-at" label="Sent at" mode="datetime"></u-date-picker>
+
+<!-- Day and time are applied together -->
+<u-date-picker name="due-at" label="Due at" mode="datetime" confirm></u-date-picker>
 ```
 
 ---
@@ -54,8 +83,11 @@ day preserves whatever time-of-day was already set; only the "Today" button over
 | `max` | `string` | — | — | Maximum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
 | `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: 12px · `--u-density` (14px) · 16px. A field and a button of the same size share a height |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
+| `isDateDisabled` | `(date: string) => boolean` | — | — | App rule for days that cannot be chosen (ISO in, `true` = disabled). Property only; see «Disabled days» |
 | `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type, e.g. `YYYY-MM-DD` or `YYYY-MM-DD HH:mm`) |
 | `format` | `'iso' \| 'locale'` | `'iso'` | ✓ | How the text box writes and reads the date part |
+| `confirm` | `boolean` | `false` | ✓ | Calendar picks wait for an Apply button (see «Apply to confirm») |
+| `seconds` | `boolean` | `false` | ✓ | `mode="datetime"`: enter the time to the second (`HH:mm:ss` in the text box, seconds in the time input). The value carries seconds either way |
 | `disabled` | `boolean` | `false` | ✓ | Disable |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
 | `required` | `boolean` | `false` | ✓ | Required |
@@ -69,7 +101,7 @@ day preserves whatever time-of-day was already set; only the "Today" button over
 
 | Event | Description |
 |-------|-------------|
-| `change` | Fires when the user clicks a date cell, confirms via keyboard, commits typed text (Enter or leaving the field, when the value changes), changes the time input (`mode="datetime"`, once a date is set), or clicks the clear button. Programmatic value assignment does not fire it. |
+| `change` | Fires when the user clicks a date cell, confirms via keyboard, commits typed text (Enter or leaving the field, when the value changes), changes the time input (`mode="datetime"`, once a date is set), or clicks the clear button — with `confirm`, calendar picks fire it only when Apply commits a different value. Programmatic value assignment does not fire it. |
 
 ## Methods
 

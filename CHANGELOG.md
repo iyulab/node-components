@@ -101,6 +101,58 @@
 - **`--u-focus-ring-color`** — every focus outline reads it (default `--u-primary-color-strong`),
   so a theme with a neutral ink primary can keep focus on an interaction hue.
 
+## [1.58.0] - 2026-10-03
+
+### Added
+
+- **`confirm` on `u-date-picker` and `u-date-range-picker`: apply calendar picks with a button.** With
+  `confirm`, choosing a day, a time, a range, a preset, "Today" or "Clear value" in the calendar only
+  stages the choice; the footer adds Cancel and Apply. Apply commits it and fires `change` once;
+  Cancel, Escape or closing the calendar any other way drops it. Useful where a day and a time, or a
+  range adjusted several times, should reach the app as one change. Typing in the field still commits
+  on Enter or leaving it. New locale key `apply` in all built-in locales.
+- **`isDateDisabled` on `u-date-picker` and `u-date-range-picker`: app rules for days that cannot be
+  chosen** — weekends, holidays, fully booked days. The function receives the ISO day; a disabled day
+  is drawn `aria-disabled`, cannot be picked, and turns "Today" (or a preset ending on it) off. A range
+  may run across a disabled day but cannot start or end on one. A typed or assigned value on a
+  disabled day reports `stepMismatch` with the new locale message `dateUnavailable`.
+
+- **`u-date-range-picker mode="datetime"`: a period with start and end times.** Labelled start and end
+  time inputs sit under the calendar; each half of the value is a complete ISO-8601 `DateTimeOffset`
+  (`2026-10-01T09:00:00+09:00/2026-10-01T18:00:00+09:00`). The first range picked, and any preset,
+  covers its days whole (00:00–23:59); picking other days afterwards keeps the times. The text box reads
+  `2026-10-01 09:00 ~ 2026-10-31 18:00` and `2026-10-01 09:00 ~ 18:00`. New exports
+  `parseDateTimeRange` / `formatDateTimeRangeText`, new parts `calendar-time` / `time-input`, new
+  locale keys `startTime` / `endTime`.
+
+- **`seconds` on `u-date-picker` and `u-date-range-picker` (`mode="datetime"`): times to the second.**
+  The time inputs show seconds, the text box reads and shows `HH:mm:ss`, and in the range picker a
+  whole day ends at `23:59:59`. Without it, times stay to the minute and typed seconds are dropped, as
+  before. `parseDateTime` / `parseDateTimeRange` take `seconds: true` to keep them, and
+  `formatDateTimeText` / `formatDateTimeRangeText` take a `seconds` argument to write them.
+
+- **12-hour times are read.** `parseDateTime` and `parseDateTimeRange` — and so the text boxes of
+  `u-date-picker` / `u-date-range-picker` in `mode="datetime"`, and other readers built on them — take
+  `3:00 PM`, `3:00pm`, `p.m. 3:00` in every locale, and the locale's own words before or after the
+  time (`오후 3:00` in `ko`, `午後3:00` in `ja`, `下午 3:00` in `zh-CN` …; `12 AM` is midnight, `12 PM`
+  noon). The words come from the new locale keys `timeAm` / `timePm`. The value and the shown text
+  stay 24-hour.
+- **`Locale.getValue(key, params, locale)`** resolves a message for a given locale (along its
+  fallback chain) instead of the active one.
+
+### Changed
+
+- **`u-carousel[autoplay]` starts stopped for users who prefer reduced motion.** With
+  `prefers-reduced-motion: reduce`, rotation does not start on its own; the start button turns it on.
+  Turning the setting on while the page is open stops rotation.
+
+### Fixed
+
+- **`u-date-picker mode="datetime"` takes the UTC offset of the chosen time, not of midnight.** On a
+  day the clocks change, a time after the change carried the offset from before it.
+- **`u-date-picker` re-validates when `min` or `max` changes.** A value that a new bound put out of
+  range kept reporting valid until the value itself changed; `u-date-range-picker` already re-validated.
+
 ## [1.57.1] - 2026-10-03
 
 ### Fixed

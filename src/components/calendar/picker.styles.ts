@@ -73,4 +73,39 @@ export const styles = css`
     margin-top: 4px;
     border-top: 1px solid var(--u-border-color-weak, #EEEEEE);
   }
+
+  /* mode="datetime" 의 시간 칸 줄 — 단일 피커는 칸 하나, 기간 피커는 이름 붙은 칸 둘. */
+  .calendar-time {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    padding: 4px 4px 0;
+  }
+  .time-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--u-txt-color-weak, #616161);
+  }
+  .time-input {
+    font-family: inherit;
+    font-size: 0.9em;
+    padding: 2px 6px;
+    border: 1px solid var(--u-input-border-color, #E0E0E0);
+    border-radius: 0.25em;
+    background-color: var(--u-input-bg-color, #FFFFFF);
+    color: var(--u-txt-color, #212121);
+  }
+  .time-input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 1px var(--u-input-border-color-focus, #1565C0);
+  }
+
+  /* confirm 모드의 취소·적용 — 줄 끝에 붙는다(빠른 동작이 없으면 혼자서도 오른쪽). */
+  .confirm-actions {
+    display: flex;
+    gap: 4px;
+    margin-inline-start: auto;
+  }
 `;

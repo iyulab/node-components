@@ -54,5 +54,11 @@
   "confirm": "Подтвердить",
   "cancel": "Отмена",
   "stepComplete": "Завершено",
-  "stepOnHold": "Приостановлено"
+  "stepOnHold": "Приостановлено",
+  "apply": "Применить",
+  "dateUnavailable": "Эта дата недоступна",
+  "startTime": "Время начала",
+  "endTime": "Время окончания",
+  "timeAm": "AM",
+  "timePm": "PM"
 }

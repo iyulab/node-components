@@ -54,5 +54,11 @@
   "confirm": "Confirmar",
   "cancel": "Cancelar",
   "stepComplete": "Completado",
-  "stepOnHold": "En espera"
+  "stepOnHold": "En espera",
+  "apply": "Aplicar",
+  "dateUnavailable": "Esta fecha no está disponible",
+  "startTime": "Hora de inicio",
+  "endTime": "Hora de fin",
+  "timeAm": "a.m.",
+  "timePm": "p.m."
 }

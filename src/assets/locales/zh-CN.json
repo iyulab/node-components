@@ -54,5 +54,11 @@
   "confirm": "确定",
   "cancel": "取消",
   "stepComplete": "已完成",
-  "stepOnHold": "已暂停"
+  "stepOnHold": "已暂停",
+  "apply": "应用",
+  "dateUnavailable": "该日期不可选",
+  "startTime": "开始时间",
+  "endTime": "结束时间",
+  "timeAm": "上午",
+  "timePm": "下午"
 }

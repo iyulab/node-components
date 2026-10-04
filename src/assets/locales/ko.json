@@ -54,5 +54,11 @@
   "confirm": "확인",
   "cancel": "취소",
   "stepComplete": "완료",
-  "stepOnHold": "보류"
+  "stepOnHold": "보류",
+  "apply": "적용",
+  "dateUnavailable": "선택할 수 없는 날짜입니다",
+  "startTime": "시작 시간",
+  "endTime": "종료 시간",
+  "timeAm": "오전",
+  "timePm": "오후"
 }

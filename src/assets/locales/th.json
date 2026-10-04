@@ -54,5 +54,11 @@
   "confirm": "ยืนยัน",
   "cancel": "ยกเลิก",
   "stepComplete": "เสร็จสิ้น",
-  "stepOnHold": "พักไว้"
+  "stepOnHold": "พักไว้",
+  "apply": "นำไปใช้",
+  "dateUnavailable": "ไม่สามารถเลือกวันที่นี้ได้",
+  "startTime": "เวลาเริ่มต้น",
+  "endTime": "เวลาสิ้นสุด",
+  "timeAm": "ก่อนเที่ยง",
+  "timePm": "หลังเที่ยง"
 }

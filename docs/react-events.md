@@ -65,7 +65,7 @@ import { UDialog } from '@iyulab/components/react';
 
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
-| `onChange` | `change` | `unknown` | fires when the user completes a range or clears it. Programmatic value |
+| `onChange` | `change` | `unknown` | fires when the user completes a range or clears it (with `confirm`, when Apply |
 
 ## `<u-dialog>`
 

@@ -54,5 +54,11 @@
   "confirm": "Bestätigen",
   "cancel": "Abbrechen",
   "stepComplete": "Abgeschlossen",
-  "stepOnHold": "Angehalten"
+  "stepOnHold": "Angehalten",
+  "apply": "Übernehmen",
+  "dateUnavailable": "Dieses Datum ist nicht verfügbar",
+  "startTime": "Startzeit",
+  "endTime": "Endzeit",
+  "timeAm": "AM",
+  "timePm": "PM"
 }

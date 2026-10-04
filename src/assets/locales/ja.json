@@ -54,5 +54,11 @@
   "confirm": "OK",
   "cancel": "キャンセル",
   "stepComplete": "完了",
-  "stepOnHold": "保留"
+  "stepOnHold": "保留",
+  "apply": "適用",
+  "dateUnavailable": "この日付は選択できません",
+  "startTime": "開始時刻",
+  "endTime": "終了時刻",
+  "timeAm": "午前",
+  "timePm": "午後"
 }

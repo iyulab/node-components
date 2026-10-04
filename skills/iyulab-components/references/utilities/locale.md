@@ -38,7 +38,7 @@ same chain.
 | `Locale.set(locale)` | Set active locale |
 | `Locale.get()` | Get active locale |
 | `Locale.register(locale, table)` | Register/override locale messages (partial merge supported) |
-| `Locale.getValue(key, params?)` | Resolve a localized message for current locale |
+| `Locale.getValue(key, params?, locale?)` | Resolve a localized message for the current locale (or `locale`, along its fallback chain) |
 | `Locale.namespace(name)` | A string table for a package or app area, keyed by its own union — returns a handle (below) |
 
 ### Namespaces

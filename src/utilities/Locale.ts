@@ -83,7 +83,18 @@ export type LocaleMessageKey =
   // `u-steps` 의 단계 상태 — 화면은 표식 모양·색으로 말하므로 보조기기에는 글자로 붙인다
   // (현재 단계는 `aria-current="step"` 이 말한다).
   | 'stepComplete'
-  | 'stepOnHold';
+  | 'stepOnHold'
+  // 날짜 피커의 `confirm` 모드 — 달력에서 고른 것을 값으로 확정하는 버튼(취소는 `cancel`).
+  | 'apply'
+  // 날짜 피커의 `isDateDisabled` 가 막은 날이 값이 됐을 때(타이핑·코드) — `stepMismatch` 의 문구.
+  | 'dateUnavailable'
+  // 기간 피커 `mode="datetime"` 의 시간 칸 둘의 이름.
+  | 'startTime'
+  | 'endTime'
+  // 12시간제 시각을 읽을 때 받는 오전·오후 낱말(`parseDateTime`) — 화면 문구가 아니라 읽기 어휘다.
+  // `Intl` 의 dayPeriod 는 엔진마다 다르다(Node 22 ICU 는 `ko` 에 `PM`, Chromium 은 `오후`).
+  | 'timeAm'
+  | 'timePm';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 
@@ -251,8 +262,8 @@ export class Locale {
    * 현재 활성 로케일 기준으로 메시지를 조회합니다.
    * `params`가 있으면 템플릿의 `{name}` 자리를 치환합니다.
    */
-  public static getValue(key: LocaleMessageKey, params?: Record<string, string | number>): string {
-    return interpolate(lookup(active, key), params);
+  public static getValue(key: LocaleMessageKey, params?: Record<string, string | number>, locale?: LocaleTag): string {
+    return interpolate(lookup(locale ?? active, key), params);
   }
 
   /**

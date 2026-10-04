@@ -54,5 +54,11 @@
   "confirm": "Konfirmasi",
   "cancel": "Batal",
   "stepComplete": "Selesai",
-  "stepOnHold": "Ditahan"
+  "stepOnHold": "Ditahan",
+  "apply": "Terapkan",
+  "dateUnavailable": "Tanggal ini tidak tersedia",
+  "startTime": "Waktu mulai",
+  "endTime": "Waktu selesai",
+  "timeAm": "AM",
+  "timePm": "PM"
 }

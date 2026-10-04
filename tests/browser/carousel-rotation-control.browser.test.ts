@@ -86,9 +86,69 @@ describe('u-carousel rotation control', () => {
     expect(el.index).toBe(at);
   });
 
+  describe('prefers-reduced-motion: reduce', () => {
+    /** 동작 줄이기 질의만 가짜로 답한다 — 다른 질의는 브라우저에 맡긴다. */
+    function fakeReducedMotion(initial: boolean) {
+      const real = window.matchMedia.bind(window);
+      const listeners = new Set<(e: MediaQueryListEvent) => void>();
+      const mql = {
+        matches: initial,
+        media: '(prefers-reduced-motion: reduce)',
+        addEventListener: (_: string, fn: (e: MediaQueryListEvent) => void) => listeners.add(fn),
+        removeEventListener: (_: string, fn: (e: MediaQueryListEvent) => void) => listeners.delete(fn),
+      } as unknown as MediaQueryList;
+      window.matchMedia = ((q: string) => q.includes('prefers-reduced-motion') ? mql : real(q)) as typeof window.matchMedia;
+      return {
+        set(matches: boolean) {
+          (mql as { matches: boolean }).matches = matches;
+          listeners.forEach(fn => fn({ matches } as MediaQueryListEvent));
+        },
+        restore() { window.matchMedia = real; },
+      };
+    }
+
+    it('정지 상태로 시작하고, 시작 버튼으로 켤 수 있다', async () => {
+      const media = fakeReducedMotion(true);
+      try {
+        const el = await mount();
+        expect(button(el)!.getAttribute('aria-label')).toBe('Start automatic slide show');
+        await wait(INTERVAL * 3);
+        expect(el.index).toBe(0);
+        button(el)!.click();
+        await el.updateComplete;
+        await wait(INTERVAL * 3);
+        expect(el.index).toBeGreaterThan(0);
+      } finally {
+        media.restore();
+      }
+    });
+
+    it('보는 중에 설정이 켜지면 멈추고, 꺼져도 저절로 다시 시작하지 않는다', async () => {
+      const media = fakeReducedMotion(false);
+      try {
+        const el = await mount();
+        expect(button(el)!.getAttribute('aria-label')).toBe('Stop automatic slide show');
+        media.set(true);
+        await el.updateComplete;
+        expect(button(el)!.getAttribute('aria-label')).toBe('Start automatic slide show');
+        const at = el.index;
+        media.set(false);
+        await el.updateComplete;
+        await wait(INTERVAL * 3);
+        expect(el.index).toBe(at);
+      } finally {
+        media.restore();
+      }
+    });
+  });
+
   it('포인터가 위에 있는 동안만 잠시 멈춘다', async () => {
     const el = await mount();
     await userEvent.hover(el);
+    await el.updateComplete;
+    // 부하가 걸린 실행에서는 hover 전에 이미 마지막 슬라이드까지 넘어가 있을 수 있다(`loop` 없음 —
+    // 그러면 아래 «다시 넘어간다» 가 원리적으로 성립하지 않는다). 처음으로 되돌려 재기 시작한다.
+    el.index = 0;
     await el.updateComplete;
     const at = el.index;
     await wait(INTERVAL * 3);

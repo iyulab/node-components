@@ -41,6 +41,46 @@ exported as `parseDateRange` and `formatDateRangeText`.
   min="2026-01-01" max="2026-12-31" value="2026-03-01/2026-03-31"></u-date-range-picker>
 ```
 
+### Date and time (`mode="datetime"`)
+
+`mode="datetime"` adds a start time and an end time under the calendar (labelled inputs). Each half of
+the value is then a complete ISO-8601 `DateTimeOffset` — seconds and the browser's local offset are
+always filled in — and `start`/`end` return those halves:
+
+```html
+<u-date-range-picker name="shift" label="Shift" mode="datetime"
+  value="2026-10-01T09:00:00+09:00/2026-10-01T18:00:00+09:00"></u-date-range-picker>
+```
+
+The first range picked covers its days whole (00:00 to 23:59), as do presets; after that, picking
+other days keeps the times already set. Changing a time updates that end at once (the calendar stays
+open); a start time set after the end on the same day swaps the two. The text box reads
+`2026-10-01 09:00 ~ 2026-10-31 18:00` and `2026-10-01 09:00 ~ 18:00` (a time alone ends on the first
+day); a day typed without a time keeps that end's time. 12-hour times are read as well
+(`2026-10-01 오전 9:00 ~ 오후 6:00`, `9:00 AM ~ 6:00 PM`) and shown in 24-hour form. `min`/`max` and `isDateDisabled` stay
+date-only. The reader and writer are exported as `parseDateTimeRange` and `formatDateTimeRangeText`.
+Add `seconds` to enter times to the second: the inputs and the text box show `HH:mm:ss`, and a whole
+day runs from `00:00:00` to `23:59:59`.
+
+### Disabled days
+
+`isDateDisabled` receives an ISO day and returns `true` to disable it. A disabled day cannot start or
+end a range, but a range may run across it — a working week still spans the weekend between. A preset
+whose range starts or ends on a disabled day is disabled. A typed or assigned range that starts or ends
+on one reports `stepMismatch` ("This date is not available").
+
+### Apply to confirm
+
+With `confirm`, choosing in the calendar does not change the value yet: a completed range, a preset
+and "Clear value" only stage the choice, shown in the calendar, and the footer adds **Cancel** and
+**Apply**. Apply commits the staged choice (empty if "Clear value" was chosen), fires `change` once
+and closes; Cancel, Escape or closing the calendar any other way drops it, and the next opening
+starts from the value. Typing in the text box still commits on Enter or leaving the field.
+
+```html
+<u-date-range-picker name="period" label="Period" presets="last7Days thisMonth" confirm></u-date-range-picker>
+```
+
 ### Quick ranges (presets)
 
 `presets` lists quick ranges beside the calendar (above it on a narrow screen), in the order given.
@@ -91,15 +131,19 @@ picker.addEventListener('change', () => {
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
-| `value` | `string` | — | — | The range as `YYYY-MM-DD/YYYY-MM-DD` (start first) |
-| `start` | `string` (read-only) | — | — | First day of the range (ISO), `undefined` without a complete range |
-| `end` | `string` (read-only) | — | — | Last day of the range (ISO), `undefined` without a complete range |
+| `mode` | `'date' \| 'datetime'` | `'date'` | ✓ | `datetime` adds start and end times; each half becomes an ISO-8601 `DateTimeOffset` |
+| `value` | `string` | — | — | The range as `YYYY-MM-DD/YYYY-MM-DD` (start first), or two `DateTimeOffset`s in `mode="datetime"` |
+| `start` | `string` (read-only) | — | — | Start of the range (ISO day, or date-time in `mode="datetime"`), `undefined` without a complete range |
+| `end` | `string` (read-only) | — | — | End of the range (ISO day, or date-time in `mode="datetime"`), `undefined` without a complete range |
 | `min` | `string` | — | — | Earliest selectable day (ISO `YYYY-MM-DD`), inclusive |
 | `max` | `string` | — | — | Latest selectable day (ISO `YYYY-MM-DD`), inclusive |
 | `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: 12px · `--u-density` (14px) · 16px. A field and a button of the same size share a height |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
+| `isDateDisabled` | `(date: string) => boolean` | — | — | App rule for days that cannot start or end a range (ISO in, `true` = disabled). Property only; see «Disabled days» |
 | `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type) |
 | `format` | `'iso' \| 'locale'` | `'iso'` | ✓ | How the text box writes and reads each day |
+| `confirm` | `boolean` | `false` | ✓ | Calendar picks wait for an Apply button (see «Apply to confirm») |
+| `seconds` | `boolean` | `false` | ✓ | `mode="datetime"`: enter times to the second; a whole day ends at `23:59:59` |
 | `presets` | `Array<DateRangePresetName \| DateRangePreset>` | `[]` | — | Quick ranges beside the calendar; attribute form is space-separated built-in names |
 | `disabled` | `boolean` | `false` | ✓ | Disable |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
@@ -111,13 +155,14 @@ picker.addEventListener('change', () => {
 | `validationMessage` | `string` | — | — | Custom validation message |
 
 Validation: `required` with no value → `valueMissing`; a value that is not two ISO days joined by `/`
-→ `badInput`; start before `min` → `rangeUnderflow`; end after `max` → `rangeOverflow`.
+→ `badInput`; start before `min` → `rangeUnderflow`; end after `max` → `rangeOverflow`; start or end on a day
+`isDateDisabled` refuses → `stepMismatch`.
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| `change` | Fires when the user completes a range or clears it. Programmatic value assignment does not fire it. |
+| `change` | Fires when the user completes a range or clears it (with `confirm`, when Apply commits a different value). Programmatic value assignment does not fire it. |
 
 ## Methods
 
@@ -144,6 +189,8 @@ Validation: `required` with no value → `valueMissing`; a value that is not two
 | `calendar-grid` | A date grid |
 | `calendar-week` | One week row inside a date grid |
 | `day` | A date cell button |
+| `calendar-time` | The row holding the start and end time inputs (`mode="datetime"` only) |
+| `time-input` | A time-of-day input (`mode="datetime"` only) |
 | `calendar-footer` | The row holding the "Clear" quick action |
 | `presets` | The list of quick ranges beside the calendar |
 | `preset` | One quick-range button |

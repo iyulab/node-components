@@ -13,37 +13,30 @@ import { Locale } from "../../utilities/Locale.js";
 import { dateTextPattern, formatDateText, formatDateTimeText, parseDate, parseDateTime, type DateTextFormat } from "../../utilities/format.js";
 import { UCalendar } from "../calendar/UCalendar.js";
 import { DateTextController } from "../calendar/date-text-controller.js";
-import { isOutOfRange, parseISODate, toISODate } from "../calendar/dates.js";
+import { isDayUnavailable, parseISODate, toISODate, type DateDisabledFn } from "../calendar/dates.js";
+import { normalizeTime, splitDateTime, toDateTimeOffset } from "../calendar/datetime.js";
 import { UPopover } from "../popover/UPopover.js";
 import { styles as pickerStyles } from "../calendar/picker.styles.js";
 import { styles } from "./UDatePicker.styles.js";
-
-/** `±HH:mm` for the browser's local timezone at `date` (DST-aware — recomputed per date,
- *  not cached — `getTimezoneOffset()`'s sign is the inverse of the ISO-8601 offset sign). */
-function getLocalOffset(date: Date): string {
-  const minutes = -date.getTimezoneOffset();
-  const sign = minutes >= 0 ? '+' : '-';
-  const abs = Math.abs(minutes);
-  return `${sign}${String(Math.floor(abs / 60)).padStart(2, '0')}:${String(abs % 60).padStart(2, '0')}`;
-}
 
 /** Builds the `value` for the given mode — `datetime` always emits seconds + local offset so
  *  the result is unconditionally a valid, unambiguous ISO-8601 `DateTimeOffset` regardless of
  *  how coarse the UI input was (this is the guarantee the datetime mode request asked for). */
 function buildValue(date: Date, mode: DatePickerMode, time: string): string {
-  return mode === 'datetime' ? `${toISODate(date)}T${time}:00${getLocalOffset(date)}` : toISODate(date);
+  return mode === 'datetime' ? toDateTimeOffset(toISODate(date), time) : toISODate(date);
 }
 
-/** Splits a `value` into its date portion (as a `Date`, via the local `parseISODate` above —
- *  date-only, no timezone conversion) and its `HH:mm` time-of-day (`'00:00'` if absent —
- *  covers both plain date-mode values and a datetime value with no time captured yet). */
+/** Splits a `value` into its date portion (as a local-midnight `Date` — no timezone conversion)
+ *  and its `HH:mm:ss` time-of-day (`'00:00:00'` if absent — covers both plain date-mode values and a
+ *  datetime value with no time captured yet). Seconds are kept here whatever `seconds` says, so
+ *  picking another day never drops seconds a value already has. */
 function splitValue(value: string): { date: Date; time: string } {
-  const [datePart, rest] = value.split('T');
-  const match = rest?.match(/^(\d{2}:\d{2})/);
-  return { date: parseISODate(datePart), time: match ? match[1] : '00:00' };
+  const { day, time } = splitDateTime(value, true);
+  return { date: parseISODate(day), time };
 }
 
 export type DatePickerMode = 'date' | 'datetime';
+export type { DateDisabledFn } from "../calendar/dates.js";
 
 /**
  * A single-date(-time)-selection form control. In `mode="date"` (default) the value follows
@@ -92,7 +85,8 @@ export type DatePickerMode = 'date' | 'datetime';
  * @cssprop --date-picker-popover-width - width of the calendar popover (default: 296px, independent of trigger width — a fixed-width calendar reads more naturally)
  *
  * @event change - fires when the user clicks a date cell, confirms via keyboard, changes the
- *   time input (datetime mode, once a date is set), or clicks the clear button. Programmatic
+ *   time input (datetime mode, once a date is set), or clicks the clear button — with `confirm`,
+ *   calendar picks fire it only when Apply commits a different value. Programmatic
  *   value assignment does not fire it (same contract as native form controls).
  */
 @customElement('u-date-picker')
@@ -105,6 +99,10 @@ export class UDatePicker extends UFormControlElement<string> {
   /** `date` (default) selects a calendar day only. `datetime` also captures a time-of-day and
    *  the value becomes a complete ISO-8601 `DateTimeOffset` string. */
   @property({ type: String, reflect: true }) mode: DatePickerMode = 'date';
+  /** `mode="datetime"`: the time is entered to the second — the time input shows seconds and the
+   *  text box reads and shows `HH:mm:ss`. Without it the time is to the minute (the value always
+   *  carries seconds either way). */
+  @property({ type: Boolean, reflect: true }) seconds: boolean = false;
   /** Minimum value (ISO YYYY-MM-DD) — dates before this cannot be selected. Date-only even in
    *  `mode="datetime"`; time-of-day is never range-checked. */
   @property({ type: String }) min?: string;
@@ -113,6 +111,10 @@ export class UDatePicker extends UFormControlElement<string> {
   @property({ type: String }) max?: string;
   /** Whether to show the clear button */
   @property({ type: Boolean, reflect: true }) clearable: boolean = false;
+  /** App rule for days that cannot be chosen — receives the ISO day, returns `true` to disable it
+   *  (weekends, holidays, fully booked days). Such days cannot be picked in the calendar ("Today" too);
+   *  a typed or assigned value on one reports `stepMismatch`. Property only. */
+  @property({ attribute: false }) isDateDisabled?: DateDisabledFn;
   /** Placeholder text (shown when there is no value). Defaults to the pattern to type
    *  (`YYYY-MM-DD`, or `YYYY-MM-DD HH:mm` in `mode="datetime"`). */
   @property({ type: String }) placeholder?: string;
@@ -121,6 +123,11 @@ export class UDatePicker extends UFormControlElement<string> {
    *  `20261002` are read in both. The time, in `mode="datetime"`, is always `HH:mm`. The value is
    *  ISO either way. */
   @property({ type: String, reflect: true }) format: DateTextFormat = 'iso';
+  /** Picks in the calendar wait for an Apply button instead of committing at once. Choosing a day,
+   *  the time, "today" or "clear" inside the calendar only stages the choice; Apply commits it, fires
+   *  `change` and closes; Cancel, Escape or closing the calendar any other way drops it. Typing in
+   *  the text box still commits on Enter or leaving the field. */
+  @property({ type: Boolean, reflect: true }) confirm: boolean = false;
 
   @query('.container', true) containerEl?: HTMLElement;
   @query('u-popover', true) popoverEl?: UPopover;
@@ -133,6 +140,8 @@ export class UDatePicker extends UFormControlElement<string> {
   /** Time-of-day for the next selection while no `value` exists yet (`mode="datetime"` only) —
    *  once `value` is set, the time input reads/writes its time portion directly instead. */
   @state() private pendingTime: string = '00:00';
+  /** With `confirm`, the choice made in the open calendar that Apply would commit. */
+  @state() private staged?: string;
   /** The typed-date text box — what is being typed, committing it, opening the calendar. */
   private readonly textEntry = new DateTextController(this, {
     toValue: (text) => {
@@ -152,6 +161,17 @@ export class UDatePicker extends UFormControlElement<string> {
     input: () => this.textInputEl,
     interactive: () => !this.effectivelyDisabled && !this.readonly,
   });
+
+  protected shouldValidate(changed: PropertyValues): boolean {
+    return super.shouldValidate(changed) || changed.has('min') || changed.has('max') || changed.has('isDateDisabled');
+  }
+
+  protected willUpdate(changed: PropertyValues): void {
+    super.willUpdate(changed);
+    // `confirm`: each opening starts from the value, and a value committed another way while the
+    // calendar is open (typed text) replaces what was staged.
+    if (this.open && (changed.has('open') || changed.has('value'))) this.staged = this.value;
+  }
 
   protected updated(changed: PropertyValues): void {
     super.updated(changed);
@@ -174,12 +194,17 @@ export class UDatePicker extends UFormControlElement<string> {
     }
   }
 
+  /** What the open calendar shows and edits: the staged choice with `confirm`, otherwise the value. */
+  private get working(): string | undefined {
+    return this.confirm && this.open ? this.staged : this.value;
+  }
+
   /** The value as the text box shows it: `YYYY-MM-DD`, or `YYYY-MM-DD HH:mm` in `mode="datetime"`. */
   private shownText(): string {
     if (!this.value) return '';
     const { date, time } = splitValue(this.value);
     return this.mode === 'datetime'
-      ? formatDateTimeText(`${toISODate(date)}T${time}`, this.format)
+      ? formatDateTimeText(`${toISODate(date)}T${time}`, this.format, undefined, this.seconds)
       : formatDateText(toISODate(date), this.format);
   }
 
@@ -206,7 +231,7 @@ export class UDatePicker extends UFormControlElement<string> {
             aria-label=${ifDefined(this.resolvedAriaLabel)}
             aria-description=${ifDefined(this.resolvedAriaDescription)}
             aria-invalid=${this.textEntry.badText ? 'true' : 'false'}
-            placeholder=${this.placeholder ?? (datetime ? `${dateTextPattern(this.format)} HH:mm` : dateTextPattern(this.format))}
+            placeholder=${this.placeholder ?? (datetime ? `${dateTextPattern(this.format)} ${this.seconds ? 'HH:mm:ss' : 'HH:mm'}` : dateTextPattern(this.format))}
             .value=${this.textEntry.text}
             ?disabled=${this.effectivelyDisabled}
             ?readonly=${this.readonly}
@@ -258,9 +283,10 @@ export class UDatePicker extends UFormControlElement<string> {
       <div class="calendar" part="calendar">
         <u-calendar
           exportparts="calendar-header, calendar-title, calendar-weekdays, calendar-grid, calendar-week, day"
-          .value=${this.value ? toISODate(splitValue(this.value).date) : undefined}
+          .value=${this.working ? toISODate(splitValue(this.working).date) : undefined}
           .min=${this.min}
           .max=${this.max}
+          .isDateDisabled=${this.isDateDisabled}
           @day-select=${this.handleDaySelect}
           @keydown=${this.handleCalendarKeydown}
         ></u-calendar>
@@ -272,12 +298,13 @@ export class UDatePicker extends UFormControlElement<string> {
 
   private renderTimeRow() {
     if (this.mode !== 'datetime') return '';
-    const time = this.value ? splitValue(this.value).time : this.pendingTime;
+    const time = this.working ? splitValue(this.working).time : this.pendingTime;
     return html`
       <div class="calendar-time" part="calendar-time">
         <input type="time" class="time-input" part="time-input"
           aria-label=${Locale.getValue('time')}
-          .value=${time}
+          step=${ifDefined(this.seconds ? '1' : undefined)}
+          .value=${normalizeTime(time, this.seconds)}
           @change=${this.handleTimeChange}
         />
       </div>
@@ -285,15 +312,26 @@ export class UDatePicker extends UFormControlElement<string> {
   }
 
   private renderFooter() {
-    const todayDisabled = isOutOfRange(new Date(), this.min, this.max);
+    const todayDisabled = this.unavailable(new Date());
     return html`
       <div class="calendar-footer" part="calendar-footer">
         <u-button appearance="plain" size="sm" ?disabled=${todayDisabled} @click=${this.handleTodayClick}>${Locale.getValue('today')}</u-button>
-        ${this.clearable && this.value ? html`
+        ${this.clearable && this.working ? html`
           <u-button appearance="plain" size="sm" @click=${this.handleFooterResetClick}>${Locale.getValue('clear')}</u-button>
+        ` : ''}
+        ${this.confirm ? html`
+          <span class="confirm-actions">
+            <u-button appearance="plain" size="sm" @click=${this.handleCancelClick}>${Locale.getValue('cancel')}</u-button>
+            <u-button size="sm" @click=${this.handleApplyClick}>${Locale.getValue('apply')}</u-button>
+          </span>
         ` : ''}
       </div>
     `;
+  }
+
+  /** A day the calendar refuses — outside `min`/`max` or disabled by `isDateDisabled`. */
+  private unavailable(date: Date): boolean {
+    return isDayUnavailable(date, this.min, this.max, this.isDateDisabled);
   }
 
   /** `timeOverride` lets a caller force the time-of-day (the "today" quick action wants
@@ -301,13 +339,17 @@ export class UDatePicker extends UFormControlElement<string> {
    *  it, which preserves the existing time-of-day (or `pendingTime`) so switching the date
    *  alone doesn't clobber a time the user already picked. */
   private selectDay(date: Date, timeOverride?: string): void {
-    if (isOutOfRange(date, this.min, this.max)) return;
-    const time = timeOverride ?? (this.value ? splitValue(this.value).time : this.pendingTime);
+    if (this.unavailable(date)) return;
+    const time = timeOverride ?? (this.working ? splitValue(this.working).time : this.pendingTime);
     const iso = buildValue(date, this.mode, time);
+    if (this.mode === 'datetime') this.pendingTime = time;
+    if (this.confirm) {
+      this.staged = iso;
+      return;
+    }
     const changed = iso !== this.value;
     this.textEntry.clear();
     this.value = iso;
-    if (this.mode === 'datetime') this.pendingTime = time;
     if (changed) this.emitChange();
     this.popoverEl?.hide();
     (this.textInputEl ?? this.containerEl)?.focus();
@@ -318,8 +360,12 @@ export class UDatePicker extends UFormControlElement<string> {
    *  `pendingTime` for whenever a day gets picked. Doesn't close the popover or refocus the
    *  trigger — unlike selecting a day, adjusting the time doesn't conclude the interaction. */
   private handleTimeChange = (e: Event) => {
-    const time = (e.target as HTMLInputElement).value || '00:00';
+    const time = normalizeTime((e.target as HTMLInputElement).value || '00:00', this.seconds);
     this.pendingTime = time;
+    if (this.confirm) {
+      if (this.staged) this.staged = buildValue(splitValue(this.staged).date, this.mode, time);
+      return;
+    }
     if (!this.value) return;
     const iso = buildValue(splitValue(this.value).date, this.mode, time);
     const changed = iso !== this.value;
@@ -344,8 +390,8 @@ export class UDatePicker extends UFormControlElement<string> {
       return date ? { date, time: this.pendingTime } : null;
     }
     const keep = this.value ? splitValue(this.value).time : this.pendingTime;
-    const dt = parseDateTime(text, { format: this.format, defaultTime: keep });
-    return dt ? { date: dt.slice(0, 10), time: dt.slice(11, 16) } : null;
+    const dt = parseDateTime(text, { format: this.format, defaultTime: keep, seconds: this.seconds });
+    return dt ? { date: dt.slice(0, 10), time: dt.slice(11) } : null;
   }
 
   /** Escape inside the grid closes the calendar and returns focus to the trigger — the grid
@@ -379,8 +425,9 @@ export class UDatePicker extends UFormControlElement<string> {
    *  이라 시간까지 `now`로 덮어쓴다 — 평범한 day 셀 클릭과 달리 기존 시각을 보존하지 않는다. */
   private handleTodayClick = () => {
     const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
     const time = this.mode === 'datetime'
-      ? `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+      ? `${pad(now.getHours())}:${pad(now.getMinutes())}${this.seconds ? `:${pad(now.getSeconds())}` : ''}`
       : undefined;
     this.selectDay(now, time);
   };
@@ -388,7 +435,28 @@ export class UDatePicker extends UFormControlElement<string> {
   /** 캘린더 팝오버 안 "초기화" 퀵액션 — 트리거의 clear 아이콘(`handleClearClick`)과 값을
    *  비우는 로직은 같지만, 팝오버가 열린 채로 눌렸으므로 선택 완료와 동일하게 닫아 준다. */
   private handleFooterResetClick = () => {
+    if (this.confirm) {
+      this.staged = undefined;
+      return;
+    }
     this.resetValue();
+    this.popoverEl?.hide();
+    (this.textInputEl ?? this.containerEl)?.focus();
+  };
+
+  /** `confirm` 모드의 «적용» — 달력에서 고른 것을 값으로 확정한다(비운 채면 값을 비운다). */
+  private handleApplyClick = () => {
+    const next = this.staged;
+    const changed = next !== this.value;
+    this.textEntry.clear();
+    this.value = next;
+    if (changed) this.emitChange();
+    this.popoverEl?.hide();
+    (this.textInputEl ?? this.containerEl)?.focus();
+  };
+
+  /** `confirm` 모드의 «취소» — 고른 것은 다음에 열 때 값에서 다시 시작하므로 닫기만 하면 버려진다. */
+  private handleCancelClick = () => {
     this.popoverEl?.hide();
     (this.textInputEl ?? this.containerEl)?.focus();
   };
@@ -430,6 +498,10 @@ export class UDatePicker extends UFormControlElement<string> {
     } else if (this.value && this.max && splitValue(this.value).date.getTime() > parseISODate(this.max).getTime()) {
       flags = { rangeOverflow: true };
       message = Locale.getValue('rangeOverflow', { max: this.max });
+    } else if (this.value && this.isDateDisabled?.(toISODate(splitValue(this.value).date))) {
+      // The native analogue is a date input's `step`: a readable day the control does not allow.
+      flags = { stepMismatch: true };
+      message = Locale.getValue('dateUnavailable');
     }
 
     this.commit(flags, message, this.textInputEl ?? this.containerEl ?? undefined);

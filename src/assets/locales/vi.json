@@ -54,5 +54,11 @@
   "confirm": "Xác nhận",
   "cancel": "Hủy",
   "stepComplete": "Đã hoàn thành",
-  "stepOnHold": "Tạm dừng"
+  "stepOnHold": "Tạm dừng",
+  "apply": "Áp dụng",
+  "dateUnavailable": "Ngày này không khả dụng",
+  "startTime": "Giờ bắt đầu",
+  "endTime": "Giờ kết thúc",
+  "timeAm": "SA",
+  "timePm": "CH"
 }
