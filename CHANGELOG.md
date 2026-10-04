@@ -81,6 +81,11 @@
 - **`u-radio type="button"`: its options are radios to assistive technology.** The button style
   hides the radio marker, and the option took its role from the marker — so a `radiogroup` held
   `role="option"` items with `aria-selected`. The role now follows the group.
+- **`u-button` and `u-icon-button` pass button state ARIA to the element that takes focus.**
+  Only `aria-label` used to cross the shadow boundary, so a toggle or disclosure button's
+  `aria-pressed` / `aria-expanded` / `aria-haspopup` set on the host never reached assistive
+  technology (WCAG 4.1.2). They are now moved to the inner `<button>` (`aria-pressed` not on a
+  link), and `aria-controls` is carried as an element reference.
 - **`u-tab-panel` tells assistive technology which tab is selected.** Tabs carry `aria-selected`,
   only the selected tab is a tab stop (roving tabindex — Tab used to stop on every tab), each
   `u-panel` becomes a `tabpanel`, and tab and panel are linked with `aria-controls` /

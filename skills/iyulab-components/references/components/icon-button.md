@@ -47,6 +47,12 @@ Square icon-only button with a built-in tooltip (shown from the default slot). R
 | `tooltipPlacement` | `Placement` | `'top'` | — | Tooltip position |
 | `tooltipOffset` | `OffsetOptions` | `4` | — | Tooltip offset from button |
 
+## Accessibility
+
+Give every icon button an `aria-label` — the icon has no text. `aria-label` and the button states
+(`aria-pressed`, `aria-expanded`, `aria-controls`, `aria-haspopup`) set on the host reach the
+inner button, as on `u-button`.
+
 ## CSS Parts
 
 | Part | Description |

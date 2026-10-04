@@ -1,10 +1,12 @@
-import { html, type TemplateResult } from "lit";
+import { html, type PropertyValues, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import '../spinner/USpinner.js';
 
 import { UElement } from "../UElement.js";
 import { styles } from "./UButton.styles.js";
+import { FORWARDED_ARIA } from "./forwarded-aria.js";
+
 
 /**
  * 외형 정도(chrome) — 컴포넌트 공통 어휘. `solid` 꽉 찬 면 · `soft` 옅은 틴트 면 · `outlined` 테두리 ·
@@ -170,21 +172,55 @@ export class UButton extends UElement {
    * 않았다 — 목록에 명시적으로 추가해야 한다.
    */
   static override get observedAttributes(): string[] {
-    return [...super.observedAttributes, 'aria-label'];
+    return [...super.observedAttributes, ...FORWARDED_ARIA];
   }
 
   override attributeChangedCallback(name: string, old: string | null, value: string | null): void {
     super.attributeChangedCallback(name, old, value);
-    if (name === 'aria-label') this.requestUpdate();
+    if ((FORWARDED_ARIA as readonly string[]).includes(name)) this.requestUpdate();
+  }
+
+  protected override updated(changed: PropertyValues): void {
+    super.updated(changed);
+    this.forwardControls();
+  }
+
+  /**
+   * `aria-controls` 는 id 참조라 섀도 경계를 넘지 못한다 — 안쪽 버튼에 문자열로 옮기면 아무것도
+   * 가리키지 않는다. 호스트의 트리에서 id 를 풀어 **요소 참조**(`ariaControlsElements`)로 싣는다.
+   * 섀도 안에서 바깥 트리의 요소를 가리키는 것은 요소 참조가 허용하는 방향이다. 그 API 가 없는
+   * 브라우저에서는 옮기지 않는다(호스트의 속성은 그대로 남는다).
+   */
+  private forwardControls() {
+    const inner = this.shadowRoot?.querySelector<HTMLElement>('button, a') as
+      (HTMLElement & { ariaControlsElements?: Element[] | null }) | null;
+    if (!inner || !('ariaControlsElements' in inner)) return;
+    const ids = this.getAttribute('aria-controls')?.split(/\s+/).filter(Boolean) ?? [];
+    // 감싼 컴포넌트(`u-icon-button`)가 이 버튼에 속성을 넘기면 id 는 그 바깥 트리에 있다 — 위로 올라가며 찾는다.
+    const find = (id: string) => {
+      for (let root: Node = this.getRootNode(); ; ) {
+        const hit = (root as Document | ShadowRoot).getElementById?.(id);
+        if (hit) return hit;
+        if (!(root instanceof ShadowRoot)) return null;
+        root = root.host.getRootNode();
+      }
+    };
+    const targets = ids.map(find).filter((el): el is HTMLElement => !!el);
+    inner.ariaControlsElements = targets.length ? targets : null;
   }
 
   render() {
     const ariaLabel = this.getAttribute('aria-label') ?? undefined;
+    const pressed = this.getAttribute('aria-pressed') ?? undefined;
+    const expanded = this.getAttribute('aria-expanded') ?? undefined;
+    const haspopup = this.getAttribute('aria-haspopup') ?? undefined;
 
     if (this.href) {
       return html`
         <a part="link"
           aria-label=${ifDefined(ariaLabel)}
+          aria-expanded=${ifDefined(expanded)}
+          aria-haspopup=${ifDefined(haspopup)}
           ?disabled=${this.effectivelyDisabled || this.loading}
           tabindex=${this.effectivelyDisabled || this.loading ? -1 : 0}
           href=${ifDefined(this.effectivelyDisabled || this.loading ? undefined : this.href)}
@@ -201,6 +237,9 @@ export class UButton extends UElement {
     return html`
       <button part="button"
         aria-label=${ifDefined(ariaLabel)}
+        aria-pressed=${ifDefined(pressed)}
+        aria-expanded=${ifDefined(expanded)}
+        aria-haspopup=${ifDefined(haspopup)}
         type=${this.type}
         ?disabled=${this.effectivelyDisabled || this.loading}
       >

@@ -64,6 +64,20 @@ Versatile button with multiple appearances. Renders as an `<a>` element when `hr
 - `solid`/`soft`/`outlined`: background/border switch to the chosen color's scale. `neutral` is an achromatic (grey) button — the brand colour is `primary` (the default).
 - `plain`/`link`: these have no fill, so for `primary` (the default) and `neutral` they keep body text (`plain`) or link text (`link`); any other `color` switches the text color (e.g. `appearance="link" color="danger"` for a destructive link).
 
+## Accessibility
+
+Set ARIA on the `u-button` host as you would on a native button — the component moves it to the
+inner `<button>`/`<a>` that actually takes focus: `aria-label`, and the button states
+`aria-pressed` (toggle), `aria-expanded` + `aria-controls` (disclosure) and `aria-haspopup`
+(menu button). `aria-pressed` is dropped on a link (`href`), where it is not allowed.
+`aria-controls` is an id reference, which cannot cross the shadow boundary, so it is carried as an
+element reference (`ariaControlsElements`) resolved when the button renders.
+
+```html
+<u-button aria-expanded="false" aria-controls="details">Details</u-button>
+<u-button aria-pressed="true">Bold</u-button>
+```
+
 ## CSS Parts
 
 | Part | Description |
