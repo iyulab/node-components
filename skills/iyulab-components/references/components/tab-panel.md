@@ -73,6 +73,13 @@ out of the component.
 |-------|-------------|
 | `change` | Fires on user-driven tab changes (click/keyboard). Not emitted for initial mount or direct `value` assignment. |
 
+### Accessibility
+
+The panel wires the WAI-ARIA tabs pattern itself: each tab carries `aria-selected`, only the
+selected tab is a tab stop (arrow keys, Home and End move between tabs and select them), each
+`u-panel` becomes a `tabpanel`, and a tab and its panel (same `value`) point at each other with
+`aria-controls` / `aria-labelledby`. Ids are generated when missing; ids you set are kept.
+
 ### CSS Parts
 
 | Part | Description |

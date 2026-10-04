@@ -81,6 +81,18 @@
 - **`u-radio type="button"`: its options are radios to assistive technology.** The button style
   hides the radio marker, and the option took its role from the marker — so a `radiogroup` held
   `role="option"` items with `aria-selected`. The role now follows the group.
+- **`u-tab-panel` tells assistive technology which tab is selected.** Tabs carry `aria-selected`,
+  only the selected tab is a tab stop (roving tabindex — Tab used to stop on every tab), each
+  `u-panel` becomes a `tabpanel`, and tab and panel are linked with `aria-controls` /
+  `aria-labelledby` (ids are generated when missing). Selection used to show only through the
+  `active` styling attribute (WCAG 4.1.2).
+- **`u-radio` is one tab stop, and arrow keys select.** Only the selected option (or the first
+  enabled one) is in the tab order, and ArrowUp/Down/Left/Right, Home and End move focus and
+  selection together and fire `change` — the native radio group behaviour. Before, every option
+  was a tab stop and arrows only moved focus. `focus()` now goes to that tab stop instead of the
+  first option.
+- **Every focus is visible on a soft segmented `u-radio`.** Its segments have no border and the
+  option drops its outline, so the focused segment showed no change; it now draws the focus ring.
 
 ### Added
 

@@ -56,7 +56,7 @@ Radio group built from `u-option` children. Form-associated.
 
 | Event | Description |
 |-------|-------------|
-| `change` | Fires when selection changes |
+| `change` | Fires when the user changes the selection — click, Space/Enter, or an arrow key |
 
 ## Methods
 
@@ -64,8 +64,14 @@ Radio group built from `u-option` children. Form-associated.
 |--------|-------------|
 | `validate()` | Validate; sets `invalid` |
 | `reset()` | Reset selection |
-| `focus(options?)` | Focus the first option (regardless of selection) |
+| `focus(options?)` | Focus the group's tab stop — the selected option, or the first enabled one |
 | `blur()` | Blur the currently focused option, if any |
+
+## Keyboard
+
+The group is one tab stop (the selected option, or the first enabled one). Arrow keys move focus
+**and** selection together, wrapping at the ends; Home/End jump to the first/last option — the
+native radio group and WAI-ARIA APG behaviour.
 
 ## CSS Parts
 

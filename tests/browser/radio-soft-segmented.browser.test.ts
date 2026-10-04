@@ -92,3 +92,54 @@ describe('u-radio soft (segmented) — keyboard focus', () => {
     expect(cs.outlineWidth).toBe('2px');
   });
 });
+
+describe('u-radio — roving tabindex (APG radio group)', () => {
+  it('🔴only the selected option is a tab stop; Tab enters on it and leaves the group in one step', async () => {
+    const { userEvent } = await import('vitest/browser');
+    const before = document.createElement('button');
+    before.textContent = 'before';
+    document.body.appendChild(before);
+    made.push(before);
+    const el = await group('b');
+    const after = document.createElement('button');
+    after.textContent = 'after';
+    document.body.appendChild(after);
+    made.push(after);
+    const opts = [...el.querySelectorAll('u-option')];
+    expect(opts.map((o) => o.getAttribute('tabindex'))).toEqual(['-1', '0', '-1']);
+
+    before.focus();
+    await userEvent.tab();
+    expect(document.activeElement).toBe(opts[1]);
+    await userEvent.tab();
+    expect(document.activeElement).toBe(after);
+  });
+
+  it('🔴arrow keys move focus and selection together, firing change, and the tab stop follows', async () => {
+    const { userEvent } = await import('vitest/browser');
+    const el = await group('a');
+    let changes = 0;
+    el.addEventListener('change', () => changes++);
+    const opts = [...el.querySelectorAll('u-option')];
+    opts[0].focus();
+    await userEvent.keyboard('{ArrowRight}');
+    await el.updateComplete;
+    expect(document.activeElement).toBe(opts[1]);
+    expect(el.value).toBe('b');
+    expect(changes).toBe(1);
+    expect(opts.map((o) => o.getAttribute('tabindex'))).toEqual(['-1', '0', '-1']);
+    expect(opts[1].getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('with no value, the first option is the tab stop', async () => {
+    const el = document.createElement('u-radio') as URadio;
+    el.innerHTML = '<u-option value="a">A</u-option><u-option value="b">B</u-option>';
+    document.body.appendChild(el);
+    made.push(el);
+    await el.updateComplete;
+    await new Promise((r) => setTimeout(r, 0));
+    await el.updateComplete;
+    const opts = [...el.querySelectorAll('u-option')];
+    expect(opts.map((o) => o.getAttribute('tabindex'))).toEqual(['0', '-1']);
+  });
+});

@@ -162,7 +162,7 @@ describe('폼 컨트롤 host.focus()/.blur() 위임 — UInput.focus()와 같은
     expect(document.activeElement).not.toBe(el);
   });
 
-  it('URadio — host.focus()가 첫 옵션으로 위임된다(선택된 값과 무관)', async () => {
+  it('URadio — host.focus()가 탭 정지점(선택된 옵션)으로 위임된다', async () => {
     const radio = document.createElement('u-radio') as URadio;
     for (const v of ['a', 'b', 'c']) {
       const option = document.createElement('u-option');
@@ -176,8 +176,8 @@ describe('폼 컨트롤 host.focus()/.blur() 위임 — UInput.focus()와 같은
     await new Promise(r => setTimeout(r, 0));
 
     radio.focus();
-    const firstOption = radio.querySelector('u-option[value="a"]');
-    expect(document.activeElement).toBe(firstOption);
+    const selected = radio.querySelector('u-option[value="b"]');
+    expect(document.activeElement).toBe(selected);
 
     radio.blur();
     expect(radio.shadowRoot?.activeElement).toBeNull();

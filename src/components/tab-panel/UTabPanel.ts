@@ -10,6 +10,9 @@ import { styles } from "./UTabPanel.styles.js";
 export type TabPanelAppearance = 'line' | 'card' | 'pill' | 'plain';
 export type TabPanelPlacement = 'top' | 'bottom' | 'left' | 'right';
 
+let idSeq = 0;
+const nextId = (prefix: string) => `${prefix}-${++idSeq}`;
+
 /**
  * 탭 기반 콘텐츠 전환을 제공하는 컴포넌트입니다.
  *
@@ -82,12 +85,40 @@ export class UTabPanel extends UElement {
     this.fire('change', { bubbles: false, composed: false });
   }
 
+  /**
+   * 선택 상태를 외형(`active`)과 보조기기 표면에 함께 싣는다 — WAI-ARIA APG Tabs.
+   * - 탭: `aria-selected` · 로빙 tabindex(선택된 탭만 0 — Tab 은 탭 목록에 한 번만 멈추고,
+   *   안에서는 화살표가 옮긴다). 선택된 탭이 없거나 비활성이면 첫 활성 탭이 0 을 받는다.
+   * - 패널: `role="tabpanel"` · 같은 `value` 의 탭과 `aria-controls`/`aria-labelledby` 로 잇는다.
+   *   탭과 패널은 같은 light DOM 에 있으므로 id 참조가 성립한다. 소비자는 id 를 몰라도 된다 —
+   *   없으면 만든다(주어진 id 는 그대로 쓴다).
+   */
   private updateTabPanel() {
+    const stop = this.tabs.find(t => t.value === this.value && !t.disabled)
+      ?? this.tabs.find(t => !t.disabled);
+    const panelOf = new Map(this.panels.map(p => [p.value, p] as const));
+    const tabOf = new Map(this.tabs.map(t => [t.value, t] as const));
+
     this.tabs.forEach(tab => {
-      tab.toggleAttribute('active', tab.value === this.value);
+      const selected = tab.value === this.value;
+      tab.toggleAttribute('active', selected);
+      tab.setAttribute('aria-selected', String(selected));
+      tab.setAttribute('tabindex', tab === stop ? '0' : '-1');
+      if (!tab.id) tab.id = nextId('u-tab');
+      const panel = panelOf.get(tab.value);
+      if (panel) {
+        if (!panel.id) panel.id = nextId('u-tab-panel');
+        tab.setAttribute('aria-controls', panel.id);
+      } else {
+        tab.removeAttribute('aria-controls');
+      }
     });
     this.panels.forEach(panel => {
       panel.hidden = panel.value !== this.value;
+      panel.setAttribute('role', 'tabpanel');
+      const tab = tabOf.get(panel.value);
+      if (tab) panel.setAttribute('aria-labelledby', tab.id);
+      else panel.removeAttribute('aria-labelledby');
     });
   }
 

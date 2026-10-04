@@ -60,6 +60,21 @@ export class URadio extends UFormControlElement<string> {
     if (['value','options'].some(k => changedProperties.has(k))) {
       this.onChangeValue();
     }
+    this.updateRoving();
+  }
+
+  /**
+   * 로빙 tabindex — 라디오 그룹은 Tab 이 한 번만 멈춘다(선택된 옵션, 없으면 첫 활성 옵션).
+   * 그룹 안의 이동은 화살표가 한다(WAI-ARIA APG Radio Group · 네이티브 라디오와 같다).
+   */
+  private tabStop(): UOption | undefined {
+    return this.options.find(o => o.value === this.value && !o.disabled)
+      ?? this.options.find(o => !o.disabled);
+  }
+
+  private updateRoving() {
+    const stop = this.tabStop();
+    this.options.forEach(o => o.setAttribute('tabindex', o === stop ? '0' : '-1'));
   }
 
   render() {
@@ -97,12 +112,11 @@ export class URadio extends UFormControlElement<string> {
     this.invalid = false;
   }
 
-  /** 그룹의 첫 포커스 가능 옵션으로 위임한다(선택된 값과 무관 — 나머지 폼 컨트롤과
-   *  같은 "위임 대상이 하나로 고정된 단순 계약"을 유지한다). 옵션 자신이 host에
-   *  실제 tabindex를 갖는 커스텀 엘리먼트라 `UOption.focus()`가 이미 동작한다. */
+  /** 그룹의 탭 정지점으로 위임한다 — 선택된 옵션, 없으면 첫 활성 옵션(`updateRoving` 과 같은
+   *  대상). Tab 으로 들어올 때와 프로그램으로 포커스할 때 같은 옵션에 닿는다(네이티브 라디오와 같다).
+   *  옵션 자신이 host 에 실제 tabindex 를 갖는 커스텀 엘리먼트라 `UOption.focus()` 가 이미 동작한다. */
   public focus(options?: FocusOptions): void {
-    const first = this.options.find(o => !o.disabled);
-    first?.focus(options);
+    this.tabStop()?.focus(options);
   }
 
   public blur(): void {
@@ -119,6 +133,7 @@ export class URadio extends UFormControlElement<string> {
       option.marker = this.type === 'button' ? undefined : 'radio';
       option.disabled = this.effectivelyDisabled || this.readonly;
     }
+    this.updateRoving();
   }
 
   private cleanup(options: UOption[]) {
@@ -171,6 +186,14 @@ export class URadio extends UFormControlElement<string> {
     this.emitChange();
   };
 
+  /** 화살표·Home·End 는 포커스와 선택을 함께 옮긴다 — 네이티브 라디오와 APG 라디오 그룹의 동작. */
+  private moveTo(option: UOption) {
+    option.focus();
+    if (option.value === this.value) return;
+    this.value = option.value;
+    this.emitChange();
+  }
+
   private handleOptionKeyDown = (e: KeyboardEvent) => {
     if (this.readonly || this.effectivelyDisabled) return;
 
@@ -188,25 +211,23 @@ export class URadio extends UFormControlElement<string> {
       case 'ArrowDown':
       case 'ArrowRight': {
         e.preventDefault();
-        const next = options[(currentIndex + 1) % options.length];
-        next.focus();
+        this.moveTo(options[(currentIndex + 1) % options.length]);
         break;
       }
       case 'ArrowUp':
       case 'ArrowLeft': {
         e.preventDefault();
-        const prev = options[(currentIndex - 1 + options.length) % options.length];
-        prev.focus();
+        this.moveTo(options[(currentIndex - 1 + options.length) % options.length]);
         break;
       }
       case 'Home': {
         e.preventDefault();
-        options[0].focus();
+        this.moveTo(options[0]);
         break;
       }
       case 'End': {
         e.preventDefault();
-        options[options.length - 1].focus();
+        this.moveTo(options[options.length - 1]);
         break;
       }
     }

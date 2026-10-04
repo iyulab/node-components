@@ -38,7 +38,8 @@ export class UTab extends UElement {
   connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute('role', 'tab');
-    this.setAttribute('tabindex', '0');
+    // 탭 패널 안에서는 패널이 로빙 tabindex 를 정한다 — 다시 붙을 때 그것을 덮지 않는다.
+    if (!this.hasAttribute('tabindex')) this.setAttribute('tabindex', '0');
     if (!this.hasAttribute('slot')) {
       this.setAttribute('slot', 'tab');
     }

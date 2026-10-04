@@ -50,7 +50,12 @@ export class UOption extends UElement {
   connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute('role', 'option');
-    this.setAttribute('tabindex', this.disabled ? '-1' : '0');
+    // 라디오 그룹 안에서는 그룹이 로빙 tabindex 를 정한다(`URadio.updateRoving`).
+    if (!this.inRadioGroup) this.setAttribute('tabindex', this.disabled ? '-1' : '0');
+  }
+
+  private get inRadioGroup() {
+    return this.parentElement?.localName === 'u-radio';
   }
 
   protected updated(changed: PropertyValues): void {
@@ -62,12 +67,12 @@ export class UOption extends UElement {
     //  이름만 있고 비어 보이는 위젯으로 읽지 않는다.)
     // ⚠역할은 «표식 모양»이 아니라 «소속 그룹»이 정한다 — `u-radio type="button"` 은 동그라미 표식을
     //   숨기려고 marker 를 비우지만 여전히 radiogroup 이다(종전에는 그 안에 role=option 이 놓였다).
-    const isRadio = this.marker === 'radio' || this.parentElement?.localName === 'u-radio';
+    const isRadio = this.marker === 'radio' || this.inRadioGroup;
     this.setAttribute('role', isRadio ? 'radio' : 'option');
     this.removeAttribute(isRadio ? 'aria-selected' : 'aria-checked');
     this.setAttribute(isRadio ? 'aria-checked' : 'aria-selected', String(this.selected));
     this.setAttribute('aria-disabled', String(this.disabled));
-    this.setAttribute('tabindex', this.disabled ? '-1' : '0');
+    if (!this.inRadioGroup) this.setAttribute('tabindex', this.disabled ? '-1' : '0');
   }
 
   render() {
