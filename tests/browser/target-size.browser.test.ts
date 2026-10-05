@@ -350,6 +350,12 @@ interface Fixture {
    */
   spacingIsOurs?: true;
   /**
+   * 판정하지 않지만 **간격 계산에는 넣는** 이웃 타깃. 간격 예외는 같은 상태의 타깃끼리만 재므로, 같은 픽스처에 함께 그려지는
+   * 다른 상태의 타깃이 보이지 않으면 미달 타깃이 «간격 예외» 로 통과한다(flex-table 열 메뉴 단추 ↔ 리사이즈 핸들 실측).
+   * 이 게이트에는 아직 그런 배치가 없다 — 판정 루프는 형제 게이트와 같은 코드로 둔다(`hit-test-block-sync` 가 대조한다).
+   */
+  spacingNeighbors?: (tag: string) => Element[];
+  /**
    * 🔴**타깃이 «열린 상태»에서만 렌더되면 재기 전에 그 상태를 만든다**(`chat-components`
    * 게이트가 먼저 들였다). 사용자와 같은 경로(클릭·키)로 연다 — 내부 상태를 직접 세우면 «그 경로로
    * 열리는가»가 빠진다. 열리지 않으면 «타깃 0개» 단언이 빨강을 낸다(조용히 통과하지 않는다).
@@ -941,8 +947,12 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
         expect(unreachable, '누르면 다른 요소가 받는 타깃 — 잘렸거나 가려졌거나 닫혀 있다').toEqual([]);
 
         // 🔴간격 예외는 «우리가 배치를 소유할 때»만 쓴다 — `spacingIsOurs` 주석 참조.
+        const neighborEls = fixture.spacingNeighbors ? fixture.spacingNeighbors(tag) : [];
+        // 이웃 셀렉터가 아무것도 못 찾으면 선언이 조용히 무력해진다(간격 예외가 종전처럼 일한다) — 선언했으면 찾아야 한다.
+        if (fixture.spacingNeighbors) expect(neighborEls.length, '간격 이웃을 하나도 못 찾았다').toBeGreaterThan(0);
+        const neighbors = neighborEls.map(measure);
         const verdicts = targets.map((t, i) =>
-          fixture.spacingIsOurs ? judge(t, targets.filter((_, j) => j !== i)) : judge(t, [t]),
+          fixture.spacingIsOurs ? judge(t, [...targets.filter((_, j) => j !== i), ...neighbors]) : judge(t, [t]),
         );
         const detail = `실측 ${targets.map((t) => `${Math.round(t.w)}x${Math.round(t.h)}`).join(' ')} · 판정 ${verdicts.join(' ')}`;
 
