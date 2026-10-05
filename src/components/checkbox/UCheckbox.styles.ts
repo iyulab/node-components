@@ -14,7 +14,9 @@ export const styles = css`
        ⚠재는 것은 **포인터 타깃**이지 시각 크기가 아니다 — 체크 박스(.checkbox)의
        치수는 그대로 두고 «클릭을 받는 영역»만 최소 높이를 갖는다. 라벨이 있으면
        내용이 이미 이보다 크므로 아무 일도 일어나지 않는다. */
-    min-block-size: 24px;
+    min-block-size: max(24px, var(--u-target-size, 0px));
+    /* 호스트 하한(--u-target-size, 미설정 = 0)이 있으면 폭도 — 라벨 없는 단독 컨트롤이 그 값보다 좁다. */
+    min-inline-size: var(--u-target-size, 0px);
     justify-content: center;
     color: var(--u-txt-color, #212121);
     font-size: inherit;

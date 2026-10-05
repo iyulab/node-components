@@ -22,7 +22,7 @@ export const styles = css`
 
   a {
     display: inline-flex;
-    align-items: center;
+    align-items: center;\n    /* 호스트 하한(--u-target-size, 미설정 = 0) — 누르는 것은 링크 자신이라 링크가 커진다. */\n    justify-content: center;\n    min-height: var(--u-target-size, 0px);\n    min-width: var(--u-target-size, 0px);
     gap: 0.2em;
     color: inherit;
     text-decoration: none;

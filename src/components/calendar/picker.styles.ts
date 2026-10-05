@@ -11,6 +11,9 @@ export const styles = css`
     align-items: center;
     gap: 0.4em;
     padding: var(--u-field-padding-block, 0.3em) var(--u-field-padding-inline, 0.6em);
+    /* 호스트 하한(--u-target-size, 미설정 = 0) — 다른 필드와 같은 높이 하한. */
+    box-sizing: border-box;
+    min-height: var(--u-target-size, 0px);
     border: 1px solid var(--u-input-border-color, #E0E0E0);
     border-radius: var(--u-field-radius, 0.25em);
     background-color: var(--u-input-bg-color, #FFFFFF);
@@ -92,6 +95,8 @@ export const styles = css`
     font-family: inherit;
     font-size: 0.9em;
     padding: 2px 6px;
+    box-sizing: border-box;
+    min-height: var(--u-target-size, 0px);
     border: 1px solid var(--u-input-border-color, #E0E0E0);
     border-radius: 0.25em;
     background-color: var(--u-input-bg-color, #FFFFFF);

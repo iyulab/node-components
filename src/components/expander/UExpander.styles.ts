@@ -25,7 +25,7 @@ export const styles = css`
     width: 100%;
     box-sizing: border-box;
     padding: var(--u-space-sm, 8px) var(--u-space-md, 12px);
-    border: none;
+    border: none;\n    /* 호스트 하한(--u-target-size, 미설정 = 0). */\n    min-height: var(--u-target-size, 0px);
     border-radius: inherit;
     background: none;
     color: var(--u-txt-color, #212121);

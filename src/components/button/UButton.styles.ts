@@ -320,7 +320,9 @@ export const styles = css`
      * 그래서 글자 버튼의 높이는 **변하지 않고**(sm 32 · md 37 · lg 42 그대로),
      * 아이콘만 든 버튼이 같은 높이로 올라온다. 상수를 박으면 이 성질이 깨진다 —
      * 소비자가 --btn-padding-block 을 덮는 순간 둘이 다시 갈라진다. */
-    min-height: calc(1.5em + 2 * var(--btn-padding-block, 0.5em) + 2px);
+    min-height: max(calc(1.5em + 2 * var(--btn-padding-block, 0.5em) + 2px), var(--u-target-size, 0px));
+    /* 호스트 하한(--u-target-size, 미설정 = 0) — 글자와 독립된 터치 하한. 아이콘만 든 버튼은 폭도 따른다. */
+    min-width: var(--u-target-size, 0px);
 
   }
   a {

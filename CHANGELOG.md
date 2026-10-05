@@ -122,6 +122,15 @@
 
 ### Added
 
+- **`--u-target-size` — a minimum size for every press target, independent of text size.** Unset by
+  default (nothing changes). Set it — e.g. `@media (pointer: coarse) { :root { --u-target-size: 44px } }`
+  — and buttons, text fields, selects, date pickers, menu/tree rows, options, tabs, expander headers,
+  breadcrumb links and calendar days grow to at least that size; checkboxes, switches, rating stars,
+  the slider thumb, field icons, the split handle and carousel dots keep their visible size and grow
+  only the area that takes the press. Text size stays with `--u-density`. See `docs/theming.md`.
+  Text fields and selects now clip their content at the outer edge of the border instead of the
+  inner edge (`overflow: clip` with a 1px margin) so an enlarged field icon reaches the border;
+  nothing renders differently at the default size.
 - **`--u-canvas-bg-color`** — the application background behind surfaces (page body). Light default
   `neutral-100`, one step below raised chrome (`neutral-50`) and surfaces (`neutral-0`).
   `--u-bg-color` stays the surface components paint their own face with.

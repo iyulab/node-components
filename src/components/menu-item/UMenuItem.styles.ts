@@ -23,7 +23,7 @@ export const styles = css`
     flex-direction: row;
     align-items: center;
     padding: 0.25em 0.5em;
-    padding-left: calc(var(--menu-indent-size) * var(--menu-item-depth) + 0.5em);
+    padding-left: calc(var(--menu-indent-size) * var(--menu-item-depth) + 0.5em);\n    /* 호스트 하한(--u-target-size, 미설정 = 0). */\n    box-sizing: border-box;\n    min-height: var(--u-target-size, 0px);
     background-color: transparent;
     transition: background-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     user-select: none;

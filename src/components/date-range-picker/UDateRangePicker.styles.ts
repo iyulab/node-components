@@ -33,7 +33,7 @@ export const styles = css`
   .preset {
     display: flex;
     align-items: center;
-    min-height: 28px;
+    min-height: max(28px, var(--u-target-size, 0px));
     padding: 0 10px;
     border: none;
     border-radius: var(--u-radius-md, 4px);

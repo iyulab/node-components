@@ -35,7 +35,7 @@ export const styles = css`
        트랙 어디를 눌러도 값이 바뀐다. WCAG 2.2 SC 2.5.8 의 24px 하한은 그래서 여기에도 든다.
        보이는 트랙(6px)·thumb 치수는 그대로이고, 늘어나는 것은 «잡히는 높이»뿐이다.
        ⚠주석에 백틱을 쓰지 말 것 — 태그드 템플릿이 그 자리에서 끝난다. */
-    height: max(var(--slider-thumb-size), 24px);
+    height: max(var(--slider-thumb-size), 24px, var(--u-target-size, 0px));
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
@@ -79,8 +79,8 @@ export const styles = css`
        바꿔도 콘텐츠와 겹치지 않는다. */
     display: grid;
     place-items: center;
-    min-width: 24px;
-    min-height: 24px;
+    min-width: max(24px, var(--u-target-size, 0px));
+    min-height: max(24px, var(--u-target-size, 0px));
   }
 
   .thumb-content {

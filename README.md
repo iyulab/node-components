@@ -158,6 +158,8 @@ Theme.set('system');
 
 ⚠ 타깃 크기 보장은 `--u-density` **`14px` 이상**에서 성립합니다 — 컨트롤 패딩이 `em` 이라 그보다
 낮추면 타깃이 함께 줄어듭니다([docs/theming.md](./docs/theming.md)의 밀도 절 참고).
+터치·장갑 환경처럼 더 큰 타깃이 필요하면 글자 크기와 따로 `--u-target-size`(예: `44px`)로 하한을 올립니다
+([docs/theming.md](./docs/theming.md)의 «Target size» 절).
 
 ### KWCAG 2.2 대응표
 

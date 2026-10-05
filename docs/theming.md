@@ -577,6 +577,30 @@ ancestor to make a screen denser or roomier:
 > you need a denser grid, scale the data surface instead — `@iyulab/data-components` has its own
 > `--dc-font-size` for table text, which leaves the controls alone.
 
+## Target size — `--u-target-size`
+
+`--u-target-size` sets a **minimum size for everything you press**, independently of the text size.
+It is unset by default, and then nothing changes: every target keeps its normal size (24×24 CSS px
+or larger, WCAG 2.2 SC 2.5.8). Set it for touch, gloves or kiosk use — for example 44px, the size
+WCAG 2.5.5 (AAA) and the common platform guidelines ask for:
+
+```css
+@media (pointer: coarse) {
+  :root { --u-target-size: 44px; }
+}
+```
+
+- **Box-shaped controls grow to it** — buttons (an icon-only button also gets that width), text fields,
+  selects, date pickers, file inputs, menu and tree rows, options, tabs, expander headers, breadcrumb links,
+  and the calendar's day cells (the date picker's popover widens to fit them).
+- **Small controls keep their visible size and grow only the area that takes the press** — checkbox,
+  switch, rating stars, slider thumb, tree toggle and checkbox, a field's clear/reveal/stepper icons,
+  the split panel's handle, and the carousel's dots and rotation button.
+- It is a floor, not a size: anything already larger stays as it is. Text size stays with
+  `--u-density`, so a 44px field can still use 14px text.
+- There are no named presets (compact · touch …): a preset is a combination of `--u-density`, this
+  token and your own spacing, which is a decision for your theme.
+
 ## Styling Internals with `::part()`
 
 Tokens cover color and typography globally. For per-component presentation that is **an application design decision rather than a library default**, style the exposed CSS parts directly.

@@ -33,7 +33,7 @@ export const styles = css`
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: var(--option-padding-block) var(--option-padding-inline);
+    padding: var(--option-padding-block) var(--option-padding-inline);\n    /* 호스트 하한(--u-target-size, 미설정 = 0). */\n    min-height: var(--u-target-size, 0px);
     border-radius: inherit;
   }
   :host(:focus-visible) {

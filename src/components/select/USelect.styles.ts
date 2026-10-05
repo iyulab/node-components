@@ -23,11 +23,17 @@ export const styles = css`
     flex-direction: row;
     align-items: center;
     padding: var(--u-field-padding-block, 0.3em) var(--u-field-padding-inline, 0.6em);
+    /* 호스트 하한(--u-target-size, 미설정 = 0) — 글자와 독립된 터치 하한. */
+    box-sizing: border-box;
+    min-height: var(--u-target-size, 0px);
     border: 1px solid var(--u-input-border-color, #E0E0E0);
     border-radius: var(--u-field-radius, 0.25em);
     background-color: var(--u-input-bg-color, #FFFFFF);
     transition: border-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), box-shadow var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
-    overflow: hidden;
+    /* 잘라 내는 경계를 테두리 바깥선까지 — 호스트 하한(--u-target-size)으로 커진 접미 아이콘은 필드 높이를 채우고
+       테두리 1px 위까지 닿는다. 패딩 상자에서 자르면 그 1px 이 눌리지 않는다(hidden 은 여백을 받지 않는다). */
+    overflow: clip;
+    overflow-clip-margin: 1px;
     user-select: none;
     cursor: pointer;
   }
@@ -182,7 +188,8 @@ export const styles = css`
      1em 이라 세로 패딩만 주면 트리거가 8px 커진다. */
   .suffix-item[role="button"] {
     /* 받는 여백 = u-input 과 같은 식 — 글자 크기와 무관하게 ≥ 24px */
-    --_target-pad: max(0.25em, calc(12px - 0.5em));
+    /* 호스트 하한(--u-target-size)이 있으면 상자가 그 값이 되도록 — 미설정이면 0 이라 종전 24px 그대로. */
+    --_target-pad: max(0.25em, calc(12px - 0.5em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
     box-sizing: content-box;
     /* 오른쪽은 펼침 화살표와 종전처럼 0.25em 만 맞댄다 — 글자가 작아 늘어난 폭은 왼쪽(값 글자 쪽, 타깃 아님)으로 넓힌다.
        16px 에서는 P = 0.25em 이라 종전 배치와 같다. */
@@ -216,7 +223,7 @@ export const styles = css`
   .search-input input {
     all: unset;
     /* 포인터를 받는 것은 이 입력이다 — 글자 크기와 무관하게 24px 이상(WCAG 2.5.8). */
-    min-block-size: 24px;
+    min-block-size: max(24px, var(--u-target-size, 0px));
     flex: 1;
     min-width: 0;
     line-height: 1.5;

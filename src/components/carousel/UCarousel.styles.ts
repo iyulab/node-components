@@ -77,8 +77,9 @@ export const styles = css`
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    /* 호스트 하한(--u-target-size)이 있으면 그 값 — 미설정이면 24px. */
+    width: max(24px, var(--u-target-size, 0px));
+    height: max(24px, var(--u-target-size, 0px));
     padding: 0;
     border: none;
     border-radius: var(--u-radius-circle, 50%);
@@ -109,11 +110,20 @@ export const styles = css`
     transform: translateX(-50%);
   }
 
+  /* 호스트 하한(--u-target-size)이 있으면 보이는 점은 그대로 두고 누르는 상자만 그 값으로 —
+     투명 테두리가 상자를 채우고 배경은 안쪽(padding-box)에만 칠한다. 미설정이면 테두리 0 이라 종전과 같다. */
   .dot {
-    width: 10px;
+    --_dot-w: 10px;
+    --_dot-bb: max(0px, calc((var(--u-target-size, 0px) - 10px) / 2));
+    --_dot-bi: max(0px, calc((var(--u-target-size, 0px) - var(--_dot-w)) / 2));
+    box-sizing: content-box;
+    width: var(--_dot-w);
     height: 10px;
     padding: 0;
-    border: none;
+    border-style: solid;
+    border-color: transparent;
+    border-width: var(--_dot-bb) var(--_dot-bi);
+    background-clip: padding-box;
     border-radius: var(--u-radius-circle, 50%);
     background-color: var(--u-neutral-400, #BDBDBD);
     cursor: pointer;
@@ -123,8 +133,9 @@ export const styles = css`
     background-color: var(--u-neutral-200, #EEEEEE);
   }
   .dot[active] {
-    width: 24px;
-    border-radius: 5px;
+    --_dot-w: 24px;
+    /* 안쪽 모서리가 5px 이 되도록 테두리 두께만큼 바깥 반지름을 키운다(축마다). */
+    border-radius: calc(5px + var(--_dot-bi)) / calc(5px + var(--_dot-bb));
     background-color: var(--u-neutral-100, #F5F5F5);
   }
 `;

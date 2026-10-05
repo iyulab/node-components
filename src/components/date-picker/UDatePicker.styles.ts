@@ -14,7 +14,8 @@ export const styles = css`
   }
 
   u-popover {
-    width: var(--date-picker-popover-width);
+    /* 호스트 하한(--u-target-size)이 있으면 칸 7개가 그 폭으로 들어가는 너비(팝오버 여백 8px ×2 · 테두리 1px ×2) 이상. */
+    width: max(var(--date-picker-popover-width), calc(7 * var(--u-target-size, 0px) + 18px));
   }
 
   /* mode="date": the trigger is a text box — it takes the container's room and reads like its text. */

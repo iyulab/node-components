@@ -32,6 +32,10 @@ export const styles = css`
        평점 위젯의 시각적 무게가 달라지고, 그것은 이 처방이 피하려는 것이다.
        패딩이 늘면 중심 간 거리도 함께 벌어져 겹침도 생기지 않는다. */
     padding: 0.16em;
+    /* 호스트 하한(--u-target-size, 미설정 = 0) — 글리프는 그대로, 상자만. */
+    box-sizing: border-box;
+    min-width: var(--u-target-size, 0px);
+    min-height: var(--u-target-size, 0px);
     outline: none;
     border-radius: 0.15em;
     color: var(--rating-symbol-off-color);

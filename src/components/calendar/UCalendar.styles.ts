@@ -17,7 +17,7 @@ export const styles = css`
     gap: 16px;
   }
   .month {
-    flex: 1 1 224px;
+    flex: 1 1 max(224px, calc(7 * var(--u-target-size, 0px)));
     min-width: 0;
   }
 
@@ -41,7 +41,8 @@ export const styles = css`
   .calendar-weekdays,
   .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, minmax(32px, 1fr));
+    /* 칸 하한은 32px — 호스트 하한(--u-target-size)이 더 크면 그 값. */
+    grid-template-columns: repeat(7, minmax(max(32px, var(--u-target-size, 0px)), 1fr));
   }
   .calendar-weekdays {
     padding-bottom: 4px;

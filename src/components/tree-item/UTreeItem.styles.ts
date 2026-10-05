@@ -26,7 +26,7 @@ export const styles = css`
     padding-left: calc(
       var(--tree-indent-size) * var(--tree-item-depth)
       + var(--tree-indent-guide-offset)
-    );
+    );\n    /* 호스트 하한(--u-target-size, 미설정 = 0). */\n    box-sizing: border-box;\n    min-height: var(--u-target-size, 0px);
     transition: background-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     user-select: none;
     cursor: pointer;
@@ -72,8 +72,9 @@ export const styles = css`
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    /* 호스트 하한(--u-target-size)이 있으면 그 값 — 미설정이면 24px 그대로. */
+    width: max(24px, var(--u-target-size, 0px));
+    height: max(24px, var(--u-target-size, 0px));
   }
   .prefix-toggler::before {
     content: "";
@@ -115,8 +116,9 @@ export const styles = css`
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    /* 호스트 하한(--u-target-size)이 있으면 그 값 — 미설정이면 24px 그대로. */
+    width: max(24px, var(--u-target-size, 0px));
+    height: max(24px, var(--u-target-size, 0px));
     cursor: pointer;
   }
   .prefix-checkbox::before {

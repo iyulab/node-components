@@ -24,7 +24,9 @@ export const styles = css`
     /* WCAG 2.2 SC 2.5.8 — 트랙(--switch-track-height)의 시각 치수는 그대로 두고
        포인터 타깃만 24px 하한을 갖는다. UCheckbox 와 같은 처방이다.
        ⚠이 주석에 백틱을 쓰면 css 템플릿이 그 자리에서 끝난다(sweep 의 「css 백틱」). */
-    min-block-size: 24px;
+    min-block-size: max(24px, var(--u-target-size, 0px));
+    /* 호스트 하한(--u-target-size, 미설정 = 0)이 있으면 폭도 — 라벨 없는 단독 컨트롤이 그 값보다 좁다. */
+    min-inline-size: var(--u-target-size, 0px);
     justify-content: center;
     color: var(--u-txt-color, #212121);
     font-size: inherit;

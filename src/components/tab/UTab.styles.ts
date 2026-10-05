@@ -23,7 +23,7 @@ export const styles = css`
     display: inline-flex;
     flex-direction: row;
     align-items: center;
-    padding: var(--tab-padding-block) var(--tab-padding-inline);
+    padding: var(--tab-padding-block) var(--tab-padding-inline);\n    /* 호스트 하한(--u-target-size, 미설정 = 0). */\n    min-height: var(--u-target-size, 0px);
     border-radius: inherit;
   }
 

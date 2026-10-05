@@ -22,11 +22,19 @@ export const styles = css`
     flex-direction: row;
     align-items: center;
     padding: var(--u-field-padding-block, 0.3em) var(--u-field-padding-inline, 0.6em);
+    /* 호스트 하한(--u-target-size, 미설정 = 0) — 글자와 독립된 터치 하한. */
+    box-sizing: border-box;
+    min-height: var(--u-target-size, 0px);
+    /* 맨 뒤 접미 아이콘이 오른쪽으로 넓힐 자리 — 호스트 하한이 있을 때만 종전 여백보다 커진다. */
+    padding-right: max(var(--u-field-padding-inline, 0.6em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
     border: 1px solid var(--u-input-border-color, #E0E0E0);
     border-radius: var(--u-field-radius, 0.25em);
     background-color: var(--u-input-bg-color, #FFFFFF);
     transition: border-color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), box-shadow var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
-    overflow: hidden;
+    /* 잘라 내는 경계를 테두리 바깥선까지 — 호스트 하한(--u-target-size)으로 커진 접미 아이콘은 필드 높이를 채우고
+       테두리 1px 위까지 닿는다. 패딩 상자에서 자르면 그 1px 이 눌리지 않는다(hidden 은 여백을 받지 않는다). */
+    overflow: clip;
+    overflow-clip-margin: 1px;
   }
   :host([readonly]) .container,
   :host(:disabled) .container {
@@ -192,7 +200,8 @@ export const styles = css`
      16px 에서는 종전과 같은 0.25em(4px)이고, 14px(md 기본)에서 5px, 12px(sm)에서 6px 로 늘어난다.
      2.0 전에는 0.25em 고정이라 16px 에서만 24 였다 — 14px 본문을 쓰는 앱에서는 21px(미달)이었다. */
   .suffix-item[role="button"] {
-    --_target-pad: max(0.25em, calc(12px - 0.5em));
+    /* 호스트 하한(--u-target-size)이 있으면 상자가 그 값이 되도록 — 미설정이면 0 이라 종전 24px 그대로. */
+    --_target-pad: max(0.25em, calc(12px - 0.5em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
     box-sizing: content-box;
     margin: calc(-1 * var(--_target-pad)) calc(-1 * var(--_target-pad)) calc(-1 * var(--_target-pad)) var(--_target-pad);
     padding: var(--_target-pad);
@@ -200,7 +209,7 @@ export const styles = css`
   /* 좌우 여백이 0 인 변형(underlined · plain)은 맨 뒤 아이콘이 오른쪽으로 넓힐 자리가 없다 — 컨테이너에 그만큼만 준다. */
   :host([appearance="underlined"]) .container,
   :host([appearance="plain"]) .container {
-    padding-right: max(0.25em, calc(12px - 0.5em));
+    padding-right: max(0.25em, calc(12px - 0.5em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
   }
 
   u-popover {

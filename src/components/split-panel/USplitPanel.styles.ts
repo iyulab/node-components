@@ -3,7 +3,8 @@ import { css } from "lit";
 export const styles = css`
   :host {
     --splitter-size: 4px;
-    --splitter-hit-size: 24px;
+    /* 호스트 하한(--u-target-size)이 있으면 그 값 — 미설정이면 24px. */
+    --splitter-hit-size: max(24px, var(--u-target-size, 0px));
     --splitter-color: var(--u-neutral-200, #EEEEEE);
     --splitter-color-hover: var(--u-primary-color-weaker, #64B5F6);
     --splitter-color-active: var(--u-primary-color-strong, #1565C0);
