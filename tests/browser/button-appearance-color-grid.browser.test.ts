@@ -158,12 +158,35 @@ describe('u-button appearance × color 격자', () => {
     expect(dangerHover).not.toBe(bareHover);
   });
 
-  it('🔴기본 color 는 primary — 맨 버튼은 브랜드 면이고 `color="primary"` 와 같다', async () => {
+  it('🔴색을 주지 않은 맨 버튼은 primary 로 칠한다 — 그러나 `color` 를 달지 않는다', async () => {
     const bare = await mount({});
-    expect(bare.getAttribute('color')).toBe('primary');
+    // 반영되는 기본값이면 «명시한 primary» 를 고르는 선택자가 모든 버튼에 맞는다.
+    expect(bare.hasAttribute('color')).toBe(false);
     expect(bare.getAttribute('appearance')).toBe('solid');
     const primary = await mount({ color: 'primary' });
     expect(paintedColor(bare, 'host-bg')).toBe(paintedColor(primary, 'host-bg'));
+    for (const appearance of ['soft', 'outlined'] as const) {
+      const where = appearance === 'soft' ? 'host-bg' : 'inner-border';
+      expect(paintedColor(await mount({ appearance }), where), appearance)
+        .toBe(paintedColor(await mount({ appearance, color: 'primary' }), where));
+    }
+  });
+
+  it('🔴plain 에 primary 를 «명시» 하면 브랜드색 글자다 — 맨 plain 은 본문 글자 그대로', async () => {
+    const bare = await mount({ appearance: 'plain' });
+    const primary = await mount({ appearance: 'plain', color: 'primary' });
+    const probe = document.createElement('div');
+    probe.style.color = getComputedStyle(document.documentElement)
+      .getPropertyValue('--u-primary-color-strong').trim();
+    document.body.appendChild(probe);
+    expect(paintedColor(primary, 'color')).toBe(getComputedStyle(probe).color);
+    expect(paintedColor(bare, 'color')).not.toBe(paintedColor(primary, 'color'));
+  });
+
+  it('link 는 primary 를 명시해도 링크 색이다 — 맨 link 와 같다', async () => {
+    const bare = await mount({ appearance: 'link' });
+    const primary = await mount({ appearance: 'link', color: 'primary' });
+    expect(paintedColor(primary, 'color')).toBe(paintedColor(bare, 'color'));
   });
 
   it('🔴`neutral` 은 무채색 — 브랜드 면이 아니다 (배지·체크박스와 같은 뜻)', async () => {

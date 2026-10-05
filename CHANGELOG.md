@@ -30,17 +30,13 @@
   `u-alert` and toasts default to `appearance="soft"` (was `variant="solid"`, the same tint plus an outline).
 - 🔴**`color="neutral"` means achromatic (grey) everywhere; the brand colour is `primary`.** Before,
   `neutral` on `u-button` was the brand path (its default) while on `u-badge`/`u-checkbox` it was
-  grey. `u-button`'s default `color` is now `primary` — a bare button looks the same; a button that
-  set `color="neutral"` explicitly is now a grey button (drop the attribute or use `primary` for the
-  old look). `plain` and `link` buttons show body/link text for `primary` and `neutral` and take the
-  colour for every other value. ⚠**A brand-coloured plain button is no longer available:** in
-  1.x, `variant="ghost" color="primary"` drew brand-coloured text, but `primary` is now every
-  button's default, so `appearance="plain" color="primary"` draws body text like a bare plain
-  button. For brand-coloured text use `appearance="link"` (link colour), or `appearance="soft"`
-  for a tinted button.
-  ⚠Because `color` reflects, every bare button now carries `color="primary"` — a selector like
-  `u-button[color="primary"]` that used to pick out the one explicitly-primary button now matches
-  them all; select by `appearance` or by your own hook instead.
+  grey. A `u-button` with no `color` is now painted as `primary` — a bare button looks the same; a
+  button that set `color="neutral"` explicitly is now a grey button (drop the attribute or use
+  `primary` for the old look). `color` has no default value, so a bare button carries no `color`
+  attribute and `u-button[color="primary"]` still picks out only the buttons that set it. `plain` and
+  `link` buttons show body/link text with no `color` or `neutral` and take the colour for every
+  other value — `appearance="plain" color="primary"` draws brand-coloured text, as
+  `variant="ghost" color="primary"` did in 1.x.
 - 🔴**Text fields take `size="sm|md|lg"` like buttons, and `md` no longer inherits the font size.**
   `u-input`, `u-select`, `u-textarea`, `u-date-picker` and `u-date-range-picker` render at
   `--u-density` (14px) by default — 12px for `sm`, 16px for `lg` — so a field and a button of the same

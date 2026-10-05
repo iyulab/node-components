@@ -46,7 +46,7 @@ Versatile button with multiple appearances. Renders as an `<a>` element when `hr
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `appearance` | `'solid'\|'soft'\|'outlined'\|'plain'\|'link'` | `'solid'` | ✓ | How much chrome: `solid` filled with the colour · `soft` tint, no outline · `outlined` · `plain` no chrome · `link` |
-| `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | `'primary'` | ✓ | Color, independent of `appearance`. `primary` is the brand colour; `neutral` is an achromatic (grey) button (see notes below). |
+| `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | — | ✓ | Color, independent of `appearance`. Unset paints like `primary` (the brand colour) without adding the attribute; `neutral` is an achromatic (grey) button (see notes below). |
 | `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Button size (12px/14px/16px font-size; padding, spinner, and icon slots scale proportionally). |
 | `rounded` | `boolean` | `false` | ✓ | Pill-shaped border radius |
 | `disabled` | `boolean` | `false` | ✓ | Disable the button |
@@ -61,8 +61,9 @@ Versatile button with multiple appearances. Renders as an `<a>` element when `hr
 
 ### `color` notes
 
-- `solid`/`soft`/`outlined`: background/border switch to the chosen color's scale. `neutral` is an achromatic (grey) button — the brand colour is `primary` (the default).
-- `plain`/`link`: these have no fill, so for `primary` (the default) and `neutral` they keep body text (`plain`) or link text (`link`); any other `color` switches the text color (e.g. `appearance="link" color="danger"` for a destructive link).
+- `solid`/`soft`/`outlined`: background/border switch to the chosen color's scale. `neutral` is an achromatic (grey) button — the brand colour is `primary`, which is also how a button with no `color` is painted.
+- `plain`/`link`: these have no fill, so with no `color` or `neutral` they keep body text (`plain`) or link text (`link`); any other `color` switches the text color (e.g. `appearance="link" color="danger"` for a destructive link). A `plain` button with an explicit `color="primary"` draws brand-coloured text; a `link` stays link-coloured.
+- `color` has no default value, so a bare button carries no `color` attribute — `u-button[color="primary"]` matches only buttons that set it.
 
 ## Accessibility
 
@@ -91,7 +92,7 @@ element reference (`ariaControlsElements`) resolved when the button renders.
 
 | Property | Description |
 |----------|-------------|
-| `--u-primary-color` | Base color for the default `color="primary"` — set it and hover/active/soft tones auto-derive via `color-mix()` |
+| `--u-primary-color` | Base color for `color="primary"` and for a button with no `color` — set it and hover/active/soft tones auto-derive via `color-mix()` |
 | `--btn-color` | The button's **fill** color. Every derived token below is `color-mix()`'d from this one — usually the only one you need to override |
 | `--btn-txt-color` | Text color on the fill, read by `appearance="solid"` (default `#fff`, or `--u-{role}-txt-color` when a semantic `color` is set) |
 | `--btn-color-strong` | Text color on the surrounding page background, read by `appearance="link"` and `"plain"` — opposite contrast need from the fill, so it's a separate token (default: same as `--btn-color`, or `--u-{role}-color-strong` for a semantic `color`) |

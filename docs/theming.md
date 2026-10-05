@@ -234,7 +234,8 @@ the role tokens and follows a rebrand. Before 2.0 `neutral` was the brand path o
 
 | Component | Default `color` | A bare element is… |
 |---|---|---|
-| `u-button` · `u-checkbox` | `primary` | the brand colour |
+| `u-button` | none — painted as `primary` | the brand colour (no `color` attribute is added) |
+| `u-checkbox` | `primary` | the brand colour |
 | `u-tag` · `u-chip` | `neutral` | a grey label — use `color="primary"` for a brand tint |
 | `u-badge` | `blue` | the palette blue |
 

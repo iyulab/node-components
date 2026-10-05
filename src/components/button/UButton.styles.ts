@@ -57,6 +57,8 @@ export const styles = css`
      ★장식 램프(shade-600)로 해석하면 안 된다 — 라이트에서 그 단 위의 흰 글자는 8색 중
      6색이 AA 미달이다(green 3.30 · orange 2.37 · cyan 2.74 …). 역할 값을 쓰는 이유가
      *의미 이름*인데 그 대가로 대비를 잃으면 앞뒤가 맞지 않는다. */
+  /* 기본(색 미지정)도 이 경로다 — color 는 기본값을 반영하지 않는다(UButton.ts 참조). */
+  :host(:not([color])),
   :host([color="primary"]) {
     --btn-color: var(--u-primary-color, #1976D2);
     --btn-color-strong: var(--u-primary-color-strong, #1565C0);
@@ -96,6 +98,7 @@ export const styles = css`
      보증된 유채색 표면» 이고, 태그·알림의 soft 가 이미 그 토큰을 쓴다. 혼합 12% 로 두면 같은
      «soft warning» 이 태그와 버튼에서 다른 면이 되고(노랑 12% 는 거의 흰색), 다크 짝도 따로
      놀았다. hover/active 는 그 면 위에 면 색을 더 섞어 진해지는 방향으로 파생한다. */
+  :host(:not([color])),
   :host([color="primary"]),
   :host([color="info"]),
   :host([color="success"]),
@@ -233,7 +236,10 @@ export const styles = css`
   :host([appearance="plain"]:active) {
     background-color: var(--u-bg-color-active, #EEEEEE);
   }
-  /* plain + 기본(primary)·neutral 밖의 색: 글자색이 색 축을 따른다 (link 와 같은 어법)
+  /* plain + 색을 «명시» 한 것(neutral 제외): 글자색이 색 축을 따른다 (link 와 같은 어법)
+     맨 버튼(색 미지정)은 본문 글자다. 명시한 primary 는 브랜드색 글자다 — 기본값을 반영하지
+     않으므로 둘이 구별된다(2.0 첫 판은 기본값이 color="primary" 로 반영돼 그 둘이 같았고,
+     그래서 브랜드색 plain 버튼을 만들 길이 없었다).
      ★**plain 은 색이 «필요 없는» 외형이 아니라 색이 «유일한 신호»인 외형이다.**
      면도 테두리도 없으므로 글자색이 사라지면 남는 구분이 없다 — 파괴적 액션을 ghost 로
      두는 화면에서 위험 신호가 통째로 없어진다.
@@ -241,15 +247,15 @@ export const styles = css`
      는 따르고 link 도 아래에서 따르는데 여기만 빠져 있었다 — 축이 **한 자리에서만**
      끊긴 형태라, 12조합을 격자로 대조하기 전에는 드러나지 않는다.
      link 와 같은 이유로 면 슬롯(--btn-color)이 아니라 --btn-color-strong 을 읽는다. */
-  :host([appearance="plain"][color]:not([color="primary"]):not([color="neutral"])) {
+  :host([appearance="plain"][color]:not([color="neutral"])) {
     color: var(--btn-color-strong);
   }
   /* 호버 면도 그 색의 soft 면이다 — 회색 호버는 «색이 유일한 신호» 를 누르는 순간 지운다. */
-  :host([appearance="plain"][color]:not([color="primary"]):not([color="neutral"]):hover) {
+  :host([appearance="plain"][color]:not([color="neutral"]):hover) {
     color: var(--btn-color-strong-hover);
     background-color: var(--btn-color-surface);
   }
-  :host([appearance="plain"][color]:not([color="primary"]):not([color="neutral"]):active) {
+  :host([appearance="plain"][color]:not([color="neutral"]):active) {
     color: var(--btn-color-strong-active);
     background-color: var(--btn-color-surface-hover);
   }

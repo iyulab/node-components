@@ -85,12 +85,15 @@ export class UButton extends UElement {
   /** 외형 정도 — `solid`(기본) · `soft` · `outlined` · `plain` · `link` */
   @property({ type: String, reflect: true }) appearance: ButtonAppearance = "solid";
   /**
-   * 색. 기본값 `primary` 는 `--u-primary-color`(역할 토큰)로 칠한다 — 브랜드 색을 덮으면 기본 버튼이
+   * 색. 주지 않으면 `primary` 로 칠한다(`--u-primary-color` 역할 토큰) — 브랜드 색을 덮으면 맨 버튼이
    * 함께 따라온다. `neutral` 은 **무채색**(회색) 버튼이다(모든 컴포넌트에서 같은 뜻).
-   * `plain`·`link` 는 글자만 있는 외형이라 기본(`primary`)·`neutral` 에서는 본문/링크 색을 쓰고,
-   * 그 밖의 색을 주면 글자가 그 색을 따른다.
+   * `plain`·`link` 는 글자만 있는 외형이라 색을 주지 않았거나 `neutral` 이면 본문/링크 색을 쓰고,
+   * 그 밖의 색을 주면 글자가 그 색을 따른다 — `plain` 에 `primary` 를 **명시**하면 브랜드색 글자다.
+   *
+   * ⚠기본값을 두지 않는다(반영되는 속성이라, 기본값을 두면 맨 버튼도 `color="primary"` 를 달아
+   * «명시한 primary» 와 구별되지 않는다).
    */
-  @property({ type: String, reflect: true }) color: ButtonColor = "primary";
+  @property({ type: String, reflect: true }) color?: ButtonColor;
   /** 버튼 크기. `font-size`만 변경하며 나머지는 `em` 단위라 비례 조정됨. */
   @property({ type: String, reflect: true }) size: ButtonSize = "md";
   /** 경계선 둥글게 여부 */
