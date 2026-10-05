@@ -357,7 +357,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
     return html`
       <div class="body">
         ${presets.length ? this.renderPresets(presets) : ''}
-        <div class="calendar" part="calendar">
+        <div class="calendar" part="calendar" @mousedown=${this.textEntry.holdFocus}>
           <u-calendar
             exportparts="calendar-month, calendar-header, calendar-title, calendar-weekdays, calendar-grid, calendar-week, day"
             selection="range"

@@ -280,7 +280,7 @@ export class UDatePicker extends UFormControlElement<string> {
 
   private renderCalendar() {
     return html`
-      <div class="calendar" part="calendar">
+      <div class="calendar" part="calendar" @mousedown=${this.textEntry.holdFocus}>
         <u-calendar
           exportparts="calendar-header, calendar-title, calendar-weekdays, calendar-grid, calendar-week, day"
           .value=${this.working ? toISODate(splitValue(this.working).date) : undefined}

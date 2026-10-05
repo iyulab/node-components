@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.0.1] - 2026-10-05
+
+### Fixed
+
+- **A press on a date picker's calendar keeps focus in the picker** (`u-date-picker`,
+  `u-date-range-picker`). Pressing a part of the calendar that takes no focus — the month title, the
+  weekday row, a gap — moved focus to the page with the calendar still open: the keyboard lost its
+  place, and a host that ends an edit on `blur` (a table cell editor) ended it in the middle of
+  choosing. Presses on controls (days, buttons, the time input) are unchanged.
+
+### Documentation
+
+- README: individual imports use the exported `dist/components/<name>/U<Name>.js` paths (the
+  `@iyulab/components/u-button` form shown before was never exported).
+
 ## [2.0.0] - 2026-10-05
 
 ### Changed (breaking)

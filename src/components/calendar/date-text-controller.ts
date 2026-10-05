@@ -106,6 +106,18 @@ export class DateTextController implements ReactiveController {
     this.open(false);
   };
 
+  /** A press on a part of the calendar that takes no focus — the month title, the weekday row, the
+   *  gaps — keeps focus where it is, inside the control. Without this the browser moves focus to the
+   *  page: the control loses its place for the keyboard, and a host that ends an edit on `blur`
+   *  (a table cell editor) ends it in the middle of choosing. Presses on controls are untouched. */
+  holdFocus = (e: MouseEvent): void => {
+    for (const node of e.composedPath()) {
+      if (node === e.currentTarget) break;
+      if (node instanceof HTMLElement && (node.tabIndex >= 0 || node.matches('button, input, select, textarea'))) return;
+    }
+    e.preventDefault();
+  };
+
   handleCalendarButtonClick = (e: MouseEvent): void => {
     e.stopPropagation();
     if (this.options.popover()?.open) {
