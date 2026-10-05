@@ -265,6 +265,7 @@ export * from './events/MyEvent';
 - Shadow DOM을 유지한다. `createRenderRoot()`로 Shadow DOM을 우회하지 않는다.
 - 여백(margin)·테두리(border)·색상(color)·글자 크기(font-size)·배경(background)등을 `:host`에 위치시켜 소비앱이 `u-button { padding: 8px; color: red; }`처럼 커스텀 엘리먼트 태그를 직접 셀렉터로 잡아 손쉽게 커스터마이징할 수 있게 의도 한다.
 - 슬롯 이름은 `prefix` / `suffix` / `footer` 등 역할 기반으로 통일한다.
+- 속성 값의 낱말은 **같은 축 안에서는 어느 컴포넌트에서나 같은 뜻**이다. 예: `color` 축의 `neutral` 은 `u-button`·`u-tag`·`u-badge` 모두에서 무채색(회색)이고, 브랜드 색은 `primary` 다. 다른 축(예: `tone`)이 같은 낱말을 쓰는 것은 허용하되, 그 컴포넌트 문서가 그 값이 어느 축의 낱말인지 밝힌다. 같은 축에서 뜻이 갈리면 결함이다.
 - CSS part 이름은 내부 구조를 반영하되 구현 세부사항을 노출하지 않는다.
 - 다른 컴포넌트를 내부에서 사용할 때는 파일 상단에 사이드이펙트 import를 추가한다.
 ```ts
