@@ -19,9 +19,9 @@ import '@iyulab/components/styles/tokens.css';
 // 전체 import
 import '@iyulab/components';
 
-// 개별 import
-import '@iyulab/components/u-button';
-import '@iyulab/components/u-input';
+// 개별 import (등록 부수효과만 — 쓰는 컴포넌트만 번들에 들어간다)
+import '@iyulab/components/dist/components/button/UButton.js';
+import '@iyulab/components/dist/components/input/UInput.js';
 ```
 
 > **토큰 시트는 선택이 아니다.** 컴포넌트의 모든 색·테두리·배경은 `var(--u-…)` 로 해석되며,
