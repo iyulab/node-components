@@ -987,11 +987,25 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
           await mount(fixture.html);
           if (fixture.prepare) await fixture.prepare(document.querySelector(tag)!);
           const els = fixture.targets ? fixture.targets(tag) : [document.querySelector(tag)!];
+          // 여는 전환(대화상자의 scale 등) 도중에 재면 커진 상자가 작게 잡힌다 — 두 프레임 연속 같을 때까지 기다린다.
+          //   (섀도 트리 안의 전환은 document.getAnimations() 에 잡히지 않아 «상자가 멈췄는가» 로 잰다.)
+          const frame = () => new Promise((r) => requestAnimationFrame(() => r(undefined)));
+          //   ⚠전환은 몇 프레임 뒤에야 시작할 수 있다 — 바로 연속 두 프레임을 보면 «시작 전» 에 멈춘다(실측). 전환 시간만큼 먼저 둔다.
+          await new Promise((r) => setTimeout(r, 300));
+          for (let i = 0, prev = ''; i < 60; i++) {
+            const now = JSON.stringify(els.map(measure));
+            if (now === prev) break;
+            prev = now;
+            await frame();
+          }
           const targets = els.map(measure);
           expect(targets.length, '타깃을 하나도 못 찾으면 이 판정은 무의미하다').toBeGreaterThan(0);
           // 반올림 오차(장치 픽셀 스냅)를 0.5px 까지 받는다.
-          const under = targets.filter((t) => t.w < FLOOR - 0.5 || t.h < FLOOR - 0.5);
-          expect(under.map((t) => `${Math.round(t.w)}x${Math.round(t.h)}`).join(' '), `${FLOOR}px 미만 타깃`).toBe('');
+          const under = els
+            .map((el, i) => ({ el, t: targets[i] }))
+            .filter(({ t }) => t.w < FLOOR - 0.5 || t.h < FLOOR - 0.5)
+            .map(({ el, t }) => `${describeEl(el)} ${Math.round(t.w)}x${Math.round(t.h)}`);
+          expect(under, `${FLOOR}px 미만 타깃`).toEqual([]);
           const unreachable = els.filter((el) => unreachablePoints(el).length > 0).map(describeEl);
           expect(unreachable, '커진 타깃이 실제로 눌린다').toEqual([]);
         } finally {
