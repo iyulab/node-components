@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.10.2] - 2026-10-07
+
+### Fixed
+
+- **A deep import of `u-select` registers `u-chip`.** Multi-select chips are `<u-chip>` elements, but `UChip` was
+  imported for a type only, so the build dropped the import: with `@iyulab/components/dist/components/select/USelect.js`
+  alone the chips were undefined elements. The barrel import hid it (another module registered `u-chip`).
+- **`Dialog.prompt`'s text box is named by the message** — it had only its placeholder, which is not a name (it
+  disappears as you type).
+
 ## [2.10.1] - 2026-10-07
 
 ### Documentation

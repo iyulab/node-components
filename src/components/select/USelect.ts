@@ -8,7 +8,9 @@ import '../spinner/USpinner.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
-import { UChip } from "../chip/UChip.js";
+// 부수효과 import — 이 모듈이 그리는 `<u-chip>` 을 등록한다(타입만 가져오면 빌드가 import 를 지워 등록되지 않는다).
+import "../chip/UChip.js";
+import type { UChip } from "../chip/UChip.js";
 import { UOption } from "../option/UOption.js";
 import { UPopover } from "../popover/UPopover.js";
 import { styles } from "./USelect.styles.js";

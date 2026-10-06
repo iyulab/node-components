@@ -162,6 +162,7 @@ export class Dialog {
           <u-input
             type=${(options?.type || 'text') as InputType}
             placeholder=${options?.placeholder || ''}
+            aria-label=${message}
             .value=${inputValue}
             @input=${(e: InputEvent) => { 
               const input = e.target as UInput;
