@@ -1,9 +1,19 @@
 # Changelog
 
-## [Unreleased]
+## [2.7.0] - 2026-10-07
+
+### Added
+
+- **`u-carousel` has the WAI-ARIA APG carousel structure.** The host is a `region` described as a "carousel" and each
+  slide a `group` described as a "slide" and named by its position ("2 of 5"), so a screen reader announces where it
+  is. Name the carousel with `aria-label`. A `role`, `aria-roledescription` or `aria-label` already on a slide is kept.
+  New locale keys `carousel`, `slide`, `slideOf` (all built-in languages).
+- `--select-min-text`, `--date-picker-min-text`, `--date-range-picker-min-text` (see below).
 
 ### Fixed
 
+- **`u-file-input` clear button has a 24px target** (WCAG 2.2 SC 2.5.8) and follows `--u-target-size`. It was the bare
+  16px glyph.
 - **`u-date-picker` and `u-date-range-picker` clear and calendar buttons have a 24px target** (WCAG 2.2 SC 2.5.8) and
   follow the host floor `--u-target-size`. They were the bare 14px glyph, so a page that set a 44px floor still had two
   14px buttons in every date field. The glyph stays 1em; the press area grows into the field's padding, so the field

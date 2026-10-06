@@ -66,6 +66,13 @@ export const styles = css`
     color: var(--u-icon-color, #616161);
     font-size: 1em;
     cursor: pointer;
+    /* 받는 영역 — 글리프는 1em 그대로, 상자만 ≥ 24px(WCAG 2.2 SC 2.5.8) · 호스트 하한(--u-target-size)이면 그 값.
+       u-input·u-select 와 같은 식이다. 위·아래·왼쪽(파일 이름 쪽, 타깃 아님)은 음수 여백으로 넓혀 줄 높이와 배치를 지키고,
+       오른쪽은 필드 끝이라 넓히지 않는다(호스트 밖으로 나가 이웃을 덮지 않게) — 글리프가 그만큼 안쪽으로 온다. */
+    --_target-pad: max(0.25em, calc(12px - 0.5em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
+    box-sizing: content-box;
+    padding: var(--_target-pad);
+    margin: calc(-1 * var(--_target-pad)) 0 calc(-1 * var(--_target-pad)) calc(-1 * var(--_target-pad));
     transition: color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   .clear-btn:hover {

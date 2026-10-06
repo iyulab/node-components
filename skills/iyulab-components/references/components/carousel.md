@@ -28,6 +28,12 @@ moves into it, until the user presses start (WAI-ARIA APG carousel pattern). Sli
 motion (`prefers-reduced-motion: reduce`) the carousel starts stopped — the start button turns
 rotation on — and it stops if that setting is turned on while the page is open.
 
+Assistive technology gets the WAI-ARIA APG carousel structure: the host is a `region` described as a
+"carousel" (in the active locale), and each slide is a `group` described as a "slide" and named by its
+position ("2 of 5"). Name the carousel with `aria-label` on the host — a region needs a name to be a
+landmark. A `role`, `aria-roledescription` or `aria-label` you put on a slide is kept; only the empty
+ones are filled.
+
 ---
 
 ## Slots

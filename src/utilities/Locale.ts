@@ -36,6 +36,10 @@ export type LocaleMessageKey =
   | 'previousSlide'
   | 'nextSlide'
   | 'goToSlide'
+  // u-carousel 의 보조기기 어휘(APG Carousel) — 역할 설명(aria-roledescription)과 슬라이드 위치 이름.
+  | 'carousel'
+  | 'slide'
+  | 'slideOf'
   // 자동 넘김 캐러셀의 회전 제어 버튼 — 움직이는 콘텐츠에는 멈출 수단이 있어야 한다(WCAG 2.2.2).
   | 'stopSlideRotation'
   | 'startSlideRotation'

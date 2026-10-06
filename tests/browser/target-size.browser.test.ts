@@ -486,7 +486,19 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
       targets: () => [document.querySelector('u-select')!.shadowRoot!.querySelector('.search-input input')!],
     },
   ],
-  'u-file-input': { html: '<u-file-input></u-file-input>' },
+  'u-file-input': [
+    { state: '빈', html: '<u-file-input></u-file-input>' },
+    {
+      state: '파일 있음',
+      // 지우기 «x» 는 파일이 있을 때만 그려진다 — 빈 상태만 재면 이 타깃이 시야 밖이었다(조건부 타깃 전수, 2.7.0).
+      html: '<u-file-input></u-file-input>',
+      prepare: async (host) => {
+        (host as HTMLElement & { value: File[] | null }).value = [new File(['x'], 'report.pdf')];
+        await (host as HTMLElement & { updateComplete: Promise<unknown> }).updateComplete;
+      },
+      targets: () => parts(document.querySelector('u-file-input')!, 'clear-button'),
+    },
+  ],
   // 내부 요소지만 날짜 피커들이 이것으로 날짜 칸·이전/다음 달 버튼을 그린다 — 열지 않아도 바로 렌더되므로
   // 피커의 «달력» 상태와 별개로 두 달 보기(범위 피커의 배치)까지 직접 잰다.
   'u-calendar': [
@@ -589,7 +601,15 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   ],
   // ⚠제목 속성은 `label` 이다 — `header` 는 슬롯 이름이라, 종전 `header="More"` 는 **빈 제목**을 재고 있었다.
   'u-expander': { html: '<u-expander label="More">body</u-expander>' },
-  'u-tab': { html: '<u-tab-panel><u-tab>One</u-tab><u-tab>Two</u-tab></u-tab-panel>' },
+  'u-tab': [
+    { state: '기본', html: '<u-tab-panel><u-tab>One</u-tab><u-tab>Two</u-tab></u-tab-panel>' },
+    {
+      state: '닫기',
+      // \`removable\` 탭의 닫기 버튼 — 탭(호스트)과 다른 일을 하는 별도 타깃이다.
+      html: '<u-tab-panel><u-tab removable>One</u-tab><u-tab removable>Two</u-tab></u-tab-panel>',
+      targets: () => Array.from(document.querySelectorAll('u-tab')).flatMap((t) => parts(t, 'remove-btn')),
+    },
+  ],
   'u-menu-item': [
     { state: '닫힘', html: '<u-menu><u-menu-item>Item</u-menu-item></u-menu>' },
     {
@@ -931,7 +951,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 27(49상태) · 미판정 0() · 대상아님 22');
+      ).toBe('판정 27(51상태) · 미판정 0() · 대상아님 22');
     });
   });
 

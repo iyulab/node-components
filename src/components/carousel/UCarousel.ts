@@ -18,6 +18,10 @@ import { styles } from "./UCarousel.styles.js";
  * (WAI-ARIA APG Carousel · WCAG 2.2.2). 사용자가 동작 줄이기(`prefers-reduced-motion: reduce`)를
  * 켜 두었으면 정지 상태로 시작하고(시작 버튼으로 켤 수 있다), 보는 중에 그 설정이 켜지면 멈춘다.
  *
+ * 보조기기에는 WAI-ARIA APG Carousel 구조로 나간다 — 호스트는 «캐러셀» 역할 설명을 단 영역(`region`), 각 슬라이드는
+ * «슬라이드» 역할 설명과 «n / 전체» 이름을 단 그룹이다. 캐러셀의 이름은 호스트의 `aria-label` 로 준다(영역은 이름이
+ * 있어야 랜드마크다). 슬라이드에 소비자가 이미 단 `role`·`aria-roledescription`·`aria-label` 은 덮지 않는다.
+ *
  * @csspart slides - 슬라이드 컨테이너
  * @csspart prev-button - 이전 버튼
  * @csspart next-button - 다음 버튼
@@ -59,6 +63,12 @@ export class UCarousel extends UElement {
   @state() private hovered = false;
 
   private autoplayTimer?: number;
+  /** 호스트 역할(region · «캐러셀» 역할 설명) — 소비자의 `role` 속성이 있으면 그것이 이긴다. */
+  private readonly internals: ElementInternals | undefined =
+    'attachInternals' in this ? this.attachInternals() : undefined;
+  /** 지금 슬롯에 꽂힌 슬라이드와, 그중 우리가 단 속성(소비자가 단 것은 여기 없다 — 덮지도 회수하지도 않는다). */
+  private slides: Element[] = [];
+  private readonly ownedSlideAttrs = new WeakMap<Element, string[]>();
   /** `prefers-reduced-motion: reduce` 질의 — 연결된 동안만 듣는다. */
   private reducedMotion?: MediaQueryList;
   private dragStartX = 0;
@@ -96,6 +106,10 @@ export class UCarousel extends UElement {
 
   connectedCallback(): void {
     super.connectedCallback();
+    if (this.internals) {
+      this.internals.role = 'region';
+      this.internals.ariaRoleDescription = Locale.getValue('carousel');
+    }
     this.addEventListener('focusin', this.handleFocusIn);
     this.addEventListener('pointerenter', this.handlePointerEnter);
     this.addEventListener('pointerleave', this.handlePointerLeave);
@@ -244,10 +258,35 @@ export class UCarousel extends UElement {
 
   private handleSlotChange(e: Event) {
     const slot = e.target as HTMLSlotElement;
-    this.slideCount = slot.assignedElements().length;
+    const next = slot.assignedElements();
+    for (const gone of this.slides) if (!next.includes(gone)) this.releaseSlide(gone);
+    this.slides = next;
+    next.forEach((slide, i) => this.labelSlide(slide, i, next.length));
+    this.slideCount = next.length;
     if (this.index >= this.slideCount) {
       this.index = Math.max(0, this.slideCount - 1);
     }
+  }
+
+  /** 슬라이드를 «n / 전체» 이름의 그룹으로 — 처음 볼 때 비어 있던 속성만 우리 것으로 삼고, 그것만 갱신한다. */
+  private labelSlide(slide: Element, i: number, total: number) {
+    let owned = this.ownedSlideAttrs.get(slide);
+    if (!owned) {
+      owned = ['role', 'aria-roledescription', 'aria-label'].filter((name) => !slide.hasAttribute(name));
+      this.ownedSlideAttrs.set(slide, owned);
+    }
+    const values: Record<string, string> = {
+      role: 'group',
+      'aria-roledescription': Locale.getValue('slide'),
+      'aria-label': Locale.getValue('slideOf', { n: i + 1, total }),
+    };
+    for (const name of owned) slide.setAttribute(name, values[name]);
+  }
+
+  /** 슬롯을 떠난 슬라이드에서 우리가 단 속성을 걷는다. */
+  private releaseSlide(slide: Element) {
+    for (const name of this.ownedSlideAttrs.get(slide) ?? []) slide.removeAttribute(name);
+    this.ownedSlideAttrs.delete(slide);
   }
 
   private handleDragStart = (e: Event) => {

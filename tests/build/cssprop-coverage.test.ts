@@ -36,7 +36,7 @@ const INTERNAL: Record<string, string> = {
   '--_splitter-box': 'u-split-panel 핸들 박스 = max(--splitter-size, --splitter-hit-size) 에서 계산',
   '--_icon-box': 'u-input 접미 아이콘 하나의 받는 상자 = max(1.5em, 24px, --u-target-size) — 글자 영역 하한(min-inline-size) 식의 항',
   '--_min-text': '날짜 피커 글자 영역 하한 — 공용 피커 시트의 min-inline-size 가 읽는 항, 공개 값은 --date-picker-min-text·--date-range-picker-min-text',
-  '--_target-pad': 'u-input·u-select·날짜 피커 접미 아이콘 받는 여백 = max(0.25em, 12px − 0.5em, --u-target-size/2 − 0.5em) — 글자 크기와 무관하게 24px(또는 호스트 하한)를 보장하는 식',
+  '--_target-pad': 'u-input·u-select·날짜 피커·file-input 접미 아이콘 받는 여백 = max(0.25em, 12px − 0.5em, --u-target-size/2 − 0.5em) — 글자 크기와 무관하게 24px(또는 호스트 하한)를 보장하는 식',
   '--_dot-w': 'u-carousel 점의 보이는 폭(활성 24px) — 호스트 하한의 투명 테두리 계산 입력',
   '--_dot-bb': 'u-carousel 점의 세로 투명 테두리 = (--u-target-size − 10px)/2, 미설정이면 0',
   '--_dot-bi': 'u-carousel 점의 가로 투명 테두리 = (--u-target-size − 보이는 폭)/2, 미설정이면 0',
