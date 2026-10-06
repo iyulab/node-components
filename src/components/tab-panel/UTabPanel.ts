@@ -32,6 +32,7 @@ const nextId = (prefix: string) => `${prefix}-${++idSeq}`;
  *   발생시키지 않는다(네이티브 select가 프로그래밍적 대입에는 change를 내지 않는 것과 동일한 관례).
  */
 @customElement('u-tab-panel')
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
 export class UTabPanel extends UElement {
   static styles = [super.styles, styles];
 
@@ -216,6 +217,23 @@ export class UTabPanel extends UElement {
       target.scrollBy({ left: e.deltaY, behavior: reduce ? 'auto' : 'smooth' });
     }
   }
+}
+
+/** Events `<u-tab-panel>` dispatches. */
+export interface UTabPanelEventMap {
+  /** A tab was chosen by click or keyboard — not on first mount. Does not bubble; read `value` on the panel. */
+  'change': CustomEvent<null>;
+}
+
+/** Typed listeners for {@link UTabPanelEventMap} — element-scoped, the DOM's own pattern (`HTMLMediaElementEventMap`). */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
+export interface UTabPanel {
+  addEventListener<K extends keyof UTabPanelEventMap>(type: K, listener: (this: UTabPanel, ev: UTabPanelEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void;
+  addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: UTabPanel, ev: HTMLElementEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof UTabPanelEventMap>(type: K, listener: (this: UTabPanel, ev: UTabPanelEventMap[K]) => unknown, options?: boolean | EventListenerOptions): void;
+  removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: UTabPanel, ev: HTMLElementEventMap[K]) => unknown, options?: boolean | EventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 
 declare global {

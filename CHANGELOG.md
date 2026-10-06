@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.2.1] - 2026-10-06
+
+### Fixed
+
+- **`u-select`'s `search` and `u-tab-panel`'s `change` are typed for TypeScript listeners.** Each element
+  declares its custom events (`USelectEventMap`, `UTabPanelEventMap`) and types `addEventListener` with
+  them — `select.addEventListener('search', (e) => e.detail.query)` no longer needs a cast. They are
+  element-scoped rather than global: `change` is already the native `Event` there.
+
+### Documentation
+
+- **Quick Start** — a first page (token sheet, `u-input` and `u-button` in a native form, a toast) that
+  builds, type-checks and renders as written.
+
 ## [2.2.0] - 2026-10-06
 
 ### Added

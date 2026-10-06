@@ -49,6 +49,7 @@ import { styles } from "./USelect.styles.js";
  *   필요한 소비자는 이 이벤트를 구독해 자체적으로 옵션을 갱신할 수 있다.
  */
 @customElement('u-select')
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
 export class USelect extends UFormControlElement<string | string[]> {
   static styles = [ super.styles, styles ];
 
@@ -478,6 +479,23 @@ export class USelect extends UFormControlElement<string | string[]> {
     this.value = this.valueAsArray.filter(v => v !== value);
     this.emitChange();
   };
+}
+
+/** Custom events `<u-select>` dispatches (its `change`/`input` are the native form-control events). */
+export interface USelectEventMap {
+  /** The search box changed (`searchable`). `query` is the trimmed, lower-cased text. */
+  'search': CustomEvent<{ query: string }>;
+}
+
+/** Typed listeners for {@link USelectEventMap} — element-scoped, the DOM's own pattern (`HTMLMediaElementEventMap`). */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
+export interface USelect {
+  addEventListener<K extends keyof USelectEventMap>(type: K, listener: (this: USelect, ev: USelectEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void;
+  addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: USelect, ev: HTMLElementEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof USelectEventMap>(type: K, listener: (this: USelect, ev: USelectEventMap[K]) => unknown, options?: boolean | EventListenerOptions): void;
+  removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: USelect, ev: HTMLElementEventMap[K]) => unknown, options?: boolean | EventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 
 declare global {
