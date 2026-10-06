@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0] - 2026-10-06
+
+### Added
+
+- **`copyFromKey(text)` / `pasteFromKey()`** — Ctrl/Cmd + C, X and V for something that is not a text
+  field (a grid's selected cells, a list's selected rows), working in every browser. They use the
+  browser's `copy`/`cut`/`paste` event and its `clipboardData` when the browser fires one — no
+  permission, any page — and the async Clipboard API when it does not: Safari fires no `copy` event
+  without a text selection. `copyFromKey` resolves `true` only once the text is on the clipboard, so a
+  cut can clear its selection safely. Call them from the shortcut's `keydown` without preventing the
+  key.
+
 ## [2.0.3] - 2026-10-06
 
 ### Fixed

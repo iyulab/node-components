@@ -67,6 +67,7 @@ export * from './events/ShowEvent';
 
 // Utilities
 export * from './utilities/BrowserStorage.js';
+export * from './utilities/clipboard.js';
 export * from './utilities/converters.js';
 export * from './utilities/devWarning.js';
 export * from './utilities/Dialog.js';
