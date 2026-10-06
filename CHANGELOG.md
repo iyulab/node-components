@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.6.0] - 2026-10-06
+
+### Changed
+
+- **`u-rating` is one Tab stop and its arrows choose**, like a native radio group (WAI-ARIA APG Radio Group). Every
+  star was a Tab stop, so Tab walked through five stars; arrows only moved focus, so the next Tab jumped back to the
+  chosen star. Now Tab enters on the chosen star (the first when there is none) and leaves on the next press;
+  `Arrow` keys move and choose, firing `change`, and `Home`/`End` choose the first/last. `focus()` goes to the chosen
+  star (it went to the first).
+
+### Fixed
+
+- **`u-tree` is one Tab stop** (APG Tree View). Every item was a Tab stop. Now Tab enters on the item focused last (at
+  first the selected item, else the first) and the next Tab leaves the tree; arrows move inside as before. When that
+  item is collapsed away or disabled the stop moves to its nearest visible ancestor. Only the stop carries `tabindex`
+  — an item is a shadow host and its children render in its slot, so a `tabindex="-1"` parent would take its whole
+  subtree out of Tab order; `item.focus()` and a click make an item the stop first.
+
 ## [2.5.0] - 2026-10-06
 
 An accessibility-tree audit of the interactive widgets — what a screen reader receives, not what the DOM says.

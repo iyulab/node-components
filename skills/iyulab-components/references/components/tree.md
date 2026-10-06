@@ -30,6 +30,11 @@ Items are `treeitem`s with `aria-level` (depth), `aria-expanded` (items with chi
 `selectable` tree) and `aria-checked` (`mixed` for a partly checked parent, in a `checkable` tree). An item is
 named by its own label — not by the text of the items under it.
 
+**Keyboard** — the tree is **one** Tab stop: the item focused last (at first the selected item, else the first).
+Tab enters on it and the next Tab leaves the tree; arrows move inside (`↑`/`↓` items, `→` expand / first child,
+`←` collapse / parent, `Home`/`End`). If that item is collapsed away or disabled, the stop moves to its nearest visible
+ancestor. Only the stop carries `tabindex`; `item.focus()` and a click make an item the stop.
+
 ## u-tree
 
 ### Slots

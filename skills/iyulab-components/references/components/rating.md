@@ -27,6 +27,10 @@ Star/custom-symbol rating input. Supports fractional precision and custom symbol
 
 A `radiogroup` (named by `label`) of radios named `1`…`max` — a screen reader adds the position ("3 of 5").
 
+**Keyboard** — like a native radio group: one Tab stop (the chosen star, or the first when there is none);
+`ArrowRight`/`ArrowUp` and `ArrowLeft`/`ArrowDown` move **and choose** (firing `change`), `Home`/`End` choose the
+first/last; `Space`/`Enter` choose the focused star (again on the chosen one clears it). `focus()` goes to the Tab stop.
+
 ## Slots
 
 | Name | Description |

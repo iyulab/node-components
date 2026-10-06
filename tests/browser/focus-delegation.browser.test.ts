@@ -197,15 +197,16 @@ describe('폼 컨트롤 host.focus()/.blur() 위임 — UInput.focus()와 같은
     expect(document.activeElement).not.toBe(radio.querySelector('u-option'));
   });
 
-  it('URating — host.focus()가 첫(최저 점수) 심볼로 위임된다', async () => {
+  it('URating — host.focus()가 탭 정지(고른 별)로 위임된다', async () => {
     const rating = document.createElement('u-rating') as URating;
     rating.value = 3;
     document.body.appendChild(rating);
     await rating.updateComplete;
 
     rating.focus();
-    const firstSymbol = rating.shadowRoot!.querySelector('.symbol');
-    expect(rating.shadowRoot?.activeElement).toBe(firstSymbol);
+    // 탭 정지는 고른 별이다(라디오 묶음) — 종전 «첫 별» 은 별마다 탭 정지이던 모델의 기대였다.
+    const chosen = rating.shadowRoot!.querySelector('.symbol[data-score="3"]');
+    expect(rating.shadowRoot?.activeElement).toBe(chosen);
 
     rating.blur();
     expect(rating.shadowRoot?.activeElement).toBeNull();

@@ -72,12 +72,14 @@ export class UTree extends UElement {
     this.addEventListener('pick', this.handlePick);
     this.addEventListener('check', this.handleCheck);
     this.addEventListener('keydown', this.handleKeydown);
+    this.addEventListener('focusin', this.handleFocusin);
   }
 
   disconnectedCallback(): void {
     this.removeEventListener('pick', this.handlePick);
     this.removeEventListener('check', this.handleCheck);
     this.removeEventListener('keydown', this.handleKeydown);
+    this.removeEventListener('focusin', this.handleFocusin);
     super.disconnectedCallback();
   }
 
@@ -174,6 +176,43 @@ export class UTree extends UElement {
     this._items = slot.assignedElements({ flatten: true })
       .filter(el => el instanceof UTreeItem) as UTreeItem[];
     this.propagate();
+    this.syncTabStop();
+  };
+
+  /** 탭 정지 — 트리 전체에 하나(APG Tree View). 마지막으로 포커스된 항목, 처음에는 선택된 항목 또는 첫 항목. */
+  private tabStop?: UTreeItem;
+
+  /**
+   * 정지를 다시 정한다 — `preferred` 가 있으면 그것(포커스를 받으려는 항목), 아니면 지금 정지를 지키되 비활성이 되거나
+   * 접힌 부모 밑에 숨으면 보이는 가장 가까운 조상으로 옮긴다(숨은 항목의 tabindex 0 은 Tab 이 건너뛰어 트리에 들어갈
+   * 길이 사라진다).
+   *
+   * ⚠정지가 아닌 항목은 `tabindex` 를 **떼어 낸다**(-1 이 아니다). 항목은 섀도 호스트이고 자식 항목은 그 섀도의 슬롯으로
+   * 그려진다 — 음수 tabindex 호스트의 범위는 순차 탐색에서 통째로 빠져, 부모가 -1 이면 그 밑의 정지에 Tab 이 닿지
+   * 않았다(실측: Shift+Tab 이 트리를 건너뛰었다). 그래서 항목은 포커스를 받기 직전에 정지가 된다(`UTreeItem.focus`).
+   * @internal 항목이 부른다.
+   */
+  public syncTabStop(preferred?: UTreeItem): void {
+    if (preferred && !preferred.disabled) this.tabStop = preferred;
+    const shown = (item: UTreeItem) => {
+      for (let p = item.parentItem; p; p = p.parentItem) if (!p.expanded) return false;
+      return true;
+    };
+    const reachable = this.getItems(item => !item.disabled && shown(item));
+    let stop = this.tabStop;
+    while (stop && !reachable.includes(stop)) stop = stop.parentItem ?? undefined;
+    this.tabStop = stop ?? reachable.find(item => item.selected) ?? reachable[0];
+    this.mapItems(item => {
+      if (item === this.tabStop) item.setAttribute('tabindex', '0');
+      else item.removeAttribute('tabindex');
+    });
+  }
+
+  private handleFocusin = (e: FocusEvent) => {
+    const item = e.composedPath().find(el => el instanceof UTreeItem) as UTreeItem | undefined;
+    if (!item || item === this.tabStop || item.disabled) return;
+    this.tabStop = item;
+    this.syncTabStop();
   };
 
   private handleIconSlotChange = (e: Event) => {

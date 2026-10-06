@@ -85,7 +85,7 @@ export class URating extends UFormControlElement<number> {
                 aria-label=${String(score)}
                 aria-checked=${score === Math.round(this.value || 0) ? 'true' : 'false'}
                 aria-disabled=${this.interactive ? 'false' : 'true'}
-                tabindex=${this.interactive ? '0' : '-1'}
+                tabindex=${this.interactive && score === this.tabStopScore ? '0' : '-1'}
                 data-score=${score}
                 @pointermove=${this.handleSymbolPointerMove}
                 @pointerleave=${this.handleSymbolPointerLeave}
@@ -153,10 +153,18 @@ export class URating extends UFormControlElement<number> {
    *  `<span>`이라 disabled/readonly일 때 `tabindex="-1"`(=`!interactive`)이고,
    *  다른 컴포넌트의 `.container`/thumb와 같은 이유로 프로그램적 focus는 여전히
    *  통과하므로 직접 가드한다. */
+  /**
+   * 탭 정지는 그룹에 하나 — 고른 별(없으면 첫 별)이다(APG Radio Group · 네이티브 라디오 묶음과 같다). 종전에는 별마다
+   * 탭 정지라 Tab 이 별 다섯을 다 지나갔다.
+   */
+  private get tabStopScore(): number {
+    return Math.min(this.max, Math.max(1, Math.round(this.value || 0) || 1));
+  }
+
   public focus(options?: FocusOptions): void {
     if (!this.interactive) return;
-    const first = this.renderRoot.querySelector<HTMLElement>('.symbol');
-    first?.focus(options);
+    const stop = this.renderRoot.querySelector<HTMLElement>(`.symbol[data-score="${this.tabStopScore}"]`);
+    stop?.focus(options);
   }
 
   public blur(): void {
@@ -222,28 +230,31 @@ export class URating extends UFormControlElement<number> {
     const currentIndex = symbols.indexOf(currentSymbol);
     if (currentIndex === -1) return;
 
+    // 화살표·Home·End 는 «옮기고 고른다» — 라디오 묶음의 키보드 계약(APG Radio Group · 네이티브 라디오). 고른 별이
+    // 곧 탭 정지라, 옮기기만 하고 고르지 않으면 다음 Tab 에서 포커스가 고른 별로 되돌아갔다.
+    const moveTo = (index: number) => {
+      e.preventDefault();
+      const score = index + 1;
+      if (score !== this.value) {
+        this.value = score;
+        this.emitChange();
+      }
+      this.updateComplete.then(() => symbols[index].focus());
+    };
     switch (e.key) {
       case 'ArrowRight':
-      case 'ArrowUp': {
-        e.preventDefault();
-        const nextIndex = Math.min(symbols.length - 1, currentIndex + 1);
-        symbols[nextIndex].focus();
+      case 'ArrowUp':
+        moveTo(Math.min(symbols.length - 1, currentIndex + 1));
         break;
-      }
       case 'ArrowLeft':
-      case 'ArrowDown': {
-        e.preventDefault();
-        const prevIndex = Math.max(0, currentIndex - 1);
-        symbols[prevIndex].focus();
+      case 'ArrowDown':
+        moveTo(Math.max(0, currentIndex - 1));
         break;
-      }
       case 'Home':
-        e.preventDefault();
-        symbols[0].focus();
+        moveTo(0);
         break;
       case 'End':
-        e.preventDefault();
-        symbols[symbols.length - 1].focus();
+        moveTo(symbols.length - 1);
         break;
       case ' ':
       case 'Enter': {

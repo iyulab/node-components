@@ -11,6 +11,9 @@ import { type ExpandEventDetail } from "../../events/ExpandEvent.js";
 import { type CollapseEventDetail } from "../../events/CollapseEvent.js";
 import { isFromNestedControl } from "../../utilities/nestedControl.js";
 
+/** 이 항목이 속한 트리 — 탭 정지(트리 전체에 하나)는 트리가 정한다. */
+interface TabStopOwner { syncTabStop(preferred?: UTreeItem): void }
+
 export type TreeItemTrigger = 'item' | 'icon';
 
 /**
@@ -84,7 +87,9 @@ export class UTreeItem extends UElement {
   connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute('role', 'treeitem');
-    this.setAttribute('tabindex', this.disabled ? '-1' : '0');
+    // 탭 정지는 트리 전체에 하나다(APG Tree View) — 트리가 한 항목에 0 을 주고 나머지에서는 tabindex 를 뗀다
+    // (`UTree.syncTabStop` 의 ⚠ 참조). 종전에는 항목마다 0 이라 Tab 이 항목을 하나씩 다 지나갔다.
+    this.addEventListener('pointerdown', this.handlePointerdown);
     if (this.parentElement instanceof UTreeItem) {
       this._parentItem = this.parentElement;
       this.depth = this._parentItem.depth + 1;
@@ -97,8 +102,11 @@ export class UTreeItem extends UElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
+    if (changedProperties.has('disabled') || changedProperties.has('expanded')) {
+      // 비활성이 됐거나 접혀 정지가 숨으면 트리가 정지를 옮긴다.
+      this.requestTabStopSync();
+    }
     if (changedProperties.has('disabled')) {
-      this.setAttribute('tabindex', this.disabled ? '-1' : '0');
       // 역할이 호스트에 있으므로 비활성도 호스트가 알린다 — 보조기술·자동화 도구가 읽는 것은 이 속성이다.
       if (this.disabled) this.setAttribute('aria-disabled', 'true');
       else this.removeAttribute('aria-disabled');
@@ -227,6 +235,23 @@ export class UTreeItem extends UElement {
     );
     this.leaf = this._childItems.length === 0;
     this.propagate();
+    this.requestTabStopSync();
+  };
+
+  private requestTabStopSync(preferred?: UTreeItem): void {
+    (this.closest('u-tree') as unknown as TabStopOwner | null)?.syncTabStop?.(preferred);
+  }
+
+  /** 포커스를 받기 직전에 탭 정지가 된다 — 정지가 아닌 항목은 tabindex 가 없어 그대로는 포커스를 받지 못한다. */
+  public override focus(options?: FocusOptions): void {
+    this.requestTabStopSync(this);
+    super.focus(options);
+  }
+
+  /** 누르면 포커스가 오도록 — 브라우저가 포커스 대상을 정하기 전(pointerdown)에 정지가 된다. 바깥 항목의 처리는 막는다. */
+  private handlePointerdown = (e: PointerEvent) => {
+    const own = e.composedPath().find(el => el instanceof UTreeItem);
+    if (own === this) this.requestTabStopSync(this);
   };
 
   private handleHeaderClick = (e: MouseEvent) => {
