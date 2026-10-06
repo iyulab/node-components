@@ -10,6 +10,7 @@ import '../popover/UPopover.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
+import { charsWidth } from "../../utilities/chars.js";
 import { dateTextPattern, formatDateText, formatDateTimeText, parseDate, parseDateTime, type DateTextFormat } from "../../utilities/format.js";
 import { UCalendar } from "../calendar/UCalendar.js";
 import { DateTextController } from "../calendar/date-text-controller.js";
@@ -97,6 +98,12 @@ export class UDatePicker extends UFormControlElement<string> {
 
   /** 크기 — 다른 필드·버튼과 같은 세 단(`sm` 12px · `md` = `--u-density`(14px) · `lg` 16px). */
   @property({ type: String, reflect: true }) size: FieldSize = 'md';
+  /**
+   * 칸이 담을 글자 수 — 지정하면 폭을 정하지 않은 칸(기본 `inline-block`)이 «N자 + 지우기·달력 버튼 + 패딩» 폭으로 그려지고,
+   * 그보다 좁게 주면 넘친다(글자 영역 하한이 N자가 된다). 값의 표시 형식(`format`)이 정하는 길이를 주면 칸이 꼭 그만큼이다. `u-input` 의 `chars` 와 같은 축이다.
+   * 폭을 준 칸에서는 하한으로만 쓴다.
+   */
+  @property({ type: Number, reflect: true }) chars?: number;
 
   /** `date` (default) selects a calendar day only. `datetime` also captures a time-of-day and
    *  the value becomes a complete ISO-8601 `DateTimeOffset` string. */
@@ -217,6 +224,7 @@ export class UDatePicker extends UFormControlElement<string> {
   }
 
   render() {
+    const chars = charsWidth(this.chars);
     const datetime = this.mode === 'datetime';
     return html`
       <u-field part="field"
@@ -228,8 +236,9 @@ export class UDatePicker extends UFormControlElement<string> {
         .validationMessage=${this.validationMessage}
       >
         <div class="container" part="container" @click=${this.textEntry.handleContainerClick}
-          style=${`--_icons: ${this.suffixButtonCount()}`}>
+          style=${`--_icons: ${this.suffixButtonCount()}${chars ? `; --date-picker-min-text: ${chars}` : ''}`}>
           <input class="text-input" part="input"
+            style=${ifDefined(chars ? `inline-size: ${chars}` : undefined)}
             type="text"
             inputmode=${datetime ? 'text' : 'numeric'}
             autocomplete="off"

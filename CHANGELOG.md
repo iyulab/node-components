@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.11.0] - 2026-10-07
+
+### Added
+
+- **`chars` on `u-select`, `u-date-picker` and `u-date-range-picker`** — the same declaration `u-input` has: an unsized
+  field draws at N characters + its suffix buttons + padding, and a sized one uses it as the text floor. These fields
+  had only the text floor (`--*-min-text`), so a consumer sized them by copying the clear, arrow and calendar button
+  boxes and the padding into a `calc()`. An unsized `u-select` also widened and narrowed with the chosen option; with
+  `chars` its width holds and a longer option ends in an ellipsis.
+
 ## [2.10.3] - 2026-10-07
 
 ### Fixed

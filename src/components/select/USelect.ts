@@ -8,6 +8,7 @@ import '../spinner/USpinner.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
+import { charsWidth } from "../../utilities/chars.js";
 // 부수효과 import — 이 모듈이 그리는 `<u-chip>` 을 등록한다(타입만 가져오면 빌드가 import 를 지워 등록되지 않는다).
 import "../chip/UChip.js";
 import type { UChip } from "../chip/UChip.js";
@@ -68,6 +69,12 @@ export class USelect extends UFormControlElement<string | string[]> {
    * 한 줄에 서도록. 테마는 필드 상자 토큰(`--u-field-padding-block`)으로 단마다 높이를 다듬는다.
    */
   @property({ type: String, reflect: true }) size: FieldSize = 'md';
+  /**
+   * 칸이 담을 글자 수 — 지정하면 폭을 정하지 않은 칸(기본 `inline-block`)이 «N자 + 지우기·펼침 화살표 + 패딩» 폭으로 그려져
+   * 고른 값이 바뀌어도 폭이 흔들리지 않고(더 긴 값은 말줄임), 그보다 좁게 주면 넘친다(표시 글자 하한이 N자가 된다).
+   * `u-input` 의 `chars` 와 같은 축이다. 폭을 준 칸(`--u-select-width`·`block`)에서는 하한으로만 쓴다.
+   */
+  @property({ type: Number, reflect: true }) chars?: number;
   /** 다중 선택 여부 */
   @property({ type: Boolean, reflect: true }) multiple: boolean = false;
   /** 검색 가능 여부 */
@@ -144,6 +151,7 @@ export class USelect extends UFormControlElement<string | string[]> {
   }
 
   render() {
+    const chars = charsWidth(this.chars);
     return html`
       <u-field part="field"
         ?required=${this.required}
@@ -158,7 +166,7 @@ export class USelect extends UFormControlElement<string | string[]> {
         </span>
 
         <div class="container" part="container" tabindex=${this.effectivelyDisabled ? "-1" : "0"}
-          style=${`--_clear: ${this.clearable && this.hasValue && !this.effectivelyDisabled && !this.readonly ? 1 : 0}`}
+          style=${`--_clear: ${this.clearable && this.hasValue && !this.effectivelyDisabled && !this.readonly ? 1 : 0}${chars ? `; --select-min-text: ${chars}; --_chars: ${chars}` : ''}`}
           role="combobox"
           aria-disabled=${ifDefined(this.effectivelyDisabled ? 'true' : undefined)}
           aria-label=${ifDefined(this.resolvedAriaLabel)}

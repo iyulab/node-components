@@ -9,6 +9,7 @@ import '../spinner/USpinner.js';
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import { parseNumber } from "../../utilities/format.js";
+import { charsWidth } from "../../utilities/chars.js";
 import { UOption } from "../option/UOption.js";
 // 부수효과 import — 이 모듈이 그리는 `<u-popover>` 을 등록한다(타입으로만 가져오면 빌드가 import 를 지운다 — 데코레이터 메타데이터가 우연히 붙잡고 있었다).
 import "../popover/UPopover.js";
@@ -282,10 +283,9 @@ export class UInput extends UFormControlElement<string> {
     }
   }
 
-  /** `chars` 를 CSS 길이로 — 양의 정수일 때만(그 밖은 지정 없음과 같다). */
+  /** `chars` 를 CSS 길이로 — 양의 수일 때만(그 밖은 지정 없음과 같다). */
   private get charsWidth(): string | undefined {
-    const n = this.chars;
-    return n != null && Number.isFinite(n) && n > 0 ? `${Math.ceil(n)}ch` : undefined;
+    return charsWidth(this.chars);
   }
 
   /** The shown number uses the locale's decimal separator — re-show it in the new locale (unless the user is typing in it). */

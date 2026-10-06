@@ -163,6 +163,13 @@ export const styles = css`
     color: var(--u-txt-color-weak, #616161);
   }
 
+  /* chars — 표시 글자 요소의 폭을 N자로(렌더가 --_chars 를 준다). 고유 폭 계산에서 고른 값의 길이 대신 이 값이 쓰여
+     칸이 값마다 흔들리지 않고, 폭을 받은 칸에서는 flex: 1 이 그대로 채운다. 없으면 종전 auto. */
+  .text-content,
+  .chips-content {
+    inline-size: var(--_chars, auto);
+  }
+
   .chips-content {
     flex: 1;
     min-width: 0;

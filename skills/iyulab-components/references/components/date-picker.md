@@ -82,6 +82,7 @@ starts from the value. Typing in the text box still commits on Enter or leaving 
 | `min` | `string` | — | — | Minimum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
 | `max` | `string` | — | — | Maximum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
 | `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: 12px · `--u-density` (14px) · 16px. A field and a button of the same size share a height |
+| `chars` | `number` | — | ✓ | Characters the field holds. An unsized field draws at N characters + its clear and calendar buttons + padding; a sized one uses it as the text floor, so a narrower box overflows. Give the length of the `format` pattern for a box that fits it exactly. Same axis as `u-input`'s `chars` |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
 | `isDateDisabled` | `(date: string) => boolean` | — | — | App rule for days that cannot be chosen (ISO in, `true` = disabled). Property only; see «Disabled days» |
 | `placeholder` | `string` | — | — | Placeholder text (defaults to the pattern to type, e.g. `YYYY-MM-DD` or `YYYY-MM-DD HH:mm`) |
