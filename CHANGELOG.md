@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.3.0] - 2026-10-06
+
+### Fixed
+
+- **`Dialog.alert` and `Dialog.confirm` render a string `message` as text**, like `Dialog.prompt` always did. They passed
+  it to `show({ content })`, whose string `content` is HTML, so a confirmation that included user input (an item's
+  name) could inject markup — `<img src=x onerror=…>` ran. Nothing documented HTML in these messages; if you relied on
+  it, pass a `TemplateResult` (below) or use `Dialog.show({ content })`, which keeps its HTML-string contract.
+
+### Added
+
+- `Dialog.alert` / `Dialog.confirm` accept `string | TemplateResult` — formatting goes through a Lit template, whose
+  interpolated values stay text.
+
 ## [2.2.2] - 2026-10-06
 
 ### Documentation

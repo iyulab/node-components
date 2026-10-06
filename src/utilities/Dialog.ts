@@ -76,6 +76,14 @@ export interface DialogAction {
 }
 
 /**
+ * 메시지를 본문 템플릿으로 — 문자열은 lit 이 글자로 이스케이프한다. `show` 는 문자열 `content` 를 HTML 로 해석하므로
+ * (그것이 `show` 의 계약이다) `alert`·`confirm` 이 문자열을 그대로 넘기면 그 계약을 조용히 물려받아 마크업 주입 싱크가 된다.
+ */
+function asText(message: string | TemplateResult): TemplateResult {
+  return html`${message}`;
+}
+
+/**
  * Dialog 유틸리티 클래스입니다.
  * 프로그래밍 방식으로 alert, confirm, prompt 다이얼로그를 표시합니다.
  */
@@ -85,22 +93,25 @@ export class Dialog {
 
   /**
    * 알림 다이얼로그를 표시합니다.
+   * @param message 본문 — **문자열은 글자로** 그린다(사용자 입력을 넣어도 마크업이 되지 않는다). 서식이 필요하면
+   *   `TemplateResult`(`html\`…\``)를 넘긴다. HTML 문자열은 그것을 명시한 `show({ content })` 로만.
    */
-  public static async alert(message: string, options?: DialogOptions): Promise<void> {
+  public static async alert(message: string | TemplateResult, options?: DialogOptions): Promise<void> {
     await this.show({
       ...options,
-      content: message
+      content: asText(message)
     });
   }
 
   /**
    * 확인 다이얼로그를 표시합니다. (확인/취소 버튼)
+   * @param message 본문 — **문자열은 글자로** 그린다(`alert` 와 같다). 서식은 `TemplateResult` 로.
    * @returns 확인이면 true, 취소이면 false
    */
-  public static async confirm(message: string, options?: ConfirmDialogOptions): Promise<boolean> {
+  public static async confirm(message: string | TemplateResult, options?: ConfirmDialogOptions): Promise<boolean> {
     const result = await this.show({
       ...options,
-      content: message,
+      content: asText(message),
       actions: [
         { label: options?.cancelLabel || Locale.getValue('cancel'), value: 'cancel', appearance: 'outlined' },
         { label: options?.confirmLabel || Locale.getValue('confirm'), value: 'confirm', color: options?.confirmColor },

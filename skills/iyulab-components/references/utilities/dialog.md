@@ -45,6 +45,11 @@ const result = await Dialog.show({
 | `Dialog.prompt(message, options?)` | `Promise<string \| null>` | Text input dialog |
 | `Dialog.show(options)` | `Promise<string \| null>` | Custom dialog; resolves with clicked action `value` |
 
+`message` is **text**: a string is rendered as text in `alert`, `confirm` and `prompt`, so a user-supplied name in a
+confirmation cannot inject markup. For formatting pass a Lit `TemplateResult`
+(`Dialog.confirm(html\`Delete <strong>${name}</strong>?\`)` — interpolated values stay text). Only
+`Dialog.show({ content })` takes an HTML string, and says so.
+
 ## Types
 
 ```ts
