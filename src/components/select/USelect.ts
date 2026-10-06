@@ -37,6 +37,8 @@ import { styles } from "./USelect.styles.js";
  *   컨테이너 폭을 채우려면 `block`으로 지정한다.
  * @cssprop --u-select-width - 호스트의 width (기본값: auto). flex 컨테이너처럼 block만으로는
  *   늘어나지 않는 맥락에서 `100%`로 지정한다.
+ * @cssprop --select-min-text - 표시 글자 영역의 최소 폭 (기본값: 4ch). 지우기·펼침 화살표가 좁은 칸을 나눠도 글자가 0 으로
+ *   접히지 않는다 — 그보다 좁으면 칸이 호스트 밖으로 넘친다(보이는 실패).
  * @cssprop --select-popover-width - 팝오버의 너비 (기본값: 앵커(트리거) 너비, strategy와 무관하게 동일).
  *   옵션 텍스트가 길어도 이 값을 넘겨 넓어지지 않으며, 넘치는 텍스트는 UOption에서 ellipsis 처리된다.
  * @cssprop --select-popover-min-height - 팝오버의 최소 높이 (기본값: 0px)
@@ -152,6 +154,7 @@ export class USelect extends UFormControlElement<string | string[]> {
         </span>
 
         <div class="container" part="container" tabindex=${this.effectivelyDisabled ? "-1" : "0"}
+          style=${`--_clear: ${this.clearable && this.hasValue && !this.effectivelyDisabled && !this.readonly ? 1 : 0}`}
           role="combobox"
           aria-disabled=${ifDefined(this.effectivelyDisabled ? 'true' : undefined)}
           aria-label=${ifDefined(this.resolvedAriaLabel)}

@@ -96,3 +96,4 @@ the first/last visible option; on an option, arrows, `Home`/`End`, `Enter`/`Spac
 | `--select-popover-width` | Dropdown width (fixed to anchor width by default; long option text ellipsizes instead of widening the popover) |
 | `--select-popover-min-height` | Dropdown min-height |
 | `--select-popover-max-height` | Dropdown max-height |
+| `--select-min-text` | Minimum width of the displayed text (default `4ch`). The clear button and the dropdown arrow never squeeze the selection below it — a select given less width overflows its host visibly instead of showing nothing |

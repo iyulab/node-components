@@ -36,6 +36,16 @@ export const styles = css`
     overflow-clip-margin: 1px;
     user-select: none;
     cursor: pointer;
+    /* 지우기 «x» 의 받는 여백 — 아래 접미 버튼 규칙과 글자 하한이 함께 읽는다. */
+    --_target-pad: max(0.25em, calc(12px - 0.5em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
+    /* 글자 영역의 하한 — 지우기(받는 상자) · 펼침 화살표가 한 줄을 나눌 때 주어진 폭이 좁으면 표시 글자가 0 까지 접혀
+       «무엇이 골라졌는지 보이지 않는» 채 정상처럼 그려졌다. 하한 아래로는 칸이 호스트 밖으로 넘친다 — 보이는 실패다.
+       지우기 몫 = 글리프 1em + 받는 여백(왼쪽은 표시 글자 쪽으로 넓히고 오른쪽은 화살표 간격과 맞댄다) · 화살표(또는 스피너) 몫 =
+       1em + 앞 간격 0.25em. 지우기가 보이는지(--_clear)는 렌더가 정한다. */
+    min-inline-size: calc(
+      2px + 2 * var(--u-field-padding-inline, 0.6em) + var(--select-min-text, 4ch)
+      + var(--_clear, 0) * (1em + var(--_target-pad)) + 1.25em
+    );
   }
   :host([readonly]) .container,
   :host(:disabled) .container {
@@ -187,9 +197,8 @@ export const styles = css`
      위아래는 컨테이너 여백(0.3em) 쪽으로 넓힌다. 음수 여백이라 배치·트리거 높이는 그대로다 — 트리거의 줄은
      1em 이라 세로 패딩만 주면 트리거가 8px 커진다. */
   .suffix-item[role="button"] {
-    /* 받는 여백 = u-input 과 같은 식 — 글자 크기와 무관하게 ≥ 24px */
-    /* 호스트 하한(--u-target-size)이 있으면 상자가 그 값이 되도록 — 미설정이면 0 이라 종전 24px 그대로. */
-    --_target-pad: max(0.25em, calc(12px - 0.5em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
+    /* 받는 여백(--_target-pad)은 컨테이너가 정한다 — u-input 과 같은 식: 글자 크기와 무관하게 ≥ 24px,
+       호스트 하한(--u-target-size)이 있으면 상자가 그 값. */
     box-sizing: content-box;
     /* 오른쪽은 펼침 화살표와 종전처럼 0.25em 만 맞댄다 — 글자가 작아 늘어난 폭은 왼쪽(값 글자 쪽, 타깃 아님)으로 넓힌다.
        16px 에서는 P = 0.25em 이라 종전 배치와 같다. */

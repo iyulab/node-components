@@ -501,6 +501,13 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   'u-date-range-picker': [
     { state: '닫힘', html: '<u-date-range-picker></u-date-range-picker>' },
     {
+      state: '지우기·달력',
+      // 접미 버튼 둘 — 값 지우기(«x») · 달력 열기/닫기. 트리거(\`.container\`) 안에 있지만 각각 다른 일을 하는 별도 타깃이다
+      // (\`stopPropagation\`). 종전에는 글리프 그대로 14px 이었다 — 이 상태를 재는 픽스처가 없어 아무것도 그것을 말하지 않았다.
+      html: '<u-date-range-picker clearable value="2026-03-06/2026-03-12" style="width:240px"></u-date-range-picker>',
+      targets: () => suffixButtons('u-date-range-picker'),
+    },
+    {
       state: '프리셋',
       // 달력 옆 빠른 선택 목록 — 좁은 뷰포트에서는 달력 위로 올라가 가로로 흐른다.
       html: '<u-date-range-picker presets="today yesterday last7Days last30Days thisWeek lastWeek thisMonth lastMonth thisYear"></u-date-range-picker>',
@@ -535,6 +542,13 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
   ],
   'u-date-picker': [
     { state: '닫힘', html: '<u-date-picker></u-date-picker>' },
+    {
+      state: '지우기·달력',
+      // 접미 버튼 둘 — 값 지우기(«x») · 달력 열기/닫기. 트리거(\`.container\`) 안에 있지만 각각 다른 일을 하는 별도 타깃이다
+      // (\`stopPropagation\`). 종전에는 글리프 그대로 14px 이었다 — 이 상태를 재는 픽스처가 없어 아무것도 그것을 말하지 않았다.
+      html: '<u-date-picker clearable value="2026-03-06" style="width:240px"></u-date-picker>',
+      targets: () => suffixButtons('u-date-picker'),
+    },
     {
       state: '달력',
       // 달력(날짜 버튼 · 이전/다음 달)은 `.container` 를 눌러 팝오버가 `show` 를 낸 뒤에만 렌더된다.
@@ -917,7 +931,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 27(47상태) · 미판정 0() · 대상아님 22');
+      ).toBe('판정 27(49상태) · 미판정 0() · 대상아님 22');
     });
   });
 

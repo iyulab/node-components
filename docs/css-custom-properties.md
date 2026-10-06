@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 32개 · 프로퍼티 140개**
+**컴포넌트 32개 · 프로퍼티 143개**
 
 ## `<u-alert>`
 
@@ -82,6 +82,7 @@ u-button.cta { --btn-color: #0f9d58; }
 |---|---|
 | `--u-date-picker-display` | host `display` (default: inline-block). Set `block` to fill the container width in forms and grid cells. |
 | `--u-date-picker-width` | host `width` (default: auto). Set `100%` where `block` alone does not stretch the host (e.g. inside a flex container). |
+| `--date-picker-min-text` | minimum width of the text area (default: 4ch). When the suffix buttons (clear · calendar) share a narrow box, the field overflows its host instead of folding the text to nothing. |
 | `--date-picker-popover-width` | width of the calendar popover (default: 296px, independent of trigger width — a fixed-width calendar reads more naturally) |
 
 ## `<u-date-range-picker>`
@@ -90,6 +91,7 @@ u-button.cta { --btn-color: #0f9d58; }
 |---|---|
 | `--u-date-range-picker-display` | host `display` (default: inline-block). Set `block` to fill the container width in forms and grid cells. |
 | `--u-date-range-picker-width` | host `width` (default: auto). Set `100%` where `block` alone does not stretch the host (e.g. inside a flex container). |
+| `--date-range-picker-min-text` | minimum width of the text area (default: 4ch). When the suffix buttons (clear · calendar) share a narrow box, the field overflows its host instead of folding the text to nothing. |
 
 ## `<u-divider>`
 
@@ -194,6 +196,7 @@ u-button.cta { --btn-color: #0f9d58; }
 |---|---|
 | `--u-select-display` | 호스트의 display (기본값: inline-block). 폼/그리드 셀에서 컨테이너 폭을 채우려면 `block`으로 지정한다. |
 | `--u-select-width` | 호스트의 width (기본값: auto). flex 컨테이너처럼 block만으로는 늘어나지 않는 맥락에서 `100%`로 지정한다. |
+| `--select-min-text` | 표시 글자 영역의 최소 폭 (기본값: 4ch). 지우기·펼침 화살표가 좁은 칸을 나눠도 글자가 0 으로 접히지 않는다 — 그보다 좁으면 칸이 호스트 밖으로 넘친다(보이는 실패). |
 | `--select-popover-width` | 팝오버의 너비 (기본값: 앵커(트리거) 너비, strategy와 무관하게 동일). 옵션 텍스트가 길어도 이 값을 넘겨 넓어지지 않으며, 넘치는 텍스트는 UOption에서 ellipsis 처리된다. |
 | `--select-popover-min-height` | 팝오버의 최소 높이 (기본값: 0px) |
 | `--select-popover-max-height` | 팝오버의 최대 높이 (기본값: 50vh) |

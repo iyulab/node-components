@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **`u-date-picker` and `u-date-range-picker` clear and calendar buttons have a 24px target** (WCAG 2.2 SC 2.5.8) and
+  follow the host floor `--u-target-size`. They were the bare 14px glyph, so a page that set a 44px floor still had two
+  14px buttons in every date field. The glyph stays 1em; the press area grows into the field's padding, so the field
+  keeps its height.
+- **`u-select`, `u-date-picker` and `u-date-range-picker` no longer fold their text to nothing in a narrow box** — the
+  same floor `u-input` got in 2.4.0. With the clear button (and the host target floor) a 60px field drew 0px of text.
+  Each now has a text floor (`--select-min-text`, `--date-picker-min-text`, `--date-range-picker-min-text`, default
+  `4ch`, plus the suffix buttons); below it the field overflows its host visibly.
+
 ## [2.6.0] - 2026-10-06
 
 ### Changed

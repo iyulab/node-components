@@ -204,3 +204,4 @@ The range look comes from theme tokens — `--u-primary-color` (end caps), `--u-
 |----------|-------------|
 | `--u-date-range-picker-display` | Host `display` (default: inline-block). Set `block` to fill the container width |
 | `--u-date-range-picker-width` | Host `width` (default: auto). Set `100%` where `block` alone does not stretch the host |
+| `--date-range-picker-min-text` | Minimum width of the text area (default `4ch`). The clear and calendar buttons never squeeze the typed range below it — a picker given less width overflows its host visibly |

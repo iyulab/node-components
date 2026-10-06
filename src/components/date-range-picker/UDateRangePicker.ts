@@ -108,6 +108,8 @@ const dayPart = (half: string) => half.slice(0, 10);
  *   fill the container width in forms and grid cells.
  * @cssprop --u-date-range-picker-width - host `width` (default: auto). Set `100%` where `block`
  *   alone does not stretch the host (e.g. inside a flex container).
+ * @cssprop --date-range-picker-min-text - minimum width of the text area (default: 4ch). When the suffix buttons (clear · calendar) share a
+ *   narrow box, the field overflows its host instead of folding the text to nothing.
  *
  * @event change - fires when the user completes a range or clears it (with `confirm`, when Apply
  *   commits a different value). Programmatic value
@@ -279,6 +281,12 @@ export class UDateRangePicker extends UFormControlElement<string> {
     }
   }
 
+  /** 보이는 접미 버튼 수 — 글자 영역 하한(`min-inline-size`)이 그만큼의 받는 상자를 뺀다. 아래 `?hidden` 조건과 같다. */
+  private suffixButtonCount(): number {
+    if (this.effectivelyDisabled || this.readonly) return 0;
+    return (this.clearable && this.value ? 1 : 0) + 1;
+  }
+
   render() {
     const pattern = this.mode === 'datetime' ? `${dateTextPattern(this.format)} ${this.seconds ? 'HH:mm:ss' : 'HH:mm'}` : dateTextPattern(this.format);
     return html`
@@ -290,7 +298,8 @@ export class UDateRangePicker extends UFormControlElement<string> {
         .description=${this.description}
         .validationMessage=${this.validationMessage}
       >
-        <div class="container" part="container" @click=${this.textEntry.handleContainerClick}>
+        <div class="container" part="container" @click=${this.textEntry.handleContainerClick}
+          style=${`--_icons: ${this.suffixButtonCount()}`}>
           <input class="text-input" part="input"
             type="text"
             autocomplete="off"

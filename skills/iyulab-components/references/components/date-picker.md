@@ -137,4 +137,5 @@ starts from the value. Typing in the text box still commits on Enter or leaving 
 |----------|-------------|
 | `--u-date-picker-display` | Host `display` (default: inline-block). Set `block` to fill the container width in forms and grid cells |
 | `--u-date-picker-width` | Host `width` (default: auto). Set `100%` where `block` alone does not stretch the host (e.g. inside a flex container) |
+| `--date-picker-min-text` | Minimum width of the text area (default `4ch`). The clear and calendar buttons never squeeze the typed date below it — a picker given less width overflows its host visibly |
 | `--date-picker-popover-width` | Width of the calendar popover (default: 296px, independent of trigger width — a fixed-width calendar reads more naturally) |

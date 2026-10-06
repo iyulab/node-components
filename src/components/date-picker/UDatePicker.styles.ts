@@ -19,6 +19,10 @@ export const styles = css`
   }
 
   /* mode="date": the trigger is a text box — it takes the container's room and reads like its text. */
+  /* 글자 영역 하한(공용 피커 시트의 min-inline-size 가 읽는다). */
+  .container {
+    --_min-text: var(--date-picker-min-text, 4ch);
+  }
   .text-input {
     flex: 1 1 auto;
     min-width: 0;

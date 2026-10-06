@@ -82,6 +82,8 @@ export type { DateDisabledFn } from "../calendar/dates.js";
  *   the container width in forms and grid cells.
  * @cssprop --u-date-picker-width - host `width` (default: auto). Set `100%` where `block` alone
  *   does not stretch the host (e.g. inside a flex container).
+ * @cssprop --date-picker-min-text - minimum width of the text area (default: 4ch). When the suffix buttons (clear · calendar) share a
+ *   narrow box, the field overflows its host instead of folding the text to nothing.
  * @cssprop --date-picker-popover-width - width of the calendar popover (default: 296px, independent of trigger width — a fixed-width calendar reads more naturally)
  *
  * @event change - fires when the user clicks a date cell, confirms via keyboard, changes the
@@ -208,6 +210,12 @@ export class UDatePicker extends UFormControlElement<string> {
       : formatDateText(toISODate(date), this.format);
   }
 
+  /** 보이는 접미 버튼 수 — 글자 영역 하한(`min-inline-size`)이 그만큼의 받는 상자를 뺀다. 아래 `?hidden` 조건과 같다. */
+  private suffixButtonCount(): number {
+    if (this.effectivelyDisabled || this.readonly) return 0;
+    return (this.clearable && this.value ? 1 : 0) + 1;
+  }
+
   render() {
     const datetime = this.mode === 'datetime';
     return html`
@@ -219,7 +227,8 @@ export class UDatePicker extends UFormControlElement<string> {
         .description=${this.description}
         .validationMessage=${this.validationMessage}
       >
-        <div class="container" part="container" @click=${this.textEntry.handleContainerClick}>
+        <div class="container" part="container" @click=${this.textEntry.handleContainerClick}
+          style=${`--_icons: ${this.suffixButtonCount()}`}>
           <input class="text-input" part="input"
             type="text"
             inputmode=${datetime ? 'text' : 'numeric'}
