@@ -20,6 +20,8 @@ interface RawAxNode {
   role?: { value: string };
   name?: { value: string };
   description?: { value: string };
+  /** The node's current value (a progressbar's or slider's `valuenow`) — CDP carries it here, not among `properties`. */
+  value?: { value: unknown };
   backendDOMNodeId?: number;
   properties?: { name: string; value: { value: unknown; relatedNodes?: { backendDOMNodeId: number }[] } }[];
 }

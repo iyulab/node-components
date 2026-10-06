@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.5.0] - 2026-10-06
+
+An accessibility-tree audit of the interactive widgets — what a screen reader receives, not what the DOM says.
+
+### Fixed
+
+- **`u-progress-bar` and `u-progress-ring` are exposed as a `progressbar`** with `aria-valuenow`/`min`/`max`
+  (no value when `indeterminate`). They had no role, so nothing was in progress as far as assistive technology knew.
+  Name them with `aria-label`.
+- **`u-spinner` is an indeterminate `progressbar` with a name** — its text (read once, as the name), or the locale's
+  new `loading` word when it has none. It was invisible to assistive technology.
+- **`u-rating` stars are named radios** (`1`…`max`; a screen reader adds "3 of 5"). They were five unnamed radios.
+- **`u-tree-item` carries its structure and state:** `aria-level` (nested items all reported level 1 — they render
+  through a shadow slot, so DOM nesting gave the browser nothing to count), `aria-expanded` on items with children,
+  `aria-selected` in a `selectable` tree, `aria-checked` (`mixed` for a partly checked parent) in a `checkable` tree.
+  An item is named by its own label; it was named with every descendant's text ("Root Child 1 Child 2").
+- **`u-icon-button` is named by its tooltip text** when it has no `aria-label`. The slot only filled the tooltip,
+  so a button written as the docs show had no name.
+
+### Added
+
+- Locale key `loading` (all 14 built-in languages).
+
 ## [2.4.0] - 2026-10-06
 
 ### Fixed

@@ -18,6 +18,10 @@ Animated circular spinner for loading states. Optional label below the spinner v
 
 ---
 
+## Accessibility
+
+Exposed as a **`progressbar`** with no value (in progress, amount unknown). Its name is the slotted text — read once, as the name — or the locale's `loading` word ("Loading", "로딩 중") when it has none. `aria-label` on the host wins.
+
 ## Slots
 
 | Name | Description |

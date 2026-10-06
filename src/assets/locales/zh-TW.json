@@ -41,6 +41,7 @@
   "noFileChosen": "未選擇檔案",
   "filesSelected": "已選擇{count}個檔案",
   "resizePanels": "調整面板大小",
+  "loading": "載入中",
   "search": "搜尋",
   "alertError": "錯誤",
   "alertWarning": "警告",

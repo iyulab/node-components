@@ -49,7 +49,8 @@ Square icon-only button with a built-in tooltip (shown from the default slot). R
 
 ## Accessibility
 
-Give every icon button an `aria-label` — the icon has no text. `aria-label` and the button states
+The icon has no text, so the button is named by its tooltip text (the default slot) — or by an `aria-label`
+on the host, which wins. One of the two is required. `aria-label` and the button states
 (`aria-pressed`, `aria-expanded`, `aria-controls`, `aria-haspopup`) set on the host reach the
 inner button, as on `u-button`.
 

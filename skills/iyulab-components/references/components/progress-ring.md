@@ -20,6 +20,10 @@ Circular progress indicator. Supports buffer, segments, and indeterminate state.
 
 ---
 
+## Accessibility
+
+Exposed as a **`progressbar`** with `aria-valuenow`/`min`/`max`; `indeterminate` leaves the value out. Name it with `aria-label` — slotted content ("50%") is shown, not used as the name.
+
 ## Slots
 
 | Name | Description |

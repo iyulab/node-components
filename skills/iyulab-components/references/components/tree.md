@@ -24,6 +24,12 @@ Hierarchical tree with support for selection, checkboxes, cascade check, and dra
 
 ---
 
+## Accessibility
+
+Items are `treeitem`s with `aria-level` (depth), `aria-expanded` (items with children), `aria-selected` (in a
+`selectable` tree) and `aria-checked` (`mixed` for a partly checked parent, in a `checkable` tree). An item is
+named by its own label — not by the text of the items under it.
+
 ## u-tree
 
 ### Slots

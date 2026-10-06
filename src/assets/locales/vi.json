@@ -41,6 +41,7 @@
   "noFileChosen": "Chưa chọn tệp nào",
   "filesSelected": "Đã chọn {count} tệp",
   "resizePanels": "Thay đổi kích thước bảng",
+  "loading": "Đang tải",
   "search": "Tìm kiếm",
   "alertError": "Lỗi",
   "alertWarning": "Cảnh báo",

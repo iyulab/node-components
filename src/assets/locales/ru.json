@@ -41,6 +41,7 @@
   "noFileChosen": "Файл не выбран",
   "filesSelected": "Выбрано файлов: {count}",
   "resizePanels": "Изменить размер панелей",
+  "loading": "Загрузка",
   "search": "Поиск",
   "alertError": "Ошибка",
   "alertWarning": "Предупреждение",

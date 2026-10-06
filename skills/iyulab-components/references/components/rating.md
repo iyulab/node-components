@@ -23,6 +23,10 @@ Star/custom-symbol rating input. Supports fractional precision and custom symbol
 
 ---
 
+## Accessibility
+
+A `radiogroup` (named by `label`) of radios named `1`…`max` — a screen reader adds the position ("3 of 5").
+
 ## Slots
 
 | Name | Description |

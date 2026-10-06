@@ -3,6 +3,8 @@ import { customElement, property, state } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
 import { styles } from './USpinner.styles.js';
+import { attachProgressbar } from '../../utilities/progressAria.js';
+import { Locale } from '../../utilities/Locale.js';
 
 /** 역할 축(`primary`…`danger`, 의미 · 리브랜딩을 따라옴)과 장식 축(`blue`…, 색 자체 · 면역)이 병존한다. */
 export type SpinnerColor =
@@ -33,6 +35,21 @@ export class USpinner extends UElement {
 
   @state() private hasLabel = false;
 
+  /**
+   * 보조기기에는 «양을 모르는 진행»(`progressbar`, 값 없음). 이름은 슬롯 글자, 없으면 로케일의 `loading` — 회전하는
+   * 그림만으로는 무엇이 진행 중인지 들리지 않는다. 호스트의 `aria-label` 이 이긴다.
+   */
+  private readonly internals = attachProgressbar(this);
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.nameFrom('');
+  }
+
+  private nameFrom(text: string): void {
+    if (this.internals) this.internals.ariaLabel = text || Locale.getValue('loading');
+  }
+
   render() {
     return html`
       <svg class="spinner" part="svg">
@@ -40,7 +57,7 @@ export class USpinner extends UElement {
         <circle class="indicator"></circle>
       </svg>
 
-      <span class="label" part="label" ?hidden=${!this.hasLabel}>
+      <span class="label" part="label" ?hidden=${!this.hasLabel} aria-hidden="true">
         <slot @slotchange=${this.handleSlotChange}></slot>
       </span>
     `;
@@ -53,6 +70,8 @@ export class USpinner extends UElement {
       node.nodeType === Node.ELEMENT_NODE ||
       (node.nodeType === Node.TEXT_NODE && node.textContent?.trim() !== '')
     );
+    // 보이는 글자가 이름이 된다 — 같은 글자를 두 번 읽지 않게 표시용 상자는 보조기기에서 숨긴다(위 aria-hidden).
+    this.nameFrom(nodes.map(n => n.textContent ?? '').join(' ').replace(/\s+/g, ' ').trim());
   }
 }
 

@@ -82,6 +82,7 @@ export class URating extends UFormControlElement<number> {
             return html`
               <span class="symbol" part="symbol"
                 role="radio"
+                aria-label=${String(score)}
                 aria-checked=${score === Math.round(this.value || 0) ? 'true' : 'false'}
                 aria-disabled=${this.interactive ? 'false' : 'true'}
                 tabindex=${this.interactive ? '0' : '-1'}

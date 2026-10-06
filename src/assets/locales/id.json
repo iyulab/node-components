@@ -41,6 +41,7 @@
   "noFileChosen": "Tidak ada berkas dipilih",
   "filesSelected": "{count} berkas dipilih",
   "resizePanels": "Ubah ukuran panel",
+  "loading": "Memuat",
   "search": "Cari",
   "alertError": "Kesalahan",
   "alertWarning": "Peringatan",

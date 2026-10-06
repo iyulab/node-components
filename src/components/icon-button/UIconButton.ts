@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 
 import type { Placement, OffsetOptions } from "@floating-ui/dom";
@@ -70,8 +70,17 @@ export class UIconButton extends UElement {
     if ((FORWARDED_ARIA as readonly string[]).includes(name)) this.requestUpdate();
   }
 
+  /** 기본 슬롯(툴팁)의 글자 — `aria-label` 이 없을 때 버튼의 이름. */
+  @state() private slotText = '';
+
+  private handleSlotChange = (e: Event) => {
+    const nodes = (e.target as HTMLSlotElement).assignedNodes({ flatten: true });
+    this.slotText = nodes.map(n => n.textContent ?? '').join(' ').replace(/\s+/g, ' ').trim();
+  };
+
   render() {
-    const ariaLabel = this.getAttribute('aria-label') ?? undefined;
+    // 이름: 호스트 `aria-label`, 없으면 툴팁 글자(기본 슬롯) — 아이콘만 그리는 버튼이라 둘 다 없으면 보조기기에 이름이 없다.
+    const ariaLabel = this.getAttribute('aria-label') ?? (this.slotText || undefined);
     const pressed = this.getAttribute('aria-pressed') ?? undefined;
     const expanded = this.getAttribute('aria-expanded') ?? undefined;
     const haspopup = this.getAttribute('aria-haspopup') ?? undefined;
@@ -102,7 +111,7 @@ export class UIconButton extends UElement {
         .placement=${this.tooltipPlacement}
         .offset=${this.tooltipOffset}
       >
-        <slot></slot>
+        <slot @slotchange=${this.handleSlotChange}></slot>
       </u-tooltip>
     `;
   }

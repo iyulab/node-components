@@ -62,6 +62,8 @@ export type LocaleMessageKey =
   | 'noFileChosen'
   | 'filesSelected'
   | 'resizePanels'
+  // 이름 없는 `u-spinner` 의 접근성 이름 — 진행 표시는 글자가 없으면 보조기기에 «무엇이 진행 중인지» 가 없다.
+  | 'loading'
   | 'breadcrumb'
   | 'search'
   // 알림 제목 기본값 — `title` 을 주지 않은 `u-alert` 가 쓰는 상태 이름.

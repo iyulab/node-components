@@ -41,6 +41,7 @@
   "noFileChosen": "선택된 파일 없음",
   "filesSelected": "{count}개 파일 선택됨",
   "resizePanels": "패널 크기 조절",
+  "loading": "로딩 중",
   "search": "검색",
   "alertError": "오류",
   "alertWarning": "경고",

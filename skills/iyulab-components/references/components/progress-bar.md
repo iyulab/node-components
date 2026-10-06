@@ -21,6 +21,10 @@ Linear progress indicator. Supports buffer, segments, striped effect, and indete
 
 ---
 
+## Accessibility
+
+Exposed as a **`progressbar`** with `aria-valuenow`/`min`/`max`; `indeterminate` leaves the value out (in progress, amount unknown). Name it with `aria-label` ("Upload") — the bar has no text of its own.
+
 ## Slots
 
 | Name | Description |

@@ -2,6 +2,7 @@ import { html, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
+import { attachProgressbar, syncProgressValue } from '../../utilities/progressAria.js';
 import { styles } from './UProgressRing.styles.js';
 
 const PATH_LENGTH = 100;
@@ -46,6 +47,9 @@ export class UProgressRing extends UElement {
   /** 현재값 */
   @property({ type: Number }) value: number = 0;
 
+  /** 보조기기에 내놓는 역할·값(`progressbar`) — 호스트 속성이 이긴다. */
+  private readonly internals = attachProgressbar(this);
+
   @state() private progress: number = 0;
   @state() private bufferProgress: number = 0;
   @state() private dasharray: string = PATH_LENGTH.toString();
@@ -62,6 +66,13 @@ export class UProgressRing extends UElement {
 
     if (['segments','segmentGap'].some(k => changedProperties.has(k))) {
       this.dasharray = this.calcDasharray(this.segments, this.segmentGap);
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (['min', 'max', 'value', 'indeterminate'].some(k => changedProperties.has(k))) {
+      syncProgressValue(this.internals, this);
     }
   }
 

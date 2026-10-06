@@ -74,6 +74,13 @@ export class UTreeItem extends UElement {
     return this._childItems;
   }
 
+  /**
+   * 이름 = 자기 라벨(기본 슬롯)의 글자. 역할이 호스트에 있으므로 내용에서 이름을 계산하면 **자식 항목의 글자까지**
+   * 들어갔다(실측: 부모 이름 «Root Child»). 호스트의 `aria-label` 이 이긴다.
+   */
+  private readonly internals: ElementInternals | undefined =
+    'attachInternals' in this ? this.attachInternals() : undefined;
+
   connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute('role', 'treeitem');
@@ -98,6 +105,22 @@ export class UTreeItem extends UElement {
     }
     if (changedProperties.has('depth')) {
       this.style.setProperty('--tree-item-depth', String(this.depth));
+      // 보조기기는 들여쓰기를 보지 못한다 — 깊이는 aria-level 로(자식은 섀도 안 subtree 슬롯에 그려져 DOM 중첩만으로는
+      // 브라우저가 단계를 셈하지 못했다: 실측 자식도 level 1).
+      this.setAttribute('aria-level', String(this.depth + 1));
+    }
+    if (changedProperties.has('expanded') || changedProperties.has('leaf')) {
+      // 잎은 펼침 상태가 없다 — 속성 자체가 «펼칠 수 있다» 를 말한다(APG Tree View).
+      if (this.leaf) this.removeAttribute('aria-expanded');
+      else this.setAttribute('aria-expanded', this.expanded ? 'true' : 'false');
+    }
+    if (changedProperties.has('selected') || changedProperties.has('selectable')) {
+      if (this.selectable) this.setAttribute('aria-selected', this.selected ? 'true' : 'false');
+      else this.removeAttribute('aria-selected');
+    }
+    if (['checked', 'indeterminate', 'checkable'].some(k => changedProperties.has(k))) {
+      if (this.checkable) this.setAttribute('aria-checked', this.indeterminate ? 'mixed' : this.checked ? 'true' : 'false');
+      else this.removeAttribute('aria-checked');
     }
   }
 
@@ -188,6 +211,12 @@ export class UTreeItem extends UElement {
       if (el instanceof UTreeItem && !el.hasAttribute('slot')) {
         el.setAttribute('slot', 'children');
       }
+    }
+    if (this.internals) {
+      const text = slot.assignedNodes({ flatten: true })
+        .filter(n => !(n instanceof UTreeItem))
+        .map(n => n.textContent ?? '').join(' ').replace(/\s+/g, ' ').trim();
+      this.internals.ariaLabel = text || null;
     }
   };
 
