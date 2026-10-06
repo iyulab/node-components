@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.3] - 2026-10-06
+
+### Fixed
+
+- **A control in a tree item, menu item or tab slot keeps its own keys and clicks** (`u-tree-item`,
+  `u-menu-item`, `u-tab`). A button placed in the `prefix`/`suffix` slot could not be pressed from
+  the keyboard — Enter and Space were taken by the tree or menu and selected the item instead — an
+  arrow key on it moved to the next item, and a mouse click on it also selected or expanded the item
+  and stopped there, so a listener outside never saw it. Keys and clicks from such a control now go
+  to the control only; the item's keyboard model applies while the item itself has focus, as with
+  interactive content inside `<summary>` or `<label>`.
+
 ## [2.0.2] - 2026-10-06
 
 ### Fixed

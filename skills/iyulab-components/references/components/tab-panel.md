@@ -101,6 +101,9 @@ selected tab is a tab stop (arrow keys, Home and End move between tabs and selec
 | *(default)* | Tab label |
 | `suffix` | Trailing content |
 
+A control placed in a slot (a button, a link) keeps its own keys and clicks — it does not select or
+activate the tab, and the tab's arrow-key navigation applies only while the tab itself has focus.
+
 ### Properties
 
 | Property | Type | Default | Reflect | Description |

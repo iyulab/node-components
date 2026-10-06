@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { UElement } from "../UElement.js";
 import { UTreeItem, type TreeItemTrigger } from "../tree-item/UTreeItem.js";
 import { styles } from "./UTree.styles.js";
+import { isFromNestedControl } from "../../utilities/nestedControl.js";
 
 /**
  * 계층형 데이터 구조를 표시하는 트리 컴포넌트입니다.
@@ -280,8 +281,12 @@ export class UTree extends UElement {
   }
 
   private handleKeydown = (e: KeyboardEvent) => {
-    const focused = e.composedPath().find(el => el instanceof UTreeItem) as UTreeItem | undefined;
+    const path = e.composedPath();
+    const focused = path.find(el => el instanceof UTreeItem) as UTreeItem | undefined;
     if (!focused) return;
+    // 항목 «안의» 컨트롤(prefix·suffix 슬롯의 버튼 등)에서 올라온 키는 그 컨트롤의 것이다 — 키보드 모델은
+    // 항목 자신에 포커스가 있을 때만 해석한다. 그렇지 않으면 버튼의 Enter·Space 활성화가 막히고 화살표가 새어 나간다.
+    if (isFromNestedControl(e, focused)) return;
     const items = this.getItems(item => !item.disabled && (!item.parentItem || item.parentItem.expanded));
     if (items.length === 0) return;
     const current = focused ? items.indexOf(focused) : -1;

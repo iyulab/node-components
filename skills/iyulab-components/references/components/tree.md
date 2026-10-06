@@ -87,6 +87,9 @@ Hierarchical tree with support for selection, checkboxes, cascade check, and dra
 | *(default)* | Item label |
 | `suffix` | Trailing content |
 
+A control placed in a slot (a button, a link) keeps its own keys and clicks — it does not select or
+activate the tree item, and the tree item's arrow-key navigation applies only while the tree item itself has focus.
+
 ### Properties
 
 | Property | Type | Default | Reflect | Description |

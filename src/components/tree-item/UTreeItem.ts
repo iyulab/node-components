@@ -9,6 +9,7 @@ import { type PickEventDetail } from "../../events/PickEvent.js";
 import { type CheckEventDetail } from "../../events/CheckEvent.js";
 import { type ExpandEventDetail } from "../../events/ExpandEvent.js";
 import { type CollapseEventDetail } from "../../events/CollapseEvent.js";
+import { isFromNestedControl } from "../../utilities/nestedControl.js";
 
 export type TreeItemTrigger = 'item' | 'icon';
 
@@ -200,6 +201,9 @@ export class UTreeItem extends UElement {
   };
 
   private handleHeaderClick = (e: MouseEvent) => {
+    // 헤더 슬롯(prefix·suffix·본문)에 둔 버튼·링크의 클릭은 그 컨트롤의 것이다 — 항목을 고르거나 펼치지 않고,
+    // 컨트롤의 클릭이 바깥 리스너에 닿도록 전파도 막지 않는다(`<summary>`·`<label>` 안 상호작용 콘텐츠와 같다).
+    if (isFromNestedControl(e, this)) return;
     e.stopPropagation();
     if (this.disabled) return;
 

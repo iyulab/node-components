@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators.js";
 import { UElement } from "../UElement.js";
 import { UMenuItem, type MenuItemIndicator, type MenuItemAlign } from "../menu-item/UMenuItem.js";
 import { styles } from "./UMenu.styles.js";
+import { isFromNestedControl } from "../../utilities/nestedControl.js";
 
 export type MenuSelection = 'none' | 'single' | 'multiple';
 export type MenuAppearance = 'outlined' | 'plain';
@@ -131,8 +132,12 @@ export class UMenu extends UElement {
   };
 
   private handleKeydown = (e: KeyboardEvent) => {
-    const focused = e.composedPath().find(el => el instanceof UMenuItem) as UMenuItem | undefined;
+    const path = e.composedPath();
+    const focused = path.find(el => el instanceof UMenuItem) as UMenuItem | undefined;
     if (!focused) return;
+    // 항목 «안의» 컨트롤(prefix·suffix 슬롯의 버튼 등)에서 올라온 키는 그 컨트롤의 것이다 — 키보드 모델은
+    // 항목 자신에 포커스가 있을 때만 해석한다. 그렇지 않으면 버튼의 Enter·Space 활성화가 막히고 화살표가 새어 나간다.
+    if (isFromNestedControl(e, focused)) return;
 
     const items = this.inline
       ? this.getItems(item => {

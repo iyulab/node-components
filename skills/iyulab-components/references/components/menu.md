@@ -79,6 +79,9 @@ Keyboard-navigable menu. Supports single/multiple selection, highlight or checkm
 | `suffix` | Trailing content |
 | `children` | Nested `u-menu` for sub-menu |
 
+A control placed in a slot (a button, a link) keeps its own keys and clicks — it does not select or
+activate the menu item, and the menu item's arrow-key navigation applies only while the menu item itself has focus.
+
 ### Properties
 
 | Property | Type | Default | Reflect | Description |

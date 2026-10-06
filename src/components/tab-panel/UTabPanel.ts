@@ -5,6 +5,7 @@ import { UElement } from "../UElement.js";
 import { UTab } from "../tab/UTab.js";
 import { UPanel } from "../panel/UPanel.js";
 import { styles } from "./UTabPanel.styles.js";
+import { isFromNestedControl } from "../../utilities/nestedControl.js";
 
 /** 탭 띠의 외형 — `line`(기본) · `card` · `pill` · `plain`(외형 없음 — 공통 어휘). */
 export type TabPanelAppearance = 'line' | 'card' | 'pill' | 'plain';
@@ -167,7 +168,7 @@ export class UTabPanel extends UElement {
     // 탭 «안의» 컨트롤(닫기 버튼)에서 올라온 키는 그 컨트롤의 것이다 — 탭 키보드 모델은 탭 자신에
     // 포커스가 있을 때만 해석한다. 그렇지 않으면 닫기 버튼의 Enter 가 «이 탭 선택» 으로도 읽히고,
     // 막으면 버튼의 네이티브 활성화가 사라진다.
-    if (e.composedPath()[0] !== e.currentTarget) return;
+    if (isFromNestedControl(e, e.currentTarget as Element)) return;
     const enabledTabs = this.tabs.filter(t => !t.disabled);
     const currentIndex = enabledTabs.indexOf(e.currentTarget as UTab);
     if (currentIndex === -1) return;
