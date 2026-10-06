@@ -60,7 +60,7 @@ await Theme.init({
   useBuiltIn: true,      // inject light.css / dark.css (default: true)
   store: {               // persist to localStorage (optional)
     type: 'localStorage',
-    key: 'theme'
+    prefix: 'my-app:'    // stored under 'my-app:theme' (default key: 'theme')
   }
 });
 ```

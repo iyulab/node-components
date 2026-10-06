@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.2.2] - 2026-10-06
+
+### Documentation
+
+- Examples that did not type-check against the API they teach: `Theme.init` persisted to localStorage with a `store.key` option that does not exist (the theme is stored under `theme`, with an optional `prefix`) in the theming guide and the skill reference; `Dialog.prompt` took `default` instead of `defaultValue`; the overlay-manager example read a field it never declared.
+
 ## [2.2.1] - 2026-10-06
 
 ### Fixed

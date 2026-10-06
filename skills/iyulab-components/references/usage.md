@@ -45,7 +45,7 @@ await Theme.init({
   useBuiltIn: true,    // load bundled CSS variables (default: true)
   store: {             // persist theme preference in localStorage (optional)
     type: 'localStorage',
-    key: 'app-theme'
+    prefix: 'my-app:'  // stored under 'my-app:theme' (default key: 'theme')
   }
 });
 ```
@@ -290,7 +290,7 @@ await Dialog.alert('Operation completed.');
 const confirmed = await Dialog.confirm('Delete this item?');
 
 // Prompt
-const name = await Dialog.prompt('Enter your name:', { default: 'Alice' });
+const name = await Dialog.prompt('Enter your name:', { defaultValue: 'Alice' });
 
 // Toast
 Toast.DefaultOptions = { position: 'bottom-center', duration: 3000 };

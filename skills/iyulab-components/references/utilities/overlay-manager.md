@@ -58,6 +58,7 @@ OverlayManager.closeLayer(panel);                      // when it closes, by any
 import { UOverlayElement } from '@iyulab/components';
 
 class MyOverlay extends UOverlayElement {
+  hasUnsavedChanges = false;
   // UOverlayElement already calls OverlayManager.add/remove internally
   // Override requestClose() if you need custom close logic
   override requestClose(source: string) {
