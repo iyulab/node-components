@@ -6,6 +6,9 @@ import { Toast } from '@iyulab/components';
 
 Programmatically display toast notifications. Creates `u-alert` elements dynamically and mounts them in a toast container.
 
+The message is **text** — it is set as the alert's text content, so an error message from a server or a name typed by
+a user cannot inject markup.
+
 ## Usage
 
 ```ts

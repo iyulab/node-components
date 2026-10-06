@@ -93,7 +93,8 @@ export class Toast {
 
     const el = new UAlert();
     el.status = status;
-    el.innerHTML = content || '';
+    // 글자다 — 토스트는 서버 오류 문장과 사용자 데이터를 싣는 자리라, HTML 로 해석하면 그 속 마크업이 요소가 된다(`#820` 부류).
+    el.textContent = content || '';
     el.appearance = merged.appearance || 'soft';
     el.title = merged.title || '';
     el.closable = merged.closable ?? true;

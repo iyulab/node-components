@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.3.1] - 2026-10-06
+
+### Fixed
+
+- **`Toast` renders its message as text.** `Toast.success`/`error`/`info`/`warning`/`notice`/`message`/`show` set the
+  message as the alert's `innerHTML`, so markup inside it became elements — and toasts carry server error messages
+  (`Toast.error(err.message)`, a data service's `notify.error`) and user data. Same class as the `Dialog` fix in 2.3.0;
+  HTML in a toast was never documented.
+
 ## [2.3.0] - 2026-10-06
 
 ### Fixed
