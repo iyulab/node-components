@@ -1,8 +1,8 @@
 # clipboard
 
 ```ts
-import { copyFromKey, pasteFromKey } from '@iyulab/components';
-// or: import { copyFromKey, pasteFromKey } from '@iyulab/components/dist/utilities/clipboard.js';
+import { copyFromKey, pasteFromKey, isTextEntry } from '@iyulab/components';
+// or: import { copyFromKey, pasteFromKey, isTextEntry } from '@iyulab/components/dist/utilities/clipboard.js';
 ```
 
 Copy and paste for a keyboard shortcut on something that is not a text field — a grid's selected
@@ -30,9 +30,16 @@ cut clears its selection only on `true` — otherwise the data is gone without b
 Reads the clipboard text — from the paste event, or, when none comes, from `navigator.clipboard.readText()`.
 Rejects with the Clipboard API's error when neither gives text.
 
+## `isTextEntry(target): boolean`
+
+Whether `target` is a text field — a text-like `<input>`, a `<textarea>`, or editable content. A text
+field keeps its own clipboard: pass `event.composedPath()[0]` and leave the key alone when this is
+true. A checkbox or a button is not one, so the grid's copy still applies while a row checkbox has
+focus.
+
 ```ts
 onKeydown(e: KeyboardEvent) {
-  if (!(e.ctrlKey || e.metaKey) || this.editing) return;   // a text field keeps its own clipboard
+  if (!(e.ctrlKey || e.metaKey) || isTextEntry(e.composedPath()[0])) return;
   const key = e.key.toLowerCase();
   if (key === 'c' || key === 'x') {
     const range = this.selection;

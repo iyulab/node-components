@@ -91,3 +91,18 @@ export function pasteFromKey(): Promise<string> {
     });
   });
 }
+
+/** `<input>` types that hold no text a person selects and copies. */
+const NON_TEXT_INPUTS = new Set(['checkbox', 'radio', 'button', 'submit', 'reset', 'range', 'color', 'file', 'image', 'hidden']);
+
+/**
+ * Whether `target` is a text field — a text-like `<input>`, a `<textarea>`, or editable content. A
+ * text field keeps its own clipboard: pass `event.composedPath()[0]` and skip `copyFromKey` /
+ * `pasteFromKey` when this is true. A checkbox or a button is not a text field — a grid's copy key
+ * still applies while one of its row checkboxes has focus.
+ */
+export function isTextEntry(target: EventTarget | null | undefined): boolean {
+  if (target instanceof HTMLTextAreaElement) return true;
+  if (target instanceof HTMLInputElement) return !NON_TEXT_INPUTS.has(target.type);
+  return target instanceof HTMLElement && target.isContentEditable;
+}

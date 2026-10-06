@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { userEvent } from 'vitest/browser';
-import { copyFromKey, pasteFromKey } from '../../src/utilities/clipboard.js';
+import { copyFromKey, isTextEntry, pasteFromKey } from '../../src/utilities/clipboard.js';
 
 /**
  * `copyFromKey` / `pasteFromKey` — the browser's clipboard event where it comes, the Clipboard API
@@ -86,5 +86,27 @@ describe('pasteFromKey', () => {
   it('rejects with the Clipboard API error when neither path gives text', async () => {
     clipboard.readText = refuse;
     await expect(pasteFromKey()).rejects.toThrow('denied');
+  });
+});
+
+describe('isTextEntry', () => {
+  const make = (html: string) => {
+    const host = document.createElement('div');
+    host.innerHTML = html;
+    document.body.appendChild(host);
+    return host.firstElementChild;
+  };
+
+  it('is true for text-like inputs, textareas and editable content', () => {
+    for (const html of ['<input>', '<input type="search">', '<input type="number">', '<textarea></textarea>', '<div contenteditable></div>']) {
+      expect(isTextEntry(make(html)), html).toBe(true);
+    }
+  });
+
+  it('is false for a checkbox, a button and plain elements', () => {
+    for (const html of ['<input type="checkbox">', '<input type="radio">', '<button></button>', '<div tabindex="0"></div>']) {
+      expect(isTextEntry(make(html)), html).toBe(false);
+    }
+    expect(isTextEntry(null)).toBe(false);
   });
 });

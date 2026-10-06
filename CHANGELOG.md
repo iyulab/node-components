@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.2.0] - 2026-10-06
+
+### Added
+
+- **`isTextEntry(target)`** — whether a key or clipboard event came from a text field (a text-like
+  `<input>`, a `<textarea>`, editable content), which keeps its own clipboard. Pairs with
+  `copyFromKey`/`pasteFromKey`: a grid skips its copy key in the cell editor, but not while a row
+  checkbox has focus.
+
 ## [2.1.0] - 2026-10-06
 
 ### Added
