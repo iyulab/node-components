@@ -83,6 +83,7 @@ export class USwitch extends UFormControlElement<string> {
       <label class="wrapper" part="wrapper">
         <input
           type="checkbox"
+          role="switch"
           aria-label=${ifDefined(this.contentAriaLabel)}
           ?disabled=${this.effectivelyDisabled || this.readonly}
           ?required=${this.required}

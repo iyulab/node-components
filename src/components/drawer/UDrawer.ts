@@ -61,6 +61,7 @@ export class UDrawer extends UOverlayElement {
   private handleHeaderSlotChange(e: Event) {
     const slot = e.target as HTMLSlotElement;
     this.hasHeader = slot.assignedNodes({ flatten: true }).length > 0;
+    this.nameFromSlot(slot);
   }
 }
 

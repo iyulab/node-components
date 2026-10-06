@@ -44,6 +44,13 @@ u-dialog { height: 400px; }   /* the panel then caps at 360px */
 ⚠ That lever only shrinks: a height on the host lowers the panel's maximum, it does not reserve a
 panel of that size. A short dialog stays short.
 
+## Accessibility
+
+The host is exposed as a **`dialog`**, with `aria-modal` when `mode="modal"`. Its name is whatever sits in the
+`header` slot, and follows that content as it changes. Without a header, name it with `aria-label` (or
+`aria-labelledby`) on the host — attributes on the host override the defaults, including `role="alertdialog"` for a
+message that needs a response.
+
 ## Slots
 
 | Name | Description |

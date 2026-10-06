@@ -20,6 +20,11 @@ Side panel that slides in from any screen edge. Extends `UOverlayElement` (focus
 
 ---
 
+## Accessibility
+
+Same as `u-dialog`: exposed as a **`dialog`** (`aria-modal` when modal), named by the `header` slot, or by
+`aria-label`/`aria-labelledby` on the host.
+
 ## Slots
 
 | Name | Description |

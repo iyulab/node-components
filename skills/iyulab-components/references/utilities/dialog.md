@@ -50,6 +50,12 @@ confirmation cannot inject markup. For formatting pass a Lit `TemplateResult`
 (`Dialog.confirm(html\`Delete <strong>${name}</strong>?\`)` — interpolated values stay text). Only
 `Dialog.show({ content })` takes an HTML string, and says so.
 
+## Accessibility
+
+`alert` and `confirm` open as an **`alertdialog`** (a message that needs a response — the role a native `confirm()`
+has); `prompt` and `show` open as a **`dialog`**. All are modal unless `modal: false`. With a `title`, the title is the
+dialog's name and the message its description; without one, the message is the name — a dialog is never unnamed.
+
 ## Types
 
 ```ts

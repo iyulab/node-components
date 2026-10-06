@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.4.0] - 2026-10-06
+
+### Fixed
+
+- **`u-dialog` and `u-drawer` are exposed as dialogs.** They trapped focus but carried no role, so a screen reader user
+  landed among unfamiliar buttons without hearing that anything had opened, and `getByRole('dialog')` found nothing.
+  The host is now a `dialog` (via `ElementInternals`), with `aria-modal` when `mode="modal"`, named by the `header` slot
+  (tracking its content). `aria-label`, `aria-labelledby` and `role` on the host still override.
+- **`Dialog.alert` and `Dialog.confirm` open as an `alertdialog`**, like a native `confirm()` — moving from `confirm()`
+  to `Dialog.confirm` no longer loses that. With a `title` the title names the dialog and the message describes it;
+  without one the message is the name. `Dialog.prompt` and `Dialog.show` are named the same way, as a `dialog`.
+- **`u-switch` is exposed as a `switch`**, not a checkbox — announced as on/off, and found by `getByRole('switch')`.
+
 ## [2.3.1] - 2026-10-06
 
 ### Fixed

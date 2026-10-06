@@ -21,6 +21,11 @@ Toggle switch (on/off). Supports custom track and thumb content via slots. Form-
 
 ---
 
+## Accessibility
+
+Exposed as a **`switch`** (on/off), not a checkbox — screen readers announce "on"/"off", and role-based queries use
+`getByRole('switch', { name })`. Use `u-checkbox` for a choice that is applied later (on save).
+
 ## Slots
 
 | Name | Description |

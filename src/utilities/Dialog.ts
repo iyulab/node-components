@@ -78,9 +78,25 @@ export interface DialogAction {
 /**
  * 메시지를 본문 템플릿으로 — 문자열은 lit 이 글자로 이스케이프한다. `show` 는 문자열 `content` 를 HTML 로 해석하므로
  * (그것이 `show` 의 계약이다) `alert`·`confirm` 이 문자열을 그대로 넘기면 그 계약을 조용히 물려받아 마크업 주입 싱크가 된다.
+ *
+ * 메시지 상자에는 id 를 준다 — 대화상자의 이름(제목이 없을 때)이나 설명(제목이 있을 때)으로 잇는다.
  */
-function asText(message: string | TemplateResult): TemplateResult {
-  return html`${message}`;
+function asText(message: string | TemplateResult, id: string): TemplateResult {
+  return html`<div id=${id}>${message}</div>`;
+}
+
+let messageSeq = 0;
+const nextMessageId = () => `u-dialog-message-${++messageSeq}`;
+
+/**
+ * 보조기기가 듣는 대화상자의 이름과 설명 — 제목이 있으면 제목이 이름이고 메시지가 설명이다(APG Alert Dialog).
+ * 제목이 없으면 메시지가 이름이다 — 이름 없는 대화상자는 «대화상자» 라는 말만 남긴다.
+ */
+function describe(dialog: UDialog, messageId: string, role: 'dialog' | 'alertdialog'): void {
+  if (role === 'alertdialog') dialog.setAttribute('role', 'alertdialog');
+  const titleId = dialog.querySelector(':scope > [slot="header"]')?.id;
+  dialog.setAttribute('aria-labelledby', titleId || messageId);
+  if (titleId) dialog.setAttribute('aria-describedby', messageId);
 }
 
 /**
@@ -97,10 +113,11 @@ export class Dialog {
    *   `TemplateResult`(`html\`…\``)를 넘긴다. HTML 문자열은 그것을 명시한 `show({ content })` 로만.
    */
   public static async alert(message: string | TemplateResult, options?: DialogOptions): Promise<void> {
-    await this.show({
+    const messageId = nextMessageId();
+    await this.present({
       ...options,
-      content: asText(message)
-    });
+      content: asText(message, messageId),
+    }, (dialog: UDialog) => describe(dialog, messageId, 'alertdialog'));
   }
 
   /**
@@ -109,14 +126,15 @@ export class Dialog {
    * @returns 확인이면 true, 취소이면 false
    */
   public static async confirm(message: string | TemplateResult, options?: ConfirmDialogOptions): Promise<boolean> {
-    const result = await this.show({
+    const messageId = nextMessageId();
+    const result = await this.present({
       ...options,
-      content: asText(message),
+      content: asText(message, messageId),
       actions: [
         { label: options?.cancelLabel || Locale.getValue('cancel'), value: 'cancel', appearance: 'outlined' },
         { label: options?.confirmLabel || Locale.getValue('confirm'), value: 'confirm', color: options?.confirmColor },
       ],
-    });
+    }, (dialog: UDialog) => describe(dialog, messageId, 'alertdialog'));
     return result === 'confirm';
   }
 
@@ -126,12 +144,13 @@ export class Dialog {
    */
   public static async prompt(message: string, options?: PromptDialogOptions): Promise<string | null> {
     let inputValue = options?.defaultValue || '';
+    const messageId = nextMessageId();
 
-    const result = await this.show({
+    const result = await this.present({
       ...options,
       content: html`
         <div style="display: flex; flex-direction: column; gap: 12px;">
-          <div>${message}</div>
+          <div id=${messageId}>${message}</div>
           <u-input
             type=${(options?.type || 'text') as InputType}
             placeholder=${options?.placeholder || ''}
@@ -157,7 +176,7 @@ export class Dialog {
         { label: options?.cancelLabel || Locale.getValue('cancel'), value: 'cancel', appearance: 'outlined' },
         { label: options?.confirmLabel || Locale.getValue('confirm'), value: 'confirm' },
       ],
-    });
+    }, (dialog: UDialog) => describe(dialog, messageId, 'dialog'));
     return result === 'confirm' ? inputValue : null;
   }
 
@@ -165,7 +184,12 @@ export class Dialog {
    * 커스텀 다이얼로그를 표시합니다.
    * @returns 클릭된 액션의 value 또는 닫힌 경우 null
    */
-  public static async show(options: CustomDialogOptions): Promise<string | null> {
+  public static show(options: CustomDialogOptions): Promise<string | null> {
+    return this.present(options);
+  }
+
+  /** `show` 의 본체 — `decorate` 는 `alert`·`confirm`·`prompt` 가 렌더 뒤 접근성 이름·설명을 잇는 자리다. */
+  private static async present(options: CustomDialogOptions, decorate?: (dialog: UDialog) => void): Promise<string | null> {
     let closeValue: string | null = null;
 
     const dialog = this.createDialog(options);
@@ -188,6 +212,7 @@ export class Dialog {
         ` : nothing}
       </div>
     `, dialog);
+    decorate?.(dialog);
 
     const target = options.target || document.body;
     target.appendChild(dialog);
@@ -245,6 +270,7 @@ export class Dialog {
     // 헤더 타이틀 설정
     if (options?.title) {
       const header = document.createElement('span');
+      header.id = `u-dialog-title-${++messageSeq}`;
       header.slot = 'header';
       header.textContent = options.title;
       dialog.prepend(header);

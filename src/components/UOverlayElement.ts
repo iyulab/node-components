@@ -64,6 +64,12 @@ export abstract class UOverlayElement extends UElement {
   })
   closeOn: CloseOnPolicy[] = ['escape', 'backdrop', 'button'];
 
+  /**
+   * 보조기기에 내놓는 역할 — 오버레이는 대화상자다(WAI-ARIA APG Dialog). 호스트 속성(`role`·`aria-label`·
+   * `aria-labelledby`)이 있으면 그것이 이긴다 — 기본값만 여기서 정한다.
+   */
+  private internals?: ElementInternals;
+
   /** focus trap 인스턴스 (modal일 때만 사용) */
   private focusTrap?: FocusTrap;
   
@@ -72,9 +78,35 @@ export abstract class UOverlayElement extends UElement {
     return this.mode === 'modal' && !this.contained;
   }
 
+  constructor() {
+    super();
+    if ('attachInternals' in this) {
+      this.internals = this.attachInternals();
+      this.internals.role = 'dialog';
+    }
+  }
+
   connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute('tabindex', '-1');
+  }
+
+  /**
+   * 머리 슬롯에 놓인 것을 대화상자의 이름으로 삼는다 — 이름 없는 대화상자는 낭독기에 «대화상자» 라는 말만 남긴다.
+   * 요소면 참조로 잇고(내용이 바뀌어도 따라간다), 글자 노드뿐이면 그 글자를 이름으로 둔다.
+   */
+  protected nameFromSlot(slot: HTMLSlotElement): void {
+    const internals = this.internals as (ElementInternals & { ariaLabelledByElements?: Element[] | null }) | undefined;
+    if (!internals) return;
+    const elements = slot.assignedElements({ flatten: true });
+    if (elements.length > 0 && 'ariaLabelledByElements' in internals) {
+      internals.ariaLabelledByElements = elements;
+      internals.ariaLabel = null;
+    } else {
+      if ('ariaLabelledByElements' in internals) internals.ariaLabelledByElements = null;
+      const text = slot.assignedNodes({ flatten: true }).map((n) => n.textContent ?? '').join(' ').replace(/\s+/g, ' ').trim();
+      internals.ariaLabel = text || null;
+    }
   }
 
   disconnectedCallback(): void {
@@ -84,6 +116,10 @@ export abstract class UOverlayElement extends UElement {
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
+
+    if (changedProperties.has('mode') && this.internals) {
+      this.internals.ariaModal = this.mode === 'modal' ? 'true' : null;
+    }
 
     if (changedProperties.has('open')) {
       if (this.open) this.setup();
