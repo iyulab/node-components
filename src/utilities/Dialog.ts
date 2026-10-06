@@ -33,6 +33,11 @@ export interface DialogOptions {
 }
 
 /** Confirm Dialog 옵션 */
+export interface AlertDialogOptions extends DialogOptions {
+  /** 닫는 버튼의 글자 (기본값: 로케일의 «확인»/`OK`) */
+  confirmLabel?: string;
+}
+
 export interface ConfirmDialogOptions extends DialogOptions {
   /** 확인 버튼 텍스트 (기본: 현재 로케일의 `confirm` — 영어는 'Confirm') */
   confirmLabel?: string;
@@ -112,11 +117,14 @@ export class Dialog {
    * @param message 본문 — **문자열은 글자로** 그린다(사용자 입력을 넣어도 마크업이 되지 않는다). 서식이 필요하면
    *   `TemplateResult`(`html\`…\``)를 넘긴다. HTML 문자열은 그것을 명시한 `show({ content })` 로만.
    */
-  public static async alert(message: string | TemplateResult, options?: DialogOptions): Promise<void> {
+  public static async alert(message: string | TemplateResult, options?: AlertDialogOptions): Promise<void> {
     const messageId = nextMessageId();
     await this.present({
       ...options,
       content: asText(message, messageId),
+      // 네이티브 `alert()` 의 «확인» — 버튼이 없으면 닫는 길이 Esc·바깥 누르기(둘 다 보이지 않는 조작)뿐이고 포커스가
+      // 들어갈 자리도 없었다(APG Alert Dialog 는 응답을 받는 버튼을 전제한다). 하나뿐이라 열리면 포커스가 여기 온다.
+      actions: [{ label: options?.confirmLabel || Locale.getValue('ok'), value: 'ok' }],
     }, (dialog: UDialog) => describe(dialog, messageId, 'alertdialog'));
   }
 

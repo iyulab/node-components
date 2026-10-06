@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.9.0] - 2026-10-07
+
+### Added
+
+- **`u-input` `chars`** — the number of characters the field holds. An unsized field (the default `inline-block`) draws
+  at N characters plus its suffix icons and padding, so "a 12-digit number box" no longer needs a `calc()` that copies
+  the field's icon boxes and padding (and drifts when the host target floor changes). In a sized field it is the text
+  floor. Native `<input size>` / CSS `field-sizing` axis — `size` is already this component's sm/md/lg scale.
+- `AlertDialogOptions.confirmLabel` and the locale key `ok` (en `OK`, ko `확인`, es `Aceptar` …).
+
+### Fixed
+
+- **`Dialog.alert` has an OK button**, focused when it opens — like a native `alert()`. It opened with no button at
+  all, so it closed only by Esc or a backdrop click (neither visible), and the `alertdialog` had nowhere for focus to
+  go (WAI-ARIA APG Alert Dialog).
+
 ## [2.8.0] - 2026-10-07
 
 ### Added

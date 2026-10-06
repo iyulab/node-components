@@ -40,7 +40,7 @@ const result = await Dialog.show({
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `Dialog.alert(message, options?)` | `Promise<void>` | Informational alert |
+| `Dialog.alert(message, options?)` | `Promise<void>` | Informational alert with one OK button (focused on open) |
 | `Dialog.confirm(message, options?)` | `Promise<boolean>` | Confirm / Cancel dialog |
 | `Dialog.prompt(message, options?)` | `Promise<string \| null>` | Text input dialog |
 | `Dialog.show(options)` | `Promise<string \| null>` | Custom dialog; resolves with clicked action `value` |
@@ -68,6 +68,10 @@ interface DialogOptions {
   buttonClose?: boolean;     // show an explicit close button — default: false
   escapeClose?: boolean;     // close on Esc — default: true
   backdropClose?: boolean;   // close on backdrop click — default: true
+}
+
+interface AlertDialogOptions extends DialogOptions {
+  confirmLabel?: string;     // the OK button — default: the active locale's `ok` (en: 'OK', ko: '확인')
 }
 
 interface ConfirmDialogOptions extends DialogOptions {

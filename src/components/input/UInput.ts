@@ -106,6 +106,12 @@ export class UInput extends UFormControlElement<string> {
    */
   @property({ type: String, reflect: true }) size: FieldSize = 'md';
   /** placeholder 텍스트 */
+  /**
+   * 칸이 담을 글자 수 — 지정하면 폭을 정하지 않은 칸(기본 `inline-block`)이 «N자 + 접미 아이콘 + 패딩» 폭으로 그려지고,
+   * 그보다 좁게 주면 넘친다(글자 영역 하한이 N자가 된다). 네이티브 `<input size>`·CSS `field-sizing` 과 같은 축이다 —
+   * `size` 는 이 컴포넌트에서 크기 단(sm·md·lg)이라 이름이 다르다. 폭을 준 칸(`width`·`block`)에서는 하한으로만 쓴다.
+   */
+  @property({ type: Number, reflect: true }) chars?: number;
   @property({ type: String }) placeholder?: string;
   /** 유효성 검사 패턴 (정규식) */
   @property({ type: String }) pattern?: string;  
@@ -153,11 +159,12 @@ export class UInput extends UFormControlElement<string> {
         .validationMessage=${this.validationMessage}
       >
         <div class="container" part="container"
-          style=${`--_icons: ${(showStepper ? 2 : 0) + (showClear ? 1 : 0) + (showToggle ? 1 : 0)}`}>
+          style=${`--_icons: ${(showStepper ? 2 : 0) + (showClear ? 1 : 0) + (showToggle ? 1 : 0)}${this.charsWidth ? `; --input-min-text: ${this.charsWidth}` : ''}`}>
 
           <slot name="prefix"></slot>
 
           <input part="input"
+            style=${ifDefined(this.charsWidth ? `inline-size: ${this.charsWidth}` : undefined)}
             type=${isNumber || (this.type === 'password' && this.showPassword) ? 'text' : this.type}
             aria-label=${ifDefined(this.resolvedAriaLabel)}
             aria-description=${ifDefined(this.resolvedAriaDescription)}
@@ -271,6 +278,12 @@ export class UInput extends UFormControlElement<string> {
     if (changedProperties.has('value')) {
       this.internals?.setFormValue(this.value ?? '');
     }
+  }
+
+  /** `chars` 를 CSS 길이로 — 양의 정수일 때만(그 밖은 지정 없음과 같다). */
+  private get charsWidth(): string | undefined {
+    const n = this.chars;
+    return n != null && Number.isFinite(n) && n > 0 ? `${Math.ceil(n)}ch` : undefined;
   }
 
   /** The shown number uses the locale's decimal separator — re-show it in the new locale (unless the user is typing in it). */

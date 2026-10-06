@@ -86,6 +86,8 @@ export type LocaleMessageKey =
   // 한국어 본문 아래에 `Cancel`/`Confirm` 이 섰다.
   | 'confirm'
   | 'cancel'
+  // 알림을 닫는 버튼(`Dialog.alert`) — «확인하고 진행» 의 `confirm` 과 다른 낱말인 언어가 많다(en OK · de OK · es Aceptar).
+  | 'ok'
   // `u-steps` 의 단계 상태 — 화면은 표식 모양·색으로 말하므로 보조기기에는 글자로 붙인다
   // (현재 단계는 `aria-current="step"` 이 말한다).
   | 'stepComplete'
