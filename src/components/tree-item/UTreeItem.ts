@@ -4,6 +4,7 @@ import '../icon/UIcon.js';
 import '../spinner/USpinner.js';
 
 import { UElement } from "../UElement.js";
+import { HostAria } from "../../utilities/hostAria.js";
 import { styles } from "./UTreeItem.styles.js";
 import { type PickEventDetail } from "../../events/PickEvent.js";
 import { type CheckEventDetail } from "../../events/CheckEvent.js";
@@ -79,10 +80,10 @@ export class UTreeItem extends UElement {
 
   /**
    * 이름 = 자기 라벨(기본 슬롯)의 글자. 역할이 호스트에 있으므로 내용에서 이름을 계산하면 **자식 항목의 글자까지**
-   * 들어갔다(실측: 부모 이름 «Root Child»). 호스트의 `aria-label` 이 이긴다.
+   * 들어갔다(실측: 부모 이름 «Root Child»). 속성으로 단다(DOM 도구의 `getByRole('treeitem', { name })` 도 본다) —
+   * 소비자가 단 `aria-label` 이 이긴다.
    */
-  private readonly internals: ElementInternals | undefined =
-    'attachInternals' in this ? this.attachInternals() : undefined;
+  private readonly aria = new HostAria(this);
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -220,12 +221,10 @@ export class UTreeItem extends UElement {
         el.setAttribute('slot', 'children');
       }
     }
-    if (this.internals) {
-      const text = slot.assignedNodes({ flatten: true })
-        .filter(n => !(n instanceof UTreeItem))
-        .map(n => n.textContent ?? '').join(' ').replace(/\s+/g, ' ').trim();
-      this.internals.ariaLabel = text || null;
-    }
+    const text = slot.assignedNodes({ flatten: true })
+      .filter(n => !(n instanceof UTreeItem))
+      .map(n => n.textContent ?? '').join(' ').replace(/\s+/g, ' ').trim();
+    this.aria.set('aria-label', text || null);
   };
 
   private handleChildrenSlotChange = (e: Event) => {

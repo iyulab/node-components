@@ -85,6 +85,14 @@ carries the control's role, not on the host element. Native nodes use native `di
 `u-radio`/`u-rating`, the `slider` thumbs). In end-to-end tests, locate controls by role
 (`getByRole('combobox')`) rather than by tag, so actionability checks see the disabled state.
 
+**Roles that belong to the host are host attributes**, so DOM-based role queries (Playwright, Testing
+Library) and axe-core see what assistive technology sees: `u-dialog`/`u-drawer` are `dialog` named by
+their `header` slot (`Dialog.alert`/`confirm` are `alertdialog`), `u-field` over several controls is a
+`group` named by its label, `u-progress-bar`/`u-progress-ring`/`u-spinner` are `progressbar` with
+`aria-value*`, `u-carousel` is a `region`, and `u-tree-item` is named by its own label. Write
+`getByRole('dialog', { name: 'Delete item' })` — not a tag selector. A `role` or `aria-*` attribute you
+set on the host yourself always wins and is never overwritten.
+
 ### Overlay & Floating
 
 - [`u-dialog`](./references/components/dialog.md) — Modal/non-modal dialog with configurable placement

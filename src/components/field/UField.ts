@@ -4,6 +4,7 @@ import { isFocusable } from "tabbable";
 
 import { UElement } from "../UElement.js";
 import { devWarnOnce } from "../../utilities/devWarning.js";
+import { HostAria } from "../../utilities/hostAria.js";
 import { styles } from "./UField.styles.js";
 
 /** 네이티브로 «폼 컨트롤이거나 포커스를 받도록 저작된» 태그 — 가시성과 무관한 구조 사실이다. */
@@ -150,9 +151,8 @@ export class UField extends UElement {
     return candidates.length > 1 || (candidates.length === 1 && isNamedByContent(candidates[0]));
   }
 
-  /** 묶음 이름(role=group)을 호스트에 — 섀도 밖 어떤 요소도 건드리지 않는다. */
-  private readonly internals: ElementInternals | undefined =
-    'attachInternals' in this ? this.attachInternals() : undefined;
+  /** 묶음 이름(role=group)을 호스트 속성으로 — DOM 도구(`getByRole('group')`)도 본다. 소비자가 단 값이 이긴다. */
+  private readonly aria = new HostAria(this);
 
   /**
    * 🔴**«이 필드가 이름 줄 컨트롤을 가졌는가» 는 «지금 포커스 가능한가» 와 다른 질문이다 —
@@ -218,10 +218,10 @@ export class UField extends UElement {
    */
   private nameSlottedControl(): void {
     const group = !!this.label && this.labelsAGroup;
-    if (this.internals) {
-      this.internals.role = group ? 'group' : null;
-      this.internals.ariaLabel = group ? this.label ?? null : null;
-      this.internals.ariaDescription = group ? this.description ?? null : null;
+    if (this.isConnected) {
+      this.aria.set('role', group ? 'group' : null);
+      this.aria.set('aria-label', group ? this.label ?? null : null);
+      this.aria.set('aria-description', group ? this.description ?? null : null);
     }
     if (group) {
       // 앞서 우리가 컨트롤에 얹은 이름·설명은 걷는다(묶음으로 바뀐 경우) — 소비자 값은 그대로.

@@ -6,6 +6,7 @@ import { isFocusCandidate, querySelectorDeep } from '../utilities/elements.js';
 
 import { OverlayManager } from '../utilities/OverlayManager.js';
 import { arrayAttrConverter } from '../utilities/converters.js';
+import { HostAria, nameFromSlot } from '../utilities/hostAria.js';
 import { UElement } from './UElement.js';
 import { styles } from './UOverlayElement.styles.js';
 import { ShowEventDetail } from '../events/ShowEvent.js';
@@ -65,10 +66,13 @@ export abstract class UOverlayElement extends UElement {
   closeOn: CloseOnPolicy[] = ['escape', 'backdrop', 'button'];
 
   /**
-   * 보조기기에 내놓는 역할 — 오버레이는 대화상자다(WAI-ARIA APG Dialog). 호스트 속성(`role`·`aria-label`·
-   * `aria-labelledby`)이 있으면 그것이 이긴다 — 기본값만 여기서 정한다.
+   * 보조기기에 내놓는 역할 — 오버레이는 대화상자다(WAI-ARIA APG Dialog). 호스트 **속성**으로 단다 — `ElementInternals`
+   * 기본값은 DOM 에서 보이지 않아 Playwright `getByRole('dialog')`·axe 가 이 호스트를 찾지 못했다(`hostAria.ts`).
+   * 소비자가 단 `role`·`aria-label`·`aria-labelledby` 가 이긴다 — 우리 것은 비어 있던 자리뿐이다.
    */
-  private internals?: ElementInternals;
+  protected readonly aria = new HostAria(this);
+  /** 이름으로 잇느라 머리 슬롯 요소에 우리가 준 id. */
+  private readonly nameIds = new Map<Element, string>();
 
   /** focus trap 인스턴스 (modal일 때만 사용) */
   private focusTrap?: FocusTrap;
@@ -78,35 +82,18 @@ export abstract class UOverlayElement extends UElement {
     return this.mode === 'modal' && !this.contained;
   }
 
-  constructor() {
-    super();
-    if ('attachInternals' in this) {
-      this.internals = this.attachInternals();
-      this.internals.role = 'dialog';
-    }
-  }
-
   connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute('tabindex', '-1');
+    this.aria.set('role', 'dialog');
   }
 
   /**
    * 머리 슬롯에 놓인 것을 대화상자의 이름으로 삼는다 — 이름 없는 대화상자는 낭독기에 «대화상자» 라는 말만 남긴다.
-   * 요소면 참조로 잇고(내용이 바뀌어도 따라간다), 글자 노드뿐이면 그 글자를 이름으로 둔다.
+   * 요소면 `aria-labelledby` 로 잇고(내용이 바뀌어도 따라간다), 글자 노드뿐이면 그 글자를 `aria-label` 로 둔다.
    */
   protected nameFromSlot(slot: HTMLSlotElement): void {
-    const internals = this.internals as (ElementInternals & { ariaLabelledByElements?: Element[] | null }) | undefined;
-    if (!internals) return;
-    const elements = slot.assignedElements({ flatten: true });
-    if (elements.length > 0 && 'ariaLabelledByElements' in internals) {
-      internals.ariaLabelledByElements = elements;
-      internals.ariaLabel = null;
-    } else {
-      if ('ariaLabelledByElements' in internals) internals.ariaLabelledByElements = null;
-      const text = slot.assignedNodes({ flatten: true }).map((n) => n.textContent ?? '').join(' ').replace(/\s+/g, ' ').trim();
-      internals.ariaLabel = text || null;
-    }
+    nameFromSlot(this.aria, this, slot, this.nameIds);
   }
 
   disconnectedCallback(): void {
@@ -117,8 +104,8 @@ export abstract class UOverlayElement extends UElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (changedProperties.has('mode') && this.internals) {
-      this.internals.ariaModal = this.mode === 'modal' ? 'true' : null;
+    if (changedProperties.has('mode')) {
+      this.aria.set('aria-modal', this.mode === 'modal' ? 'true' : null);
     }
 
     if (changedProperties.has('open')) {

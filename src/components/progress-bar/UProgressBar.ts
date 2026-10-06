@@ -2,7 +2,8 @@ import { html, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
 import { UElement } from '../UElement.js';
-import { attachProgressbar, syncProgressValue } from '../../utilities/progressAria.js';
+import { HostAria } from '../../utilities/hostAria.js';
+import { syncProgressbar } from '../../utilities/progressAria.js';
 import { styles } from './UProgressBar.styles.js';
 
 export type ProgressBarStatus = 'default' | 'success' | 'warning' | 'error' | 'info';
@@ -48,7 +49,7 @@ export class UProgressBar extends UElement {
   @property({ type: Number }) value: number = 0;
 
   /** 보조기기에 내놓는 역할·값(`progressbar`) — 호스트 속성이 이긴다. */
-  private readonly internals = attachProgressbar(this);
+  private readonly aria = new HostAria(this);
 
   @state() private progress: number = 0;
   @state() private bufferProgress: number = 0;
@@ -61,11 +62,11 @@ export class UProgressBar extends UElement {
       this.bufferProgress = this.buffer !== undefined ? this.calcProgress(this.buffer) : 0;
     }
   }
-
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (['min', 'max', 'value', 'indeterminate'].some(k => changedProperties.has(k))) {
-      syncProgressValue(this.internals, this);
+      syncProgressbar(this.aria, this);
     }
   }
 
@@ -108,4 +109,4 @@ declare global {
   interface HTMLElementTagNameMap {
     'u-progress-bar': UProgressBar;
   }
-}
+}

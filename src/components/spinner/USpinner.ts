@@ -3,7 +3,8 @@ import { customElement, property, state } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
 import { styles } from './USpinner.styles.js';
-import { attachProgressbar } from '../../utilities/progressAria.js';
+import { HostAria } from '../../utilities/hostAria.js';
+import { syncProgressbar } from '../../utilities/progressAria.js';
 import { Locale } from '../../utilities/Locale.js';
 
 /** 역할 축(`primary`…`danger`, 의미 · 리브랜딩을 따라옴)과 장식 축(`blue`…, 색 자체 · 면역)이 병존한다. */
@@ -39,7 +40,7 @@ export class USpinner extends UElement {
    * 보조기기에는 «양을 모르는 진행»(`progressbar`, 값 없음). 이름은 슬롯 글자, 없으면 로케일의 `loading` — 회전하는
    * 그림만으로는 무엇이 진행 중인지 들리지 않는다. 호스트의 `aria-label` 이 이긴다.
    */
-  private readonly internals = attachProgressbar(this);
+  private readonly aria = new HostAria(this);
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -51,7 +52,9 @@ export class USpinner extends UElement {
 
   private nameFrom(text: string): void {
     this.slotText = text;
-    if (this.internals) this.internals.ariaLabel = text || Locale.getValue('loading');
+    if (!this.isConnected) return;
+    syncProgressbar(this.aria);
+    this.aria.set('aria-label', text || Locale.getValue('loading'));
   }
 
   /** 글자가 없을 때의 기본 이름은 로케일 문장이다 — 새 로케일로 다시 적는다. */

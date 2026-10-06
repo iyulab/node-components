@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.10.0] - 2026-10-07
+
+### Changed
+
+- **Host roles and names are attributes, so role-based test queries find them.** `u-dialog`/`u-drawer` (`dialog`,
+  `aria-modal`, named by the `header` slot through `aria-labelledby`), `u-field` as a labelled `group`,
+  `u-progress-bar`/`u-progress-ring`/`u-spinner` (`progressbar` and `aria-valuenow`/`min`/`max`), `u-carousel`
+  (`region`, `aria-roledescription`) and the `u-tree-item` name were `ElementInternals` defaults. Those are invisible
+  from the DOM by design, so Playwright's `getByRole`, Testing Library and axe-core found no dialog, group, progress bar
+  or region — only the browser's accessibility tree had them. The accessibility tree is unchanged. An attribute is the
+  component's only if it was empty when first written; a `role` or `aria-*` you set — before or after — is never
+  overwritten or removed. A `header` element without an `id` gets one (`u-name-N`) so the dialog can reference it.
 ## [2.9.1] - 2026-10-07
 
 ### Fixed

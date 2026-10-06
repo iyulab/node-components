@@ -6,6 +6,7 @@ import '../icon/UIcon.js';
 
 import { UElement } from "../UElement.js";
 import { Locale } from "../../utilities/Locale.js";
+import { HostAria } from "../../utilities/hostAria.js";
 import { styles } from "./UCarousel.styles.js";
 
 /**
@@ -63,9 +64,8 @@ export class UCarousel extends UElement {
   @state() private hovered = false;
 
   private autoplayTimer?: number;
-  /** 호스트 역할(region · «캐러셀» 역할 설명) — 소비자의 `role` 속성이 있으면 그것이 이긴다. */
-  private readonly internals: ElementInternals | undefined =
-    'attachInternals' in this ? this.attachInternals() : undefined;
+  /** 호스트 역할(region · «캐러셀» 역할 설명)을 속성으로 — 소비자의 `role`·`aria-roledescription` 이 있으면 그것이 이긴다. */
+  private readonly aria = new HostAria(this);
   /** 지금 슬롯에 꽂힌 슬라이드와, 그중 우리가 단 속성(소비자가 단 것은 여기 없다 — 덮지도 회수하지도 않는다). */
   private slides: Element[] = [];
   private readonly ownedSlideAttrs = new WeakMap<Element, string[]>();
@@ -106,10 +106,8 @@ export class UCarousel extends UElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    if (this.internals) {
-      this.internals.role = 'region';
-      this.internals.ariaRoleDescription = Locale.getValue('carousel');
-    }
+    this.aria.set('role', 'region');
+    this.aria.set('aria-roledescription', Locale.getValue('carousel'));
     this.addEventListener('focusin', this.handleFocusIn);
     this.addEventListener('pointerenter', this.handlePointerEnter);
     this.addEventListener('pointerleave', this.handlePointerLeave);
@@ -270,7 +268,7 @@ export class UCarousel extends UElement {
 
   /** 렌더 밖에서 적어 둔 로케일 문장(호스트 역할 설명 · 슬라이드 이름)을 새 로케일로 다시 적는다. */
   protected override localeChanged(): void {
-    if (this.internals) this.internals.ariaRoleDescription = Locale.getValue('carousel');
+    if (this.isConnected) this.aria.set('aria-roledescription', Locale.getValue('carousel'));
     this.slides.forEach((slide, i) => this.labelSlide(slide, i, this.slides.length));
     super.localeChanged();
   }
