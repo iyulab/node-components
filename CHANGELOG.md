@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **An unknown `u-alert` `status` warning names the likely word** — `status="danger"` now warns "Did you mean
+  status="error"?" (also `warn`, `critical`, `positive` …). `status` is an outcome (`error`) while a button's or
+  badge's `color` is a palette role (`danger`); a value carried over from `color` rendered as a neutral notice with only
+  the list of valid values to go on.
+
 ## [2.7.0] - 2026-10-07
 
 ### Added

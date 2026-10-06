@@ -35,7 +35,7 @@ Closable message banner with status icons, auto-dismiss timer, and open/hide tra
 | `open` | `boolean` | `false` | ✓ | Show/hide the alert |
 | `closable` | `boolean` | `false` | ✓ | Show close button |
 | `appearance` | `'soft'\|'outlined'` | `'soft'` | ✓ | `soft` status-colour tint, no outline · `outlined` status-colour border on a transparent face |
-| `status` | `'error'\|'warning'\|'success'\|'info'\|'notice'` | — | ✓ | Status type; controls icon and color |
+| `status` | `'error'\|'warning'\|'success'\|'info'\|'notice'` | — | ✓ | Status type; controls icon, color and role (`error`/`warning` are `role="alert"`). An outcome word, not a palette word — buttons and badges say `color="danger"`, an alert says `status="error"`; an unknown value renders as a neutral notice and warns in development, naming the likely word |
 | `title` | `string` | `''` | — | Title label. Left empty, the status name in the current locale is shown (`Locale.set('ko')` → 「오류」), not the raw status value |
 | `duration` | `number` | `0` | — | Auto-dismiss delay in ms; `0` disables |
 

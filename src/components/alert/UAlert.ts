@@ -13,6 +13,20 @@ import { devWarnOnce } from '../../utilities/devWarning.js';
 /** 유효한 `u-alert` 상태 — 런타임 검증과 타입이 **같은 목록**을 보게 둔다. */
 export const ALERT_STATUSES = ["error", "warning", "success", "info", "notice"] as const;
 export type AlertStatus = (typeof ALERT_STATUSES)[number];
+
+/**
+ * 다른 축의 낱말로 쓴 `status` → 이 축의 낱말. `status` 는 **결과 상태**(alert · progress · Toast 가 `error`)이고,
+ * 버튼·배지·태그의 `color` 는 **팔레트 역할**(`danger`)이다 — 두 축이 다른 낱말을 쓰는 것은 의도지만, 소비자가
+ * `color` 의 낱말을 그대로 옮겨 `status="danger"` 로 화면 셋을 내보낸 실측이 있어 경고가 맞는 낱말을 함께 말한다.
+ */
+const STATUS_SYNONYMS: Readonly<Record<string, AlertStatus>> = {
+  danger: 'error',
+  critical: 'error',
+  negative: 'error',
+  warn: 'warning',
+  positive: 'success',
+  information: 'info',
+};
 /**
  * 외형 정도 — `soft` 상태색 틴트 면(기본) · `outlined` 상태색 테두리.
  * (2.0 전의 `solid` 는 꽉 찬 면이 아니라 «틴트 + 테두리» 였고 `filled` 는 «틴트» 였다 — 공통 어휘의
@@ -170,9 +184,11 @@ export class UAlert extends UElement {
   private warnUnknownStatus(): void {
     const status = this.status as string | undefined;
     if (!status || ALERT_STATUSES.includes(status as AlertStatus)) return;
+    const suggestion = STATUS_SYNONYMS[status.toLowerCase()];
     devWarnOnce(
       `u-alert:status:${status}`,
       `<u-alert status="${status}"> is not a known status, so it renders as a neutral notice. ` +
+      (suggestion ? `Did you mean status="${suggestion}"? ` : '') +
       `Use one of: ${ALERT_STATUSES.join(', ')}.`,
     );
   }
