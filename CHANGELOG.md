@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.0.2] - 2026-10-06
+
+### Fixed
+
+- **Space on a `u-select` option selects without scrolling the list.** In a `multiple` select the
+  list stays open, and each Space toggled the option *and* scrolled the list, carrying the focused
+  option away from the pointer's view. Enter and Space now only select.
+- **Space on a `u-tab` selects the tab without scrolling the page.**
+- **Keys pressed on a tab's close button belong to the button** (`u-tab[removable]` in
+  `u-tab-panel`). An arrow key on the close button moved to the next tab, and Enter selected the tab
+  being closed before closing it. The tab keyboard model now applies only while the tab itself has
+  focus.
+
+### Tests
+
+- Keyboard contracts of `u-radio` (arrows move focus and selection together and wrap, Home/End,
+  disabled options skipped, one tab stop) and `u-select` (open with Enter, arrows/Home/End on
+  options, Enter/Space select, Escape closes and returns focus, search field arrows to the
+  first/last visible option) are now pressed with real key input.
+
 ## [2.0.1] - 2026-10-05
 
 ### Fixed

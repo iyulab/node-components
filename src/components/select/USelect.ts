@@ -387,6 +387,9 @@ export class USelect extends UFormControlElement<string | string[]> {
     switch (e.key) {
       case 'Enter':
       case ' ':
+        // Space 의 기본 동작은 스크롤 컨테이너를 넘긴다 — 목록이 닫히지 않는 multiple 에서 토글할 때마다
+        // 목록이 밀린다. 고르는 키는 고르기만 한다(라디오 그룹·네이티브 listbox 와 같다).
+        e.preventDefault();
         currentOption.click();
         break;
       case 'ArrowDown': {

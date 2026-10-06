@@ -55,7 +55,9 @@ describe('UTab — removable 닫기 버튼이 키보드로 도달·활성화된�
     document.body.innerHTML = `
       <u-tab-panel id="panel">
         <u-tab slot="tab" value="a" removable id="tab-a">Tab A</u-tab>
+        <u-tab slot="tab" value="b" id="tab-b">Tab B</u-tab>
         <u-panel value="a">Content A</u-panel>
+        <u-panel value="b">Content B</u-panel>
       </u-tab-panel>
     `;
     return document.getElementById('panel') as UTabPanel;
@@ -88,5 +90,16 @@ describe('UTab — removable 닫기 버튼이 키보드로 도달·활성화된�
     await userEvent.keyboard('{Enter}');
 
     expect(removed).toBe(true);
+  });
+
+  it('닫기 버튼에서 누른 화살표는 탭 이동이 아니다 — 탭 키보드 모델은 탭 자신에 포커스가 있을 때만', async () => {
+    const panel = createPanel();
+    await panel.updateComplete;
+    const tab = document.getElementById('tab-a') as UTab;
+    tab.focus();
+    await userEvent.tab();
+    await userEvent.keyboard('{ArrowRight}');
+    await panel.updateComplete;
+    expect(panel.value).toBe('a');
   });
 });

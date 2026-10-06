@@ -148,6 +148,12 @@ describe('u-tab-panel — 탭 키보드 내비게이션', () => {
       await panel.updateComplete;
       expect(panel.value).toBe('b');
     });
+
+    it('Space·Enter 는 기본 동작을 막는다 — Space 가 탭을 고르면서 페이지를 한 화면 넘기지 않게', async () => {
+      const { tabs } = await mount('top', ['a', 'b', 'c']);
+      expect(pressKey(tabs[1], ' ').defaultPrevented).toBe(true);
+      expect(pressKey(tabs[2], 'Enter').defaultPrevented).toBe(true);
+    });
   });
 
   describe('비활성 탭은 «건너뛰는» 것이 아니라 «목록에 없다»', () => {

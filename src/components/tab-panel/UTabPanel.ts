@@ -164,6 +164,10 @@ export class UTabPanel extends UElement {
   }
 
   private handleTabKeydown = (e: KeyboardEvent) => {
+    // 탭 «안의» 컨트롤(닫기 버튼)에서 올라온 키는 그 컨트롤의 것이다 — 탭 키보드 모델은 탭 자신에
+    // 포커스가 있을 때만 해석한다. 그렇지 않으면 닫기 버튼의 Enter 가 «이 탭 선택» 으로도 읽히고,
+    // 막으면 버튼의 네이티브 활성화가 사라진다.
+    if (e.composedPath()[0] !== e.currentTarget) return;
     const enabledTabs = this.tabs.filter(t => !t.disabled);
     const currentIndex = enabledTabs.indexOf(e.currentTarget as UTab);
     if (currentIndex === -1) return;
@@ -187,6 +191,8 @@ export class UTabPanel extends UElement {
         break;
       case 'Enter':
       case ' ':
+        // Space 의 기본 동작은 페이지 스크롤이다 — 탭을 고르는 키가 화면을 함께 넘기면 안 된다.
+        e.preventDefault();
         this.change(enabledTabs[currentIndex].value);
         return;
       default:
