@@ -46,8 +46,18 @@ export class USpinner extends UElement {
     this.nameFrom('');
   }
 
+  /** 이름으로 쓰는 보이는 글자(없으면 로케일의 «로딩 중»). */
+  private slotText = '';
+
   private nameFrom(text: string): void {
+    this.slotText = text;
     if (this.internals) this.internals.ariaLabel = text || Locale.getValue('loading');
+  }
+
+  /** 글자가 없을 때의 기본 이름은 로케일 문장이다 — 새 로케일로 다시 적는다. */
+  protected override localeChanged(): void {
+    this.nameFrom(this.slotText);
+    super.localeChanged();
   }
 
   render() {

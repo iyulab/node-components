@@ -1,5 +1,6 @@
 import { LitElement, CSSResultGroup, render, RenderOptions } from 'lit';
 import { styles } from './UElement.styles.js';
+import { Locale } from '../utilities/Locale.js';
 
 /**
  * 모든 UI 컴포넌트의 기반 클래스.
@@ -39,9 +40,33 @@ function warnIfTokensMissing(): void {
 export class UElement extends LitElement {
   static styles: CSSResultGroup = styles;
 
+  /** 연결된 동안의 로케일 구독 해제 함수 · 떨어질 때 본 로케일 판(다시 붙을 때 그 사이 바뀌었는가를 묻는다). */
+  private unsubscribeLocale?: () => void;
+  private detachedLocaleRevision?: number;
+
   connectedCallback(): void {
     super.connectedCallback();
     if (process.env.NODE_ENV !== 'production') warnIfTokensMissing();
+    this.unsubscribeLocale = Locale.subscribe(() => this.localeChanged());
+    // 떨어져 있는 동안 바뀌었으면 지금 따라간다 — Lit 은 다시 붙을 때 다시 그리지 않는다.
+    if (this.detachedLocaleRevision !== undefined && this.detachedLocaleRevision !== Locale.revision) this.localeChanged();
+    this.detachedLocaleRevision = undefined;
+  }
+
+  disconnectedCallback(): void {
+    this.unsubscribeLocale?.();
+    this.unsubscribeLocale = undefined;
+    this.detachedLocaleRevision = Locale.revision;
+    super.disconnectedCallback();
+  }
+
+  /**
+   * 로케일이 바뀌었다(`Locale.set` · `Locale.register`) — 기본은 다시 그린다. 렌더 밖에서 로케일 문장을 담아 둔
+   * 컴포넌트(속성·`ElementInternals`·필드에 적어 둔 이름)는 이것을 재정의해 그 값을 다시 적고 `super` 를 부른다.
+   * 종전에는 런타임에 언어를 바꿔도 이미 그려진 문장이 다음 재렌더까지 옛 언어로 남았다.
+   */
+  protected localeChanged(): void {
+    this.requestUpdate();
   }
 
   /**

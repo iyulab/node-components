@@ -143,6 +143,18 @@ function detectLocale(): LocaleTag {
 let active: LocaleTag = detectLocale();
 
 /**
+ * 로케일이 바뀌었음을 들을 곳 — 활성 로케일 전환(`set`)과 표 등록(`register`, 네임스페이스 포함).
+ * 이것이 없으면 이미 그려진 문장은 다음 재렌더까지 옛 언어로 남았다(런타임 언어 전환의 절반이 비었다).
+ */
+const listeners = new Set<() => void>();
+let revision = 0;
+function notify(): void {
+  revision++;
+  // 듣는 쪽이 듣는 중에 구독을 풀거나 더해도 이번 알림은 지금 목록에 대해서만 돈다.
+  for (const listener of [...listeners]) listener();
+}
+
+/**
  * 내장 표가 **지역형으로만** 있는 언어의 기본 지역형 — 키는 태그의 접두(소문자).
  *
  * ⚠`lang="zh"`·`"pt"` 처럼 지역 없는 태그는 흔하고 정당하다(BCP 47). 사슬이 접두를 줄여 가기만
@@ -246,7 +258,27 @@ export class Locale {
 
   /** 전역 활성 로케일을 지정합니다. */
   public static set(locale: LocaleTag): void {
+    if (locale === active) return;
     active = locale;
+    notify();
+  }
+
+  /**
+   * 로케일이 바뀔 때(활성 로케일 전환 · 표 등록) 부를 함수를 등록하고, **구독을 푸는 함수**를 돌려줍니다.
+   * `UElement` 계열은 연결된 동안 스스로 구독해 다시 그리므로, 이것은 그 밖의 코드 — 직접 만든 요소, 앱 상태 —
+   * 를 위한 것입니다. React 에서는 `useSyncExternalStore(Locale.subscribe, () => Locale.revision)`.
+   */
+  /**
+   * 로케일이 바뀔 때마다(구독자에게 알릴 때마다) 하나씩 느는 수 — «내가 마지막으로 본 뒤 바뀌었는가» 를 묻는 값.
+   * `get()` 은 표 등록으로 문장이 바뀌어도 그대로이므로, 스냅샷·캐시 키로는 이것을 쓴다.
+   */
+  public static get revision(): number {
+    return revision;
+  }
+
+  public static subscribe(listener: () => void): () => void {
+    listeners.add(listener);
+    return () => { listeners.delete(listener); };
   }
 
   /** 전역 활성 로케일을 반환합니다 (초기값은 `<html lang>` → 브라우저 언어 자동 감지, 실패 시 'en'). */
@@ -262,6 +294,7 @@ export class Locale {
     const norm = locale.toLowerCase();
     const current = overrides.get(norm) ?? builtins.get(norm) ?? builtins.get('en')!;
     overrides.set(norm, { ...current, ...table });
+    notify();
   }
 
   /**
@@ -297,6 +330,7 @@ export class Locale {
         const norm = locale.toLowerCase();
         byLocale.set(norm, { ...byLocale.get(norm), ...(table as Record<string, string>) });
         namespaces.set(name, byLocale);
+        notify();
       },
       text: (key: K, params?: Record<string, string | number>) => textIn(undefined, key, params),
       textIn,

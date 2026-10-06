@@ -1,6 +1,17 @@
 # Changelog
 
-## [Unreleased]
+## [2.8.0] - 2026-10-07
+
+### Added
+
+- **Switching the locale at runtime updates what is already on screen.** `Locale.set()` and `Locale.register()` now
+  notify, and every connected component re-renders — including text it keeps outside its template: form validation
+  messages, `u-spinner`'s default name, `u-split-panel`'s handle name, `u-carousel`'s descriptions and slide names, the
+  decimal separator shown by `u-input type="number"`. An element detached during the change catches up when attached
+  again. Before, the old language stayed until something else re-rendered the component.
+- `Locale.subscribe(listener)` (returns the unsubscribe function) and `Locale.revision` for your own code —
+  `useSyncExternalStore(Locale.subscribe, () => Locale.revision)` in React.
+- `UElement.localeChanged()` — a protected hook for subclasses that keep localized text outside `render()`.
 
 ### Fixed
 

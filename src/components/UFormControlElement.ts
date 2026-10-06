@@ -121,6 +121,15 @@ export abstract class UFormControlElement<T> extends UElement {
   }
 
   /**
+   * 검증 메시지는 `setValidity()` 가 `internals` 에 적어 둔 문장이다 — 다시 그리기만 하면 옛 언어가 그대로 나온다.
+   * 첫 렌더 뒤라면(검증이 참조하는 안쪽 컨트롤이 있을 때) 다시 계산하고 그린다.
+   */
+  protected override localeChanged(): void {
+    if (this.hasUpdated) this.setValidity();
+    super.localeChanged();
+  }
+
+  /**
    * 호스트에 세팅된 `aria-label`/`aria-description` 은 접근성 트리에 노출되는 노드가 아니다 —
    * 그것은 shadow DOM 안쪽의 네이티브 컨트롤이고, 섀도우 경계를 넘지 않으므로 자동으로
    * 반영되지 않는다(속성은 붙어 있는데 접근 가능한 이름이 빈 채로 남는다).

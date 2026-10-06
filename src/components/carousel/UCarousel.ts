@@ -268,6 +268,13 @@ export class UCarousel extends UElement {
     }
   }
 
+  /** 렌더 밖에서 적어 둔 로케일 문장(호스트 역할 설명 · 슬라이드 이름)을 새 로케일로 다시 적는다. */
+  protected override localeChanged(): void {
+    if (this.internals) this.internals.ariaRoleDescription = Locale.getValue('carousel');
+    this.slides.forEach((slide, i) => this.labelSlide(slide, i, this.slides.length));
+    super.localeChanged();
+  }
+
   /** 슬라이드를 «n / 전체» 이름의 그룹으로 — 처음 볼 때 비어 있던 속성만 우리 것으로 삼고, 그것만 갱신한다. */
   private labelSlide(slide: Element, i: number, total: number) {
     let owned = this.ownedSlideAttrs.get(slide);

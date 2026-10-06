@@ -208,6 +208,12 @@ export class USplitPanel extends UElement {
    * 값은 **앞 패널(primary pane)의 몫**이다. 패널이 셋 이상이면 한 핸들은 이웃한 두 패널 사이만
    * 옮기므로 최대값은 100 이 아니라 그 두 패널의 몫의 합이다.
    */
+  /** 핸들 이름(«패널 크기 조절»)은 템플릿 밖에 적어 둔 로케일 문장이다 — 새 로케일로 다시 적는다. */
+  protected override localeChanged(): void {
+    this.syncSplitterAria();
+    super.localeChanged();
+  }
+
   private syncSplitterAria() {
     const root = this.renderRoot;
     if (!root) return;

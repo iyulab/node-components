@@ -40,6 +40,21 @@ same chain.
 | `Locale.register(locale, table)` | Register/override locale messages (partial merge supported) |
 | `Locale.getValue(key, params?, locale?)` | Resolve a localized message for the current locale (or `locale`, along its fallback chain) |
 | `Locale.namespace(name)` | A string table for a package or app area, keyed by its own union — returns a handle (below) |
+| `Locale.subscribe(listener)` | Call `listener` whenever the locale changes (`set` to another locale, any `register`) — returns the unsubscribe function |
+| `Locale.revision` | A number that grows on every change — a snapshot or cache key (`get()` stays the same when only a table changes) |
+
+### Switching at runtime
+
+`Locale.set()` and `Locale.register()` take effect on screen at once: every connected component
+re-renders, including text it keeps outside its template — validation messages, accessible names,
+the decimal separator of a number field. An element detached during the change catches up when it
+is attached again. Your own code subscribes the same way:
+
+```ts
+const off = Locale.subscribe(() => renderMyView());
+// React
+const revision = useSyncExternalStore(Locale.subscribe, () => Locale.revision);
+```
 
 ### Namespaces
 

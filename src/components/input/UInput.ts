@@ -273,6 +273,14 @@ export class UInput extends UFormControlElement<string> {
     }
   }
 
+  /** The shown number uses the locale's decimal separator — re-show it in the new locale (unless the user is typing in it). */
+  protected override localeChanged(): void {
+    if (this.type === 'number' && this.shadowRoot?.activeElement !== this.inputEl) {
+      this.numberText = this.displayNumber(this.value ?? '');
+    }
+    super.localeChanged();
+  }
+
   /** Canonical `value` → the text shown: the locale's decimal separator, no grouping inserted. */
   private displayNumber(value: string): string {
     const n = value ? parseNumber(value, 'en') : null;

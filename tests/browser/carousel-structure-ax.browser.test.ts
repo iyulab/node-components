@@ -56,6 +56,15 @@ describe('u-carousel 접근성 구조 (APG Carousel)', () => {
     expect(all.filter((n) => prop(n, 'roledescription') === '슬라이드').map((g) => g.name?.value)).toEqual(['2개 중 1번째', '2개 중 2번째']);
   });
 
+  it('런타임에 로캘을 바꾸면 역할 설명·슬라이드 이름이 따라온다', async () => {
+    await mount('<u-carousel aria-label="Featured"><div>A</div><div>B</div></u-carousel>');
+    Locale.set('ko');
+    await new Promise((r) => setTimeout(r, 50));
+    const all = await nodes();
+    expect(prop(all.find((n) => n.role?.value === 'region')!, 'roledescription')).toBe('캐러셀');
+    expect(all.filter((n) => prop(n, 'roledescription') === '슬라이드').map((g) => g.name?.value)).toEqual(['2개 중 1번째', '2개 중 2번째']);
+  });
+
   it('소비자가 단 슬라이드 이름·역할은 덮지 않고, 떠나도 걷지 않는다 — 빈 자리만 채운다', async () => {
     const el = await mount('<u-carousel><figure aria-label="Sunrise">A</figure><div role="tabpanel">B</div></u-carousel>');
     const [fig, panel] = Array.from(el.children);
