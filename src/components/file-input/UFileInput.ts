@@ -51,6 +51,9 @@ export class UFileInput extends UFormControlElement<File[] | null> {
     super.updated(changedProperties);
     if (changedProperties.has('value')) {
       this.syncFormValue();
+      // 바깥에서 비우면(`value = null`·빈 배열) 안쪽 입력도 비운다 — `reset()` 과 같은 결과. 남겨 두면 같은 파일을 다시
+      // 고를 때 브라우저가 `change` 를 내지 않아 아무 일도 일어나지 않는다. 반대 방향(코드가 파일을 넣기)은 브라우저가 막는다.
+      if ((!this.value || this.value.length === 0) && this.inputEl?.value) this.inputEl.value = '';
     }
   }
 

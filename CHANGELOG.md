@@ -12,6 +12,13 @@
   to `Dialog.confirm` no longer loses that. With a `title` the title names the dialog and the message describes it;
   without one the message is the name. `Dialog.prompt` and `Dialog.show` are named the same way, as a `dialog`.
 - **`u-switch` is exposed as a `switch`**, not a checkbox — announced as on/off, and found by `getByRole('switch')`.
+- **`u-file-input`: setting `value` to `null` (or `[]`) clears the native input**, as `reset()` did. It only synced the
+  form value, so after an app reset the state the native input still held the last file — picking that same file again
+  fired no `change`, and nothing happened.
+- **`u-input` keeps a minimum text area.** The suffix icons (number stepper, clear, password toggle) have a fixed box —
+  at least 24px, or `--u-target-size` — and in a narrow field they took the whole width: a 90px number input drew a 0px
+  text area, with no value or caret visible. The field now has a floor (`--input-min-text`, default `4ch`, plus the
+  icons it shows); given less, it overflows its host visibly. Fields at their default or a wider width are unchanged.
 
 ## [2.3.1] - 2026-10-06
 

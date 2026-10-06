@@ -54,6 +54,8 @@ export type FieldSize = 'sm' | 'md' | 'lg';
  *   컨테이너 폭을 채우려면 `block`으로 지정한다.
  * @cssprop --u-input-width - 호스트의 width (기본값: auto). flex 컨테이너처럼 block만으로는
  *   늘어나지 않는 맥락에서 `100%`로 지정한다.
+ * @cssprop --input-min-text - 글자 영역의 최소 폭 (기본값: 4ch). 접미 아이콘(스테퍼·지우기·비밀번호 토글)이 폭을 나눠도 글자
+ *   영역은 이 아래로 접히지 않는다 — 주어진 폭이 그보다 좁으면 칸이 호스트 밖으로 넘친다.
  * @cssprop --input-popover-width - 드롭다운 팝오버의 너비 (기본값: 앵커(트리거) 너비)
  * @cssprop --input-popover-min-height - 드롭다운 팝오버의 최소 높이 (기본값: 0px)
  * @cssprop --input-popover-max-height - 드롭다운 팝오버의 최대 높이 (기본값: 50vh)
@@ -150,7 +152,8 @@ export class UInput extends UFormControlElement<string> {
         .description=${this.description}
         .validationMessage=${this.validationMessage}
       >
-        <div class="container" part="container">
+        <div class="container" part="container"
+          style=${`--_icons: ${(showStepper ? 2 : 0) + (showClear ? 1 : 0) + (showToggle ? 1 : 0)}`}>
 
           <slot name="prefix"></slot>
 

@@ -77,7 +77,7 @@ describe('오버레이 = 대화상자', () => {
 
   it('u-drawer 도 대화상자다', async () => {
     document.body.innerHTML = `<u-drawer><span slot="header">필터</span>본문</u-drawer>`;
-    const drw = document.querySelector('u-drawer') as UDialog;
+    const drw = document.querySelector('u-drawer')!;
     drw.show();
     await settle(drw);
     const [d] = await nodes('dialog');

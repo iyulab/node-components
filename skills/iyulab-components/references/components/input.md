@@ -132,6 +132,7 @@ Call `preventDefault()` on the `keydown` to cancel it. Do not also submit on Ent
 |----------|-------------|
 | `--u-input-display` | Host `display` (default `inline-block`); set `block` to fill a form or grid cell |
 | `--u-input-width` | Host `width` (default `auto`); set `100%` where `block` alone does not stretch, such as in a flex container |
+| `--input-min-text` | Minimum width of the text area (default `4ch`). The stepper, clear and password-toggle icons never squeeze the text below it — a field given less width overflows its host visibly instead of drawing an input you cannot see into |
 | `--input-popover-width` | Combobox popover width (fixed to anchor width by default) |
 | `--input-popover-min-height` | Combobox popover min-height |
 | `--input-popover-max-height` | Combobox popover max-height |

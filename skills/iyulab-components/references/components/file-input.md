@@ -35,7 +35,7 @@ No drag-and-drop in this version — it is a minimal wrapper (trigger + status +
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
-| `value` | `File[] \| null` | `null` | — | Selected files (always an array, even for single-file selection) |
+| `value` | `File[] \| null` | `null` | — | Selected files (always an array, even for single-file selection). Setting it to `null` (or `[]`) clears the native input as `reset()` does, so the same file can be picked again |
 | `accept` | `string` | — | — | Passed through to the native `accept` attribute |
 | `multiple` | `boolean` | `false` | ✓ | Allow selecting more than one file |
 | `disabled` | `boolean` | `false` | ✓ | Disable the control |

@@ -34,6 +34,7 @@ const INTERNAL: Record<string, string> = {
   // 다른 선언 토큰들에서 계산되는 파생값 — 단독으로 덮으면 트랙 기하와 어긋난다.
   '--switch-move-width': '--switch-track-width/--switch-thumb-size/--switch-thumb-offset 에서 계산',
   '--_splitter-box': 'u-split-panel 핸들 박스 = max(--splitter-size, --splitter-hit-size) 에서 계산',
+  '--_icon-box': 'u-input 접미 아이콘 하나의 받는 상자 = max(1.5em, 24px, --u-target-size) — 글자 영역 하한(min-inline-size) 식의 항',
   '--_target-pad': 'u-input·u-select 접미 아이콘 받는 여백 = max(0.25em, 12px − 0.5em, --u-target-size/2 − 0.5em) — 글자 크기와 무관하게 24px(또는 호스트 하한)를 보장하는 식',
   '--_dot-w': 'u-carousel 점의 보이는 폭(활성 24px) — 호스트 하한의 투명 테두리 계산 입력',
   '--_dot-bb': 'u-carousel 점의 세로 투명 테두리 = (--u-target-size − 10px)/2, 미설정이면 0',

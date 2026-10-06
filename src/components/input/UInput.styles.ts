@@ -35,6 +35,17 @@ export const styles = css`
        테두리 1px 위까지 닿는다. 패딩 상자에서 자르면 그 1px 이 눌리지 않는다(hidden 은 여백을 받지 않는다). */
     overflow: clip;
     overflow-clip-margin: 1px;
+    /* 글자 영역의 하한 — 고정 크기 접미 아이콘(스테퍼 둘 · 지우기 · 비밀번호 토글, 각 상자 = max(1.5em, 24px, 호스트 하한))이
+       한 줄을 나눌 때, 주어진 폭이 좁으면 입력이 0 까지 접혀 값도 커서도 «보이지 않는» 채 정상처럼 그려졌다.
+       하한 아래로는 칸이 호스트 밖으로 넘친다 — 보이는 실패다. 아이콘 수(--_icons)는 렌더가 정한다.
+       입력의 고유 폭(size 기본 20자)이 intrinsic 계산을 지배하므로 min-content 로는 낼 수 없어 기하를 직접 더한다.
+       접두·접미 슬롯 내용은 세지 않는다(폭을 모른다). 글자 하한은 --input-min-text 로 바꾼다. */
+    --_icon-box: max(1.5em, 24px, var(--u-target-size, 0px));
+    min-inline-size: calc(
+      2px + var(--u-field-padding-inline, 0.6em) + var(--input-min-text, 4ch)
+      + var(--_icons, 0) * var(--_icon-box)
+      + max(var(--u-field-padding-inline, 0.6em), calc(var(--u-target-size, 0px) / 2 - 0.5em))
+    );
   }
   :host([readonly]) .container,
   :host(:disabled) .container {
