@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.10.3] - 2026-10-07
+
+### Fixed
+
+- `u-input` and `u-select` register the `u-popover` they render with an explicit import. They imported `UPopover` for
+  a type only, and the published modules kept the import by accident (decorator metadata) — a build setting away from
+  the same undefined-element failure 2.10.2 fixed for `u-select`'s chips.
+
 ## [2.10.2] - 2026-10-07
 
 ### Fixed

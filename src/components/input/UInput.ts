@@ -10,7 +10,9 @@ import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import { parseNumber } from "../../utilities/format.js";
 import { UOption } from "../option/UOption.js";
-import { UPopover } from "../popover/UPopover.js";
+// 부수효과 import — 이 모듈이 그리는 `<u-popover>` 을 등록한다(타입으로만 가져오면 빌드가 import 를 지운다 — 데코레이터 메타데이터가 우연히 붙잡고 있었다).
+import "../popover/UPopover.js";
+import type { UPopover } from "../popover/UPopover.js";
 import { styles } from "./UInput.styles.js";
 import { isImeComposing } from '../../utilities/keyboard.js';
 
