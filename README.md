@@ -10,6 +10,31 @@ Lit 기반 웹 컴포넌트 라이브러리.
 npm install @iyulab/components
 ```
 
+## Quick Start
+
+아래 파일 하나가 그대로 돌아가는 첫 페이지입니다(Vite 기준 — `index.html` 이 `src/main.ts` 를 모듈로 싣는다).
+
+```ts
+// src/main.ts
+import '@iyulab/components/styles/tokens.css';
+import { Toast } from '@iyulab/components';
+
+document.body.innerHTML = `
+  <form id="signup" style="display: grid; gap: 12px; max-width: 320px; margin: 32px">
+    <u-input name="email" type="email" label="Email" required></u-input>
+    <u-button type="submit" color="primary">Sign up</u-button>
+  </form>
+`;
+
+const form = document.querySelector<HTMLFormElement>('#signup')!;
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  Toast.success(`Welcome, ${new FormData(form).get('email')}`);
+});
+```
+
+`u-input` 과 `u-button` 은 네이티브 폼에 참여하므로 `FormData`·`required` 검증·Enter 제출이 그대로 동작합니다.
+
 ## Usage
 
 ```ts
