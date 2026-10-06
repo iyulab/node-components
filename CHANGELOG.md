@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.9.1] - 2026-10-07
+
+### Fixed
+
+- **`u-field`'s label names the group when it spans several controls or one that names itself.** It always copied the
+  label onto the first slotted control, so "Theme" over two buttons "Light · Dark" made the first button read
+  *Theme* — its visible text and its name disagreed (WCAG 2.5.3 Label in Name). With two or more controls, or a single
+  button, link, checkbox, switch or radio with its own text, the field is now a `group` named by the label and
+  described by `description`; each control keeps its own name. A single input is named by the label as before.
+
 ## [2.9.0] - 2026-10-07
 
 ### Added

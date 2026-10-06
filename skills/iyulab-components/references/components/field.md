@@ -35,6 +35,12 @@ is copied onto the slotted element as `aria-label` (and `description` as `aria-d
 label and the accessible name disagree (WCAG SC 2.5.3 Label in Name). Setting `label` on *both*
 renders the label twice; a development-mode console warning points at that spot.
 
+**A label over several controls, or over one that names itself, names the group.** With two or more
+controls slotted (a row of choice buttons), or a single button, link, checkbox, switch or radio that
+has its own text, the field becomes a `group` named by the label (and described by `description`);
+each control keeps its own name — "Theme" over "Light · Dark" reads as the group *Theme* with the
+buttons *Light* and *Dark*, not a first button called *Theme*.
+
 ```html
 <!-- label on the field -->
 <u-field label="Email"><u-input type="email" name="email"></u-input></u-field>

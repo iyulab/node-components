@@ -23,6 +23,15 @@ function isFormControlByStructure(node: Element): boolean {
   return false;
 }
 
+/** 자기 글자로 접근성 이름을 갖는 컨트롤 — 필드 라벨로 덮으면 보이는 글자와 이름이 어긋난다. */
+const CONTENT_NAMED = /^(button|a|u-button|u-checkbox|u-switch|u-radio)$/;
+const CONTENT_NAMED_ROLES = /^(button|link|checkbox|switch|radio)$/;
+function isNamedByContent(el: HTMLElement): boolean {
+  const role = el.getAttribute('role');
+  const byTag = CONTENT_NAMED.test(el.localName) || (!!role && CONTENT_NAMED_ROLES.test(role));
+  return byTag && (el.textContent ?? '').trim() !== '';
+}
+
 /**
  * 폼 컨트롤의 공통 레이아웃을 제공하는 필드 컴포넌트입니다.
  * 라벨, 필수 표시, 설명 텍스트, 유효성 검사 메시지를 포함합니다.
@@ -122,12 +131,28 @@ export class UField extends UElement {
    * 다시 렌더하면 우리가 얹은 속성이 지워진다.
    */
   private get controlToName(): HTMLElement | null {
-    for (const node of this.assignedRoots) {
-      const formAssociated = (node.constructor as { formAssociated?: boolean }).formAssociated === true;
-      if (formAssociated || isFocusable(node)) return node as HTMLElement;
-    }
-    return null;
+    return this.nameCandidates[0] ?? null;
   }
+
+  /** 라벨이 이름을 줄 수 있는 슬롯 컨트롤 전부 — form-associated 이거나 포커스 가능한 최상위 자식. */
+  private get nameCandidates(): HTMLElement[] {
+    return this.assignedRoots.filter((node) =>
+      (node.constructor as { formAssociated?: boolean }).formAssociated === true || isFocusable(node)) as HTMLElement[];
+  }
+
+  /**
+   * 라벨이 «컨트롤 하나의 이름» 이 아니라 **묶음의 이름**이어야 하는가 — 컨트롤이 둘 이상이거나, 자기 글자로 이름을
+   * 갖는 컨트롤(버튼·링크·체크박스·스위치·라디오)일 때. 종전에는 언제나 첫 컨트롤에 라벨을 얹어, «밝은 모드 · 어두운 모드»
+   * 버튼 둘을 «테마» 로 묶은 필드에서 첫 버튼의 이름이 «테마» 가 됐다 — 보이는 글자와 이름이 어긋난다(WCAG 2.5.3).
+   */
+  private get labelsAGroup(): boolean {
+    const candidates = this.nameCandidates;
+    return candidates.length > 1 || (candidates.length === 1 && isNamedByContent(candidates[0]));
+  }
+
+  /** 묶음 이름(role=group)을 호스트에 — 섀도 밖 어떤 요소도 건드리지 않는다. */
+  private readonly internals: ElementInternals | undefined =
+    'attachInternals' in this ? this.attachInternals() : undefined;
 
   /**
    * 🔴**«이 필드가 이름 줄 컨트롤을 가졌는가» 는 «지금 포커스 가능한가» 와 다른 질문이다 —
@@ -192,6 +217,22 @@ export class UField extends UElement {
    * (메시지 문안은 그대로다 — 키는 중복 제거 단위일 뿐 공개 표면이 아니다.)
    */
   private nameSlottedControl(): void {
+    const group = !!this.label && this.labelsAGroup;
+    if (this.internals) {
+      this.internals.role = group ? 'group' : null;
+      this.internals.ariaLabel = group ? this.label ?? null : null;
+      this.internals.ariaDescription = group ? this.description ?? null : null;
+    }
+    if (group) {
+      // 앞서 우리가 컨트롤에 얹은 이름·설명은 걷는다(묶음으로 바뀐 경우) — 소비자 값은 그대로.
+      for (const c of this.nameCandidates) {
+        if (this.lastAppliedLabel !== undefined && c.getAttribute('aria-label') === this.lastAppliedLabel) c.removeAttribute('aria-label');
+        if (this.lastAppliedDescription && c.getAttribute('aria-description') === this.lastAppliedDescription) c.removeAttribute('aria-description');
+      }
+      this.lastAppliedLabel = undefined;
+      this.lastAppliedDescription = undefined;
+      return;
+    }
     const control = this.controlToName;
     if (!control) {
       // ⚠경고는 «이름을 못 줬다» 가 아니라 «가리킬 것이 아예 없다» 일 때만 낸다 —
