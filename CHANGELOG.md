@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.1] - 2026-10-07
+
+### Documentation
+
+- The `Theme.resolved()` row of the theme reference had an unescaped `|` in its type cell, which split the table row
+  into extra columns.
+
 ## [2.10.0] - 2026-10-07
 
 ### Changed

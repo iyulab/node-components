@@ -68,7 +68,7 @@ changes**, because those targets are relative to the page background.
 | `Theme.init(options?)` | `Promise<void>` | Initialize and apply theme |
 | `Theme.get()` | `ThemeType \| undefined` | Get current theme |
 | `Theme.set(theme)` | `void` | Set theme (`'light'`, `'dark'`, `'system'`) |
-| `Theme.resolved()` | `'light' | 'dark'` | The theme actually applied — use this, not `get()`, for brightness branches |
+| `Theme.resolved()` | `'light' \| 'dark'` | The theme actually applied — use this, not `get()`, for brightness branches |
 | `Theme.accent(seed)` | `void` | Derive the `--u-primary-*` ramp from a brand color; `null` clears it |
 | `Theme.isInitialized` | `boolean` | Whether `init()` has been called |
 
