@@ -11,6 +11,8 @@
 
 ### Fixed
 
+- `u-steps` keeps its screen-reader-only status text inside the element — the absolutely positioned text escaped an
+  unpositioned scroll container and could stretch the document.
 - **`u-icon-button` and `u-copy-button` follow the control density** — their glyph size is `--u-density` × 10/7
   and × 9/7 (20px and 18px at the default density, unchanged). On a screen that raises the density, the
   `u-button` text grew and the icon buttons beside it stayed put.

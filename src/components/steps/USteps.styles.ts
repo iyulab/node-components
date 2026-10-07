@@ -3,6 +3,9 @@ import { css } from "lit";
 export const styles = css`
   :host {
     display: block;
+    /* 위치 지정 — 안의 숨김 문구(절대 위치 · 1px)의 포함 블록이 이 요소가 된다. 없으면 포함 블록이 문서 전체라 호스트의
+       overflow 감싸개를 건너뛰고 그 정적 위치에서 문서를 늘렸다(위치 지정되지 않은 스크롤 상자 안에서). */
+    position: relative;
     font-size: var(--u-text-label-size, 13px);
     line-height: var(--u-text-label-leading, 1.5);
     color: var(--u-txt-color-weaker, #757575);
