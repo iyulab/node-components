@@ -17,6 +17,12 @@
 - **`u-alert`'s body reads `--u-text-body-size`** (14px by default, unchanged) — like its title, which already read
   `--u-text-subtitle-size`.
 
+### Documentation
+
+- `docs/react-events.md`: an event description that spans several lines in the source is shown in full (it was cut
+  after its first line, mid-sentence, in nine rows), and an element that redescribes an inherited event shows its own
+  description (`u-tooltip` and `u-popover` showed the base class wording for `show`/`hide`).
+
 ## [2.16.0] - 2026-10-07
 
 ### Added

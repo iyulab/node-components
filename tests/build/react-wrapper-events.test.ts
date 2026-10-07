@@ -8,7 +8,7 @@ import {
   isInternalElement,
 } from '../../plugins/vite-plugin-react-wrapper';
 // @ts-expect-error — 문서 생성기는 .mjs 로, 타입 선언이 없다
-import { renderReactEventsDoc, DOC_PATH } from '../../scripts/react-events-doc.mjs';
+import { renderReactEventsDoc, DOC_PATH, eventTags } from '../../scripts/react-events-doc.mjs';
 // @ts-expect-error — .mjs, 타입 선언이 없다
 import { isInternalElement as isInternalElementMjs } from '../../scripts/internal-element.mjs';
 
@@ -160,6 +160,41 @@ describe('react wrapper — 이벤트 수집', () => {
         );
       });
       expect(all).toEqual([]);
+    });
+  });
+
+  // 설명이 줄을 넘기면 생성 문서가 문장 중간에서 끊겼다(첫 줄만 읽었다) — 아홉 행이 그랬다.
+  describe('@event 설명', () => {
+    it('이어지는 줄을 합치고, 다음 태그·빈 줄·주석 끝에서 멈춘다', () => {
+      const src = [
+        '/**',
+        ' * @event change - 값이 바뀌었을 때',
+        ' *   — 사용자 조작만.',
+        ' * @event input - 입력마다',
+        ' *',
+        ' * 다른 단락',
+        ' */',
+      ].join('\n');
+      expect([...eventTags(src)]).toEqual([['change', '값이 바뀌었을 때 — 사용자 조작만.'], ['input', '입력마다']]);
+    });
+
+    it('NEGATIVE 한 줄 주석과 이름만 있는 태그', () => {
+      expect([...eventTags('/** @event close - 닫힐 때 */')]).toEqual([['close', '닫힐 때']]);
+      expect([...eventTags('/**\n * @event open\n */')]).toEqual([['open', '']]);
+    });
+
+    it('생성 문서의 설명 열이 문장 중간에서 끊기지 않는다 — 원본의 여러 줄 설명이 전부 실린다', () => {
+      const doc = renderReactEventsDoc(root);
+      const missing: string[] = [];
+      for (const rel of globSync('src/components/**/*.ts', { cwd: root })) {
+        const src = readFileSync(resolve(root, rel), 'utf-8');
+        // 문서에 실리는 요소만 — 베이스 클래스의 설명은 leaf 가 덮을 수 있고, 내부 요소는 문서 밖이다.
+        if (!/@customElement\s*\(/.test(src) || isInternalElementMjs(src)) continue;
+        for (const [name, desc] of eventTags(src)) {
+          if (desc && !doc.includes(desc)) missing.push(`${rel} @event ${name}`);
+        }
+      }
+      expect(missing).toEqual([]);
     });
   });
 });

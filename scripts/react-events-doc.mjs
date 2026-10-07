@@ -16,6 +16,33 @@ export const DOC_PATH = 'docs/react-events.md';
 const toCamelEvent = name =>
   'on' + name.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('');
 
+/**
+ * JSDoc 의 `@event <name> - <설명>` — 설명은 다음 태그·빈 줄·주석 끝까지 이어진다(JSDoc 의 태그 의미).
+ * 종전에는 첫 줄만 읽어, 줄을 넘긴 설명이 생성 문서에서 문장 중간에 끊겼다.
+ */
+export function eventTags(src) {
+  const out = new Map();
+  const lines = src.split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^\s*(?:\/\*\*)?\s*\*?\s*@event\s+([\w-]+)\s*-?\s*(.*?)\s*(?:\*\/)?$/);
+    if (!m) continue;
+    const parts = [m[2]];
+    if (!/\*\/\s*$/.test(lines[i])) {
+      for (let j = i + 1; j < lines.length; j++) {
+        if (/^\s*\*\//.test(lines[j])) break;
+        const c = lines[j].match(/^\s*\*\s?(.*?)\s*(\*\/)?$/);
+        if (!c) break;
+        const text = c[1].trim();
+        if (!text || text.startsWith('@')) break;
+        parts.push(text);
+        if (c[2]) break;
+      }
+    }
+    if (!out.has(m[1])) out.set(m[1], parts.filter(Boolean).join(' '));
+  }
+  return out;
+}
+
 /** 상속 체인을 따라 이벤트를 수집한다 (베이스 → leaf 순서) */
 function collect(file, map = new Map(), visited = new Set()) {
   if (visited.has(file) || !existsSync(file)) return map;
@@ -36,9 +63,10 @@ function collect(file, map = new Map(), visited = new Set()) {
     if (p?.startsWith('.')) collect(resolve(dirname(file), p.replace(/\.js$/, '.ts')), map, visited);
   }
 
-  for (const m of src.matchAll(/@event\s+([\w-]+)\s*-?\s*([^\n]*)/g)) {
-    if (!map.has(m[1])) map.set(m[1], { detail: 'unknown', desc: m[2].trim() });
-    else if (!map.get(m[1]).desc) map.get(m[1]).desc = m[2].trim();
+  for (const [name, desc] of eventTags(src)) {
+    // 베이스 → leaf 순서라, leaf 가 다시 적은 설명이 이긴다 — 소비자가 쓰는 것은 그 요소다(툴팁의 show 는 «툴팁을 표시하기 직전»).
+    if (!map.has(name)) map.set(name, { detail: 'unknown', desc });
+    else if (desc) map.get(name).desc = desc;
   }
   for (const m of src.matchAll(/this\.fire\s*(?:<([^>]+)>)?\s*\(\s*['"]([\w-]+)['"]/g)) {
     const prev = map.get(m[2]);

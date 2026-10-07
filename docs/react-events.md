@@ -53,19 +53,19 @@ import { UDialog } from '@iyulab/components/react';
 
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
-| `onCopy` | `copy` | `unknown` | 클립보드에 실제로 쓰기 전에 발생하는 네이티브 ClipboardEvent. |
+| `onCopy` | `copy` | `unknown` | 클립보드에 실제로 쓰기 전에 발생하는 네이티브 ClipboardEvent. `preventDefault()`로 복사를 취소하거나, `clipboardData.setData('text/plain', ...)`로 복사될 값을 바꿀 수 있음 |
 
 ## `<u-date-picker>`
 
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
-| `onChange` | `change` | `unknown` | fires when the user clicks a date cell, confirms via keyboard, changes the |
+| `onChange` | `change` | `unknown` | fires when the user clicks a date cell, confirms via keyboard, changes the time input (datetime mode, once a date is set), or clicks the clear button — with `confirm`, calendar picks fire it only when Apply commits a different value. Programmatic value assignment does not fire it (same contract as native form controls). |
 
 ## `<u-date-range-picker>`
 
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
-| `onChange` | `change` | `unknown` | fires when the user completes a range or clears it (with `confirm`, when Apply |
+| `onChange` | `change` | `unknown` | fires when the user completes a range or clears it (with `confirm`, when Apply commits a different value). Programmatic value assignment does not fire it (same contract as native form controls). |
 
 ## `<u-dialog>`
 
@@ -130,33 +130,33 @@ import { UDialog } from '@iyulab/components/react';
 
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
-| `onShow` | `show` | `ShowEventDetail` | 엘리먼트가 표시되기 전에 발생합니다. 이벤트 핸들러에서 false를 반환하면 표시가 취소됩니다. |
-| `onHide` | `hide` | `HideEventDetail` | 엘리먼트가 숨겨지기 전에 발생합니다. 이벤트 핸들러에서 false를 반환하면 숨김이 취소됩니다. |
+| `onShow` | `show` | `ShowEventDetail` | 팝오버가 표시되기 직전 발생 (취소 가능) |
+| `onHide` | `hide` | `HideEventDetail` | 팝오버가 닫히기 직전 발생 (취소 가능) |
 
 ## `<u-radio>`
 
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
-| `onChange` | `change` | `unknown` | 사용자 상호작용(옵션 클릭·키보드)으로 선택 값이 변경될 때 발생. |
+| `onChange` | `change` | `unknown` | 사용자 상호작용(옵션 클릭·키보드)으로 선택 값이 변경될 때 발생. 네이티브 라디오와 동일하게 프로그램적 value 세팅·옵션 등록으로는 발화하지 않는다. |
 
 ## `<u-rating>`
 
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
-| `onChange` | `change` | `unknown` | 사용자 상호작용(심볼 클릭·키보드)으로 레이팅 값이 변경될 때 발생. |
+| `onChange` | `change` | `unknown` | 사용자 상호작용(심볼 클릭·키보드)으로 레이팅 값이 변경될 때 발생. 프로그램적 value 세팅으로는 발화하지 않는다. |
 
 ## `<u-select>`
 
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
-| `onChange` | `change` | `unknown` | 사용자 상호작용(옵션 클릭·칩 제거·지우기)으로 선택 값이 변경될 때 발생. |
-| `onSearch` | `search` | `{ query: string }` | `searchable`일 때 검색 입력이 바뀔 때마다 발생(`detail: { query: string }`). |
+| `onChange` | `change` | `unknown` | 사용자 상호작용(옵션 클릭·칩 제거·지우기)으로 선택 값이 변경될 때 발생. 네이티브 select와 동일하게 프로그램적 value 세팅·옵션 등록으로는 발화하지 않는다. |
+| `onSearch` | `search` | `{ query: string }` | `searchable`일 때 검색 입력이 바뀔 때마다 발생(`detail: { query: string }`). 로컬 필터링(이미 렌더된 `u-option`의 `hidden` 토글)과 별개로 발행되므로, 서버/원격 검색이 필요한 소비자는 이 이벤트를 구독해 자체적으로 옵션을 갱신할 수 있다. |
 
 ## `<u-slider>`
 
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
-| `onChange` | `change` | `unknown` | 사용자 상호작용으로 값이 확정됐을 때 발생 — 드래그는 완료(pointerup) 시, |
+| `onChange` | `change` | `unknown` | 사용자 상호작용으로 값이 확정됐을 때 발생 — 드래그는 완료(pointerup) 시, 키보드는 조작마다. 프로그램적 value 세팅으로는 발화하지 않는다. |
 
 ## `<u-split-panel>`
 
@@ -182,7 +182,7 @@ import { UDialog } from '@iyulab/components/react';
 
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
-| `onChange` | `change` | `unknown` | 탭을 클릭하거나 키보드로 선택했을 때만 발생한다. 최초 마운트 시 첫 탭이 |
+| `onChange` | `change` | `unknown` | 탭을 클릭하거나 키보드로 선택했을 때만 발생한다. 최초 마운트 시 첫 탭이 자동 선택되는 경우나 `value` 프로퍼티를 직접 대입하는 경우는 사용자 조작이 아니므로 발생시키지 않는다(네이티브 select가 프로그래밍적 대입에는 change를 내지 않는 것과 동일한 관례). |
 
 ## `<u-textarea>`
 
@@ -195,8 +195,8 @@ import { UDialog } from '@iyulab/components/react';
 
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
-| `onShow` | `show` | `ShowEventDetail` | 엘리먼트가 표시되기 전에 발생합니다. 이벤트 핸들러에서 false를 반환하면 표시가 취소됩니다. |
-| `onHide` | `hide` | `HideEventDetail` | 엘리먼트가 숨겨지기 전에 발생합니다. 이벤트 핸들러에서 false를 반환하면 숨김이 취소됩니다. |
+| `onShow` | `show` | `ShowEventDetail` | 툴팁을 표시하기 직전 발생 (취소 가능) |
+| `onHide` | `hide` | `HideEventDetail` | 툴팁을 숨기기 직전 발생 (취소 가능) |
 
 ## `<u-tree>`
 
