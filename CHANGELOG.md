@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.15.0] - 2026-10-07
+
+### Added
+
+- **`isFromControl(event, boundary)`** — whether an event came from a control inside `boundary`: a link, a button, a
+  form field, or an element with a control role (`button`, `link`, `checkbox`, `switch`, `radio`, `menuitem`,
+  `option`, `tab`). Open shadow roots are looked into, so a `u-button` counts. For a box that reads «pressed» for
+  itself — a row that opens on click — so that pressing a control it renders stays that control's act.
+
 ## [2.14.0] - 2026-10-07
 
 ### Added

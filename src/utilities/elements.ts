@@ -78,6 +78,27 @@ export function isFocusCandidate(el: Element): el is HTMLElement {
   return typeof el.checkVisibility === 'function' ? el.checkVisibility() : true;
 }
 
+/** 스스로 클릭을 처리하는 컨트롤 — 누르면 그 컨트롤의 동작이다. */
+const OWN_CLICK_SELECTOR = [
+  'a[href]', 'button', 'input', 'select', 'textarea', 'label', 'summary',
+  '[contenteditable=""]', '[contenteditable="true"]',
+  '[role="button"]', '[role="link"]', '[role="checkbox"]', '[role="switch"]', '[role="radio"]',
+  '[role="menuitem"]', '[role="option"]', '[role="tab"]',
+].join(', ');
+
+/**
+ * `event` 가 `boundary` 안쪽의 컨트롤(링크 · 버튼 · 입력 칸 · 그 역할을 가진 요소)에서 났는가.
+ * 행·셀처럼 «눌렀다» 를 스스로 해석하는 상자가, 그 안에 그려진 컨트롤의 클릭을 제 것으로 읽지 않게 한다
+ * — 셀 안 «삭제» 버튼을 누른 것이 «이 행을 연다» 가 되면 안 된다. 열린 섀도 안쪽까지 본다(`composedPath`).
+ */
+export function isFromControl(event: Event, boundary: EventTarget): boolean {
+  for (const node of event.composedPath()) {
+    if (node === boundary) return false;
+    if (node instanceof Element && node.matches(OWN_CLICK_SELECTOR)) return true;
+  }
+  return false;
+}
+
 /**
  * `roots` 와 그 자손에서(열린 섀도 루트 안쪽까지) `selectors` 에 맞는 첫 요소를 문서 순서로 찾는다.
  * 섀도 루트 안은 호스트 자리에서 이어서 본다 — `querySelector` 는 섀도 경계에서 멈추므로,

@@ -54,3 +54,21 @@ private onPointerEnter(e: PointerEvent) {
   this.open = true;
 }
 ```
+
+---
+
+### `isFromControl(event, boundary)`
+
+Returns `true` when `event` came from a control inside `boundary` — a link, a button, a form field, or an
+element with a control role (`button`, `link`, `checkbox`, `switch`, `radio`, `menuitem`, `option`, `tab`).
+Open shadow roots are looked into, so a `u-button` counts. The walk stops at `boundary`.
+
+Use it where a box reads "pressed" for itself — a row or a cell that opens on click — so that pressing a
+control the box renders stays that control's act.
+
+```ts
+cell.addEventListener('click', (e) => {
+  if (isFromControl(e, cell)) return;   // the Delete button in the cell is not "open this row"
+  openRow();
+});
+```
