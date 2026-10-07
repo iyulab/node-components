@@ -143,15 +143,17 @@ export const styles = css`
    *      그리고 아이콘 버튼의 계단(30/32/34)이 글자 버튼(32/37/42)과 기울기가 달라
    *      size 를 올릴수록 어긋남이 커졌다.
    *
-   * ⚠**size 미지정 기본값만 --u-density 를 읽는다(위 :host 블록) — sm/lg 는 리터럴로
-   *   남긴다.** 밀도 스위치가 저자가 명시한 size=sm/lg 를 비례로 덮어써야 하는지는
-   *   별도 제품 결정이라 이 스코프에 넣지 않았다(Pending Human Decision).
+   * sm·lg 도 --u-density 에 비례한다(× 6/7 · × 8/7 — 기본 밀도 14px 에서 12·16px). 종전에는 리터럴이라
+   *   밀도를 키운 화면(현장·터치 모드)에서 기본 크기만 커지고 작은 버튼은 12px 에 남았다. 명시한 size 는
+   *   «단 안의 상대 위치» 를 고른 것이지 절대 크기를 고른 것이 아니다.
    */
   :host([size="sm"]) {
-    font-size: 12px;
+    /* 밀도 단에 비례 — 기본 밀도 14px 에서 12px. */
+    font-size: calc(var(--u-density, 14px) * 6 / 7);
   }
   :host([size="lg"]) {
-    font-size: 16px;
+    /* 밀도 단에 비례 — 기본 밀도 14px 에서 16px. */
+    font-size: calc(var(--u-density, 14px) * 8 / 7);
   }
 
   /* === States === */

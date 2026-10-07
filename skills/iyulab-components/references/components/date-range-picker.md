@@ -137,7 +137,7 @@ picker.addEventListener('change', () => {
 | `end` | `string` (read-only) | — | — | End of the range (ISO day, or date-time in `mode="datetime"`), `undefined` without a complete range |
 | `min` | `string` | — | — | Earliest selectable day (ISO `YYYY-MM-DD`), inclusive |
 | `max` | `string` | — | — | Latest selectable day (ISO `YYYY-MM-DD`), inclusive |
-| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: 12px · `--u-density` (14px) · 16px. A field and a button of the same size share a height |
+| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: `--u-density` (14px) for md, 6/7 of it for sm (12px) and 8/7 for lg (16px) — change the density and all three follow. A field and a button of the same size share a height |
 | `chars` | `number` | — | ✓ | Characters the field holds — both dates and the separator (`a – b`). An unsized field draws at N characters + its clear and calendar buttons + padding; a sized one uses it as the text floor, so a narrower box overflows. Same axis as `u-input`'s `chars`. N characters are measured as drawn — tabular figures and letter spacing count, which CSS `ch` leaves out |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
 | `isDateDisabled` | `(date: string) => boolean` | — | — | App rule for days that cannot start or end a range (ISO in, `true` = disabled). Property only; see «Disabled days» |

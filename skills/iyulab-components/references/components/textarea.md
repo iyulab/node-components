@@ -24,7 +24,7 @@ Multi-line text input with auto-resize and optional character counter. Form-asso
 |----------|------|---------|---------|-------------|
 | `value` | `string` | — | — | Current text value |
 | `appearance` | `'outlined'\|'soft'\|'underlined'\|'plain'` | `'outlined'` | ✓ | How much chrome: `outlined` · `soft` tinted face · `underlined` bottom line only · `plain` no chrome |
-| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: 12px · `--u-density` (14px) · 16px. A field and a button of the same size share a height |
+| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: `--u-density` (14px) for md, 6/7 of it for sm (12px) and 8/7 for lg (16px) — change the density and all three follow. A field and a button of the same size share a height |
 | `resize` | `'none'\|'vertical'\|'horizontal'\|'both'\|'auto'` | `'auto'` | ✓ | Resize behavior |
 | `minRows` | `number` | — | — | Minimum visible rows |
 | `maxRows` | `number` | — | — | Maximum rows (auto-resize cap) |

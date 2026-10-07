@@ -56,7 +56,9 @@ describe('--u-density 밀도 스위치', () => {
     expect(fontSizeOf(btn)).toBe(16);
   });
 
-  it('size=sm/lg 명시값은 --u-density 의 영향을 받지 않는다(별도 축)', async () => {
+  // 종전 계약(sm/lg 는 리터럴 — 밀도와 별도 축)은 뒤집혔다: 밀도를 키운 화면에서 작은 컨트롤만 12px 에 남았다.
+  // sm 은 밀도의 6/7 이다(전 컨트롤 전수는 size-density.browser.test.ts).
+  it('size=sm 은 --u-density 에 비례한다(× 6/7)', async () => {
     const wrap = document.createElement('div');
     wrap.setAttribute('style', '--u-density: 20px');
     const sm = document.createElement('u-button');
@@ -65,6 +67,6 @@ describe('--u-density 밀도 스위치', () => {
     wrap.append(sm);
     document.body.append(wrap);
     await (sm as unknown as { updateComplete: Promise<unknown> }).updateComplete;
-    expect(fontSizeOf(sm)).toBe(12);
+    expect(fontSizeOf(sm)).toBeCloseTo((20 * 6) / 7, 1);
   });
 });

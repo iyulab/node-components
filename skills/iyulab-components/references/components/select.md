@@ -38,7 +38,7 @@ Dropdown select with single or multiple selection, search, and clear support. Fo
 |----------|------|---------|---------|-------------|
 | `value` | `string \| string[]` | — | — | Selected value(s) |
 | `appearance` | `'outlined'\|'soft'\|'underlined'\|'plain'` | `'outlined'` | ✓ | How much chrome: `outlined` · `soft` tinted face · `underlined` bottom line only · `plain` no chrome |
-| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: 12px · `--u-density` (14px) · 16px. A field and a button of the same size share a height |
+| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: `--u-density` (14px) for md, 6/7 of it for sm (12px) and 8/7 for lg (16px) — change the density and all three follow. A field and a button of the same size share a height |
 | `chars` | `number` | — | ✓ | Characters the field holds. An unsized field draws at N characters + its clear button and arrow + padding, so it no longer widens and narrows with the chosen option (a longer one ends in an ellipsis); a sized one (`--u-select-width`, `block`) uses it as the text floor, so a narrower box overflows. Same axis as `u-input`'s `chars`. N characters are measured as drawn — tabular figures and letter spacing count, which CSS `ch` leaves out |
 | `multiple` | `boolean` | `false` | ✓ | Allow multiple selections |
 | `searchable` | `boolean` | `false` | ✓ | Filter options by text |

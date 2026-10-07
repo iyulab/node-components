@@ -103,7 +103,7 @@ export class UInput extends UFormControlElement<string> {
   /** 자동 완성 기능 설정 */
   @property({ type: String }) autocomplete?: AutoFill;
   /**
-   * 크기 — 버튼의 `size` 와 같은 세 단(`sm` 12px · `md` 기본 = `--u-density`(14px) · `lg` 16px).
+   * 크기 — 버튼의 `size` 와 같은 세 단(`md` 기본 = `--u-density`(14px) · `sm` = 그 6/7(12px) · `lg` = 8/7(16px) — 밀도 단을 바꾸면 셋이 함께 움직인다).
    * 상자 높이는 글자 크기에서 파생된다(1.5em 줄 + 필드 상자 여백 × 2 + 테두리) — 같은 `size` 의 버튼과
    * 한 줄에 서도록. 테마는 필드 상자 토큰(`--u-field-padding-block`)으로 단마다 높이를 다듬는다.
    */

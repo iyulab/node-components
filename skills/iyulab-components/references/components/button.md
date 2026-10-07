@@ -47,7 +47,7 @@ Versatile button with multiple appearances. Renders as an `<a>` element when `hr
 |----------|------|---------|---------|-------------|
 | `appearance` | `'solid'\|'soft'\|'outlined'\|'plain'\|'link'` | `'solid'` | ✓ | How much chrome: `solid` filled with the colour · `soft` tint, no outline · `outlined` · `plain` no chrome · `link` |
 | `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | — | ✓ | Color, independent of `appearance`. Unset paints like `primary` (the brand colour) without adding the attribute; `neutral` is an achromatic (grey) button (see notes below). |
-| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Button size (12px/14px/16px font-size; padding, spinner, and icon slots scale proportionally). |
+| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Button size (font-size `--u-density` × 6/7 · × 1 · × 8/7 — 12/14/16px at the default density; padding, spinner, and icon slots scale proportionally). |
 | `rounded` | `boolean` | `false` | ✓ | Pill-shaped border radius |
 | `disabled` | `boolean` | `false` | ✓ | Disable the button |
 | `loading` | `boolean` | `false` | ✓ | Show loading spinner; disables interaction |

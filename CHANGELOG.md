@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.13.0] - 2026-10-07
+
+### Changed
+
+- **`size="sm"` and `size="lg"` follow the density** (`--u-density`) on `u-button`, `u-input`, `u-select`, `u-textarea`,
+  `u-date-picker` and `u-date-range-picker`: sm is 6/7 of it and lg 8/7. They were 12px and 16px whatever the density,
+  so a host that raised the density (a field or touch mode) enlarged the default controls and left the small ones
+  at 12px. At the default density (14px) nothing changes.
+
 ## [2.12.1] - 2026-10-07
 
 ### Fixed

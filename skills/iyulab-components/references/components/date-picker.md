@@ -81,7 +81,7 @@ starts from the value. Typing in the text box still commits on Enter or leaving 
 | `value` | `string` | — | — | Selected date (ISO `YYYY-MM-DD`), or full ISO-8601 datetime in `mode="datetime"` |
 | `min` | `string` | — | — | Minimum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
 | `max` | `string` | — | — | Maximum selectable date (ISO `YYYY-MM-DD`, date-only in both modes) |
-| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: 12px · `--u-density` (14px) · 16px. A field and a button of the same size share a height |
+| `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: `--u-density` (14px) for md, 6/7 of it for sm (12px) and 8/7 for lg (16px) — change the density and all three follow. A field and a button of the same size share a height |
 | `chars` | `number` | — | ✓ | Characters the field holds. An unsized field draws at N characters + its clear and calendar buttons + padding; a sized one uses it as the text floor, so a narrower box overflows. Give the length of the `format` pattern for a box that fits it exactly. Same axis as `u-input`'s `chars`. N characters are measured as drawn — tabular figures and letter spacing count, which CSS `ch` leaves out |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
 | `isDateDisabled` | `(date: string) => boolean` | — | — | App rule for days that cannot be chosen (ISO in, `true` = disabled). Property only; see «Disabled days» |

@@ -106,9 +106,11 @@ export const styles = css`
     font-size: var(--u-density, 14px);
   }
   :host([size="sm"]) {
-    font-size: 12px;
+    /* 밀도 단에 비례 — 기본 밀도 14px 에서 12px. */
+    font-size: calc(var(--u-density, 14px) * 6 / 7);
   }
   :host([size="lg"]) {
-    font-size: 16px;
+    /* 밀도 단에 비례 — 기본 밀도 14px 에서 16px. */
+    font-size: calc(var(--u-density, 14px) * 8 / 7);
   }
 `;
