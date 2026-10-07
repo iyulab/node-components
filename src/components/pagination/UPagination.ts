@@ -64,6 +64,16 @@ export class UPagination extends UElement {
   @property({ type: String, reflect: true }) size: PaginationSize = 'md';
   /** 현재 쪽 양옆에 보일 쪽 번호 수. */
   @property({ type: Number }) siblings = 1;
+  /**
+   * 내비게이션의 접근 가능한 이름. 비우면 로케일 문장(`pagination`). 한 화면에 페이저가 둘 이상이면 각자 이름을 준다
+   * (랜드마크는 이름으로 구별된다 — 예: «주문 목록 페이지»).
+   */
+  @property({ type: String }) label = '';
+  /**
+   * 범위 글자를 만든다 — `(start, end, total)`, `start` 는 1 기준(행이 없으면 0). 비우면 로케일 문장(`rangeOfTotal` —
+   * «1–20 / 345»). 숫자 형식·문구를 화면 규약에 맞출 때.
+   */
+  @property({ attribute: false }) formatRange?: (start: number, end: number, total: number) => string;
 
   /** 페이지 수 — 행이 없어도 1. */
   get pageCount(): number {
@@ -80,8 +90,10 @@ export class UPagination extends UElement {
     const start = this.totalCount === 0 ? 0 : current * this.pageSize + 1;
     const end = Math.min(this.totalCount, (current + 1) * this.pageSize);
     return html`
-      <nav part="nav" aria-label=${Locale.getValue('pagination')}>
-        <span class="range" part="range">${Locale.getValue('rangeOfTotal', { start, end, total: this.totalCount })}</span>
+      <nav part="nav" aria-label=${this.label || Locale.getValue('pagination')}>
+        <span class="range" part="range">${this.formatRange
+          ? this.formatRange(start, end, this.totalCount)
+          : Locale.getValue('rangeOfTotal', { start, end, total: this.totalCount })}</span>
         <div class="pages">
           <u-button part="prev" class="step" appearance="plain" size=${this.size}
             aria-label=${Locale.getValue('previousPage')}

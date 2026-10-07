@@ -91,6 +91,15 @@ describe('u-pagination', () => {
     expect(labels(el)).toEqual(['<', '1', '>']);
   });
 
+  it('label 이 내비게이션 이름을, formatRange 가 범위 글자를 정한다 — 한 화면의 두 페이저가 구별된다', async () => {
+    const el = await mount('page="1" page-size="20" total-count="45"');
+    (el as HTMLElement & { label: string; formatRange: (s: number, e: number, t: number) => string }).label = 'Orders pages';
+    (el as HTMLElement & { formatRange: (s: number, e: number, t: number) => string }).formatRange = (s, e, t) => `${s}~${e} (${t})`;
+    await el.updateComplete;
+    expect(sr(el).querySelector('nav')!.getAttribute('aria-label')).toBe('Orders pages');
+    expect(sr(el).querySelector('[part="range"]')!.textContent).toBe('21~40 (45)');
+  });
+
   it('로캘을 따른다', async () => {
     Locale.set('ko');
     const el = await mount('page="0" page-size="20" total-count="45"');

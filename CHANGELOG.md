@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.16.0] - 2026-10-07
+
+### Added
+
+- **`u-pagination` `label` and `formatRange`.** `label` names the navigation (the locale string when empty) — two
+  pagers on one page were two landmarks with the same name. `formatRange(start, end, total)` builds the range text
+  when a screen formats counts its own way. Both are what a table needs to use `u-pagination` as its pager.
+
 ## [2.15.0] - 2026-10-07
 
 ### Added

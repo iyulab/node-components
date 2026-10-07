@@ -37,6 +37,8 @@ pager.addEventListener('page-change', (e) => {
 | `pageSizes` | `number[]` | `[]` | | Choices for rows per page (attribute `page-sizes`, a comma list). Empty — no select |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | ✓ | Size step of the buttons and the select, as the other controls |
 | `siblings` | `number` | `1` | | Page numbers shown on each side of the current one |
+| `label` | `string` | `''` | | The navigation's accessible name; the locale string (`pagination`) when empty. Give each pager on a page its own — landmarks are told apart by name |
+| `formatRange` | `(start, end, total) => string` | — | | Builds the range text (`start` is 1-based, 0 when there are no rows); the locale string (`rangeOfTotal`) when unset |
 
 `pageCount` (read-only) is the number of pages — 1 when there are no rows.
 
