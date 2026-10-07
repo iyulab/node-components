@@ -21,7 +21,7 @@ import { UDialog } from '@iyulab/components/react';
 
 `detail` 열이 `unknown` 이면 `CustomEvent`(detail 타입 미지정)로 노출된다.
 
-**컴포넌트 28개 · 이벤트 43개**
+**컴포넌트 29개 · 이벤트 44개**
 
 ## `<u-alert>`
 
@@ -118,6 +118,12 @@ import { UDialog } from '@iyulab/components/react';
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
 | `onPick` | `pick` | `PickEventDetail` | 아이템 선택 시 발생 (하위 메뉴가 없는 경우) |
+
+## `<u-pagination>`
+
+| React prop | 이벤트 | detail | 설명 |
+|---|---|---|---|
+| `onPageChange` | `page-change` | `PageChangeDetail` | `{ page, pageSize }` — 쪽을 옮기거나 페이지 크기를 바꿨다(크기를 바꾸면 첫 장). 취소하면 그대로다. |
 
 ## `<u-popover>`
 

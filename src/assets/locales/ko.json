@@ -66,5 +66,11 @@
   "startTime": "시작 시간",
   "endTime": "종료 시간",
   "timeAm": "오전",
-  "timePm": "오후"
+  "timePm": "오후",
+  "pagination": "페이지 이동",
+  "previousPage": "이전 페이지",
+  "nextPage": "다음 페이지",
+  "pageN": "{n}페이지",
+  "rowsPerPage": "페이지당 행 수",
+  "rangeOfTotal": "{total}건 중 {start}–{end}"
 }

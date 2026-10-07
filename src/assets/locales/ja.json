@@ -66,5 +66,11 @@
   "startTime": "開始時刻",
   "endTime": "終了時刻",
   "timeAm": "午前",
-  "timePm": "午後"
+  "timePm": "午後",
+  "pagination": "ページ送り",
+  "previousPage": "前のページ",
+  "nextPage": "次のページ",
+  "pageN": "{n} ページ",
+  "rowsPerPage": "1 ページの行数",
+  "rangeOfTotal": "{total} 件中 {start}–{end}"
 }

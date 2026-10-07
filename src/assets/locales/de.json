@@ -66,5 +66,11 @@
   "startTime": "Startzeit",
   "endTime": "Endzeit",
   "timeAm": "AM",
-  "timePm": "PM"
+  "timePm": "PM",
+  "pagination": "Seitennavigation",
+  "previousPage": "Vorherige Seite",
+  "nextPage": "Nächste Seite",
+  "pageN": "Seite {n}",
+  "rowsPerPage": "Zeilen pro Seite",
+  "rangeOfTotal": "{start}–{end} von {total}"
 }

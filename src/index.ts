@@ -32,6 +32,7 @@ export * from './components/input/UInput.js';
 export * from './components/menu/UMenu.js';
 export * from './components/menu-item/UMenuItem.js';
 export * from './components/option/UOption.js';
+export * from './components/pagination/UPagination.js';
 export * from './components/panel/UPanel.js';
 export * from './components/popover/UPopover.js';
 export * from './components/progress-bar/UProgressBar.js';

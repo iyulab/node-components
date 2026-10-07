@@ -123,7 +123,7 @@ npx skills add ./node_modules/@iyulab/components
 
 **Overlay & Floating** — `u-dialog`, `u-drawer`, `u-popover`, `u-tooltip`
 
-**Navigation** — `u-menu`, `u-menu-item`, `u-tab-panel`, `u-breadcrumb`, `u-breadcrumb-item`, `u-tree`, `u-tree-item`
+**Navigation** — `u-menu`, `u-menu-item`, `u-tab-panel`, `u-breadcrumb`, `u-breadcrumb-item`, `u-pagination`, `u-tree`, `u-tree-item`
 
 **Layout & Display** — `u-avatar`, `u-card`, `u-carousel`, `u-divider`, `u-expander`, `u-icon`, `u-panel`, `u-split-panel`, `u-tag`, `u-text`
 

@@ -69,8 +69,8 @@ Versatile button with multiple appearances. Renders as an `<a>` element when `hr
 
 Set ARIA on the `u-button` host as you would on a native button — the component moves it to the
 inner `<button>`/`<a>` that actually takes focus: `aria-label`, and the button states
-`aria-pressed` (toggle), `aria-expanded` + `aria-controls` (disclosure) and `aria-haspopup`
-(menu button). `aria-pressed` is dropped on a link (`href`), where it is not allowed.
+`aria-pressed` (toggle), `aria-expanded` + `aria-controls` (disclosure), `aria-haspopup`
+(menu button) and `aria-current` (the current page, step or item). `aria-pressed` is dropped on a link (`href`), where it is not allowed.
 `aria-controls` is an id reference, which cannot cross the shadow boundary, so it is carried as an
 element reference (`ariaControlsElements`) resolved when the button renders.
 

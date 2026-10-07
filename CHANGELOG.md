@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.14.0] - 2026-10-07
+
+### Added
+
+- **`u-pagination`** — page navigation for a paged list: the range and total ("101–120 of 345"), previous / next, page
+  numbers with gaps, and optionally rows per page (`page-sizes`). `page` is zero-based, the same axis as the data
+  sources and both tables; `page-change` carries `{ page, pageSize }` (a size change goes back to page 0) and is
+  cancelable — uncancelled, the element updates itself. A `<nav>` named by the locale, "Page n" buttons, the current
+  one with `aria-current="page"`. 14 locales.
+- `u-button` forwards `aria-current` to the element that takes focus, like its other state attributes — a current
+  page, step or item set on the host was not read.
+
 ## [2.13.1] - 2026-10-07
 
 ### Fixed

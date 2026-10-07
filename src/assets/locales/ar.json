@@ -66,5 +66,11 @@
   "startTime": "وقت البدء",
   "endTime": "وقت الانتهاء",
   "timeAm": "ص",
-  "timePm": "م"
+  "timePm": "م",
+  "pagination": "ترقيم الصفحات",
+  "previousPage": "الصفحة السابقة",
+  "nextPage": "الصفحة التالية",
+  "pageN": "الصفحة {n}",
+  "rowsPerPage": "عدد الصفوف في الصفحة",
+  "rangeOfTotal": "{start}–{end} من {total}"
 }

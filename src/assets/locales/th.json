@@ -66,5 +66,11 @@
   "startTime": "เวลาเริ่มต้น",
   "endTime": "เวลาสิ้นสุด",
   "timeAm": "ก่อนเที่ยง",
-  "timePm": "หลังเที่ยง"
+  "timePm": "หลังเที่ยง",
+  "pagination": "การแบ่งหน้า",
+  "previousPage": "หน้าก่อนหน้า",
+  "nextPage": "หน้าถัดไป",
+  "pageN": "หน้า {n}",
+  "rowsPerPage": "จำนวนแถวต่อหน้า",
+  "rangeOfTotal": "{start}–{end} จาก {total}"
 }

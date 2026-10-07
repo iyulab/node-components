@@ -217,6 +217,8 @@ export class UButton extends UElement {
     const pressed = this.getAttribute('aria-pressed') ?? undefined;
     const expanded = this.getAttribute('aria-expanded') ?? undefined;
     const haspopup = this.getAttribute('aria-haspopup') ?? undefined;
+    // 현재 위치(쪽 번호 · 단계 · 메뉴의 현재 항목) — 호스트에 둔 `aria-current` 가 포커스되는 요소에 있어야 읽힌다.
+    const current = this.getAttribute('aria-current') ?? undefined;
 
     if (this.href) {
       return html`
@@ -224,6 +226,7 @@ export class UButton extends UElement {
           aria-label=${ifDefined(ariaLabel)}
           aria-expanded=${ifDefined(expanded)}
           aria-haspopup=${ifDefined(haspopup)}
+          aria-current=${ifDefined(current)}
           ?disabled=${this.effectivelyDisabled || this.loading}
           tabindex=${this.effectivelyDisabled || this.loading ? -1 : 0}
           href=${ifDefined(this.effectivelyDisabled || this.loading ? undefined : this.href)}
@@ -243,6 +246,7 @@ export class UButton extends UElement {
         aria-pressed=${ifDefined(pressed)}
         aria-expanded=${ifDefined(expanded)}
         aria-haspopup=${ifDefined(haspopup)}
+        aria-current=${ifDefined(current)}
         type=${this.type}
         ?disabled=${this.effectivelyDisabled || this.loading}
       >

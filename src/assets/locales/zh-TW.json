@@ -66,5 +66,11 @@
   "startTime": "開始時間",
   "endTime": "結束時間",
   "timeAm": "上午",
-  "timePm": "下午"
+  "timePm": "下午",
+  "pagination": "分頁",
+  "previousPage": "上一頁",
+  "nextPage": "下一頁",
+  "pageN": "第 {n} 頁",
+  "rowsPerPage": "每頁列數",
+  "rangeOfTotal": "第 {start}–{end} 筆，共 {total} 筆"
 }

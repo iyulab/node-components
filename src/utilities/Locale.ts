@@ -103,7 +103,14 @@ export type LocaleMessageKey =
   // 12시간제 시각을 읽을 때 받는 오전·오후 낱말(`parseDateTime`) — 화면 문구가 아니라 읽기 어휘다.
   // `Intl` 의 dayPeriod 는 엔진마다 다르다(Node 22 ICU 는 `ko` 에 `PM`, Chromium 은 `오후`).
   | 'timeAm'
-  | 'timePm';
+  | 'timePm'
+  // `u-pagination` — 내비게이션 이름 · 이전/다음 · 쪽 번호 이름 · 페이지 크기 선택 이름 · 범위 글자.
+  | 'pagination'
+  | 'previousPage'
+  | 'nextPage'
+  | 'pageN'
+  | 'rowsPerPage'
+  | 'rangeOfTotal';
 
 type LocaleTable = Record<LocaleMessageKey, string>;
 

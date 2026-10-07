@@ -66,5 +66,11 @@
   "startTime": "Hora de início",
   "endTime": "Hora de término",
   "timeAm": "AM",
-  "timePm": "PM"
+  "timePm": "PM",
+  "pagination": "Paginação",
+  "previousPage": "Página anterior",
+  "nextPage": "Próxima página",
+  "pageN": "Página {n}",
+  "rowsPerPage": "Linhas por página",
+  "rangeOfTotal": "{start}–{end} de {total}"
 }

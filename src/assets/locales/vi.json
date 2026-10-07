@@ -66,5 +66,11 @@
   "startTime": "Giờ bắt đầu",
   "endTime": "Giờ kết thúc",
   "timeAm": "SA",
-  "timePm": "CH"
+  "timePm": "CH",
+  "pagination": "Phân trang",
+  "previousPage": "Trang trước",
+  "nextPage": "Trang sau",
+  "pageN": "Trang {n}",
+  "rowsPerPage": "Số hàng mỗi trang",
+  "rangeOfTotal": "{start}–{end} trên {total}"
 }

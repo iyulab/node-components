@@ -104,6 +104,7 @@ set on the host yourself always wins and is never overwritten.
 
 - [`u-breadcrumb`](./references/components/breadcrumb.md) — Hierarchical location indicator
 - [`u-breadcrumb-item`](./references/components/breadcrumb.md) — Individual breadcrumb link/label
+- [`u-pagination`](./references/components/pagination.md) — Page navigation: range and total, page numbers, rows per page (zero-based `page`)
 - [`u-menu`](./references/components/menu.md) — Menu container with keyboard navigation and selection modes
 - [`u-menu-item`](./references/components/menu.md) — Menu entry with optional sub-menu
 - [`u-tab-panel`](./references/components/tab-panel.md) — Tab-based content switcher

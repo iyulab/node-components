@@ -752,6 +752,26 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
     },
     spacingIsOurs: true,
   },
+  'u-pagination': [
+    {
+      // 쪽 번호가 생략 부호를 사이에 두고 나란히 선다 — 그 배치는 우리가 정한다(spacingIsOurs). 기본(md) 과 가장 작은 sm.
+      html: '<u-pagination page="5" page-size="10" total-count="300" page-sizes="10,50"></u-pagination>',
+      targets: () => {
+        const p = document.querySelector('u-pagination')!;
+        return [...parts(p, 'prev'), ...parts(p, 'page'), ...parts(p, 'next'), ...parts(p, 'page-size')];
+      },
+      spacingIsOurs: true,
+    },
+    {
+      state: 'sm',
+      html: '<u-pagination size="sm" page="5" page-size="10" total-count="300"></u-pagination>',
+      targets: () => {
+        const p = document.querySelector('u-pagination')!;
+        return [...parts(p, 'prev'), ...parts(p, 'page'), ...parts(p, 'next')];
+      },
+      spacingIsOurs: true,
+    },
+  ],
   'u-split-panel': {
     // 🔴**분할 핸들은 컴포넌트가 스스로 만든다**(`createSplitter` — `pointerdown`·`dblclick` 을 건다).
     //   `splitter` 슬롯의 내용은 그 안에 복제되는 장식일 뿐이다. 패널 둘이면 핸들 하나이고, 가로
@@ -951,7 +971,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 27(51상태) · 미판정 0() · 대상아님 22');
+      ).toBe('판정 28(53상태) · 미판정 0() · 대상아님 22');
     });
   });
 
