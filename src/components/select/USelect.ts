@@ -8,7 +8,7 @@ import '../spinner/USpinner.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
-import { charsWidth } from "../../utilities/chars.js";
+import { CharsWidthController } from "../../utilities/chars.js";
 // 부수효과 import — 이 모듈이 그리는 `<u-chip>` 을 등록한다(타입만 가져오면 빌드가 import 를 지워 등록되지 않는다).
 import "../chip/UChip.js";
 import type { UChip } from "../chip/UChip.js";
@@ -75,6 +75,12 @@ export class USelect extends UFormControlElement<string | string[]> {
    * `u-input` 의 `chars` 와 같은 축이다. 폭을 준 칸(`--u-select-width`·`block`)에서는 하한으로만 쓴다.
    */
   @property({ type: Number, reflect: true }) chars?: number;
+  /** `chars` 의 폭 — 그려지는 N자를 잰다(`ch` 는 글꼴 기능·자간을 빼고 잰다). */
+  private readonly charsWidth = new CharsWidthController(this, {
+    chars: () => this.chars,
+    text: () => this.renderRoot.querySelector<HTMLElement>(".text-content, .chips-content"),
+    box: () => this.renderRoot.querySelector<HTMLElement>('.container'),
+  });
   /** 다중 선택 여부 */
   @property({ type: Boolean, reflect: true }) multiple: boolean = false;
   /** 검색 가능 여부 */
@@ -151,7 +157,7 @@ export class USelect extends UFormControlElement<string | string[]> {
   }
 
   render() {
-    const chars = charsWidth(this.chars);
+    const chars = this.charsWidth.width;
     return html`
       <u-field part="field"
         ?required=${this.required}

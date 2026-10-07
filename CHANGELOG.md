@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.11.1] - 2026-10-07
+
+### Fixed
+
+- **A `chars` field holds N characters as they are drawn** (`u-input`, `u-select`, `u-date-picker`,
+  `u-date-range-picker`). The width was `N` CSS `ch`, which is one `0` without font features or letter spacing, so
+  with tabular figures (`font-variant-numeric: tabular-nums`, as the house theme sets) or letter spacing the last
+  digit was cut — six digits in Pretendard 14px overflowed by 2px. The field now draws N zeros in the text's own
+  computed font off-screen and uses that width; it re-measures when the font loads or the size changes.
+
 ## [2.11.0] - 2026-10-07
 
 ### Added

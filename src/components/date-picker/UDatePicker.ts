@@ -10,7 +10,7 @@ import '../popover/UPopover.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
-import { charsWidth } from "../../utilities/chars.js";
+import { CharsWidthController } from "../../utilities/chars.js";
 import { dateTextPattern, formatDateText, formatDateTimeText, parseDate, parseDateTime, type DateTextFormat } from "../../utilities/format.js";
 import { UCalendar } from "../calendar/UCalendar.js";
 import { DateTextController } from "../calendar/date-text-controller.js";
@@ -104,6 +104,12 @@ export class UDatePicker extends UFormControlElement<string> {
    * 폭을 준 칸에서는 하한으로만 쓴다.
    */
   @property({ type: Number, reflect: true }) chars?: number;
+  /** `chars` 의 폭 — 그려지는 N자를 잰다(`ch` 는 글꼴 기능·자간을 빼고 잰다). */
+  private readonly charsWidth = new CharsWidthController(this, {
+    chars: () => this.chars,
+    text: () => this.renderRoot.querySelector<HTMLElement>(".text-input"),
+    box: () => this.renderRoot.querySelector<HTMLElement>('.container'),
+  });
 
   /** `date` (default) selects a calendar day only. `datetime` also captures a time-of-day and
    *  the value becomes a complete ISO-8601 `DateTimeOffset` string. */
@@ -224,7 +230,7 @@ export class UDatePicker extends UFormControlElement<string> {
   }
 
   render() {
-    const chars = charsWidth(this.chars);
+    const chars = this.charsWidth.width;
     const datetime = this.mode === 'datetime';
     return html`
       <u-field part="field"

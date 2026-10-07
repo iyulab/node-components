@@ -57,7 +57,7 @@ the library does not infer one from field meaning.
 | `appearance` | `'outlined'\|'soft'\|'underlined'\|'plain'` | `'outlined'` | ✓ | How much chrome: `outlined` · `soft` tinted face · `underlined` bottom line only · `plain` no chrome |
 | `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Field size, like a button's: 12px · `--u-density` (14px) · 16px. A field and a button of the same size share a height |
 | `type` | `'text'\|'password'\|'email'\|'tel'\|'url'\|'search'\|'number'\|'date'\|'time'`… | `'text'` | — | Input type |
-| `chars` | `number` | — | ✓ | Characters the field holds. An unsized field draws at N characters + its suffix icons + padding; a sized one (`width`, `block`) uses it as the text floor, so a narrower box overflows. Not `size` — that is the sm/md/lg scale |
+| `chars` | `number` | — | ✓ | Characters the field holds. An unsized field draws at N characters + its suffix icons + padding; a sized one (`width`, `block`) uses it as the text floor, so a narrower box overflows. Not `size` — that is the sm/md/lg scale. N characters are measured as drawn — tabular figures and letter spacing count, which CSS `ch` leaves out |
 | `placeholder` | `string` | — | — | Placeholder text |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
 | `minlength` | `number` | — | — | Minimum character count |
