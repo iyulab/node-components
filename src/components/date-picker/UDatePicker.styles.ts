@@ -23,23 +23,6 @@ export const styles = css`
   .container {
     --_min-text: var(--date-picker-min-text, 4ch);
   }
-  .text-input {
-    flex: 1 1 auto;
-    min-width: 0;
-    border: none;
-    outline: none;
-    padding: 0;
-    margin: 0;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-  }
-  .text-input::placeholder {
-    color: var(--u-txt-color-weak, #616161);
-  }
-  .calendar-button {
-    cursor: pointer;
-  }
 
   /* === Size — 다른 필드·버튼과 같은 세 단 === */
   :host {

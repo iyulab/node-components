@@ -62,6 +62,27 @@ export const styles = css`
     color: var(--u-txt-color-weak, #616161);
   }
 
+  /* 직접 입력 글자 칸(mode="date") — 줄 높이는 .text-content·입력과 같은 1.5. «font: inherit» 만 두면
+     줄 높이가 normal 로 와서 같은 단의 다른 필드보다 낮게 그려진다. */
+  .text-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: 1.5;
+  }
+  .text-input::placeholder {
+    color: var(--u-txt-color-weak, #616161);
+  }
+  .calendar-button {
+    cursor: pointer;
+  }
+
   .suffix-item {
     color: var(--u-icon-color, #616161);
     font-size: 1em;

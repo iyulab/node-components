@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.13.1] - 2026-10-07
+
+### Fixed
+
+- **`u-date-picker` and `u-date-range-picker` are as tall as the other fields of the same size.** Their typed-date
+  text box (since 1.55.0) took the line height from the page (`normal`) instead of the 1.5 the other fields use, so
+  in a form row the pickers sat 3–8px lower than `u-input` and `u-select` beside them (at the default density: 24 /
+  26 / 30px against 27 / 31 / 36px). The text box now uses the same line height.
+
 ## [2.13.0] - 2026-10-07
 
 ### Changed
