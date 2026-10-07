@@ -62,6 +62,7 @@ export class UIcon extends UElement {
   /** 해석 결과가 없으면 `fallback` 으로 대신한다. 둘 다 없을 때만 아무것도 그리지 않는다. */
   private paint(html?: string) {
     const resolved = html ?? this.sanitize(this.fallback);
+    // html-sink: 개발자가 등록·배포한 아이콘 SVG(사용자 입력 아님) — 루트가 svg 인 문서만 받는다(`sanitize`)
     return resolved ? unsafeHTML(resolved) : nothing;
   }
 

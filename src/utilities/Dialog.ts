@@ -202,6 +202,7 @@ export class Dialog {
     let closeValue: string | null = null;
 
     const dialog = this.createDialog(options);
+    // html-sink: 문서화된 HTML 계약 — `show({ content })` 의 문자열은 마크업이다(글자는 `alert`·`confirm` 의 `message`)
     const content = typeof options.content === 'string' ? unsafeHTML(options.content) : options.content;
     const actions = options.actions && options.actions.length > 0 ? options.actions : null;
 
