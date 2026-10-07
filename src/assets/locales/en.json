@@ -46,6 +46,7 @@
   "resizePanels": "Resize panels",
   "loading": "Loading",
   "search": "Search",
+  "noMatches": "No matches",
   "alertError": "Error",
   "alertWarning": "Warning",
   "alertSuccess": "Success",

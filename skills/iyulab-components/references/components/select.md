@@ -42,6 +42,7 @@ Dropdown select with single or multiple selection, search, and clear support. Fo
 | `chars` | `number` | — | ✓ | Characters the field holds. An unsized field draws at N characters + its clear button and arrow + padding, so it no longer widens and narrows with the chosen option (a longer one ends in an ellipsis); a sized one (`--u-select-width`, `block`) uses it as the text floor, so a narrower box overflows. Same axis as `u-input`'s `chars`. N characters are measured as drawn — tabular figures and letter spacing count, which CSS `ch` leaves out |
 | `multiple` | `boolean` | `false` | ✓ | Allow multiple selections |
 | `searchable` | `boolean` | `false` | ✓ | Filter options by text |
+| `filter` | `'local'\|'none'` | `'local'` | ✓ | Who filters by the search text. `local` shows options whose text or value contains it; `none` hides nothing — for remote search, where the `search` event drives a server query and you replace the options with its results. When the text matches nothing (and not `loading`), the popup says *No matches* |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
 | `loading` | `boolean` | `false` | ✓ | Loading state |
 | `placeholder` | `string` | — | — | Placeholder text |
@@ -61,7 +62,7 @@ Dropdown select with single or multiple selection, search, and clear support. Fo
 | Event | Description |
 |-------|-------------|
 | `change` | Fires when selection changes |
-| `search` | Fires on every search input change when `searchable` (`detail: { query: string }`). Fires alongside the built-in local filtering — subscribe to it to drive remote/server-side search instead of (or in addition to) the local filter |
+| `search` | Fires on every search input change when `searchable` (`detail: { query: string }`). With `filter="none"` the select hides nothing, so the options you set from the server are shown as they are — otherwise the built-in local filter runs too |
 
 ## Methods
 
@@ -89,6 +90,7 @@ the first/last visible option; on an option, arrows, `Home`/`End`, `Enter`/`Spac
 | `container` | Trigger area |
 | `popover` | Dropdown list container |
 | `search-input` | Search input inside dropdown |
+| `no-matches` | *No matches* status line in the dropdown (empty and hidden otherwise) |
 
 ## CSS Custom Properties
 

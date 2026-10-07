@@ -46,6 +46,7 @@
   "resizePanels": "ปรับขนาดแผง",
   "loading": "กำลังโหลด",
   "search": "ค้นหา",
+  "noMatches": "ไม่พบรายการที่ตรงกัน",
   "alertError": "ข้อผิดพลาด",
   "alertWarning": "คำเตือน",
   "alertSuccess": "สำเร็จ",

@@ -46,6 +46,7 @@
   "resizePanels": "Bereichsgröße ändern",
   "loading": "Wird geladen",
   "search": "Suchen",
+  "noMatches": "Keine Treffer",
   "alertError": "Fehler",
   "alertWarning": "Warnung",
   "alertSuccess": "Erfolg",

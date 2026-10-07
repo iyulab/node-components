@@ -46,6 +46,7 @@
   "resizePanels": "Ubah ukuran panel",
   "loading": "Memuat",
   "search": "Cari",
+  "noMatches": "Tidak ada yang cocok",
   "alertError": "Kesalahan",
   "alertWarning": "Peringatan",
   "alertSuccess": "Berhasil",

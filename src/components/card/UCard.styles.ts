@@ -12,9 +12,13 @@ export const styles = css`
     --card-border-color: var(--u-border-color, #E0E0E0);
   }
 
-  /* 테두리는 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */
+  /* 테두리는 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다.
+     그래서 면(호스트)과 테두리(.base)가 한 상자여야 한다: 카드가 늘어나면(같은 행 높이 맞춤 · 높이 지정 · grid 행)
+     .base 도 호스트의 주축으로 늘어난다. 종전에는 세로 카드에서 내용 높이에 머물러 그 아래에 면만 한 번 더 그려졌다. */
   .base {
     box-sizing: border-box;
+    flex: 1 1 auto;
+    min-height: 0;
     width: 100%;
     display: flex;
     flex-direction: inherit;

@@ -46,6 +46,7 @@
   "resizePanels": "Изменить размер панелей",
   "loading": "Загрузка",
   "search": "Поиск",
+  "noMatches": "Нет совпадений",
   "alertError": "Ошибка",
   "alertWarning": "Предупреждение",
   "alertSuccess": "Успешно",

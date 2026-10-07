@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.12.0] - 2026-10-07
+
+### Added
+
+- **`u-select` `filter="none"`** — a searchable select that leaves filtering to you. The `search` event could already
+  drive a server query, but the built-in filter kept running and could not be turned off: options the server found
+  by several words or by another field stayed hidden (a reused `u-option` kept the `hidden` of the earlier text), so
+  the results looked empty. With `filter="none"` nothing is hidden. `local` stays the default.
+- **No matches** — when the search text matches no option (and the select is not `loading`), the dropdown says so
+  in a status line (`part="no-matches"`, new locale key `noMatches` in all fourteen languages).
+
+### Fixed
+
+- With local filtering, options added while a search text is in place are filtered by it too; they appeared
+  unfiltered. And an option added a moment ago is matched by its label — before its first render it was matched
+  by its `value` (`UOption.getText()` read the label from its own slot, which did not exist yet).
+- **A stretched `u-card` keeps its border on the whole card.** The border is drawn by the inner `.base` (so app
+  resets do not remove it), which did not grow with the host: a vertical card stretched to its row's height, or
+  given a height, closed its border at the content and painted a second, borderless panel below.
+
 ## [2.11.1] - 2026-10-07
 
 ### Fixed

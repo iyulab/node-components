@@ -46,6 +46,7 @@
   "resizePanels": "Thay đổi kích thước bảng",
   "loading": "Đang tải",
   "search": "Tìm kiếm",
+  "noMatches": "Không có kết quả phù hợp",
   "alertError": "Lỗi",
   "alertWarning": "Cảnh báo",
   "alertSuccess": "Thành công",

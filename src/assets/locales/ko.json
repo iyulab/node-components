@@ -46,6 +46,7 @@
   "resizePanels": "패널 크기 조절",
   "loading": "로딩 중",
   "search": "검색",
+  "noMatches": "일치하는 항목 없음",
   "alertError": "오류",
   "alertWarning": "경고",
   "alertSuccess": "완료",

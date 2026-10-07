@@ -228,6 +228,15 @@ export const styles = css`
     overflow-y: auto;
   }
 
+  /* 결과 0건 — 비어 있을 때는 자리를 차지하지 않는다(상태 영역은 늘 있어야 바뀐 문구가 읽힌다). */
+  .no-matches:empty {
+    display: none;
+  }
+  .no-matches {
+    padding: var(--u-field-padding-block, 0.3em) var(--u-field-padding-inline, 0.6em);
+    color: var(--u-txt-color-weak, #616161);
+  }
+
   .search-input {
     display: flex;
     align-items: center;

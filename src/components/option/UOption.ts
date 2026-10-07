@@ -106,10 +106,20 @@ export class UOption extends UElement {
     return nothing;
   }
 
+  /**
+   * 라벨(기본 slot)에 들어가는 노드. 아직 그려지지 않은 옵션(방금 붙어 첫 렌더 전)은 슬롯이 없으므로 라이트 DOM 에서
+   * 기본 slot 에 들어갈 자식(`slot` 속성 없는 것)을 읽는다 — 종전에는 그때 `value` 로 대신해, 막 추가된 옵션이 검색어에
+   * 라벨이 아니라 값으로 걸러졌다.
+   */
+  private labelNodes(): Node[] {
+    const slot = this.renderRoot?.querySelector('slot:not([name])') as HTMLSlotElement | null | undefined;
+    if (slot) return slot.assignedNodes({ flatten: true });
+    return [...this.childNodes].filter(n => !(n instanceof Element && n.hasAttribute('slot')));
+  }
+
   /** 라벨(기본 slot)의 텍스트 노드만 추출한다 — 엘리먼트 자식(예: 설명용 `<p>`)은 제외. */
   public getText(): string {
-    const slot = this.renderRoot.querySelector('slot:not([name])') as HTMLSlotElement | null;
-    const text = slot?.assignedNodes({ flatten: true })
+    const text = this.labelNodes()
       .filter(n => n.nodeType === Node.TEXT_NODE)
       .map(n => n.textContent ?? '')
       .join('')
@@ -120,8 +130,7 @@ export class UOption extends UElement {
 
   /** 라벨(기본 slot) 노드를 clone해서 반환한다 — 원본은 옵션 목록에 계속 slot돼 있어야 하므로. */
   public getContent(): Node[] {
-    const slot = this.renderRoot.querySelector('slot:not([name])') as HTMLSlotElement | null;
-    const nodes = slot?.assignedNodes({ flatten: true }).map(n => n.cloneNode(true)) ?? [];
+    const nodes = this.labelNodes().map(n => n.cloneNode(true));
     return nodes.length > 0 ? nodes : [document.createTextNode(this.value)];
   }
 }

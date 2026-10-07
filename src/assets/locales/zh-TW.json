@@ -46,6 +46,7 @@
   "resizePanels": "調整面板大小",
   "loading": "載入中",
   "search": "搜尋",
+  "noMatches": "沒有符合的項目",
   "alertError": "錯誤",
   "alertWarning": "警告",
   "alertSuccess": "成功",

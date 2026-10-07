@@ -37,6 +37,7 @@ import { styles } from "./USelect.styles.js";
  * @csspart container - 트리거 영역을 감싸는 요소
  * @csspart popover - 옵션 목록이 표시되는 팝오버 요소
  * @csspart search-input - 검색 입력 영역
+ * @csspart no-matches - 검색어에 맞는 옵션이 없을 때의 «일치하는 항목 없음» 상태 줄
  * 
  * @cssprop --u-select-display - 호스트의 display (기본값: inline-block). 폼/그리드 셀에서
  *   컨테이너 폭을 채우려면 `block`으로 지정한다.
@@ -85,6 +86,12 @@ export class USelect extends UFormControlElement<string | string[]> {
   @property({ type: Boolean, reflect: true }) multiple: boolean = false;
   /** 검색 가능 여부 */
   @property({ type: Boolean, reflect: true }) searchable: boolean = false;
+  /**
+   * 검색어로 옵션을 거르는 주체. `local`(기본) — 옵션 글자·값에 검색어가 들어 있는 것만 보인다. `none` — 거르지 않는다:
+   * 옵션 집합의 주인이 소비자일 때(`search` 이벤트로 서버를 검색해 옵션을 바꾸는 원격 검색) 쓴다. 서버가 낱말 AND · 다른 칸으로
+   * 찾은 옵션을 라이브러리가 다시 걸러 숨기던 충돌이 사라진다.
+   */
+  @property({ type: String, reflect: true }) filter: 'local' | 'none' = 'local';
   /** 지우기 버튼 표시 여부 */
   @property({ type: Boolean, reflect: true }) clearable: boolean = false;
   /** 로딩 상태 표시 여부 */
@@ -113,6 +120,10 @@ export class USelect extends UFormControlElement<string | string[]> {
   @query('u-popover', true) popoverEl?: UPopover;
 
   @state() private options: UOption[] = [];
+  /** 검색칸의 지금 검색어(소문자 · 앞뒤 공백 없음). */
+  private query = '';
+  /** 검색어가 있는데 보이는 옵션이 없다 — 팝업에 «일치하는 항목 없음» 을 알린다. */
+  @state() private noMatches = false;
   /** aria-expanded 배선용 팝오버 열림 상태 */
   @state() private open: boolean = false;
   /** combobox → 팝업 연결용 고유 id (aria-controls). 검색 가능이면 팝업은 dialog 이고 그 안에 listbox 가 있다. */
@@ -140,6 +151,12 @@ export class USelect extends UFormControlElement<string | string[]> {
   disconnectedCallback(): void {
     this.cleanup(this.options);
     super.disconnectedCallback();
+  }
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    // 거르는 주체가 바뀌거나 원격 검색이 끝나면(`loading` 해제) 지금 검색어를 다시 적용한다 — «0건» 알림도 함께.
+    if (changedProperties.has('filter') || changedProperties.has('loading')) this.applyFilter();
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -233,6 +250,7 @@ export class USelect extends UFormControlElement<string | string[]> {
             @keydown=${this.handleSearchKeydown}
           />
         </div>
+        <div class="no-matches" part="no-matches" role="status">${this.noMatches ? Locale.getValue('noMatches') : ''}</div>
         <div class="listbox" role="listbox" id=${this.listboxId}
           aria-multiselectable=${ifDefined(this.multiple ? 'true' : undefined)}>
           <slot @slotchange=${this.handleSlotChange}></slot>
@@ -362,6 +380,7 @@ export class USelect extends UFormControlElement<string | string[]> {
       (el): el is UOption => el instanceof UOption
     );
     this.setup(this.options);
+    this.applyFilter();
   };
 
   /**
@@ -443,7 +462,17 @@ export class USelect extends UFormControlElement<string | string[]> {
 
   private handleSearchInput = (e: InputEvent) => {
     const input = e.target as HTMLInputElement;
-    const query = input.value.toLowerCase().trim();
+    this.query = input.value.toLowerCase().trim();
+    this.applyFilter();
+    this.fire<{ query: string }>('search', { detail: { query: this.query }, cancelable: false });
+  };
+
+  /**
+   * 지금 검색어를 지금 옵션에 적용한다 — 입력 때뿐 아니라 옵션이 바뀔 때도(재사용된 `u-option` 이 앞 검색의 `hidden` 을
+   * 들고 남지 않게). `filter="none"` 이면 아무것도 숨기지 않는다.
+   */
+  private applyFilter() {
+    const query = this.filter === 'none' ? '' : this.query;
     for (const option of this.options) {
       if (!query) {
         option.hidden = false;
@@ -453,8 +482,8 @@ export class USelect extends UFormControlElement<string | string[]> {
         option.hidden = !label.includes(query) && !value.includes(query);
       }
     }
-    this.fire<{ query: string }>('search', { detail: { query }, cancelable: false });
-  };
+    this.noMatches = !!this.query && !this.loading && !this.options.some((o) => !o.hidden);
+  }
 
   private handleSearchKeydown = (e: KeyboardEvent) => {
     const options = this.options.filter(o => !o.hidden && !o.disabled);

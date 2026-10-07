@@ -46,6 +46,7 @@
   "resizePanels": "调整面板大小",
   "loading": "加载中",
   "search": "搜索",
+  "noMatches": "没有匹配项",
   "alertError": "错误",
   "alertWarning": "警告",
   "alertSuccess": "成功",

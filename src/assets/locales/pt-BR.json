@@ -46,6 +46,7 @@
   "resizePanels": "Redimensionar painéis",
   "loading": "Carregando",
   "search": "Pesquisar",
+  "noMatches": "Nenhum resultado",
   "alertError": "Erro",
   "alertWarning": "Aviso",
   "alertSuccess": "Sucesso",

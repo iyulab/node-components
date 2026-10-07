@@ -46,6 +46,7 @@
   "resizePanels": "تغيير حجم اللوحات",
   "loading": "جارٍ التحميل",
   "search": "بحث",
+  "noMatches": "لا توجد نتائج مطابقة",
   "alertError": "خطأ",
   "alertWarning": "تحذير",
   "alertSuccess": "نجاح",
