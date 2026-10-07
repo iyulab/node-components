@@ -90,6 +90,7 @@ the library does not infer one from field meaning.
 |-------|-------------|
 | `input` | Fires on every keystroke |
 | `change` | Fires when the value is committed — on `Enter` or on blur, and only if it changed (like a native `<input>`). On `Enter` inside a form it fires before the form submits |
+| `search` | `type="search"` only — a search was committed: `Enter`, the clear button, or `Escape` (which clears a non-empty value; on an empty field `Escape` is left to the page, e.g. to close a dialog). `detail.query` is the value with surrounding spaces trimmed. This is the shape list sources take (`bindSource`, `u-list-page` in `@iyulab/enterprise`) |
 
 ## Form submission
 

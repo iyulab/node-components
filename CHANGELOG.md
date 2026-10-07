@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`u-input type="search"` fires `search { query }`** when a search is committed — `Enter`, the clear button, or
+  `Escape`, which now clears a non-empty search field in every browser (an empty field leaves `Escape` to the page).
+  `query` is the value with surrounding spaces trimmed. A list search box had no event in the shape list sources take;
+  the native `search` event exists only in some browsers and stays inside the shadow root. `UInputEventMap` types it.
+
 ## [2.16.0] - 2026-10-07
 
 ### Added

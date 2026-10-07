@@ -65,8 +65,11 @@ export type FieldSize = 'sm' | 'md' | 'lg';
  * 
  * @event input - 입력값이 변경될 때 발생
  * @event change - 값이 확정됐을 때 발생 — Enter 또는 blur 에서, 값이 바뀐 경우에만(네이티브 입력과 같다)
+ * @event search - `type="search"` 에서 검색을 확정할 때 — Enter · 지우기 버튼 · Escape(값이 있을 때 비운다). `detail.query` 는
+ *   앞뒤 공백을 걷은 값이다. 목록 소스의 검색어로 쓰는 모양(`bindSource` · `u-list-page` 가 듣는다)
  */
 @customElement('u-input')
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
 export class UInput extends UFormControlElement<string> {
   static styles = [ super.styles, styles ];
 
@@ -502,7 +505,18 @@ export class UInput extends UFormControlElement<string> {
 
   private handleInputKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
+      if (this.type === 'search' && !isImeComposing(e) && !this.composing && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        this.fireSearch();
+      }
       this.handleImplicitSubmission(e);
+      return;
+    }
+    // 검색 칸의 Escape 는 값을 비운다(네이티브 검색 칸과 같다) — 값이 없거나 제안 목록이 열려 있으면 소비하지 않아
+    // 바깥(오버레이 닫기)이 받는다. 네이티브는 브라우저마다 달라(Firefox 는 비우지 않는다) 직접 한다.
+    if (e.key === 'Escape' && this.type === 'search' && this.value && !this.popoverEl?.open
+        && !this.readonly && !this.effectivelyDisabled) {
+      e.preventDefault();
+      this.clearValue();
       return;
     }
     // 숫자 입력의 화살표 증감 — 네이티브 숫자 입력이 하던 일이다. 제안 목록이 열려 있으면 목록이 키를 갖는다.
@@ -576,6 +590,12 @@ export class UInput extends UFormControlElement<string> {
 
   private handleClearButtonClick = (e: PointerEvent) => {
     e.stopImmediatePropagation();
+    this.clearValue();
+    this.focus();
+  }
+
+  /** 값을 비우고 그 사실을 알린다 — 지우기 버튼과 검색 칸의 Escape 가 같은 길을 탄다. */
+  private clearValue() {
     this.reset();
     // 타이핑 경로(handleInputInput)와 같은 "값이 바뀌었다" 신호를 여기서도 내야
     // input 이벤트 하나만 구독하는 소비자도 클리어를 감지한다 —
@@ -588,7 +608,12 @@ export class UInput extends UFormControlElement<string> {
       bubbles: true,
       composed: true
     }));
-    this.focus();
+    if (this.type === 'search') this.fireSearch();
+  }
+
+  /** 검색 확정 — 목록 소스의 검색어 모양(`{ query }`). */
+  private fireSearch() {
+    this.fire<{ query: string }>('search', { detail: { query: (this.value ?? '').trim() }, cancelable: false });
   }
 
   /** 경계(min/max)에 걸리면 시각적으로 흐리고 마우스 클릭을 막는다(CSS `pointer-events:
@@ -709,6 +734,23 @@ function isSubmitButton(el: Element): boolean {
 
 function blocksImplicitSubmission(el: Element): boolean {
   return (el instanceof HTMLInputElement || el instanceof UInput) && BLOCKING_TYPES.has(el.type);
+}
+
+/** Custom events `<u-input>` dispatches (its `change`/`input` are the native form-control events). */
+export interface UInputEventMap {
+  /** A search was committed (`type="search"`: Enter, the clear button, or Escape clearing the value). `query` is trimmed. */
+  'search': CustomEvent<{ query: string }>;
+}
+
+/** Typed listeners for {@link UInputEventMap} — element-scoped, the DOM's own pattern (`HTMLMediaElementEventMap`). */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
+export interface UInput {
+  addEventListener<K extends keyof UInputEventMap>(type: K, listener: (this: UInput, ev: UInputEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void;
+  addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: UInput, ev: HTMLElementEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof UInputEventMap>(type: K, listener: (this: UInput, ev: UInputEventMap[K]) => unknown, options?: boolean | EventListenerOptions): void;
+  removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: UInput, ev: HTMLElementEventMap[K]) => unknown, options?: boolean | EventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 
 declare global {
