@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.12.1] - 2026-10-07
+
+### Fixed
+
+- **A `chars` field measures again when an inherited font changes** (`u-input`, `u-select`, `u-date-picker`,
+  `u-date-range-picker`). The field was measured when it rendered, so a font change coming from outside the
+  component — a page switching its density or text size at runtime — left it at the old width: too wide after
+  shrinking, cutting the last characters after growing. The field now notices inherited font size, family and
+  letter-spacing changes and measures again.
+
 ## [2.12.0] - 2026-10-07
 
 ### Added

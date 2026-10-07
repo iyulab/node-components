@@ -28,10 +28,17 @@ const FONT_PROPS = [
  * 자간(`letter-spacing`)을 주면 N자가 `Nch` 를 넘어, «N자리 숫자 칸» 이 마지막 숫자를 잘랐다(Pretendard 14px 에서 자당
  * 0.33px — 6자리면 2px). 그래서 글자 요소의 계산된 글꼴을 옮긴 보이지 않는 요소에 `0` N개를 실제로 그리고 그 폭을 쓴다.
  * 크기는 `ResizeObserver` 로 따른다 — 웹 글꼴이 늦게 실리거나 크기 단(`size`)이 바뀌어 폭이 달라지면 다시 읽는다.
+ *
+ * 측정 요소는 글꼴을 계산값(px)으로 **복사**하므로, 호스트 밖에서 상속된 글꼴이 바뀌어도(밀도·글자 크기 단을 루트에서
+ * 런타임에 전환) 스스로는 달라지지 않는다 — 호스트는 다시 그려지지 않고 복사본은 옛 값을 들고 있다. 그래서 같은 자리에
+ * 글꼴을 복사하지 않고 **상속하는** 감시 요소를 하나 더 두고, 그 크기가 바뀌면 다시 복사해 잰다. 복사를 버리지 않는
+ * 이유: 글자 요소 자신에 걸린 글꼴(`::part(input)` 의 글꼴 기능 등)은 상속으로 오지 않는다.
  * 재기 전(첫 그림)에는 `Nch` 로 그린다.
  */
 export class CharsWidthController implements ReactiveController {
   private sizer?: HTMLSpanElement;
+  /** 글꼴을 상속하는 감시 요소 — 상속된 글꼴이 바뀌면 크기가 바뀐다. */
+  private watch?: HTMLSpanElement;
   private observer?: ResizeObserver;
   private measured?: number;
 
@@ -75,17 +82,32 @@ export class CharsWidthController implements ReactiveController {
         'visibility:hidden;pointer-events:none';
       const sizer = document.createElement('span');
       sizer.style.cssText = 'display:inline-block;white-space:pre';
-      frame.appendChild(sizer);
+      const watch = document.createElement('span');
+      watch.style.cssText = 'display:inline-block;white-space:pre';
+      frame.append(sizer, watch);
       box.appendChild(frame);
       this.sizer = sizer;
-      this.observer = new ResizeObserver((entries) => this.read(entries[entries.length - 1].contentRect.width));
+      this.watch = watch;
+      this.observer = new ResizeObserver((entries) => {
+        let sized: number | undefined;
+        let inherited = false;
+        for (const entry of entries) {
+          if (entry.target === sizer) sized = entry.contentRect.width;
+          else inherited = true;
+        }
+        // 상속 글꼴이 바뀌었으면 다시 복사한다 — 복사본의 크기가 바뀌면 다음 관찰이 그 폭을 읽는다.
+        if (inherited) this.measure();
+        if (sized != null) this.read(sized);
+      });
       this.observer.observe(sizer);
+      this.observer.observe(watch);
     }
     const sizer = this.sizer;
     const source = getComputedStyle(this.options.text() ?? box);
     for (const prop of FONT_PROPS) sizer.style.setProperty(prop, source.getPropertyValue(prop));
     const digits = '0'.repeat(n);
     if (sizer.textContent !== digits) sizer.textContent = digits;
+    if (this.watch && this.watch.textContent !== digits) this.watch.textContent = digits;
   }
 
   private read(width: number): void {
@@ -102,6 +124,7 @@ export class CharsWidthController implements ReactiveController {
     this.observer = undefined;
     this.sizer?.parentElement?.remove();
     this.sizer = undefined;
+    this.watch = undefined;
     this.measured = undefined;
   }
 }

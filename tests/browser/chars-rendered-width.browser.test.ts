@@ -79,6 +79,37 @@ describe('chars — 그려지는 N자', () => {
     expect(clipped(el, 'input')).toBeLessThanOrEqual(0);
   });
 
+  // 호스트 밖에서 상속된 글꼴이 런타임에 바뀌는 경우 — 루트 속성 하나로 밀도·글자 크기 단을 바꾸는 호스트.
+  // 호스트는 다시 그려지지 않으므로 «그려질 때 잰다» 만으로는 옛 폭에 남는다.
+  const inputWidth = (el: HTMLElement) => (el.shadowRoot!.querySelector('input') as HTMLElement).getBoundingClientRect().width;
+  const fresh = async (style: string) => {
+    const el = await mount('<u-input type="number" chars="6" value="888888"></u-input>', style);
+    const w = inputWidth(el);
+    document.body.innerHTML = '';
+    return w;
+  };
+
+  for (const [from, to] of [['14px', '18px'], ['18px', '14px']] as const) {
+    it(`🔴상속된 밀도가 런타임에 ${from} → ${to} 로 바뀌면 그 크기로 처음 연 칸과 같다`, async () => {
+      const expected = await fresh(`letter-spacing:3px;--u-density:${to}`);
+      const el = await mount('<u-input type="number" chars="6" value="888888"></u-input>', `letter-spacing:3px;--u-density:${from}`);
+      expect(inputWidth(el)).not.toBe(expected);
+      (el.parentElement as HTMLElement).style.setProperty('--u-density', to);
+      await settle(el);
+      expect(inputWidth(el)).toBe(expected);
+      expect(clipped(el, 'input')).toBeLessThanOrEqual(0);
+    });
+  }
+
+  it('🔴상속된 자간이 런타임에 바뀌어도 다시 잰다', async () => {
+    const expected = await fresh('letter-spacing:3px');
+    const el = await mount('<u-input type="number" chars="6" value="888888"></u-input>', 'letter-spacing:0px');
+    (el.parentElement as HTMLElement).style.letterSpacing = '3px';
+    await settle(el);
+    expect(inputWidth(el)).toBe(expected);
+    expect(clipped(el, 'input')).toBeLessThanOrEqual(0);
+  });
+
   it('NEGATIVE 측정 요소는 스크롤 넘침에 보태지 않고, chars 를 걷으면 사라진다', async () => {
     const el = await mount('<u-input type="number" chars="40" value="1" style="position:absolute;right:0"></u-input>');
     expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth);
