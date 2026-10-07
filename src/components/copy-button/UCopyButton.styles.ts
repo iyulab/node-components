@@ -3,7 +3,8 @@ import { css } from "lit";
 export const styles = css`
   :host {
     display: inline-flex;
-    font-size: 18px;
+    /* 글리프는 밀도 단에 비례한다(기본 밀도 14px 에서 18px). */
+    font-size: calc(var(--u-density, 14px) * 9 / 7);
   }
 
   u-icon-button {

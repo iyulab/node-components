@@ -21,7 +21,7 @@ import { UDialog } from '@iyulab/components/react';
 
 `detail` 열이 `unknown` 이면 `CustomEvent`(detail 타입 미지정)로 노출된다.
 
-**컴포넌트 29개 · 이벤트 44개**
+**컴포넌트 29개 · 이벤트 45개**
 
 ## `<u-alert>`
 
@@ -106,6 +106,7 @@ import { UDialog } from '@iyulab/components/react';
 |---|---|---|---|
 | `onInput` | `input` | `unknown` | 입력값이 변경될 때 발생 |
 | `onChange` | `change` | `unknown` | 값이 확정됐을 때 발생 — Enter 또는 blur 에서, 값이 바뀐 경우에만(네이티브 입력과 같다) |
+| `onSearch` | `search` | `{ query: string }` | `type="search"` 에서 검색을 확정할 때(Enter · 지우기 버튼 · 값이 있는 Escape) — `detail.query` 는 앞뒤 공백을 걷은 값 |
 
 ## `<u-menu>`
 

@@ -65,8 +65,7 @@ export type FieldSize = 'sm' | 'md' | 'lg';
  * 
  * @event input - 입력값이 변경될 때 발생
  * @event change - 값이 확정됐을 때 발생 — Enter 또는 blur 에서, 값이 바뀐 경우에만(네이티브 입력과 같다)
- * @event search - `type="search"` 에서 검색을 확정할 때 — Enter · 지우기 버튼 · Escape(값이 있을 때 비운다). `detail.query` 는
- *   앞뒤 공백을 걷은 값이다. 목록 소스의 검색어로 쓰는 모양(`bindSource` · `u-list-page` 가 듣는다)
+ * @event search - `type="search"` 에서 검색을 확정할 때(Enter · 지우기 버튼 · 값이 있는 Escape) — `detail.query` 는 앞뒤 공백을 걷은 값
  */
 @customElement('u-input')
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget

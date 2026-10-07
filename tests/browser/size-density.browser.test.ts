@@ -5,6 +5,9 @@ import '../../src/components/select/USelect.js';
 import '../../src/components/textarea/UTextarea.js';
 import '../../src/components/date-picker/UDatePicker.js';
 import '../../src/components/date-range-picker/UDateRangePicker.js';
+import '../../src/components/icon-button/UIconButton.js';
+import '../../src/components/copy-button/UCopyButton.js';
+import '../../src/components/alert/UAlert.js';
 
 /**
  * 크기 단 `sm`·`lg` 는 밀도 단(`--u-density`)에 비례한다(× 6/7 · × 8/7).
@@ -57,5 +60,42 @@ describe('크기 단 × 밀도 단', () => {
     (el.parentElement as HTMLElement).style.setProperty('--u-density', '18px');
     await settle(el);
     expect(width(el)).toBe(expected);
+  });
+
+});
+
+/**
+ * 아이콘만 있는 컨트롤의 글리프(`u-icon-button` 20px · `u-copy-button` 18px)도 밀도 단에 비례한다 — 같은 줄의 `u-button` 글자가
+ * 밀도를 따라 커질 때 아이콘 버튼만 그대로 남았다. 기본 밀도에서는 종전 값이다.
+ */
+describe('아이콘 컨트롤 × 밀도 단', () => {
+  beforeEach(() => { document.body.innerHTML = ''; });
+
+  async function hostSize(markup: string, density?: string): Promise<number> {
+    document.body.innerHTML = `<div style="${density ? `--u-density:${density}` : ''}">${markup}</div>`;
+    const el = document.body.firstElementChild!.firstElementChild as HTMLElement & { updateComplete: Promise<unknown> };
+    await el.updateComplete;
+    return parseFloat(getComputedStyle(el).fontSize);
+  }
+
+  for (const [tag, base] of [['u-icon-button', 20], ['u-copy-button', 18]] as const) {
+    it(`🔴${tag} — 밀도 16px 에서 글리프가 비례해 커진다`, async () => {
+      expect(await hostSize(`<${tag}></${tag}>`, '16px')).toBeCloseTo((base * 16) / 14, 1);
+    });
+    it(`NEGATIVE ${tag} — 기본 밀도에서는 ${base}px 그대로다`, async () => {
+      expect(await hostSize(`<${tag}></${tag}>`)).toBeCloseTo(base, 2);
+    });
+  }
+});
+
+/** 경보의 본문은 타입 단(`--u-text-body-size`)을 읽는다 — 제목(`--u-text-subtitle-size`)과 같은 축이다. 종전 본문만 14px 리터럴이었다. */
+describe('u-alert 본문 × 타입 단', () => {
+  it('🔴--u-text-body-size 를 바꾸면 본문이 따른다 · NEGATIVE 기본은 14px', async () => {
+    document.body.innerHTML = '<div style="--u-text-body-size:17px"><u-alert open>Body</u-alert></div><u-alert open>Body</u-alert>';
+    const [themed, plain] = [...document.querySelectorAll('u-alert')] as Array<HTMLElement & { updateComplete: Promise<unknown> }>;
+    await themed.updateComplete; await plain.updateComplete;
+    const content = (el: HTMLElement) => parseFloat(getComputedStyle(el.shadowRoot!.querySelector('.content')!).fontSize);
+    expect(content(themed)).toBe(17);
+    expect(content(plain)).toBe(14);
   });
 });

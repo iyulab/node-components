@@ -9,6 +9,14 @@
   `query` is the value with surrounding spaces trimmed. A list search box had no event in the shape list sources take;
   the native `search` event exists only in some browsers and stays inside the shadow root. `UInputEventMap` types it.
 
+### Fixed
+
+- **`u-icon-button` and `u-copy-button` follow the control density** — their glyph size is `--u-density` × 10/7
+  and × 9/7 (20px and 18px at the default density, unchanged). On a screen that raises the density, the
+  `u-button` text grew and the icon buttons beside it stayed put.
+- **`u-alert`'s body reads `--u-text-body-size`** (14px by default, unchanged) — like its title, which already read
+  `--u-text-subtitle-size`.
+
 ## [2.16.0] - 2026-10-07
 
 ### Added

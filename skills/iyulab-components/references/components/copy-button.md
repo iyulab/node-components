@@ -75,6 +75,8 @@ button.addEventListener('copy', (e: ClipboardEvent) => {
 
 ## Sizing
 
-This component keeps a **fixed** font size (18px) rather than inheriting the surrounding
-typography — it reads as an affordance next to text of any size. See
-[design-tokens.md](../../../../docs/design-tokens.md) for the four components that do this.
+This component does not inherit the surrounding typography — it reads as an affordance next to text
+of any size. Its size follows the control density instead: `--u-density` × 9/7, 18px at the default
+density (14px), so it grows with the `u-button` text beside it on a denser screen. See
+[design-tokens.md](../../../../docs/design-tokens.md) for the components that follow a scale rather than the
+surrounding text.

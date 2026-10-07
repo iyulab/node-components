@@ -120,7 +120,7 @@ export const styles = css`
   }
 
   .content {
-    font-size: 14px;
+    font-size: var(--u-text-body-size, 14px);
     font-weight: 300;
     line-height: 1.5;
     overflow-y: auto;
