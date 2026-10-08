@@ -38,6 +38,18 @@ export function encodeTsv(rows: readonly (readonly string[])[]): string {
  * // [['가', '첫 줄\r\n둘째 줄']]
  */
 export function decodeTsv(text: string): string[][] {
+  return decodeDelimited(text, '\t');
+}
+
+/**
+ * 구분자로 나뉜 텍스트(CSV · TSV · 세미콜론 CSV)를 2차원 셀 배열로 읽습니다 — 인용 규칙은 `decodeTsv` 와 같고(RFC 4180),
+ * 다른 것은 칸을 나누는 글자뿐입니다. 파일 앞의 BOM 은 읽는 쪽이 걷습니다(이 함수는 글자를 바꾸지 않습니다).
+ *
+ * @example
+ * decodeDelimited('이름,비고\n가,"쉼표, 든 칸"', ',');
+ * // [['이름', '비고'], ['가', '쉼표, 든 칸']]
+ */
+export function decodeDelimited(text: string, delimiter: string): string[][] {
   const rows: string[][] = [];
   if (text === '') return rows;
 
@@ -82,7 +94,7 @@ export function decodeTsv(text: string): string[][] {
     }
 
     atCellStart = false;
-    if (ch === '\t') {
+    if (ch === delimiter) {
       endCell();
       i++;
     } else if (ch === '\r' || ch === '\n') {

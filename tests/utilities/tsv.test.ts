@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { encodeTsv, decodeTsv } from '../../src/utilities/tsv.js';
+import { encodeTsv, decodeTsv, decodeDelimited } from '../../src/utilities/tsv.js';
 
 /**
  * 스프레드시트 클립보드 TSV — Excel 이 클립보드에 쓰는 형식(RFC 4180 인용 + 탭 구분 + 행마다 줄바꿈)과
@@ -76,5 +76,20 @@ describe('왕복 — decodeTsv(encodeTsv(rows)) === rows', () => {
       );
       expect(decodeTsv(encodeTsv(rows)), JSON.stringify(rows)).toEqual(rows);
     }
+  });
+});
+
+describe('decodeDelimited', () => {
+  it('쉼표 CSV — 인용된 칸 안의 쉼표·줄바꿈은 칸을 나누지 않는다', () => {
+    expect(decodeDelimited('이름,비고\r\n가,"쉼표, 든 칸"\r\n나,"두\n줄"\r\n', ',')).toEqual([
+      ['이름', '비고'],
+      ['가', '쉼표, 든 칸'],
+      ['나', '두\n줄'],
+    ]);
+  });
+
+  it('🔴NEGATIVE — 쉼표 CSV 를 탭으로 읽으면 한 줄이 한 칸이다(decodeTsv 는 바뀌지 않았다)', () => {
+    expect(decodeTsv('a,b\nc,d')).toEqual([['a,b'], ['c,d']]);
+    expect(decodeDelimited('a;b\nc;d', ';')).toEqual([['a', 'b'], ['c', 'd']]);
   });
 });

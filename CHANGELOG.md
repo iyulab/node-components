@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`decodeDelimited(text, delimiter)`** (`utilities/tsv`) — reads comma- or semicolon-separated text with the same
+  quoting rules as `decodeTsv` (RFC 4180), which is now `decodeDelimited(text, '\t')`. A file importer had only the tab
+  reader, so a comma CSV came back as one cell per line.
+
 ## [2.17.0] - 2026-10-08
 
 ### Added
