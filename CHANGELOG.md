@@ -14,6 +14,13 @@
   consumer's bundler could not remove them; they were design notes, sent to every browser. A consumer bundle of the whole library is about a fifth smaller (gzip 141.9 KB → 114.2 KB),
   a single `u-button` about a sixth (33.4 KB → 27.7 KB).
 
+### Documentation
+
+- The README and the skill teach importing utilities from their own modules
+  (`@iyulab/components/dist/utilities/Theme.js`) in an app that imports components one by one. The barrel registers
+  every component even when one value is taken from it — `Theme` alone measured 158 KB gzip through the barrel and
+  19 KB through its module.
+
 ## [2.18.0] - 2026-10-08
 
 ### Added

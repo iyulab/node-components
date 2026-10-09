@@ -23,6 +23,19 @@ import '@iyulab/components/dist/components/button/UButton.js';
 import '@iyulab/components/dist/components/input/UInput.js';
 ```
 
+### Utilities without the barrel
+
+`import … from '@iyulab/components'` registers **every** component — the barrel lists them all and is a side-effect
+module. An app that imports components one by one should import utilities one by one too, or a single `Theme`
+brings the whole library (measured: 158 KB → 19 KB gzip for `Theme` alone):
+
+```ts
+import { Theme } from '@iyulab/components/dist/utilities/Theme.js';
+import { Toast } from '@iyulab/components/dist/utilities/Toast.js';
+import { Locale } from '@iyulab/components/dist/utilities/Locale.js';
+import { formatCurrency } from '@iyulab/components/dist/utilities/format.js';
+```
+
 ### React wrappers
 
 React wrappers are generated via `@lit/react` and live under the `react` sub-export.

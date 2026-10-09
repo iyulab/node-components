@@ -47,7 +47,14 @@ import '@iyulab/components';
 // 개별 import (등록 부수효과만 — 쓰는 컴포넌트만 번들에 들어간다)
 import '@iyulab/components/dist/components/button/UButton.js';
 import '@iyulab/components/dist/components/input/UInput.js';
+
+// 유틸리티도 개별로 — 배럴('@iyulab/components')은 값 하나만 가져와도 컴포넌트를 전부 등록한다
+import { Theme } from '@iyulab/components/dist/utilities/Theme.js';
 ```
+
+> **배럴은 «전체 등록» 이다.** `import { Theme } from '@iyulab/components'` 한 줄이 모든 컴포넌트를 등록하고 번들에
+> 싣는다(실측: `Theme` 하나에 gzip 158KB ↔ 개별 경로 19KB). 컴포넌트를 개별로 가져오는 앱은 유틸리티도
+> `@iyulab/components/dist/utilities/<이름>.js` 에서 가져온다. 아래 절의 예시는 이 경로를 쓴다.
 
 > **토큰 시트는 선택이 아니다.** 컴포넌트의 모든 색·테두리·배경은 `var(--u-…)` 로 해석되며,
 > 미정의 커스텀 프로퍼티는 선언 전체를 무효로 만든다 — 에러도 경고도 없이 컨트롤이
@@ -130,7 +137,7 @@ npx skills add ./node_modules/@iyulab/components
 ## Theming
 
 ```ts
-import { Theme } from '@iyulab/components';
+import { Theme } from '@iyulab/components/dist/utilities/Theme.js';
 
 await Theme.init({
   default: 'system',       // 'light' | 'dark' | 'system'
@@ -245,7 +252,7 @@ Theme.set('system');
 활성 로케일 하나로 전부 따라옵니다.
 
 ```ts
-import { Locale } from '@iyulab/components';
+import { Locale } from '@iyulab/components/dist/utilities/Locale.js';
 
 Locale.set('ko');                                   // 활성 로케일
 Locale.register('nl', { valueMissing: '…' });       // 검증 메시지 override

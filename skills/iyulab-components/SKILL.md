@@ -27,7 +27,8 @@ import '@iyulab/components'; // registers all u-* custom elements
 await Theme.init(); // optional — applies system/light/dark theme
 ```
 
-Import individual components (tree-shakable):
+Import individual components (tree-shakable) — and then import utilities individually too
+(`@iyulab/components/dist/utilities/Theme.js`): the barrel registers every component even when you take one value from it:
 
 ```ts
 import '@iyulab/components/dist/components/button/UButton.js';
