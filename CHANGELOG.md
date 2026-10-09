@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- `Dialog` loads `u-input` only when `Dialog.prompt` is called. An app that imports `Dialog` from its own module for
+  `alert` and `confirm` no longer carries the input and the popover, option and field it brings (gzip 62.4 KB → 43.7 KB
+  in a minimal consumer); `prompt` loads it on first use and stays as before.
+
 ## [2.19.0] - 2026-10-09
 
 ### Added

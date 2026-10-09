@@ -55,6 +55,11 @@ describe('utility modules are a light path', () => {
     expect(reached(name)).not.toContain('index.ts');
   });
 
+  it('Dialog loads the prompt input on demand — alert and confirm do not carry it', () => {
+    expect(reached('Dialog.ts')).not.toContain('components/input/UInput.ts');
+    expect(readFileSync(join(UTILITIES, 'Dialog.ts'), 'utf-8')).toMatch(/await import\(['"]\.\.\/components\/input\/UInput\.js['"]\)/);
+  });
+
   // Dialog and Toast draw elements, so they register what they draw — every other utility registers nothing.
   const DRAWS = new Set(['Dialog.ts', 'Toast.ts']);
   it.each(utilities.filter((n) => !DRAWS.has(n)))('%s reaches no component module', (name) => {

@@ -1,6 +1,5 @@
 import { html, nothing, render, type TemplateResult } from 'lit';
 import '../components/button/UButton.js';
-import '../components/input/UInput.js';
 
 import { UDialog } from '../components/dialog/UDialog.js';
 import type { DialogPlacement } from '../components/dialog/UDialog.js';
@@ -151,6 +150,7 @@ export class Dialog {
    * @returns 입력값 또는 취소 시 null
    */
   public static async prompt(message: string, options?: PromptDialogOptions): Promise<string | null> {
+    await import('../components/input/UInput.js');
     let inputValue = options?.defaultValue || '';
     const messageId = nextMessageId();
 
