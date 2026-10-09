@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- `plugins/vite-plugin-strip-css-comments` — a Vite plugin that strips block comments from `css` tagged templates
+  in a package's own sources before the build. Lit packages use it so their style comments do not reach consumers
+  (`import stripCssComments from '@iyulab/components/plugins/vite-plugin-strip-css-comments.js'`).
+
+### Changed
+
+- Comments inside the components' `css` styles are no longer shipped. A tagged template's body is a string, so a
+  consumer's bundler could not remove them; they were design notes, sent to every browser. A consumer bundle of the whole library is about a fifth smaller (gzip 141.9 KB → 114.2 KB),
+  a single `u-button` about a sixth (33.4 KB → 27.7 KB).
+
 ## [2.18.0] - 2026-10-08
 
 ### Added
