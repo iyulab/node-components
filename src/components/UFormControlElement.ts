@@ -113,12 +113,35 @@ export abstract class UFormControlElement<T> extends UElement {
     void this.updateComplete.then(() => this.requestUpdate('formDisabled', old));
   }
 
+  constructor() {
+    super();
+    this.addEventListener('invalid', this.handleInvalid);
+  }
+
   connectedCallback(): void {
     super.connectedCallback();
     if (!this.internals && 'attachInternals' in this) {
       this.internals = this.attachInternals();
     }
   }
+
+  /** 자기 `validate()` 가 `internals.checkValidity()` 를 부르는 동안 — 그때 오는 `invalid` 는 보고가 아니다. */
+  private quietCheck = false;
+
+  /**
+   * UA 가 보낸 `invalid` 에서 오류를 보인다 — 소속 `<form>` 의 제출 시도(`requestSubmit()`·제출 버튼)와
+   * `form.reportValidity()` 가 이 경로다. 그러지 않으면 제출은 막히는데 어느 칸이 틀렸는지 화면에 아무것도
+   * 없다. 해제는 종전대로 값이 바뀐 뒤의 `validate()` 가 한다.
+   *
+   * 자기 `validate()` 의 조용한 확인과 합성 이벤트는 무시한다. ⚠`invalid` 이벤트는 자기를 부른 메서드를
+   * 알려 주지 않아(`checkValidity()` 도 같은 이벤트를 낸다) 페이지가 직접 부른 `form.checkValidity()` 도
+   * 오류를 보인다 — 플랫폼 한계다. 조용히 확인하려면 컨트롤의 `validate(false)` 나 `u-form.validate(false)` 를 쓴다.
+   */
+  private handleInvalid = (e: Event): void => {
+    if (this.quietCheck || !e.isTrusted) return;
+    this.invalid = true;
+    this.requestUpdate();
+  };
 
   /**
    * 검증 메시지는 `setValidity()` 가 `internals` 에 적어 둔 문장이다 — 다시 그리기만 하면 옛 언어가 그대로 나온다.
@@ -224,7 +247,15 @@ export abstract class UFormControlElement<T> extends UElement {
   public validate(report: boolean = true): boolean {
     this.setValidity();
     this.requestUpdate(); // 위 updated()와 동일한 이유 — invalid가 true→true로 안 바뀌어도 메시지 문구는 갱신됐을 수 있다.
-    const valid = this.internals ? this.internals.checkValidity() : true;
+    let valid = true;
+    if (this.internals) {
+      this.quietCheck = true;
+      try {
+        valid = this.internals.checkValidity();
+      } finally {
+        this.quietCheck = false;
+      }
+    }
     if (report) {
       this.invalid = !valid;
     }

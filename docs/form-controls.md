@@ -130,6 +130,14 @@ if (form.validate()) {
 form.reset();
 ```
 
+### Inside a native `<form>`
+
+Controls are form-associated, so a native `<form>` validates them like its own inputs: a submit attempt
+(`requestSubmit()` or a submit button) or `form.reportValidity()` blocks submission and every invalid control shows its
+error. Fixing the value clears it as usual. To check without showing errors, call the control's `validate(false)` or
+`u-form`'s `validate(false)` — a page-level `form.checkValidity()` fires the same `invalid` event a submit attempt does,
+so it shows errors too.
+
 ### `novalidate`
 
 Set `novalidate` to skip automatic validation on change:
@@ -149,7 +157,7 @@ Set `novalidate` to skip automatic validation on change:
 | `disabled` | `boolean` | Disables the control |
 | `readonly` | `boolean` | Prevents editing |
 | `required` | `boolean` | Marks as required |
-| `invalid` | `boolean` | Validation failure state (auto-set by `validate()`) |
+| `invalid` | `boolean` | Validation failure state (set by `validate()`, and by a submit attempt or `form.reportValidity()` on the owning `<form>`) |
 | `novalidate` | `boolean` | Skip auto-validate on change |
 | `label` | `string` | Field label (see note below for slot-based controls) |
 | `description` | `string` | Helper text |
