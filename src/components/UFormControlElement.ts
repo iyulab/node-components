@@ -245,6 +245,7 @@ export abstract class UFormControlElement<T> extends UElement {
    * @returns 유효하면 `true`, 아니면 `false`
    */
   public validate(report: boolean = true): boolean {
+    this.flushUpdate(); // 바로 앞의 값 변경이 안쪽 요소에 닿은 뒤에 판정한다
     this.setValidity();
     this.requestUpdate(); // 위 updated()와 동일한 이유 — invalid가 true→true로 안 바뀌어도 메시지 문구는 갱신됐을 수 있다.
     let valid = true;

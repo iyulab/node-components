@@ -60,6 +60,27 @@ export class UElement extends LitElement {
     super.disconnectedCallback();
   }
 
+  /** `performUpdate()` 안인가 — 렌더 도중에 같은 요소의 렌더를 다시 당기지 않으려고. */
+  private updating = false;
+
+  protected override performUpdate(): void {
+    this.updating = true;
+    try {
+      super.performUpdate();
+    } finally {
+      this.updating = false;
+    }
+  }
+
+  /**
+   * 대기 중인 렌더를 지금 끝낸다 — **렌더된 상태를 읽는 동기 판정**(검증이 안쪽 네이티브 요소의 `validity` 를
+   * 읽는 것 등)이 바로 앞의 속성 변경을 보게 한다. `el.value = x; el.validate()` 가 같은 틱에 바꾸기 전 값으로
+   * 판정하던 것을 막는다. 첫 렌더 전이거나 렌더 도중이면 아무것도 하지 않는다.
+   */
+  protected flushUpdate(): void {
+    if (this.hasUpdated && this.isUpdatePending && !this.updating) this.performUpdate();
+  }
+
   /**
    * 로케일이 바뀌었다(`Locale.set` · `Locale.register`) — 기본은 다시 그린다. 렌더 밖에서 로케일 문장을 담아 둔
    * 컴포넌트(속성·`ElementInternals`·필드에 적어 둔 이름)는 이것을 재정의해 그 값을 다시 적고 `super` 를 부른다.

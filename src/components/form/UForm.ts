@@ -59,6 +59,7 @@ export class UForm extends UElement {
    * @returns 모든 컨트롤이 유효하면 true, 아니면 false
    */
   public validate(report: boolean = true): boolean {
+    this.flushUpdate(); // 바로 앞의 `model` 이 컨트롤에 동기화된 뒤에 판정한다
     const controls = this.getControls();
     const results = controls.map(control => control.validate(report));
     const firstInvalid = controls[results.indexOf(false)];
