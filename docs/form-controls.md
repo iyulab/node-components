@@ -96,7 +96,8 @@ input.reset();    // empties this control and clears its validation state
 
 ### Using `u-form`
 
-`u-form` wraps multiple controls and exposes aggregate validation and two-way model binding:
+`u-form` wraps multiple controls and exposes aggregate validation and two-way model binding. Every control inside it
+takes part, including ones wrapped in `u-field` or a layout element:
 
 ```html
 <u-form id="form">
@@ -119,7 +120,8 @@ form.addEventListener('change', () => {
   console.log(form.model); // current values
 });
 
-// Validate all
+// Validate all — every invalid control shows its error and focus moves to the first one.
+// form.validate(false) only checks, without touching the screen.
 if (form.validate()) {
   submit(form.model);
 }

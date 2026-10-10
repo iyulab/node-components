@@ -51,12 +51,19 @@ export class UForm extends UElement {
   }
 
   /**
-   * 폼 내의 모든 포함된 컨트롤을 검증합니다.
+   * 폼 안의 포함된 컨트롤을 **전부** 검증합니다 — 첫 오류에서 멈추지 않아 모든 무효 컨트롤이 오류를 보입니다.
+   * 컨트롤은 위치와 무관하게 대상입니다(`u-field`·배치용 요소 안의 것 포함 — 네이티브 `form.elements` 와 같다).
+   *
+   * @param report `true`(기본값)면 각 컨트롤의 오류 표시를 갱신하고 첫 무효 컨트롤로 포커스를 옮긴다
+   *   (네이티브 `reportValidity()`). `false`면 화면에 영향 없이 유효 여부만 확인한다(`checkValidity()`).
    * @returns 모든 컨트롤이 유효하면 true, 아니면 false
    */
-  public validate(): boolean {
+  public validate(report: boolean = true): boolean {
     const controls = this.getControls();
-    return controls.every(control => control.validate());
+    const results = controls.map(control => control.validate(report));
+    const firstInvalid = controls[results.indexOf(false)];
+    if (report && firstInvalid) firstInvalid.focus();
+    return firstInvalid === undefined;
   }
 
   /**
@@ -81,11 +88,17 @@ export class UForm extends UElement {
     }
   }
 
+  /**
+   * 포함된 컨트롤을 문서 순서로 모은다 — 슬롯에 배정된 요소 **와 그 자손**이 대상이다. 감싸개(`u-field` 등) 안의
+   * 컨트롤도 이 폼의 것이다. 안쪽 `u-form` 의 컨트롤은 그 폼의 것이라 넘지 않는다.
+   */
   private getControls(): UFormControlElement<unknown>[] {
     const slot = this.renderRoot.querySelector('slot');
     if (!slot) return [];
-    return (slot.assignedElements({ flatten: true })
-      .filter(el => el instanceof UFormControlElement) as UFormControlElement<unknown>[])
+    return slot.assignedElements({ flatten: true })
+      .flatMap(el => [el, ...el.querySelectorAll('*')])
+      .filter((el): el is UFormControlElement<unknown> => el instanceof UFormControlElement)
+      .filter(el => el.parentElement?.closest('u-form') === this)
       .filter(el => this.isIncluded(el));
   }
 

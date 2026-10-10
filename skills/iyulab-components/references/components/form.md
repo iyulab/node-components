@@ -7,6 +7,8 @@ import '@iyulab/components/dist/components/form/UForm.js';
 **Tag:** `u-form`
 
 Form group with two-way model binding. Wraps `UFormControlElement`-based controls and observes value changes.
+Controls belong to the form wherever they sit inside it — wrapped in `u-field` or a layout element counts; a nested
+`u-form` keeps its own controls.
 
 ```html
 <u-form id="form">
@@ -29,7 +31,7 @@ form.addEventListener('change', () => {
   console.log(form.model); // { email: '...', role: '...' }
 });
 
-// Validate all controls
+// Validate every control: each invalid one shows its error, focus moves to the first
 if (form.validate()) {
   submitData(form.model);
 }
@@ -64,5 +66,5 @@ form.reset();
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `validate()` | `boolean` | Validate all child controls |
-| `reset()` | `void` | Reset all child controls |
+| `validate(report?)` | `boolean` | Validate every control in the form. With `report` (default `true`) each invalid control shows its error and focus moves to the first one, like `form.reportValidity()`; `validate(false)` only checks, like `checkValidity()` |
+| `reset()` | `void` | Restore every control in the form to the model snapshot |
