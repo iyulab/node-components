@@ -185,12 +185,38 @@ export class UField extends UElement {
   protected firstUpdated(changed: PropertyValues): void {
     super.firstUpdated(changed);
     const slot = this.shadowRoot?.querySelector('slot:not([name])') as HTMLSlotElement | null;
-    slot?.addEventListener('slotchange', () => this.nameSlottedControl());
+    slot?.addEventListener('slotchange', () => {
+      this.nameSlottedControl();
+      this.syncRequired();
+    });
   }
 
   protected updated(changed: PropertyValues): void {
     super.updated(changed);
     if (changed.has('label') || changed.has('description')) this.nameSlottedControl();
+    if (changed.has('required')) this.syncRequired();
+  }
+
+  /** 이 필드가 `required` 를 켠 컨트롤 — 끌 때는 우리가 켠 것만 끈다(소비자가 단 `required` 는 그대로). */
+  private requiredApplied?: HTMLElement & { required: boolean };
+
+  /**
+   * 필드의 `required` 를 그 컨트롤의 **제약**으로 넘긴다. 종전에는 별표만 그리고 컨트롤은 선택 입력으로 남아,
+   * `<u-field label="이메일" required><u-input></u-input></u-field>` 가 빈 채로 제출됐다 — 문서 예제가 전부 그
+   * 형태였다. 라벨처럼 «이 필드가 가리키는 컨트롤 하나» 에만 넘긴다 — 컨트롤이 여럿인 묶음에서는 어느 것이 필수인지
+   * 필드가 알 수 없어 넘기지 않는다(별표만 그린다).
+   */
+  private syncRequired(): void {
+    const control = this.labelsAGroup ? null : this.controlToName;
+    const target = control && 'required' in control ? control as HTMLElement & { required: boolean } : null;
+    if (this.requiredApplied && (this.requiredApplied !== target || !this.required)) {
+      this.requiredApplied.required = false;
+      this.requiredApplied = undefined;
+    }
+    if (this.required && target && !target.required) {
+      target.required = true;
+      this.requiredApplied = target;
+    }
   }
 
   /**

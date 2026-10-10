@@ -85,7 +85,7 @@ because their name normally comes from their own content:
 | `label` | `string` | — | — | Label text |
 | `description` | `string` | — | — | Helper text shown below the control |
 | `validationMessage` | `string` | — | — | Error message shown when `invalid` |
-| `required` | `boolean` | `false` | ✓ | Show required marker |
+| `required` | `boolean` | `false` | ✓ | Show the required marker and make the slotted control required (a single control — with several controls the field only shows the marker). Turning it off removes only the `required` the field set |
 | `invalid` | `boolean` | `false` | ✓ | Show validation error state |
 | `disabled` | `boolean` | `false` | ✓ | Disable state forwarding |
 
