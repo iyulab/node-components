@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.20.0] - 2026-10-10
+
+### Changed
+
+- `required` on `u-field` makes the control it labels required. It only drew the marker, so a field shown as required
+  submitted empty unless the control also carried `required`. A field wrapping several controls keeps the marker only;
+  turning `required` off on the field removes only the `required` the field set.
+- Form controls show their error when a submit attempt or `form.reportValidity()` on the owning `<form>` blocks
+  submission. Submission was blocked but no control showed why. To check without showing errors, call the control's
+  `validate(false)` — a page-level `form.checkValidity()` fires the same `invalid` event and shows errors too.
+- `u-form.validate()` moves focus to the first invalid control and takes `report` like a control's `validate()`:
+  `validate(false)` checks without touching the screen.
+
+### Fixed
+
+- `u-form` saw only its direct children, so a control wrapped in `u-field` or a layout element was not validated, synced
+  from `model`, or reset — an empty required field reported the form valid. It now covers every control inside it, up
+  to a nested `u-form`, and validates all of them instead of stopping at the first invalid one.
+- `validate()` judged the previous value when the value was set in the same tick (`el.value = x; el.validate()`, and
+  `form.model = …; form.validate()`), and left the error on. It now completes a pending render first.
+
 ## [2.19.1] - 2026-10-09
 
 ### Changed
