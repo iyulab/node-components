@@ -83,11 +83,25 @@ because their name normally comes from their own content:
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `label` | `string` | — | — | Label text |
-| `description` | `string` | — | — | Helper text shown below the control |
+| `description` | `string` | — | — | Helper text — below the control, or in a tooltip beside the label (see `descriptionDisplay`) |
+| `descriptionDisplay` | `'inline' \| 'hint'` | — | — | Where the description shows: `inline` (under the control) or `hint` (info icon beside the label, text on hover). Unset follows `UField.descriptionDisplay` |
 | `validationMessage` | `string` | — | — | Error message shown when `invalid` |
 | `required` | `boolean` | `false` | ✓ | Show the required marker and make the slotted control required (a single control — with several controls the field only shows the marker). Turning it off removes only the `required` the field set |
 | `invalid` | `boolean` | `false` | ✓ | Show validation error state |
 | `disabled` | `boolean` | `false` | ✓ | Disable state forwarding |
+
+## App-wide description display
+
+```ts
+import { UField } from '@iyulab/components';
+
+UField.descriptionDisplay = 'hint';   // once, before the first render — default 'inline'
+```
+
+Sets where every field shows its description, including the fields that `u-input`, `u-select` and the other controls
+render inside their own shadow roots. A field's own `description-display` wins. In `hint` mode a validation message
+still shows under the control, the control keeps the text as `aria-description`, and a field without a label shows the
+description inline (there is no label to put the icon beside).
 
 ## Methods
 

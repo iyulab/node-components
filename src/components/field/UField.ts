@@ -6,6 +6,8 @@ import { UElement } from "../UElement.js";
 import { devWarnOnce } from "../../utilities/devWarning.js";
 import { HostAria } from "../../utilities/hostAria.js";
 import { styles } from "./UField.styles.js";
+import "../icon/UIcon.js";
+import "../tooltip/UTooltip.js";
 
 /** 네이티브로 «폼 컨트롤이거나 포커스를 받도록 저작된» 태그 — 가시성과 무관한 구조 사실이다. */
 const NATIVE_CONTROL_TAGS = new Set(['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON']);
@@ -34,11 +36,23 @@ function isNamedByContent(el: HTMLElement): boolean {
 }
 
 /**
+ * 설명(`description`)을 어디에 보이는가.
+ * - `inline` — 컨트롤 아래 한 줄(기본).
+ * - `hint` — 라벨 옆 정보 아이콘에 마우스를 올리면 툴팁으로. 컨트롤 아래 공간을 쓰지 않아 폼이 촘촘해진다.
+ *   설명은 두 방식 모두 컨트롤의 `aria-description` 으로도 전달된다(보조기기에는 차이가 없다).
+ *   유효성 검사 메시지는 방식과 무관하게 언제나 아래에 보인다 — 오류는 숨기지 않는다.
+ *   라벨이 없으면 아이콘을 둘 자리가 없어 `inline` 으로 보인다.
+ */
+export type FieldDescriptionDisplay = 'inline' | 'hint';
+
+/**
  * 폼 컨트롤의 공통 레이아웃을 제공하는 필드 컴포넌트입니다.
  * 라벨, 필수 표시, 설명 텍스트, 유효성 검사 메시지를 포함합니다.
  *
  * @slot - 폼 컨트롤 (input, select, textarea 등)
  * @slot label-aside - 라벨 오른쪽 슬롯 영역 (숫자 표시, 알림 등)
+ * @csspart hint - `description-display="hint"` 의 정보 아이콘 감싸개
+ * @csspart hint-tooltip - 그 툴팁
  */
 @customElement('u-field')
 export class UField extends UElement {
@@ -63,6 +77,23 @@ export class UField extends UElement {
    * 형제 프로퍼티들도 명시형을 쓴다(`show-delay`·`hide-delay`).
    */
   @property({ type: String, attribute: 'validation-message' }) validationMessage?: string;
+  /**
+   * 설명을 보이는 방식 — 비우면 앱 전역 기본값(`UField.descriptionDisplay`)을 따른다.
+   * 컨트롤(`u-input` 등)이 안에 두는 필드는 전역 기본값을 따르므로, 앱 전체를 바꿀 때는 전역 기본값을 쓴다.
+   */
+  @property({ type: String, attribute: 'description-display' }) descriptionDisplay?: FieldDescriptionDisplay;
+
+  /**
+   * 앱 전역 기본값 — 앱 시작 때 한 번 정한다(예: `UField.descriptionDisplay = 'hint'`). 이미 그려진 필드는 다음 렌더부터 따른다.
+   * @default 'inline'
+   */
+  static descriptionDisplay: FieldDescriptionDisplay = 'inline';
+
+  /** 이 필드에서 실제로 쓰는 방식 — 라벨이 없으면 아이콘을 둘 자리가 없어 `inline`. */
+  private get effectiveDescriptionDisplay(): FieldDescriptionDisplay {
+    const display = this.descriptionDisplay ?? UField.descriptionDisplay;
+    return display === 'hint' && this.label ? 'hint' : 'inline';
+  }
 
   render() {
     return html`
@@ -71,6 +102,7 @@ export class UField extends UElement {
           <span class="required" ?hidden=${!this.required}>*</span>
           ${this.label}
         </label>
+        ${this.renderHint()}
         <slot name="label-aside"></slot>
       </div>
 
@@ -80,10 +112,24 @@ export class UField extends UElement {
     `;
   }
 
+  /**
+   * `hint` — 라벨 옆 정보 아이콘 + 툴팁. 설명은 컨트롤의 `aria-description` 으로 이미 전달되므로 아이콘은 보조기기에서 숨긴다.
+   * 툴팁은 라벨 «위»(입력 칸을 가리지 않는다) · 아이콘 왼쪽 끝에 맞추고 화면 밖으로 나가면 밀어 넣는다.
+   */
+  private renderHint() {
+    if (!this.description || this.effectiveDescriptionDisplay !== 'hint') return nothing;
+    return html`
+      <span class="hint" part="hint" aria-hidden="true">
+        <u-icon lib="internal" name="info-circle-fill"></u-icon>
+        <u-tooltip part="hint-tooltip" placement="top-start" shift>${this.description}</u-tooltip>
+      </span>
+    `;
+  }
+
   private renderFooter() {
     const message = this.invalid && this.validationMessage
       ? this.validationMessage
-      : this.description;
+      : this.effectiveDescriptionDisplay === 'inline' ? this.description : undefined;
     if (!message) return nothing;
     return html`<div class="footer">${message}</div>`;
   }

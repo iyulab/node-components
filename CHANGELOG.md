@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- `u-field` can show its `description` as an info icon beside the label, with the text in a tooltip on hover, instead of
+  a line under the control: `description-display="hint"` on one field, or `UField.descriptionDisplay = 'hint'` once for
+  the whole app (that default also reaches the fields `u-input`, `u-select` and the other controls render internally).
+  The control keeps the text as `aria-description`, a validation message still shows under the control, and a field
+  without a label keeps the description inline.
+
 ## [2.22.0] - 2026-10-13
 
 ### Added

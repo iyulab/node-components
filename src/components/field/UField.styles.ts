@@ -40,6 +40,26 @@ export const styles = css`
     user-select: none;
   }
 
+  .hint {
+    display: inline-flex;
+    align-items: center;
+    margin-inline-start: 0.35em;
+    margin-inline-end: auto;
+    color: var(--u-txt-color-weak, #616161);
+    font-size: 1.05em;
+    cursor: help;
+  }
+  .hint:hover {
+    color: var(--u-txt-color, #212121);
+  }
+  /* 설명은 문장이라 길다 — 한 줄로 화면을 가로지르지 않게 폭을 묶고 줄을 바꾼다. */
+  .hint u-tooltip {
+    max-width: min(20rem, calc(100vw - 2rem));
+    white-space: normal;
+    font-weight: 400;
+    line-height: 1.45;
+  }
+
   .label {
     font-weight: 500;
     line-height: 1.25;
