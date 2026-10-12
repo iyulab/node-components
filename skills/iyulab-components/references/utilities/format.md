@@ -52,9 +52,11 @@ formatDate('2026-03-14', { dateStyle: 'long' });
 formatDate(order.createdAt, { dateStyle: 'short', timeStyle: 'short' });
 ```
 
-Accepts a `Date` or an ISO `YYYY-MM-DD` string. **The string form is parsed as local time,
-not UTC** — `'2026-03-14'` is midnight where the user is, so a date never shifts a day
-across time zones the way `new Date('2026-03-14')` does.
+Accepts a `Date` or a date string, read by [`readDateValue`](#date-values--readdatevalue-and-writers): a
+`YYYY-MM-DD` day is **local midnight, not UTC** — `'2026-03-14'` is midnight where the user is, so a date
+never shifts a day across time zones the way `new Date('2026-03-14')` does; a date-time without an offset is
+local wall clock; one with an offset (`…Z`, `…+09:00`) is that instant. ISO-shaped text that names no real
+day (`2026-02-30`) is treated as invalid rather than rolled into March; other text goes to the platform parser.
 
 A value that cannot be resolved to a real date — a malformed string, or an already-invalid
 `Date` — returns `String(value)` instead of throwing. `Intl.DateTimeFormat.format()` throws
@@ -64,6 +66,30 @@ blanks the whole component; showing the raw value is the lesser failure.
 That degrade is **deliberately not symmetric** with `formatCurrency`: a date arrives as
 data (an API, a user, a stale cache), so a bad one is an expected runtime state; a currency
 code is written at the call site, so a bad one is a bug worth surfacing.
+
+## Date values — `readDateValue` and writers
+
+```ts
+import { readDateValue, writeInstant, writePlainDate, writePlainDateTime } from '@iyulab/components';
+
+const read = readDateValue('2026-09-06T22:22:34Z');
+// { kind: 'instant', date } — in Seoul, writeInstant(read.date) is '2026-09-07T07:22:34+09:00'
+if (read?.kind === 'plainDate') console.log(writePlainDate(read.date));
+```
+
+An app receives dates as text of three kinds, named after Temporal:
+
+| kind | text | means here |
+|---|---|---|
+| `instant` | a date-time with `Z` or an offset (`…+09:00`, `…-0500`) | that moment; shown as this browser's wall clock |
+| `plainDateTime` | a date-time without an offset (`2026-09-06T22:22`, `2026-09-06 22:22:34`) | that wall clock, local |
+| `plainDate` | a day (`2026-09-06`) | local midnight of that day |
+
+`readDateValue(value)` returns `{ kind, date }`, or `null` for text that is none of the three or names a day or
+time that does not exist. A `Date` reads as an `instant`. Write back in the kind you read so the value keeps its
+meaning: `writeInstant(date)` (local offset, same moment), `writePlainDateTime(date, seconds?)`,
+`writePlainDate(date)`. `localOffset(date)` gives the `±HH:mm` of that date (daylight saving is per date).
+`formatDate` and the date pickers read through the same function.
 
 ## Locale
 

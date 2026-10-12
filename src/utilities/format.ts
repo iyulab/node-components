@@ -1,26 +1,16 @@
 import { Locale, type LocaleTag } from './Locale.js';
+import { readDateValue } from './dateValue.js';
 
 /**
- * Parses "YYYY-MM-DD" as midnight in the **local** timezone.
- * Using `Date.parse("YYYY-MM-DD")` (UTC interpretation) shifts the date
- * back a day in negative-UTC-offset regions — split y/m/d and construct
- * `new Date(y, m-1, d)` directly instead.
- *
- * A full ISO datetime (e.g. `2026-02-24T09:00:00Z`) is unambiguous — it carries
- * its own timezone — so the local-time-safe split isn't needed there; when the
- * split doesn't yield three numbers, fall back to native parsing instead of
- * producing an Invalid Date.
- */
-function parseISODate(iso: string): Date {
-  const [y, m, d] = iso.split('-').map(Number);
-  return Number.isNaN(y) || Number.isNaN(m) || Number.isNaN(d) ? new Date(iso) : new Date(y, m - 1, d);
-}
-
-/**
- * Resolves a Date or ISO date string to a Date object.
+ * Resolves a Date or date string to a Date — through {@link readDateValue}, so a `YYYY-MM-DD` day is local
+ * midnight (not UTC midnight, which is the previous day west of Greenwich), a date-time without an offset is
+ * local wall clock, and one with an offset is that instant. ISO-shaped text that names no real day
+ * (`2026-02-30`) is an invalid `Date` — not March 2. Other text goes to the platform parser, as it always did.
  */
 function resolve(value: Date | string): Date {
-  return typeof value === 'string' ? parseISODate(value) : value;
+  const read = readDateValue(value);
+  if (read) return read.date;
+  return typeof value === 'string' && !/^\d{4}-\d{2}-\d{2}/.test(value.trim()) ? new Date(value) : new Date(NaN);
 }
 
 /**

@@ -4,15 +4,9 @@
 // (`toLocalDateTime`). 글자만 떼어 읽으면 다른 오프셋의 값이 그 숫자로 보이고, 고쳐 쓰면 로컬
 // 오프셋이 붙어 순간이 옮겨진다.
 import { parseISODate } from "./dates.js";
+import { localOffset, readDateValue, writeInstant } from "../../utilities/dateValue.js";
 
-/** `±HH:mm` for the browser's local timezone at `date` (DST-aware — recomputed per date,
- *  not cached — `getTimezoneOffset()`'s sign is the inverse of the ISO-8601 offset sign). */
-export function localOffset(date: Date): string {
-  const minutes = -date.getTimezoneOffset();
-  const sign = minutes >= 0 ? '+' : '-';
-  const abs = Math.abs(minutes);
-  return `${sign}${String(Math.floor(abs / 60)).padStart(2, '0')}:${String(abs % 60).padStart(2, '0')}`;
-}
+export { localOffset };
 
 /** ISO day + `HH:mm` or `HH:mm:ss` → `YYYY-MM-DDTHH:mm:ss±HH:mm` (the offset of that local day and time). */
 export function toDateTimeOffset(day: string, time: string): string {
@@ -22,21 +16,14 @@ export function toDateTimeOffset(day: string, time: string): string {
   return `${day}T${normalizeTime(time, true)}${localOffset(local)}`;
 }
 
-/** A date-time with a UTC designator or offset after its time (`…Z`, `…+09:00`, `…-0530`). */
-const WITH_OFFSET = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i;
-
 /** A date-time value as this browser's wall clock — `YYYY-MM-DDTHH:mm:ss±HH:mm` in the local offset.
  *  A value with an offset is an instant: `2026-09-06T22:22:34Z` reads `2026-09-07T07:22:34+09:00` in
  *  Seoul, the same moment. A value without one is already wall clock and comes back as it is, and so
  *  does anything that is not a date-time. Every read of a picker value goes through here, so what
  *  the picker shows and what it writes back describe the same instant. */
 export function toLocalDateTime(value: string): string {
-  if (!WITH_OFFSET.test(value)) return value;
-  const instant = new Date(value);
-  if (Number.isNaN(instant.getTime())) return value;
-  const pad = (n: number) => String(n).padStart(2, '0');
-  const day = `${instant.getFullYear()}-${pad(instant.getMonth() + 1)}-${pad(instant.getDate())}`;
-  return toDateTimeOffset(day, `${pad(instant.getHours())}:${pad(instant.getMinutes())}:${pad(instant.getSeconds())}`);
+  const read = readDateValue(value);
+  return read?.kind === 'instant' ? writeInstant(read.date) : value;
 }
 
 /** Whether two picker values are the same — a day, a date-time, or a `start/end` interval of either,

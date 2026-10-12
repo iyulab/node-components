@@ -1,5 +1,22 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **Date values** — `readDateValue(value)` reads the three kinds of date text an app receives and says which
+  one it is: `instant` (a date-time with `Z` or an offset — that moment), `plainDateTime` (no offset — local wall
+  clock) and `plainDate` (`YYYY-MM-DD` — local midnight, not UTC midnight). It returns `null` for a day or time that
+  does not exist (`2026-02-30`) instead of a rolled-over date. `writeInstant`, `writePlainDateTime`,
+  `writePlainDate` and `localOffset` write a date back in the kind it was read. The date pickers and `formatDate`
+  read through it.
+
+### Changed
+
+- `formatDate` shows ISO-shaped text that names no real day (`2026-02-30`) as the text itself, as it does for
+  other invalid input — it used to format the rolled-over date (March 2). Text that is not ISO-shaped still goes
+  to the platform parser.
+
 ## [2.20.3] - 2026-10-12
 
 ### Fixed
