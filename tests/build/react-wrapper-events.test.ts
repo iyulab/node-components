@@ -289,6 +289,7 @@ describe('react wrapper — 이벤트 수집', () => {
     it('워크스페이스 전 패키지에서, 이름으로 쓴 detail 타입은 전부 출처가 있다', () => {
       const orphans: string[] = [];
       for (const name of ['components', 'chat-components', 'data-components', 'editor-components', 'modern-app']) {
+        // workspace-only: 형제가 없는 단독 클론에서는 glob 이 비어 자기 패키지만 잰다
         const root = resolve(__dirname, '../../..', name);
         for (const f of globSync('src/**/*.ts', { cwd: root, absolute: true })) {
           if (!/@customElement\s*\(/.test(readFileSync(f, 'utf-8'))) continue;
