@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.20.2] - 2026-10-12
+
+### Fixed
+
+- The React wrapper types name every event's `detail` type with an import. `onPageChange` on the `UPagination`
+  wrapper used `PageChangeDetail` without importing it: under `skipLibCheck` the handler's event was silently
+  `any`, otherwise the declaration failed with `TS2304`. The wrapper generator (`plugins/vite-plugin-react-wrapper`)
+  now imports a detail type declared in the element's own module, and one imported from another package by its
+  package specifier.
+- The wrapper generator types an `@event`-only event from the package's event map declarations — an element-scoped
+  `*EventMap`, then the `HTMLElementEventMap` / `GlobalEventHandlersEventMap` augmentations — when the event's
+  `detail` is `CustomEvent<T>` (or an alias of it) with `T` importable. Events dispatched by a controller rather than
+  `this.fire<T>()` were typed as a bare `CustomEvent`. Native-named events (`change`, `input`) are unchanged.
+
 ## [2.20.1] - 2026-10-12
 
 ### Fixed
