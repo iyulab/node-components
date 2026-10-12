@@ -125,14 +125,21 @@ const GROUP_MARKS = /[\s\u00A0\u202F\u2009'\u2019]/;
  *   digits follow (`1,234` on an English page → 1234).
  *
  * Grouping (by either separator, spaces or apostrophes) must come in threes after a first group of
- * one to three digits — `1,23,4` is `null`. A leading `+`, `-` or `−` sets the sign. Exponents are
- * not read. `locale` defaults to the active `Locale`.
+ * one to three digits — `1,23,4` is `null`. A leading `+`, `-` or `−` sets the sign.
+ *
+ * An exponent may follow, as in a native number input: `e` or `E`, an optional sign, digits
+ * (`1e7`, `1.5e-6`, `2E+3`). The separator rules above apply to the part before it (`1,5e3` on a
+ * comma-decimal page is 1500); the exponent is never grouped. `e5`, `1e` and `1e+` are `null`.
+ * Reading exponents also lets every string `String(number)` writes come back (`1e-7`, `1e+21`).
+ * `locale` defaults to the active `Locale`.
  */
 export function parseNumber(text: string, locale?: LocaleTag): number | null {
   const trimmed = text.trim();
   const signed = trimmed.match(/^([+\-\u2212]?)(.*)$/s)!;
   const negative = signed[1] === '-' || signed[1] === '\u2212';
-  const body = signed[2];
+  const scientific = signed[2].match(/^(.*?)[eE]([+-]?)(\d+)$/s);
+  const body = scientific ? scientific[1] : signed[2];
+  const exponent = scientific ? `${scientific[2]}${scientific[3]}` : '0';
   if (!body || !/^[\d.,\s\u00A0\u202F\u2009'\u2019]+$/.test(body) || !/\d/.test(body)) return null;
   if (GROUP_MARKS.test(body[0]) || GROUP_MARKS.test(body[body.length - 1])) return null;
 
@@ -164,7 +171,7 @@ export function parseNumber(text: string, locale?: LocaleTag): number | null {
   const digits = groups.join('');
   if (!digits && !fracPart) return null;
 
-  const value = Number(`${negative ? '-' : ''}${digits || '0'}.${fracPart || '0'}`);
+  const value = Number(`${negative ? '-' : ''}${digits || '0'}.${fracPart || '0'}e${exponent}`);
   return Number.isFinite(value) ? value : null;
 }
 

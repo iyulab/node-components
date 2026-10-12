@@ -27,7 +27,8 @@ Text input field with prefix/suffix slots and label. Add `u-option` children for
 ```
 
 `type="number"` reads what the user types **in the page's locale**: `1,5` on a German page and
-`1.5` anywhere are both 1.5; `1.234,5` and `1,234.5` are both 1234.5 (rules: `parseNumber`). The
+`1.5` anywhere are both 1.5; `1.234,5` and `1,234.5` are both 1234.5 (rules: `parseNumber`).
+Exponents read as in a native number input (`1e7`, `1,5e-6` on a German page). The
 inner input is `type="text" inputmode="decimal"` — a native number input drops or rejects a
 decimal comma depending on the browser (`1,5` became `15`, a valid number ten times too large).
 `value` is always the canonical dot-decimal string — `""` when the text is not a number, which

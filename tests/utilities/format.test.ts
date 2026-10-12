@@ -124,6 +124,15 @@ describe('format utilities', () => {
       ['1.', 'en', 1],
       ['  42  ', 'ko', 42],
       ['0', 'en', 0],
+      // exponents, as a native number input reads them — the separator rules apply before the e
+      ['1e3', 'en', 1000],
+      ['1e7', 'en', 1e7],
+      ['1.5e-6', 'en', 1.5e-6],
+      ['2E+3', 'en', 2000],
+      ['-1.5e-6', 'en', -1.5e-6],
+      ['1,5e3', 'de', 1500],
+      ['1.234,5e-2', 'de', 12.345],
+      ['1,234e3', 'en', 1234000],
     ] as const)('%s (%s) → %s', (text, locale, expected) => {
       expect(parseNumber(text, locale)).toBe(expected);
     });
@@ -131,7 +140,8 @@ describe('format utilities', () => {
     it.each([
       ['', 'en'], ['   ', 'en'], [',', 'en'], ['.', 'de'], ['-', 'en'],
       ['1,23,4', 'en'], ['12 34', 'fr'], ['1.234,5,6', 'de'], ['1,5.2.3', 'en'],
-      ['1,5x', 'de'], ['abc', 'en'], ['1e3', 'en'], [' 1 2', 'fr'],
+      ['1,5x', 'de'], ['abc', 'en'], [' 1 2', 'fr'],
+      ['e5', 'en'], ['1e', 'en'], ['1e+', 'en'], ['e', 'en'], ['1e3.5', 'en'], ['1e 3', 'en'], ['1 e3', 'fr'], ['1e3e2', 'en'], ['1e999', 'en'],
       ['1..2', 'en'], ['--1', 'en'], ['1-', 'en'],
     ] as const)('⚪NEGATIVE — %j (%s) is not a number, never a partial one', (text, locale) => {
       expect(parseNumber(text, locale)).toBeNull();
@@ -144,6 +154,13 @@ describe('format utilities', () => {
       Locale.set('de');
       expect(parseNumber('1,234')).toBe(1.234);
       Locale.set('en');
+    });
+
+    it('reads back every string String(number) writes, exponent forms included', () => {
+      for (const n of [1e-7, 1.5e-7, 1e21, -2.5e22, 0.0000015, 123.456]) {
+        expect(parseNumber(String(n), 'en'), String(n)).toBe(n);
+        expect(parseNumber(String(n), 'de'), String(n)).toBe(n);
+      }
     });
 
     it('round-trips formatNumber in every built-in locale', () => {

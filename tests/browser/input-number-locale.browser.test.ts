@@ -68,6 +68,30 @@ describe('u-input type="number" — 로케일로 읽기', () => {
     expect(b.value).toBe('1.5');
   });
 
+  it('🔴지수 표기를 네이티브 숫자 입력처럼 읽는다 — 1e7 · 1,5e-6(쉼표 소수 화면)', async () => {
+    const a = await mount('<u-input type="number" step="any"></u-input>');
+    await typeInto(a, '1e7');
+    expect(a.value).toBe('10000000');
+    expect(a.valueAsNumber).toBe(1e7);
+    await blur(a);
+    expect(a.validity?.badInput).toBe(false);
+    expect(a.validate()).toBe(true);
+
+    const b = await mount('<u-input type="number" step="any"></u-input>');
+    await typeInto(b, '1,5e-6');
+    expect(b.valueAsNumber).toBe(1.5e-6);
+    expect(b.validate()).toBe(true);
+  });
+
+  it('🔴String(n) 이 지수로 쓰는 아주 작은 수도 값에서 다시 읽힌다 — 0,0000001 → valueAsNumber 1e-7', async () => {
+    const el = await mount('<u-input type="number" step="any"></u-input>');
+    await typeInto(el, '0,0000001');
+    expect(el.value).toBe('1e-7');
+    expect(el.valueAsNumber).toBe(1e-7);
+    await blur(el);
+    expect(el.validate()).toBe(true);
+  });
+
   it('🔴수가 아닌 글자는 값이 비고 badInput 이다 — 글자는 고치도록 그대로 남는다', async () => {
     const el = await mount('<u-input type="number"></u-input>');
     await typeInto(el, '1,5x');
