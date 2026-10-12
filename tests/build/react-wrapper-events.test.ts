@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { resolve } from 'path';
-import { readFileSync } from 'fs';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { resolve, join, dirname } from 'path';
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'fs';
+import { tmpdir } from 'os';
 import { globSync } from 'glob';
 import {
   collectComponentEvents,
@@ -207,8 +208,42 @@ describe('react wrapper — 이벤트 수집', () => {
   // components `UPagination.d.ts`(같은 파일이 선언한 `PageChangeDetail`) · chat-components `UFileBlock.d.ts`
   // (다른 패키지에서 import 한 `RemoveEventDetail`). 우리 react 스모크는 `skipLibCheck` 라 둘 다 못 봤다.
   describe('detail 타입의 출처', () => {
-    const pkg = (name: string, p: string) => resolve(__dirname, '../../..', name, 'src', p);
     const ev = (file: string, name: string) => collectComponentEvents(file).find(e => e.name === name);
+
+    // 다른 패키지 모양의 소스는 임시 패키지로 만든다 — 형제 패키지(chat-components)의 실제 파일을 읽으면
+    // 단독 클론(CI)에서 그 파일이 없어 이 시험이 죽는다. 시험이 재는 것은 수집기의 규칙이지 형제의 소스가 아니다.
+    let fixtureSrc = '';
+    beforeAll(() => {
+      fixtureSrc = join(mkdtempSync(join(tmpdir(), 'wrapper-events-')), 'src');
+      const write = (p: string, text: string) => {
+        mkdirSync(dirname(join(fixtureSrc, p)), { recursive: true });
+        writeFileSync(join(fixtureSrc, p), text);
+      };
+      write('components/blocks/UFileBlock.ts', [
+        "import { RemoveEventDetail } from '@iyulab/components/dist/events/RemoveEvent.js';",
+        "@customElement('u-file-block')",
+        'export class UFileBlock extends UElement {',
+        "  remove() { this.fire<RemoveEventDetail>('remove'); }",
+        '}',
+      ].join('\n'));
+      write('events/LinkActivateEvent.ts', [
+        'export interface LinkActivateEventDetail { href: string }',
+        'export type LinkActivateEvent = CustomEvent<LinkActivateEventDetail>;',
+        'declare global {',
+        '  interface HTMLElementEventMap {',
+        "    'link-activate': LinkActivateEvent;",
+        '  }',
+        '}',
+      ].join('\n'));
+      write('components/blocks/UMarkedBlock.ts', [
+        '/**',
+        ' * @event link-activate - a rendered link was activated',
+        ' */',
+        "@customElement('u-marked-block')",
+        'export class UMarkedBlock extends UElement {}',
+      ].join('\n'));
+    });
+    afterAll(() => rmSync(dirname(fixtureSrc), { recursive: true, force: true }));
 
     it('요소 파일이 스스로 선언한 detail 은 그 파일이 출처다', () => {
       const e = find('components/pagination/UPagination.ts', 'page-change');
@@ -217,13 +252,13 @@ describe('react wrapper — 이벤트 수집', () => {
     });
 
     it('다른 패키지에서 import 한 detail 은 그 지정자 그대로', () => {
-      const e = ev(pkg('chat-components', 'components/blocks/UFileBlock.ts'), 'remove');
+      const e = ev(join(fixtureSrc, 'components/blocks/UFileBlock.ts'), 'remove');
       expect(e?.detailType).toBe('RemoveEventDetail');
       expect(e?.detailSpecifier).toBe('@iyulab/components/dist/events/RemoveEvent.js');
     });
 
     it('@event 만 있는 이벤트(컨트롤러가 발화)는 이벤트 맵 선언에서 타입을 얻는다', () => {
-      const e = ev(pkg('chat-components', 'components/blocks/UMarkedBlock.ts'), 'link-activate');
+      const e = ev(join(fixtureSrc, 'components/blocks/UMarkedBlock.ts'), 'link-activate');
       expect(e?.detailType).toBe('LinkActivateEventDetail');
       expect(e?.detailSource.replace(/\\/g, '/')).toContain('/src/events/LinkActivateEvent.ts');
     });
