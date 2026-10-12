@@ -19,7 +19,7 @@ import { UDialog } from '@iyulab/components/react';
 
 아래 표는 **커스텀 이벤트**(래퍼가 명시적으로 매핑하는 것)만 담는다.
 
-`detail` 열이 `unknown` 이면 `CustomEvent`(detail 타입 미지정)로 노출된다.
+`detail` 열이 `unknown` 이면: 표준 DOM 이벤트 이름(`change`·`input`·`copy` …)은 그 DOM 타입(`HTMLElementEventMap[이름]` — `Event`·`ClipboardEvent` 등, `detail` 없음), 그 밖의 이름은 `CustomEvent`(detail 타입 미지정)로 노출된다.
 
 **컴포넌트 29개 · 이벤트 45개**
 

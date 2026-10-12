@@ -24,6 +24,7 @@ import {
   UTag,
   USelect,
   UOption,
+  UCopyButton,
   type USelectProps,
 } from '@iyulab/components/react';
 // 래퍼와 이름이 같으므로 엘리먼트 클래스는 별칭으로 가져온다
@@ -32,11 +33,27 @@ import type { UButton as UButtonElement } from '@iyulab/components';
 /** 회귀 1 — JSX children (TS2747) */
 export const Children = (): React.JSX.Element => <UButton>확인</UButton>;
 
-/** 회귀 2 — CustomEvent 핸들러 대입 */
+/** 회귀 2 — 이벤트 핸들러 대입. 네이티브 이름(`change`)은 런타임 그대로 `Event` 다 — `detail` 이 없다 */
 export const Events = (): React.JSX.Element => (
-  <USelect label="자원 구분" onChange={(e: CustomEvent) => void e.target}>
+  <USelect label="자원 구분" onChange={(e: Event) => void e.target}>
     <UOption value="materials">자재</UOption>
   </USelect>
+);
+
+/** 네이티브 이름 이벤트에서 `e.detail` 은 타입 오류다 — 종전(`CustomEvent`)에는 통과한 채 런타임 `undefined` 였다 */
+export const NativeEventHasNoDetail = (): React.JSX.Element => (
+  // @ts-expect-error — `Event` 에 `detail` 이 없다
+  <USelect label="자원 구분" onChange={(e) => void e.detail} />
+);
+
+/** 표준 이름의 고유 타입이 실린다 — `u-copy-button` 의 `copy` 는 `ClipboardEvent` */
+export const CopyIsClipboardEvent = (): React.JSX.Element => (
+  <UCopyButton value="x" onCopy={(e) => void e.clipboardData} />
+);
+
+/** 커스텀 이름의 detail 타입은 그대로 — `u-select` 의 `search` 는 `CustomEvent<{ query }>` */
+export const CustomEventKeepsDetail = (): React.JSX.Element => (
+  <USelect label="자원 구분" searchable onSearch={(e) => void e.detail.query} />
 );
 
 /** 컴포넌트 고유 prop 이 광역 `Omit` 에 쓸려나가지 않았는지 */

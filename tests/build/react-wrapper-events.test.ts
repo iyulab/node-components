@@ -8,6 +8,8 @@ import {
   isInternalElement,
   readEventMapEntries,
   detailFromEventType,
+  eventPropType,
+  EVENT_OF_ALIAS,
 } from '../../plugins/vite-plugin-react-wrapper';
 // @ts-expect-error — 문서 생성기는 .mjs 로, 타입 선언이 없다
 import { renderReactEventsDoc, DOC_PATH, eventTags } from '../../scripts/react-events-doc.mjs';
@@ -228,6 +230,25 @@ describe('react wrapper — 이벤트 수집', () => {
 
     it('네이티브 이름(맵에 없는 change)은 추측하지 않는다 — unknown 그대로', () => {
       expect(find('components/checkbox/UCheckbox.ts', 'change')?.detailType).toBe('unknown');
+    });
+
+    it('래퍼 prop 타입 — detail 이 있으면 CustomEvent<T>, 없으면 이름이 정한다(표준 DOM 이름은 그 DOM 타입)', () => {
+      expect(eventPropType({ name: 'search', detailType: '{ query: string }' })).toBe('CustomEvent<{ query: string }>');
+      expect(eventPropType({ name: 'change', detailType: 'unknown' }))
+        .toBe("EventOf<'change'>");
+      expect(EVENT_OF_ALIAS).toBe('type EventOf<K extends string> = K extends keyof HTMLElementEventMap ? HTMLElementEventMap[K] : CustomEvent;');
+    });
+
+    it('🔴네이티브 생성자로 다시 내는 이벤트에 detail 타입이 붙지 않는다 — 실린 그대로 `Event` 계열', () => {
+      // 소스가 `new Event('change')` · `relay(e)` 로 내는 표준 이름 이벤트는 detail 을 풀지 않는다(풀면 거짓 CustomEvent)
+      for (const [file, name] of [
+        ['components/checkbox/UCheckbox.ts', 'change'],
+        ['components/input/UInput.ts', 'change'],
+        ['components/input/UInput.ts', 'input'],
+        ['components/copy-button/UCopyButton.ts', 'copy'],
+      ] as const) {
+        expect(eventPropType(find(file, name)!), `${file} ${name}`).toBe(`EventOf<'${name}'>`);
+      }
     });
 
     it('워크스페이스 전 패키지에서, 이름으로 쓴 detail 타입은 전부 출처가 있다', () => {

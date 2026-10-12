@@ -387,6 +387,29 @@ function lookupEventMaps(name: string, chainFiles: string[], srcRoot: string): E
   return null;
 }
 
+/**
+ * 래퍼 이벤트 prop 이 핸들러에 넘기는 이벤트의 타입 글자.
+ *
+ * - detail 타입을 풀었으면 `CustomEvent<T>`.
+ * - 못 풀었으면(`unknown`) 이름이 결정한다: 표준 DOM 이벤트 이름(`change`·`input`·`copy` …)은 컴포넌트가
+ *   네이티브 생성자로 다시 내는 이벤트라(`new Event('change')` · `relay` · `ClipboardEvent`) **그 DOM 타입**
+ *   (`HTMLElementEventMap['change']` = `Event`), 그 밖에는 `CustomEvent`.
+ *   종전에는 전부 `CustomEvent` 였다 — 소비자가 `e.detail` 을 타입 검사 통과한 채 읽고 런타임에 `undefined` 를 얻었다.
+ * - 표준 이름 판정을 손으로 쓴 목록에 두지 않고 타입 시스템에 맡긴다 — d.ts 의 제네릭 별칭
+ *   ({@link EVENT_OF_ALIAS})이 소비자 쪽에서 푼다(`EventOf<'change'>` → `Event`). `fire('change')` 로
+ *   `CustomEvent` 를 내는 요소도 `Event` 로 보이는데, detail 이 없으므로 잃는 것이 없다(상위 타입).
+ *   ⚠별칭이 **제네릭**이어야 한다 — 리터럴을 직접 쓴 조건부(`'change' extends keyof M ? M['change'] : …`)는 참 갈래에서
+ *   좁혀지지 않아 `TS2538` 이고, 소비자의 `skipLibCheck` 아래 그 오류는 조용한 `any` 가 된다(타입 스모크가 잡았다).
+ */
+export function eventPropType(e: { name: string; detailType: string }): string {
+  if (e.detailType !== 'unknown') return `CustomEvent<${e.detailType}>`;
+  return `EventOf<'${e.name}'>`;
+}
+
+/** {@link eventPropType} 이 쓰는 별칭 — 그것을 쓰는 래퍼 d.ts 에만 싣는다. */
+export const EVENT_OF_ALIAS =
+  'type EventOf<K extends string> = K extends keyof HTMLElementEventMap ? HTMLElementEventMap[K] : CustomEvent;';
+
 const INLINE_PRIMITIVES = new Set(['string', 'number', 'boolean', 'null', 'undefined', 'unknown', 'true', 'false', 'readonly']);
 
 /**
@@ -532,10 +555,7 @@ export const ${className} = createComponent({
   }
 
   const eventTypes = events.length > 0
-    ? events.map(e => {
-        const type = e.detailType !== 'unknown' ? `CustomEvent<${e.detailType}>` : 'CustomEvent';
-        return `  ${e.reactName}?: (event: ${type}) => void;`;
-      }).join('\n') + '\n'
+    ? events.map(e => `  ${e.reactName}?: (event: ${eventPropType(e)}) => void;`).join('\n') + '\n'
     : '';
 
   // 래퍼 이벤트 prop(onChange 등)은 React.HTMLAttributes 의 동명 핸들러와 교집합되면
@@ -562,7 +582,7 @@ export const ${className} = createComponent({
   // 이것을 빠뜨리면 **런타임은 되는데 타입만 거부하는** 괴리가 생긴다.
   const dts = `${dtsImports.join('\n')}
 
-type ${className}OwnProps = Omit<${className}Element, keyof HTMLElement>;
+${events.some(e => e.detailType === 'unknown') ? `${EVENT_OF_ALIAS}\n` : ''}type ${className}OwnProps = Omit<${className}Element, keyof HTMLElement>;
 
 export declare const ${className}: React.ForwardRefExoticComponent<
   Partial<Omit<${className}Element, Exclude<keyof React.HTMLAttributes<${className}Element>, keyof ${className}OwnProps>>>
