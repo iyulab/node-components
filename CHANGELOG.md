@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.20.3] - 2026-10-12
+
+### Fixed
+
+- `parseNumber` and `u-input type="number"` read an exponent, as a native number input does: `1e7`, `1.5e-6`,
+  `2E+3`, and `1,5e3` on a comma-decimal page. Typed scientific notation used to report `badInput` with an empty
+  value. This also fixes a round trip: `value` is written with `String(number)`, which uses exponent form for very
+  small and very large numbers (`0,0000001` → `"1e-7"`), and `valueAsNumber` read that back as `NaN`.
+- The React wrappers type an event with a standard DOM name (`change`, `input`, `copy`) as the DOM event the
+  element dispatches — `Event`, `ClipboardEvent` — instead of `CustomEvent`. These events carry no `detail`; the
+  old type let `e.detail` pass type checking and read `undefined` at runtime. Runtime behaviour is unchanged. A
+  handler annotated `(e: CustomEvent)` or reading `e.detail` on these props now fails type checking: annotate it
+  `(e: Event)` and read the value from `e.currentTarget`. Wrappers built with `plugins/vite-plugin-react-wrapper`
+  get the same typing.
+
 ## [2.20.2] - 2026-10-12
 
 ### Fixed
