@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.20.1] - 2026-10-12
+
+### Fixed
+
+- `u-date-picker` and `u-date-range-picker` in `mode="datetime"` read a value written with another offset as the
+  instant it names. A value such as `2026-09-06T22:22:34Z` showed `22:22` on a `+09:00` machine, and editing it wrote
+  that wall clock back with the local offset, moving the stored instant by nine hours. The picker now shows the local
+  time of that instant, writes edits in the local offset for the same moment, and keeps the given string (no `change`)
+  when a pick leaves the instant as it was. `start` and `end` on the range picker still return the halves as written.
+
 ## [2.20.0] - 2026-10-10
 
 ### Changed
