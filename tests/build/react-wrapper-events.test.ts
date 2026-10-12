@@ -6,6 +6,8 @@ import {
   collectComponentEvents,
   findEventDeclarationViolations,
   isInternalElement,
+  readEventMapEntries,
+  detailFromEventType,
 } from '../../plugins/vite-plugin-react-wrapper';
 // @ts-expect-error — 문서 생성기는 .mjs 로, 타입 선언이 없다
 import { renderReactEventsDoc, DOC_PATH, eventTags } from '../../scripts/react-events-doc.mjs';
@@ -196,5 +198,95 @@ describe('react wrapper — 이벤트 수집', () => {
       }
       expect(missing).toEqual([]);
     });
+  });
+
+  // 래퍼 d.ts 는 detail 타입을 이름으로 쓴다 — 그 이름의 출처를 싣지 못하면 소비자 쪽에서 풀리지 않는다.
+  // `skipLibCheck` 소비자에게는 조용한 `any`, 아니면 `TS2304`. 게시본 둘이 실제로 그랬다:
+  // components `UPagination.d.ts`(같은 파일이 선언한 `PageChangeDetail`) · chat-components `UFileBlock.d.ts`
+  // (다른 패키지에서 import 한 `RemoveEventDetail`). 우리 react 스모크는 `skipLibCheck` 라 둘 다 못 봤다.
+  describe('detail 타입의 출처', () => {
+    const pkg = (name: string, p: string) => resolve(__dirname, '../../..', name, 'src', p);
+    const ev = (file: string, name: string) => collectComponentEvents(file).find(e => e.name === name);
+
+    it('요소 파일이 스스로 선언한 detail 은 그 파일이 출처다', () => {
+      const e = find('components/pagination/UPagination.ts', 'page-change');
+      expect(e?.detailType).toBe('PageChangeDetail');
+      expect(e?.detailSource.replace(/\\/g, '/')).toContain('/src/components/pagination/UPagination.ts');
+    });
+
+    it('다른 패키지에서 import 한 detail 은 그 지정자 그대로', () => {
+      const e = ev(pkg('chat-components', 'components/blocks/UFileBlock.ts'), 'remove');
+      expect(e?.detailType).toBe('RemoveEventDetail');
+      expect(e?.detailSpecifier).toBe('@iyulab/components/dist/events/RemoveEvent.js');
+    });
+
+    it('@event 만 있는 이벤트(컨트롤러가 발화)는 이벤트 맵 선언에서 타입을 얻는다', () => {
+      const e = ev(pkg('chat-components', 'components/blocks/UMarkedBlock.ts'), 'link-activate');
+      expect(e?.detailType).toBe('LinkActivateEventDetail');
+      expect(e?.detailSource.replace(/\\/g, '/')).toContain('/src/events/LinkActivateEvent.ts');
+    });
+
+    it('네이티브 이름(맵에 없는 change)은 추측하지 않는다 — unknown 그대로', () => {
+      expect(find('components/checkbox/UCheckbox.ts', 'change')?.detailType).toBe('unknown');
+    });
+
+    it('워크스페이스 전 패키지에서, 이름으로 쓴 detail 타입은 전부 출처가 있다', () => {
+      const orphans: string[] = [];
+      for (const name of ['components', 'chat-components', 'data-components', 'editor-components', 'modern-app']) {
+        const root = resolve(__dirname, '../../..', name);
+        for (const f of globSync('src/**/*.ts', { cwd: root, absolute: true })) {
+          if (!/@customElement\s*\(/.test(readFileSync(f, 'utf-8'))) continue;
+          for (const e of collectComponentEvents(f)) {
+            if (e.detailType === 'unknown' || !/^\w+$/.test(e.detailType)) continue;
+            if (!e.detailSource && !e.detailSpecifier) orphans.push(`${name} ${f.split(/[\\/]/).pop()} ${e.name}: ${e.detailType}`);
+          }
+        }
+      }
+      expect(orphans).toEqual([]);
+    });
+  });
+
+  describe('이벤트 맵 읽기', () => {
+    it('맨 바깥 항목만 — 인라인 객체 타입 안의 속성을 항목으로 읽지 않는다', () => {
+      const src = "export interface XEventMap {\n  /** doc; with semicolon */\n  'search': CustomEvent<{ query: string; at: number }>;\n  open: OpenEvent;\n}";
+      expect(readEventMapEntries(src)).toEqual([
+        { map: 'XEventMap', name: 'search', type: 'CustomEvent<{ query: string; at: number }>' },
+        { map: 'XEventMap', name: 'open', type: 'OpenEvent' },
+      ]);
+    });
+
+    it('별칭(`type A = CustomEvent<X>`)을 같은 파일에서 푼다', () => {
+      const src = 'export interface ADetail { a: 1 }\nexport type A = CustomEvent<ADetail>;';
+      expect(detailFromEventType('A', '/p/src/A.ts', src)).toEqual({ detailType: 'ADetail', detailSource: '/p/src/A.ts' });
+    });
+
+    it('인라인 detail 은 이름을 참조하지 않을 때만 그대로 싣는다', () => {
+      expect(detailFromEventType('CustomEvent<{ query: string }>', '/f.ts', '')?.detailType).toBe('{ query: string }');
+    });
+
+    it('⚪NEGATIVE — 출처를 못 푸는 이름 · 참조가 든 인라인 · CustomEvent 가 아닌 이벤트는 null', () => {
+      expect(detailFromEventType('CustomEvent<Foo>', '/f.ts', 'const x = 1;')).toBeNull();
+      expect(detailFromEventType('CustomEvent<{ row: DataRow }>', '/f.ts', '')).toBeNull();
+      expect(detailFromEventType('MouseEvent', '/f.ts', '')).toBeNull();
+    });
+  });
+
+  // 문서 생성기(.mjs)는 이벤트 맵 해석을 복제하지 않는다 — 지금 components 의 이벤트는 전부 `this.fire<T>` 나
+  // `@event`(네이티브)로 타입이 정해진다. 맵에서만 타입을 얻는 이벤트가 생기면 이 대조가 문서의 낡음을 잡는다.
+  it('문서의 detail 열이 래퍼 타입과 같다', () => {
+    const doc = renderReactEventsDoc(root);
+    const mismatches: string[] = [];
+    for (const rel of globSync('src/components/**/*.ts', { cwd: root })) {
+      const file = resolve(root, rel);
+      const text = readFileSync(file, 'utf-8');
+      const tag = text.match(/@customElement\s*\(\s*['"]([^'"]+)['"]\s*\)/);
+      if (!tag || isInternalElement(text)) continue;
+      const section = doc.split(`## \`<${tag[1]}>\``)[1]?.split('\n## ')[0] ?? '';
+      for (const e of collectComponentEvents(file)) {
+        const row = section.match(new RegExp('\\| `' + e.reactName + '` \\| `' + e.name + '` \\| `([^`]+)`'));
+        if (row?.[1] !== e.detailType) mismatches.push(`${tag[1]} ${e.name}: 래퍼=${e.detailType} 문서=${row?.[1]}`);
+      }
+    }
+    expect(mismatches).toEqual([]);
   });
 });

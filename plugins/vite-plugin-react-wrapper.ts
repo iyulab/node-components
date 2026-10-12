@@ -19,7 +19,16 @@ interface ComponentEvent {
    * 절대화해 이 어긋남을 원천 차단한다.
    */
   detailSource: string;
+  /**
+   * detail 타입을 **다른 패키지**에서 가져올 때의 지정자(예: `@iyulab/components/dist/events/RemoveEvent.js`).
+   * 그 경우 `detailSource` 는 비고, d.ts 는 이 지정자 그대로 import 한다 — 비워 두면 래퍼 d.ts 가
+   * import 없이 이름만 써서 소비자 쪽에서 풀리지 않는다(`TS2304`).
+   */
+  detailSpecifier?: string;
 }
+
+/** detail 타입을 어디서 가져오는가 — 같은 패키지 소스(절대 경로) 또는 다른 패키지(지정자). */
+interface DetailOrigin { detailSource: string; detailSpecifier?: string }
 
 interface ComponentInfo {
   className: string;     // 클래스명 (예: UButton)
@@ -213,19 +222,34 @@ export function findEventDeclarationViolations(
  * ⑵leaf 가 같은 이벤트를 더 구체적 타입으로 발화하면 그것이 이긴다.
  */
 export function collectComponentEvents(filePath: string): ComponentEvent[] {
-  const eventMap = new Map<string, { detailType: string; detailSource: string }>();
-  collectInto(eventMap, filePath, new Set());
+  const eventMap = new Map<string, EventEntry>();
+  const chain = new Set<string>();
+  collectInto(eventMap, filePath, chain);
 
-  return Array.from(eventMap, ([name, { detailType, detailSource }]) => ({
+  // `@event` 만 있고 detail 타입을 모르는 이벤트는 **이벤트 맵 선언**에서 찾는다 — 요소 범위 맵
+  // (`UInputEventMap` 처럼 상속 체인 파일의 `*EventMap`)이 먼저, 패키지 전역 증강
+  // (`HTMLElementEventMap`·`GlobalEventHandlersEventMap`)이 다음. 타입은 그 선언 한 곳이 정본이다 —
+  // 컨트롤러가 대신 발화하는 이벤트(`this.fire` 가 없다)도 여기서 타입을 얻는다.
+  const srcRoot = packageSrcRoot(filePath);
+  for (const [name, entry] of eventMap) {
+    if (entry.detailType !== 'unknown') continue;
+    const found = lookupEventMaps(name, [...chain], srcRoot);
+    if (found) eventMap.set(name, found);
+  }
+
+  return Array.from(eventMap, ([name, { detailType, detailSource, detailSpecifier }]) => ({
     name,
     reactName: toCamelEvent(name),
     detailType,
     detailSource,
+    ...(detailSpecifier ? { detailSpecifier } : {}),
   }));
 }
 
+type EventEntry = { detailType: string } & DetailOrigin;
+
 function collectInto(
-  eventMap: Map<string, { detailType: string; detailSource: string }>,
+  eventMap: Map<string, EventEntry>,
   filePath: string,
   visited: Set<string>,
 ): void {
@@ -236,14 +260,7 @@ function collectInto(
 
   // import 구문에서 식별자 → 소스 경로 매핑 수집 (detail 타입과 베이스 클래스 양쪽에 쓴다)
   // 예: import { ShowEventDetail } from '../events/ShowEvent.js';
-  const importMap = new Map<string, string>();
-  for (const m of content.matchAll(/import\s+\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/g)) {
-    const importPath = m[2];
-    for (const name of m[1].split(',')) {
-      const typeName = name.replace(/type\s+/, '').trim();
-      if (typeName) importMap.set(typeName, importPath);
-    }
-  }
+  const importMap = readImportMap(content);
 
   // 베이스 클래스를 먼저 수집한다 (제네릭 베이스 `extends UFormControlElement<T>` 포함)
   const extendsMatch = content.match(
@@ -262,9 +279,139 @@ function collectInto(
   // this.fire<DetailType>('eventName') 패턴 - 제네릭 타입 추출
   for (const m of content.matchAll(/this\.fire\s*(?:<([^>]+)>)?\s*\(\s*['"]([\w-]+)['"]/g)) {
     const detailType = m[1] || 'unknown';
-    const detailSource = resolveLocalModule(filePath, importMap.get(detailType)) || '';
-    eventMap.set(m[2], { detailType, detailSource });
+    eventMap.set(m[2], { detailType, ...detailOrigin(detailType, filePath, content, importMap) });
   }
+}
+
+/** 이 파일이 그 이름을 export 선언하는가. */
+function declaresExport(content: string, name: string): boolean {
+  return new RegExp(`export\\s+(?:interface|type|class|enum)\\s+${name}\\b`).test(content);
+}
+
+/**
+ * detail 타입 이름의 출처 — 이 파일이 import 했으면 그 import 를, 이 파일이 스스로 export 선언했으면 이 파일을.
+ * ⚠뒤쪽이 빠져 있었다: `UPagination` 의 `PageChangeDetail` 처럼 요소 파일이 선언한 detail 은 출처가 비어
+ * 래퍼 d.ts 가 import 없이 이름만 썼다(`skipLibCheck` 소비자에게는 조용한 `any`, 아니면 `TS2304`).
+ */
+function detailOrigin(name: string, file: string, content: string, importMap: Map<string, string>): DetailOrigin {
+  const imported = importMap.get(name);
+  if (imported) return resolveDetailOrigin(file, imported);
+  return declaresExport(content, name) ? { detailSource: file } : { detailSource: '' };
+}
+
+function readImportMap(content: string): Map<string, string> {
+  const importMap = new Map<string, string>();
+  for (const m of content.matchAll(/import\s+(?:type\s+)?\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/g)) {
+    for (const name of m[1].split(',')) {
+      const typeName = name.replace(/type\s+/, '').trim();
+      if (typeName) importMap.set(typeName, m[2]);
+    }
+  }
+  return importMap;
+}
+
+/** 상대 import 는 같은 패키지 소스(절대 경로)로, 패키지 지정자는 그대로 — 둘 다 아니면 출처 없음. */
+function resolveDetailOrigin(fromFile: string, importPath: string | undefined): DetailOrigin {
+  if (importPath && !importPath.startsWith('.')) return { detailSource: '', detailSpecifier: importPath };
+  return { detailSource: resolveLocalModule(fromFile, importPath) || '' };
+}
+
+/** 소스 파일이 속한 패키지의 `src` 디렉터리(없으면 그 파일의 디렉터리). */
+function packageSrcRoot(filePath: string): string {
+  const norm = filePath.split(sep).join('/');
+  const i = norm.lastIndexOf('/src/');
+  return i >= 0 ? norm.slice(0, i + 4) : dirname(filePath);
+}
+
+/** 이벤트 맵 인터페이스의 `'name': Type;` 항목들 — `map` 은 맵 이름(예: `HTMLElementEventMap`). */
+export function readEventMapEntries(content: string): { map: string; name: string; type: string }[] {
+  const out: { map: string; name: string; type: string }[] = [];
+  for (const m of content.matchAll(/interface\s+(\w*EventMap)\s*\{/g)) {
+    // 짝 맞는 닫는 중괄호까지 — 항목 타입 안의 `{ query: string }` 를 건너뛴다.
+    let depth = 1;
+    let i = m.index + m[0].length;
+    const start = i;
+    for (; i < content.length && depth > 0; i++) {
+      if (content[i] === '{') depth++;
+      else if (content[i] === '}') depth--;
+    }
+    const body = content.slice(start, i - 1).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+    // 항목 = 맨 바깥 깊이의 `이름: 타입;` — 인라인 객체 타입 안의 `query: string;` 을 항목으로 읽지 않는다.
+    let depthB = 0;
+    let from = 0;
+    for (let j = 0; j < body.length; j++) {
+      const c = body[j];
+      if (c === '{' || c === '<' || c === '(') depthB++;
+      else if (c === '}' || c === '>' || c === ')') depthB--;
+      else if (c === ';' && depthB === 0) {
+        const e = body.slice(from, j).match(/^\s*['"]?([\w-]+)['"]?\s*:\s*([\s\S]+)$/);
+        if (e) out.push({ map: m[1], name: e[1], type: e[2].trim() });
+        from = j + 1;
+      }
+    }
+  }
+  return out;
+}
+
+const GLOBAL_EVENT_MAPS = new Set(['HTMLElementEventMap', 'GlobalEventHandlersEventMap']);
+const globalMapCache = new Map<string, { name: string; type: string; file: string }[]>();
+
+function globalEventMapEntries(srcRoot: string): { name: string; type: string; file: string }[] {
+  let entries = globalMapCache.get(srcRoot);
+  if (!entries) {
+    entries = [];
+    for (const file of globSync('**/*.ts', { cwd: srcRoot, absolute: true, ignore: ['**/*.test.ts', '**/*.d.ts'] })) {
+      const content = readFileSync(file, 'utf-8');
+      if (!content.includes('EventMap')) continue;
+      for (const e of readEventMapEntries(content)) {
+        if (GLOBAL_EVENT_MAPS.has(e.map)) entries.push({ name: e.name, type: e.type, file });
+      }
+    }
+    globalMapCache.set(srcRoot, entries);
+  }
+  return entries;
+}
+
+function lookupEventMaps(name: string, chainFiles: string[], srcRoot: string): EventEntry | null {
+  // 요소 범위 맵 — 상속 체인 파일 안의 `*EventMap`. leaf 부터(가장 구체적인 선언이 이긴다).
+  for (const file of [...chainFiles].reverse()) {
+    const content = readFileSync(file, 'utf-8');
+    const hit = readEventMapEntries(content).find(e => e.name === name && !GLOBAL_EVENT_MAPS.has(e.map));
+    const resolved = hit && detailFromEventType(hit.type, file, content);
+    if (resolved) return resolved;
+  }
+  for (const hit of globalEventMapEntries(srcRoot).filter(e => e.name === name)) {
+    const resolved = detailFromEventType(hit.type, hit.file, readFileSync(hit.file, 'utf-8'));
+    if (resolved) return resolved;
+  }
+  return null;
+}
+
+const INLINE_PRIMITIVES = new Set(['string', 'number', 'boolean', 'null', 'undefined', 'unknown', 'true', 'false', 'readonly']);
+
+/**
+ * 이벤트 타입 글자에서 detail 타입과 그 출처를 푼다 — `CustomEvent<X>` 이거나, 같은 파일의
+ * `type A = CustomEvent<X>` 별칭 `A`. `X` 는 그 파일이 선언했거나 import 한 이름 하나, 또는 다른 이름을
+ * 참조하지 않는 인라인 타입(`{ query: string }`). 못 풀면 null — 추측해서 거짓 타입을 내지 않는다.
+ */
+export function detailFromEventType(type: string, file: string, content: string): EventEntry | null {
+  const alias = type.match(/^(\w+)$/);
+  if (alias) {
+    const def = content.match(new RegExp(`type\\s+${alias[1]}\\s*=\\s*([^;]+);`));
+    return def ? detailFromEventType(def[1].trim(), file, content) : null;
+  }
+  const custom = type.match(/^CustomEvent<([\s\S]+)>$/);
+  if (!custom) return null;
+  const detail = custom[1].trim();
+  if (/^\w+$/.test(detail)) {
+    const origin = detailOrigin(detail, file, content, readImportMap(content));
+    return origin.detailSource || origin.detailSpecifier ? { detailType: detail, ...origin } : null;
+  }
+  // 인라인 타입 — 속성 이름과 원시 타입만 쓸 때(다른 이름을 참조하면 import 할 길이 없다).
+  const keys = new Set([...detail.matchAll(/(\w+)\??\s*:/g)].map(k => k[1]));
+  const idents = (detail.replace(/(['"])(?:(?!\1).)*\1/g, '').match(/[A-Za-z_]\w*/g) ?? [])
+    .filter(id => !INLINE_PRIMITIVES.has(id) && !keys.has(id));
+  return idents.length === 0 ? { detailType: detail, detailSource: '' } : null;
 }
 
 /** 같은 패키지 소스 안의 상대 import 를 절대 `.ts` 경로로 해석한다 (외부 모듈이면 null) */
@@ -357,7 +504,15 @@ export const ${className} = createComponent({
   // leaf 기준으로 잘못 풀리는 것을 막기 위함 — ComponentEvent.detailSource 주석 참조).
   const detailImportMap = new Map<string, string[]>(); // 빌드경로 → [타입명]
   for (const e of events) {
-    if (e.detailType === 'unknown' || !e.detailSource) continue;
+    if (e.detailType === 'unknown') continue;
+    // 다른 패키지의 detail 타입은 그 지정자 그대로 — 이미 «패키지 스펙»이다.
+    if (e.detailSpecifier) {
+      const types = detailImportMap.get(e.detailSpecifier) || [];
+      if (!types.includes(e.detailType)) types.push(e.detailType);
+      detailImportMap.set(e.detailSpecifier, types);
+      continue;
+    }
+    if (!e.detailSource) continue;  // 인라인 타입(`{ query: string }`) — import 할 것이 없다
     const absEventSrc = e.detailSource.replace(/\\/g, '/');
     const eventSrcIndex = absEventSrc.indexOf('/src/');
     const relFromSrc = eventSrcIndex >= 0
