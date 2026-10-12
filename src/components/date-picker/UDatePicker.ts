@@ -15,7 +15,7 @@ import { dateTextPattern, formatDateText, formatDateTimeText, parseDate, parseDa
 import { UCalendar } from "../calendar/UCalendar.js";
 import { DateTextController } from "../calendar/date-text-controller.js";
 import { isDayUnavailable, parseISODate, toISODate, type DateDisabledFn } from "../calendar/dates.js";
-import { normalizeTime, splitDateTime, toDateTimeOffset } from "../calendar/datetime.js";
+import { normalizeTime, sameDateTime, splitDateTime, toDateTimeOffset } from "../calendar/datetime.js";
 import { UPopover } from "../popover/UPopover.js";
 import { styles as pickerStyles } from "../calendar/picker.styles.js";
 import { styles } from "./UDatePicker.styles.js";
@@ -371,9 +371,9 @@ export class UDatePicker extends UFormControlElement<string> {
       this.staged = iso;
       return;
     }
-    const changed = iso !== this.value;
+    const changed = !sameDateTime(iso, this.value);
     this.textEntry.clear();
-    this.value = iso;
+    if (changed) this.value = iso;
     if (changed) this.emitChange();
     this.popoverEl?.hide();
     (this.textInputEl ?? this.containerEl)?.focus();
@@ -392,9 +392,9 @@ export class UDatePicker extends UFormControlElement<string> {
     }
     if (!this.value) return;
     const iso = buildValue(splitValue(this.value).date, this.mode, time);
-    const changed = iso !== this.value;
+    const changed = !sameDateTime(iso, this.value);
     this.textEntry.clear();
-    this.value = iso;
+    if (changed) this.value = iso;
     if (changed) this.emitChange();
   };
 
@@ -471,9 +471,9 @@ export class UDatePicker extends UFormControlElement<string> {
   /** `confirm` 모드의 «적용» — 달력에서 고른 것을 값으로 확정한다(비운 채면 값을 비운다). */
   private handleApplyClick = () => {
     const next = this.staged;
-    const changed = next !== this.value;
+    const changed = !sameDateTime(next, this.value);
     this.textEntry.clear();
-    this.value = next;
+    if (changed) this.value = next;
     if (changed) this.emitChange();
     this.popoverEl?.hide();
     (this.textInputEl ?? this.containerEl)?.focus();

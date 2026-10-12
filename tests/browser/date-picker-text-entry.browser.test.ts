@@ -3,6 +3,9 @@ import { userEvent } from 'vitest/browser';
 import '../../src/components/date-picker/UDatePicker.js';
 import type { UDatePicker } from '../../src/components/date-picker/UDatePicker.js';
 import { Locale } from '../../src/utilities/Locale.js';
+import { toDateTimeOffset } from '../../src/components/calendar/datetime.js';
+/** 이 브라우저의 오프셋으로 쓴 값 — 피커는 오프셋 있는 값을 순간으로 읽으므로, 벽시계 숫자를 단언하는 시험의 고정값은 실행 시간대의 오프셋이어야 한다. */
+const local = (day: string, time: string) => toDateTimeOffset(day, time);
 
 /**
  * `mode="date"` 의 텍스트 칸 — 키보드로 날짜를 그대로 친다. 실제 키 입력(`userEvent`)으로 재는
@@ -162,7 +165,7 @@ describe('UDatePicker — 직접 입력(mode="date")', () => {
     expect(box.getAttribute('aria-label')).toBe('Order date');
   });
   it('mode="datetime" 은 날짜와 시간을 친다 — 날짜만 치면 이미 정한 시간을 유지한다', async () => {
-    const el = mount({ mode: 'datetime', value: '2026-02-15T09:30:00+09:00' });
+    const el = mount({ mode: 'datetime', value: local('2026-02-15', '09:30:00') });
     await settle(el);
     expect(input(el).value).toBe('2026-02-15 09:30');
     expect(input(el).placeholder).toBe('YYYY-MM-DD HH:mm');

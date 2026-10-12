@@ -10,7 +10,11 @@ Single-date(-time) selection with a popover calendar. `mode="date"` (default) fo
 convention as the native `input[type=date]`: an ISO `YYYY-MM-DD` string. `mode="datetime"` adds
 a time-of-day input and the value becomes a complete ISO-8601 `DateTimeOffset` string
 (`YYYY-MM-DDTHH:mm:ss±HH:mm`, seconds and the browser's local UTC offset always filled in — the
-value is unconditionally valid regardless of how coarse the time input was). Form-associated.
+value is unconditionally valid regardless of how coarse the time input was). A value set with any
+other offset — a server's UTC `…Z` — is read as the instant it names and shown in the browser's local
+time, so `2026-09-06T22:22:34Z` shows `2026-09-07 07:22` in Seoul and picking the next day writes the
+same moment one day later. The value keeps the string it was given until the person changes it.
+Form-associated.
 
 > The calendar week always starts on Sunday, regardless of locale.
 

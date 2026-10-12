@@ -1,6 +1,7 @@
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 import type { UCalendar } from "./UCalendar.js";
 import type { UPopover } from "../popover/UPopover.js";
+import { sameDateTime } from "./datetime.js";
 
 /** What a picker with a typed-date text box gives the controller. */
 export interface DateTextControllerOptions {
@@ -136,8 +137,8 @@ export class DateTextController implements ReactiveController {
     const next = this.options.toValue(text);
     this.badText = next === null;
     const value = next ?? undefined;
-    const changed = value !== this.host.value;
-    this.host.value = value;
+    const changed = !sameDateTime(value, this.host.value);
+    if (changed) this.host.value = value;
     this.draft = this.badText ? text : null;
     this.host.requestUpdate();
     if (changed) this.options.onChange();

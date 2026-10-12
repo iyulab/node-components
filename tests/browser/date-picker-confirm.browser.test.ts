@@ -5,6 +5,9 @@ import '../../src/components/date-range-picker/UDateRangePicker.js';
 import type { UDatePicker } from '../../src/components/date-picker/UDatePicker.js';
 import type { UDateRangePicker } from '../../src/components/date-range-picker/UDateRangePicker.js';
 import { Locale } from '../../src/utilities/Locale.js';
+import { toDateTimeOffset } from '../../src/components/calendar/datetime.js';
+/** 이 브라우저의 오프셋으로 쓴 값 — 피커는 오프셋 있는 값을 순간으로 읽으므로, 벽시계 숫자를 단언하는 시험의 고정값은 실행 시간대의 오프셋이어야 한다. */
+const local = (day: string, time: string) => toDateTimeOffset(day, time);
 
 type Picker = UDatePicker | UDateRangePicker;
 
@@ -94,8 +97,9 @@ describe('confirm 모드 — u-date-picker', () => {
   });
 
   it('datetime — 날과 시간을 바꾼 뒤 «Apply» 에서 한 번에 확정한다', async () => {
+    const start = local('2026-03-06', '09:00:00');
     const el = await mount<UDatePicker>(
-      '<u-date-picker confirm mode="datetime" value="2026-03-06T09:00:00+09:00"></u-date-picker>', 'u-date-picker');
+      `<u-date-picker confirm mode="datetime" value="${start}"></u-date-picker>`, 'u-date-picker');
     let changes = 0;
     el.addEventListener('change', () => changes++);
     await open(el);
@@ -104,7 +108,7 @@ describe('confirm 모드 — u-date-picker', () => {
     time.value = '14:30';
     time.dispatchEvent(new Event('change'));
     await settle(el);
-    expect(el.value).toBe('2026-03-06T09:00:00+09:00');
+    expect(el.value).toBe(start);
     expect(changes).toBe(0);
     await click(el, footerButton(el, 'Apply'));
     expect(el.value!.slice(0, 19)).toBe('2026-03-10T14:30:00');

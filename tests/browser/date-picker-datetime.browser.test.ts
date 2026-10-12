@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import '../../src/components/date-picker/UDatePicker.js';
 import type { UDatePicker } from '../../src/components/date-picker/UDatePicker.js';
+import { toDateTimeOffset } from '../../src/components/calendar/datetime.js';
+/** 이 브라우저의 오프셋으로 쓴 값 — 피커는 오프셋 있는 값을 순간으로 읽으므로, 벽시계 숫자를 단언하는 시험의 고정값은 실행 시간대의 오프셋이어야 한다. */
+const local = (day: string, time: string) => toDateTimeOffset(day, time);
 
 /** 달력 격자는 내부 `u-calendar` 의 섀도 안에 있다(피커는 그것을 감쌀 뿐이다). */
 function cal(el: HTMLElement): ShadowRoot {
@@ -71,7 +74,7 @@ describe('UDatePicker — mode="datetime"', () => {
   });
 
   it('날짜가 있는 상태에서 시간 입력을 바꾸면 값의 시간 부분만 갱신되고 change 가 발화한다', async () => {
-    const el = createDatePicker({ mode: 'datetime', value: '2026-02-15T00:00:00+09:00' });
+    const el = createDatePicker({ mode: 'datetime', value: local('2026-02-15', '00:00:00') });
     document.body.appendChild(el);
     await openCalendar(el);
 
@@ -118,7 +121,7 @@ describe('UDatePicker — mode="datetime"', () => {
   });
 
   it('날짜 셀만 다시 클릭하면(시간 안 건드림) 기존 시간이 보존된다', async () => {
-    const el = createDatePicker({ mode: 'datetime', value: '2026-02-10T08:00:00+09:00' });
+    const el = createDatePicker({ mode: 'datetime', value: local('2026-02-10', '08:00:00') });
     document.body.appendChild(el);
     await openCalendar(el);
 
@@ -130,7 +133,7 @@ describe('UDatePicker — mode="datetime"', () => {
   });
 
   it('"오늘" 퀵액션은 datetime 모드에서 오늘 날짜 + 현재 시:분을 함께 채운다', async () => {
-    const el = createDatePicker({ mode: 'datetime', value: '2020-01-01T00:00:00+09:00' });
+    const el = createDatePicker({ mode: 'datetime', value: local('2020-01-01', '00:00:00') });
     document.body.appendChild(el);
     await openCalendar(el);
 
@@ -146,7 +149,7 @@ describe('UDatePicker — mode="datetime"', () => {
 
   it('date 모드 트리거에는 날짜만, datetime 모드 트리거에는 날짜+시간이 표시된다', async () => {
     const dateEl = createDatePicker({ value: '2026-02-24' });
-    const dtEl = createDatePicker({ mode: 'datetime', value: '2026-02-24T09:30:00+09:00' });
+    const dtEl = createDatePicker({ mode: 'datetime', value: local('2026-02-24', '09:30:00') });
     document.body.append(dateEl, dtEl);
     await settle(dateEl);
     await settle(dtEl);

@@ -45,7 +45,9 @@ exported as `parseDateRange` and `formatDateRangeText`.
 
 `mode="datetime"` adds a start time and an end time under the calendar (labelled inputs). Each half of
 the value is then a complete ISO-8601 `DateTimeOffset` — seconds and the browser's local offset are
-always filled in — and `start`/`end` return those halves:
+always filled in — and `start`/`end` return those halves. A half written with another offset (a
+server's UTC `…Z`) is read as an instant and shown in the browser's local time, the same as
+`u-date-picker`:
 
 ```html
 <u-date-range-picker name="shift" label="Shift" mode="datetime"

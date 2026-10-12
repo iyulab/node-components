@@ -18,7 +18,7 @@ import {
 import { UCalendar, type CalendarRangeSelectDetail } from "../calendar/UCalendar.js";
 import { DateTextController } from "../calendar/date-text-controller.js";
 import { parseISODate, type DateDisabledFn } from "../calendar/dates.js";
-import { normalizeTime, splitDateTime, toDateTimeOffset } from "../calendar/datetime.js";
+import { normalizeTime, sameDateTime, splitDateTime, toDateTimeOffset, toLocalDateTime } from "../calendar/datetime.js";
 import type { DatePickerMode } from "../date-picker/UDatePicker.js";
 import { styles as pickerStyles } from "../calendar/picker.styles.js";
 import { UPopover } from "../popover/UPopover.js";
@@ -31,14 +31,15 @@ export type { DateRangePreset, DateRangePresetName, DateRangePresetOption } from
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const ISO_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
 
-/** Splits `"start/end"` into its two halves — ISO dates, or in `mode="datetime"` ISO date-times;
- *  `undefined` unless both halves have that shape. */
-function parseInterval(value: string | undefined, mode: DatePickerMode): { start: string; end: string } | undefined {
+/** Splits `"start/end"` into its two halves — ISO dates, or in `mode="datetime"` ISO date-times read
+ *  as this browser's wall clock (a half with an offset is an instant — `toLocalDateTime`), or as
+ *  written with `local` off; `undefined` unless both halves have that shape. */
+function parseInterval(value: string | undefined, mode: DatePickerMode, local = true): { start: string; end: string } | undefined {
   if (!value) return undefined;
   const [start, end, ...rest] = value.split('/');
   const shape = mode === 'datetime' ? ISO_DATE_TIME : ISO_DATE;
   if (rest.length || !shape.test(start ?? '') || !shape.test(end ?? '')) return undefined;
-  return { start, end };
+  return mode === 'datetime' && local ? { start: toLocalDateTime(start), end: toLocalDateTime(end) } : { start, end };
 }
 
 /** Whether `start` comes after `end` — by day in `date` mode, by instant in `datetime` mode. */
@@ -46,8 +47,8 @@ function reversed(start: string, end: string, mode: DatePickerMode): boolean {
   return mode === 'datetime' ? new Date(start).getTime() > new Date(end).getTime() : start > end;
 }
 
-/** The ISO day of a half (`YYYY-MM-DD` either way). */
-const dayPart = (half: string) => half.slice(0, 10);
+/** The ISO day of a half (`YYYY-MM-DD` either way) — a half with an offset on this browser's wall clock. */
+const dayPart = (half: string) => splitDateTime(half).day;
 
 
 /**
@@ -176,13 +177,13 @@ export class UDateRangePicker extends UFormControlElement<string> {
   /** Start of the range — the ISO day, or in `mode="datetime"` the ISO date-time; `undefined` when
    *  there is no complete range. */
   get start(): string | undefined {
-    return parseInterval(this.value, this.mode)?.start;
+    return parseInterval(this.value, this.mode, false)?.start;
   }
 
   /** End of the range — the ISO day, or in `mode="datetime"` the ISO date-time; `undefined` when
    *  there is no complete range. */
   get end(): string | undefined {
-    return parseInterval(this.value, this.mode)?.end;
+    return parseInterval(this.value, this.mode, false)?.end;
   }
 
   @query('.container', true) containerEl?: HTMLElement;
@@ -450,9 +451,9 @@ export class UDateRangePicker extends UFormControlElement<string> {
       this.staged = next;
       return;
     }
-    const changed = next !== this.value;
+    const changed = !sameDateTime(next, this.value);
     this.textEntry.clear();
-    this.value = next;
+    if (changed) this.value = next;
     if (changed) this.emitChange();
   }
 
@@ -461,7 +462,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
       <div class="presets" part="presets" role="group" aria-label=${Locale.getValue('quickRanges')}>
         ${presets.map(p => html`
           <button type="button" class="preset" part="preset"
-            aria-pressed=${this.build(p.start, p.end, this.wholeDay) === this.working}
+            aria-pressed=${sameDateTime(this.build(p.start, p.end, this.wholeDay), this.working)}
             ?disabled=${this.unavailable(p)}
             @click=${() => this.commitRange(p.start, p.end, this.wholeDay)}
           >${p.label}</button>
@@ -501,9 +502,9 @@ export class UDateRangePicker extends UFormControlElement<string> {
   /** Commits `next` as the value (firing `change` when it differs), closes the calendar and
    *  returns focus to the text box. */
   private commitValue(next: string | undefined): void {
-    const changed = next !== this.value;
+    const changed = !sameDateTime(next, this.value);
     this.textEntry.clear();
-    this.value = next;
+    if (changed) this.value = next;
     if (changed) this.emitChange();
     this.popoverEl?.hide();
     this.textInputEl?.focus();
