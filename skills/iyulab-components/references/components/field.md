@@ -108,6 +108,13 @@ The hint opens three ways — hovering the icon, entering the field's control fr
 pins it until a tap elsewhere or a second tap). Escape closes it, and so does focus leaving the field. The icon itself
 is not a Tab stop — a form of dozens of fields would otherwise double its Tabs.
 
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `hint` | The info icon beside the label (`description-display="hint"`) |
+| `hint-tooltip` | The tooltip that holds the description |
+
 ## Methods
 
 | Method | Description |
