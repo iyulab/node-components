@@ -33,7 +33,9 @@ export const styles = css`
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: var(--option-padding-block) var(--option-padding-inline);\n    /* 호스트 하한(--u-target-size, 미설정 = 0). */\n    min-height: var(--u-target-size, 0px);
+    padding: var(--option-padding-block) var(--option-padding-inline);
+    /* 호스트 하한(--u-target-size, 미설정 = 0). */
+    min-height: var(--u-target-size, 0px);
     border-radius: inherit;
   }
   :host(:focus-visible) {
@@ -45,7 +47,8 @@ export const styles = css`
   }
 
   :host(:not([disabled]):hover),
-  :host(:not([disabled]):focus-visible) {
+  :host(:not([disabled]):focus-visible),
+  :host([active]:not([disabled])) {
     color: var(--option-color-interactive);
     border-color: var(--option-border-color-interactive);
     background-color: var(--option-background-color-interactive);
@@ -57,7 +60,8 @@ export const styles = css`
     background-color: var(--option-background-color-active);
   }
   :host([selected]:hover),
-  :host([selected]:focus-visible) {
+  :host([selected]:focus-visible),
+  :host([selected][active]) {
     color: var(--option-color-active-interactive);
     border-color: var(--option-border-color-active-interactive);
     background-color: var(--option-background-color-active-interactive);

@@ -10,6 +10,7 @@ import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import { CharsWidthController } from "../../utilities/chars.js";
 import { CompositionTracker } from "../../utilities/composition.js";
+import { isImeComposing } from "../../utilities/keyboard.js";
 // 부수효과 import — 이 모듈이 그리는 `<u-chip>` 을 등록한다(타입만 가져오면 빌드가 import 를 지워 등록되지 않는다).
 import "../chip/UChip.js";
 import type { UChip } from "../chip/UChip.js";
@@ -125,6 +126,11 @@ export class USelect extends UFormControlElement<string | string[]> {
   private query = '';
   /** `query` 의 마지막 음절이 아직 조합 중인가 — 검색 일치가 그 음절을 자모 앞부분으로 견준다. */
   private queryComposing = false;
+  /**
+   * 검색칸의 활성 후보 — 검색어가 있으면 첫 보이는 옵션. Enter 가 그것을 고른다(APG «list autocomplete with automatic
+   * selection»). 포커스는 검색칸에 남고, 보조기기에는 검색칸의 `aria-activedescendant` 로 알린다.
+   */
+  private activeOption?: UOption;
   /** 검색어가 있는데 보이는 옵션이 없다 — 팝업에 «일치하는 항목 없음» 을 알린다. */
   @state() private noMatches = false;
   /** aria-expanded 배선용 팝오버 열림 상태 */
@@ -236,7 +242,7 @@ export class USelect extends UFormControlElement<string | string[]> {
         autofocus
         for=".container"
         trigger="click"
-        @show=${() => (this.open = true)}
+        @show=${() => { this.open = true; this.updateActiveOption(); }}
         @hide=${this.handlePopoverHide}
         strategy="fixed"
         placement="bottom-start"
@@ -398,6 +404,7 @@ export class USelect extends UFormControlElement<string | string[]> {
    */
   private handlePopoverHide = () => {
     this.open = false;
+    this.setActiveOption(undefined);
     if (this.popoverEl?.matches(':focus-within')) {
       this.containerEl?.focus();
     }
@@ -508,9 +515,41 @@ export class USelect extends UFormControlElement<string | string[]> {
       }
     }
     this.noMatches = !!this.query && !this.loading && !this.options.some((o) => !o.hidden);
+    this.updateActiveOption();
+  }
+
+  /** 검색어가 있으면 첫 보이는(고를 수 있는) 옵션이 활성 후보 — 없으면 후보도 없다(화살표로 목록에 들어간다). */
+  private updateActiveOption() {
+    const candidate = this.searchable && this.open && this.query
+      ? this.options.find(o => !o.hidden && !o.disabled)
+      : undefined;
+    this.setActiveOption(candidate);
+  }
+
+  private setActiveOption(option: UOption | undefined) {
+    if (this.activeOption === option) return;
+    if (this.activeOption) this.activeOption.active = false;
+    this.activeOption = option;
+    if (option) {
+      option.active = true;
+      option.scrollIntoView?.({ block: 'nearest' });
+    }
+    // 옵션은 이 요소의 light DOM 이고 검색칸은 섀도 안이다 — IDREF 는 그 경계를 못 넘지만 요소 반영은 넘는다(조상 트리 참조).
+    const input = this.searchInputEl as (HTMLInputElement & { ariaActiveDescendantElement?: Element | null }) | null;
+    if (input && 'ariaActiveDescendantElement' in input) input.ariaActiveDescendantElement = option ?? null;
+  }
+
+  private get searchInputEl(): HTMLInputElement | null {
+    return this.shadowRoot?.querySelector<HTMLInputElement>('.search-input input') ?? null;
   }
 
   private handleSearchKeydown = (e: KeyboardEvent) => {
+    // Enter 는 활성 후보를 고른다 — 조합을 확정하는 Enter(IME)는 입력기의 것이라 고르지 않는다.
+    if (e.key === 'Enter' && !isImeComposing(e) && this.activeOption) {
+      e.preventDefault();
+      this.activeOption.click();
+      return;
+    }
     const options = this.options.filter(o => !o.hidden && !o.disabled);
     if (options.length === 0) return;
 

@@ -42,6 +42,11 @@ export class UOption extends UElement {
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
   /** 선택 여부 */
   @property({ type: Boolean, reflect: true }) selected: boolean = false;
+  /**
+   * The candidate Enter picks from the owning select's search box — shown like a hovered option. Set by `u-select`
+   * while its search box has the focus; not meant to be set by hand.
+   */
+  @property({ type: Boolean, reflect: true }) active: boolean = false;
   /** 옵션 마커 유형. 'radio'는 원형, 'check'는 체크 모양의 마커를 표시합니다. */
   @property({ type: String, reflect: true }) marker?: OptionMarker;
   /** 옵션 고유값 */

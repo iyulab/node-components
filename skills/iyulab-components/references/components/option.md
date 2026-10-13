@@ -44,6 +44,7 @@ Selectable option item. Used inside `u-select`, `u-radio`, and `u-input` (combob
 | `value` | `string` | `''` | — | Submitted value |
 | `disabled` | `boolean` | `false` | ✓ | Disable the option |
 | `selected` | `boolean` | `false` | ✓ | Selected state |
+| `active` | `boolean` | `false` | ✓ | The candidate `Enter` picks from the owning `u-select`'s search field — shown like a hovered option. Set by the select; not meant to be set by hand |
 | `marker` | `'radio'\|'check'` | — | ✓ | Show leading marker icon |
 
 ## Methods

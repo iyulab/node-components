@@ -78,7 +78,10 @@ Dropdown select with single or multiple selection, search, and clear support. Fo
 The trigger is a `role="combobox"`. Without `searchable` the dropdown holds a `role="listbox"`
 and opening it focuses the first option. With `searchable` the dropdown is a `role="dialog"`
 (named by `label`, or "Search") that holds the search field and the listbox; opening it focuses
-the search field, so typing filters at once. From the search field `ArrowDown`/`ArrowUp` move to
+the search field, so typing filters at once. While there is a query, the first visible option is the
+**active candidate** — shown like a hovered option and announced through the search field's
+`aria-activedescendant` — and `Enter` picks it (closing the list, or toggling it with `multiple`); the
+`Enter` that commits an IME composition does not. From the search field `ArrowDown`/`ArrowUp` move to
 the first/last visible option; on an option, arrows, `Home`/`End`, `Enter`/`Space` (select) and
 `Escape` (close) work as usual.
 

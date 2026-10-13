@@ -11,6 +11,11 @@
   without a label keeps the description inline. The hint opens on hovering the icon, on entering the field's control
   from the keyboard (a click into the control does not), and on tapping the icon (touch); Escape or focus leaving the
   field closes it. The icon is not a Tab stop.
+- **`u-select searchable`: Enter in the search field picks the first match.** While there is a query, the first
+  visible option is the active candidate — shown like a hovered option (`u-option[active]`) and announced through the
+  search field's `aria-activedescendant` — and Enter selects it (and closes the list; with `multiple` it toggles and
+  the list stays open). Typing «ap» and pressing Enter used to do nothing; the match took ArrowDown, then Enter. The
+  Enter that commits an IME composition does not pick. Options a remote search puts in get a candidate as they arrive.
 
 ### Fixed
 
