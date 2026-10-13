@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- A `u-dialog` or `u-drawer` whose controls are components — `u-button`, `u-icon-button` — gives the first of them the
+  focus when it opens. The focus stayed on the dialog itself: the initial-focus search did not count a host whose
+  shadow root delegates focus as focusable, and the trap's own «first tabbable» did not see inside it at that moment
+  (a native `<button>` was found). `autofocus` on a `u-icon-button` is honoured for the same reason.
+
 ## [2.23.0] - 2026-10-13
 
 ### Added

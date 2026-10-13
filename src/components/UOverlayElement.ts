@@ -179,7 +179,12 @@ export abstract class UOverlayElement extends UElement {
   /**
    * 열릴 때 포커스를 받을 요소를 정한다 — **입력을 먼저 본다.**
    *
-   * 순서: `[autofocus]` → 첫 입력 컨트롤 → (없으면) focus-trap 기본값(첫 tabbable).
+   * 순서: `[autofocus]` → 첫 입력 컨트롤 → 첫 포커스 가능 요소(섀도 안까지) → (없으면) focus-trap 기본값.
+   *
+   * 셋째 단계는 우리가 찾는다 — focus-trap 의 «첫 tabbable» 은 여는 순간 슬롯 자식 컴포넌트(`u-button` 의
+   * 섀도 안 버튼)를 보지 못해, 버튼만 든 대화상자의 포커스가 호스트에 머물렀다(브라우저 실측 — 네이티브
+   * `<button>` 은 잡았다. 열린 뒤의 Tab 가두기는 그 버튼들을 정상으로 돈다). 후보마다 실제로 포커스해 보고,
+   * 포커스가 그 안에 들어간 첫 요소에서 멈춘다(`delegatesFocus` 호스트가 안에 포커스할 것이 없으면 다음으로).
    *
    * 🔴**두 분기가 «각각» 무엇을 하는지 되돌려 재서 갈랐다** — 이 함수는 그 기록이다.
    *
@@ -202,18 +207,23 @@ export abstract class UOverlayElement extends UElement {
         'input, select, textarea, u-input, u-textarea, u-select, u-checkbox, u-radio, u-switch, u-slider',
         isFocusCandidate,
       );
-    if (!target) return undefined; // focus-trap 기본값(첫 tabbable)에 맡긴다
-
     // 직접 포커스한다 — `u-input` 처럼 `focus()` 를 안쪽으로 넘기는 호스트는 그 자신이 tabbable 이
     // 아니라서, 노드로 넘기면 focus-trap 이 «포커스 불가» 로 보고 첫 tabbable 로 폴백한다(실측: 앞의 버튼).
-    // 포커스가 대상 안에 들어갔으면 `false`(trap 이 더 옮기지 않는다), 아니면 기본값.
-    target.focus();
+    // 포커스가 대상 안에 들어갔으면 `false`(trap 이 더 옮기지 않는다).
+    if (target && this.focusLands(target)) return false;
+    const first = querySelectorDeep(content, '*', (el) => isFocusCandidate(el) && this.focusLands(el));
+    return first ? false : undefined; // 없으면 focus-trap 기본값(`fallbackFocus` — 호스트)에 맡긴다
+  }
+
+  /** `el` 을 포커스하고, 실제 포커스가 그 안(섀도 포함)에 들어갔는가. */
+  private focusLands(el: HTMLElement): boolean {
+    el.focus();
     let active: Element | null = document.activeElement;
     while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement;
     for (let n: Node | null = active; n; n = n.parentNode ?? (n as ShadowRoot).host ?? null) {
-      if (n === target) return false;
+      if (n === el) return true;
     }
-    return undefined;
+    return false;
   }
 
   /** 오버레이가 닫힐 때 설정을 해제합니다. */

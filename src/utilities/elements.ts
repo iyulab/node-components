@@ -63,7 +63,8 @@ export function isCoarsePointer(event: PointerEvent): boolean {
 
 /**
  * 포커스를 «받을 수 있는» 요소인가 — 초기 포커스 후보를 고를 때 쓴다.
- * 네이티브 포커스 요소 · `focus()` 를 재정의한(안쪽으로 넘겨 주는) 컴포넌트 · `tabindex` 를 가진 요소이고,
+ * 네이티브 포커스 요소 · `focus()` 를 재정의한(안쪽으로 넘겨 주는) 컴포넌트 · 섀도 루트가 `delegatesFocus` 인
+ * 호스트(`u-button` · `u-icon-button` — `focus()` 를 플랫폼이 안쪽으로 넘긴다) · `tabindex` 를 가진 요소이고,
  * 비활성·`inert`·안 보임이 아니어야 한다. 걸러진 호스트는 그 안쪽(섀도 루트)에서 계속 찾는다.
  * `u-select` 의 섀도에는 속성 `autofocus` 를 가진 닫힌 `u-popover` 가 늘 있다 — 이것을 집으면
  * 포커스가 아무 데도 가지 않는다.
@@ -72,7 +73,7 @@ export function isFocusCandidate(el: Element): el is HTMLElement {
   if (!(el instanceof HTMLElement)) return false;
   const native = el.matches('input:not([type="hidden"]), select, textarea, button, a[href], [contenteditable=""], [contenteditable="true"]');
   // `focus()` 를 재정의한 컴포넌트(`u-input`·`u-select` …)는 안쪽 컨트롤로 넘겨 준다 — 호스트 자체가 후보다.
-  const forwards = el.focus !== HTMLElement.prototype.focus;
+  const forwards = el.focus !== HTMLElement.prototype.focus || el.shadowRoot?.delegatesFocus === true;
   if (!native && !forwards && !el.hasAttribute('tabindex')) return false;
   if (el.matches(':disabled') || el.hasAttribute('disabled') || el.closest('[inert]')) return false;
   return typeof el.checkVisibility === 'function' ? el.checkVisibility() : true;

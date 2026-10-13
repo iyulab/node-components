@@ -4,6 +4,8 @@ import '../../src/components/drawer/UDrawer.js';
 import { LitElement, html } from 'lit';
 import '../../src/components/select/USelect.js';
 import '../../src/components/input/UInput.js';
+import '../../src/components/button/UButton.js';
+import '../../src/components/icon-button/UIconButton.js';
 
 /** 슬롯 자식이 컴포넌트인 경우 — 컨트롤은 그 섀도 루트에 있다. */
 class FormBody extends LitElement {
@@ -102,5 +104,25 @@ describe('오버레이 초기 포커스', () => {
     const active = deepActive();
     expect(active?.tagName).toBe('INPUT');
     expect(host.shadowRoot!.contains(active)).toBe(true);
+  });
+
+  it('🔴u-dialog — buttons that are components (`u-button`) take the first focus; it stayed on the dialog host', async () => {
+    const el = await mount('u-dialog', `<u-button id="ok">OK</u-button><u-button id="cancel">Cancel</u-button>`);
+    const ok = el.querySelector('#ok')!;
+    expect(ok.shadowRoot!.contains(deepActive())).toBe(true);
+  });
+
+  it('🔴`<u-icon-button autofocus>` is a candidate — its shadow root delegates focus', async () => {
+    const el = await mount('u-dialog', `<u-button id="ok">OK</u-button><u-icon-button id="x" name="x" autofocus>Close</u-icon-button>`);
+    const x = el.querySelector('#x')!;
+    let n: Node | null = deepActive();
+    let inside = false;
+    for (; n; n = n.parentNode ?? (n as ShadowRoot).host ?? null) if (n === x) inside = true;
+    expect(inside).toBe(true);
+  });
+
+  it('NEGATIVE with nothing to focus the dialog host keeps the focus', async () => {
+    const el = await mount('u-dialog', `Just text`);
+    expect(document.activeElement).toBe(el);
   });
 });
