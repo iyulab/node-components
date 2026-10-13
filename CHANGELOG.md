@@ -9,6 +9,11 @@
   fires again with `composing: false` and the finished text; Chromium sends no plain `input` at that point, so a
   consumer that skipped composing events had no way to see the finished query. A consumer that searches a server can
   now skip composing queries. `search` no longer repeats an unchanged query.
+- `CompositionTracker` and `replayInput` (`utilities/composition`) — for an input that filters or searches as you type.
+  Attach a tracker to the input's `compositionstart`, `compositionupdate` and `compositionend`; `composing` says an IME
+  composition is in progress and `settled(input)` gives the text without the syllable still being composed. Filtering
+  on the settled text never hides an item the finished text would match. `new CompositionTracker(replayInput)` re-runs
+  the input's own `input` handler when the composition ends, for an input that waits until then.
 - `modelValue` on form controls — the value a `u-form` reads into and writes from its `model`. It is `value` by
   default; `u-checkbox` and `u-switch` exchange `checked`. A custom control whose state lives in another property
   overrides it.

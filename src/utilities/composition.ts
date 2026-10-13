@@ -50,3 +50,11 @@ export class CompositionTracker implements EventListenerObject {
     return input.value.slice(0, this.start) + input.value.slice(this.start + this.text.length);
   }
 }
+
+/**
+ * 입력 칸의 `input` 처리기를 다시 부른다 — 그 칸 자신의 처리기만(전파하지 않는다). 조합 중에는 거르기·검색을 멈추는
+ * 칸이 조합 끝에 확정 글자로 다시 돌게 하는 `onEnd`: `new CompositionTracker(replayInput)`.
+ */
+export function replayInput(input: HTMLInputElement | HTMLTextAreaElement): void {
+  input.dispatchEvent(new Event('input', { bubbles: false, composed: false }));
+}
