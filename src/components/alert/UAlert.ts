@@ -9,6 +9,7 @@ import { ShowEventDetail } from '../../events/ShowEvent.js';
 import { HideEventDetail } from '../../events/HideEvent.js';
 import { Locale } from '../../utilities/Locale.js';
 import { devWarnOnce } from '../../utilities/devWarning.js';
+import { HostAria } from '../../utilities/hostAria.js';
 
 /** 유효한 `u-alert` 상태 — 런타임 검증과 타입이 **같은 목록**을 보게 둔다. */
 export const ALERT_STATUSES = ["error", "warning", "success", "info", "notice"] as const;
@@ -41,6 +42,7 @@ export type AlertAppearance = "soft" | "outlined";
  *
  * @slot - Alert 본문 콘텐츠
  * @slot footer - Alert 하단 콘텐츠 (예: 액션 버튼)
+ * @slot icon - 상태 아이콘을 대신할 아이콘 (예: 메모의 연필). 비우면 `status` 의 아이콘
  *
  * @csspart container - 전체 Alert 컨테이너 (flex column)
  * @csspart header - 아이콘·타이틀·닫기 버튼을 포함하는 상단 행
@@ -76,6 +78,14 @@ export class UAlert extends UElement {
   @property({ type: String }) override title: string = '';
   /** 자동 닫힘 타이머 (밀리초 단위, 0이하면 비활성화) */
   @property({ type: Number }) duration: number = 0;
+  /**
+   * 페이지 흐름 안의 알림 — 그 자리의 폭을 채우고, 그림자와 확대 전환이 없고, 닫히면 자리를 비운다.
+   * 기본(속성 없음)은 떠 있는 알림(토스트)의 모양이다.
+   */
+  @property({ type: Boolean, reflect: true }) inline: boolean = false;
+
+  /** 역할·`aria-atomic` — 작성자가 단 값(정적 메모의 `role="note"` 등)은 덮지 않는다. */
+  private readonly aria = new HostAria(this);
 
   /** 자동 닫힘 타이머 ID */
   private timeoutId?: number;
@@ -89,8 +99,8 @@ export class UAlert extends UElement {
 
     // status가 이미 심각도를 표현하므로 role/aria-live는 소비자가 매 사용처마다 반복
     // 부착할 것이 아니라 컴포넌트가 스스로 안다 — WAI-ARIA Alert/Status 패턴.
-    this.setAttribute('role', this.mapRole(this.status));
-    this.setAttribute('aria-atomic', 'true');
+    this.aria.set('role', this.mapRole(this.status));
+    this.aria.set('aria-atomic', 'true');
 
     if (changedProperties.has('status')) this.warnUnknownStatus();
   }
@@ -99,11 +109,13 @@ export class UAlert extends UElement {
     return html`
       <div class="container" part="container">
         <div class="header" part="header">
-          <u-icon class="icon" part="icon"
-            ?hidden=${!this.status}
-            lib="internal"
-            name=${this.mapIcon(this.status)}
-          ></u-icon>
+          <slot name="icon" class="icon-slot">
+            <u-icon class="icon" part="icon"
+              ?hidden=${!this.status}
+              lib="internal"
+              name=${this.mapIcon(this.status)}
+            ></u-icon>
+          </slot>
           <div class="title" part="title">
             ${this.title || this.defaultTitle()}
           </div>

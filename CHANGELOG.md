@@ -1,5 +1,21 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`u-alert inline` — an alert in the page flow.** Without it an alert has the floating look a toast uses: content
+  width, a large shadow, a scale transition, and the space it keeps while closed. With `inline` it fills its
+  container, drops the shadow and the transition, and takes no space while closed — for a callout, an error summary
+  or a result line. The default look is unchanged.
+- `u-alert` `icon` slot — replaces the status icon (a pencil on a note).
+
+### Fixed
+
+- `u-alert` keeps a `role` the author set. It wrote its derived role (`alert` / `status`) on every update, so a
+  static note could not be `role="note"` and was announced as a live region. The derived role still applies when
+  the author leaves `role` empty.
+
 ## [2.24.0] - 2026-10-14
 
 ### Added

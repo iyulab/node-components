@@ -66,6 +66,22 @@ export const styles = css`
     transition-delay: 0s;
   }
 
+  /* 흐름 안의 알림 — 자리의 폭을 채우고, 떠 있는 모양(그림자 · 확대)을 걷고, 닫히면 자리를 비운다. */
+  :host([inline]) {
+    width: auto;
+    min-width: 0;
+    max-height: none;
+    box-shadow: none;
+    transform: none;
+    transition: none;
+  }
+  :host([inline]:not([open])) {
+    display: none;
+  }
+  :host([inline]) .content {
+    overflow-y: visible;
+  }
+
   /* === Appearance === */
   /* soft: 상태색 틴트 면. 테두리는 레이아웃 정합용이라 항상 투명하다 — 색 훅이 도달하면 안 된다. */
   :host([appearance="soft"]) {
@@ -103,9 +119,13 @@ export const styles = css`
     font-size: var(--u-text-subtitle-size, 16px);
     user-select: none;
   }
-  .header .icon {
+  .header .icon,
+  .header ::slotted([slot="icon"]) {
     flex-shrink: 0;
     color: var(--alert-icon-color);
+  }
+  .icon-slot {
+    display: contents;
   }
   .header .title {
     flex-grow: 1;
