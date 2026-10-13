@@ -18,6 +18,8 @@ export type TagColor =
   | "primary" | "info" | "success" | "warning" | "danger"
   | "blue" | "green" | "yellow" | "red"
   | "orange" | "teal" | "cyan" | "purple" | "pink";
+/** 크기 — `md`(기본: 캡션 글자) · `sm`(오버라인 글자 · 세로 여백 없음 — 표 칸의 식별자 옆 속성처럼 글줄 안에 앉는 작은 표식). */
+export type TagSize = "sm" | "md";
 
 /**
  * 레이블, 카테고리, 상태 등을 표시하는 태그 컴포넌트입니다.
@@ -47,6 +49,8 @@ export class UTag extends UElement {
   @property({ type: String, reflect: true }) appearance: TagAppearance = "soft";
   /** 태그의 색상을 설정합니다. */
   @property({ type: String, reflect: true }) color: TagColor = "neutral";
+  /** 크기 */
+  @property({ type: String, reflect: true }) size: TagSize = "md";
   /** 태그를 둥글게 표시합니다. */
   @property({ type: Boolean, reflect: true }) rounded = false;
   /**

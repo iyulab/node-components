@@ -186,6 +186,18 @@ export const styles = css`
     box-sizing: border-box;
   }
 
+  /* sm — 글줄 안의 작은 표식: 오버라인 글자 크기 · 그 행간 · 세로 여백 없음(테두리를 포함해 18px 안팎).
+     자간·대문자는 싣지 않는다 — 오버라인 단의 자간은 영문 라벨을 전제하고, 이 태그에는 한글이 들어온다.
+     em 으로 적어 글자 크기를 따른다(밀도 단을 올린 호스트에서 함께 커진다). */
+  :host([size="sm"]) {
+    font-size: var(--u-text-overline-size, 11px);
+    line-height: calc(var(--u-text-overline-leading, 1.45) * 1em);
+    --tag-padding-block: 0;
+    --tag-padding-inline: 0.45em;
+    --tag-gap: 0.35em;
+    --tag-dot-size: 5px;
+  }
+
   /* 여백/테두리는 내부 요소가 진다 — :host 에 두면 소비 앱 CSS 리셋에 지워진다. */
   .base {
     box-sizing: border-box;

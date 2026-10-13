@@ -14,6 +14,9 @@ Non-interactive label tag for categories, status, or metadata display.
 <u-tag color="green" rounded>Active</u-tag>
 <u-tag color="success" dot>Shipped</u-tag>
 
+<!-- A small mark inside a line of text — an attribute next to an id in a table cell -->
+<a href="/orders/42">SO-42</a> <u-tag size="sm" appearance="outlined">Rush</u-tag>
+
 <!-- With icon prefix -->
 <u-tag color="red">
   <u-icon slot="prefix" lib="tabler" name="alert-circle"></u-icon>
@@ -22,6 +25,10 @@ Non-interactive label tag for categories, status, or metadata display.
 ```
 
 For interactive chips (selectable/removable), use [`u-chip`](./chip.md) instead.
+
+**`size="sm"`** sits inside a line of text: the overline text size (`--u-text-overline-size`) and its leading, no
+block padding — about 18px with the border, so it does not grow a dense table row. It carries no letter spacing (the
+overline tracking assumes Latin labels).
 
 ---
 
@@ -42,6 +49,7 @@ For interactive chips (selectable/removable), use [`u-chip`](./chip.md) instead.
 | `rounded` | `boolean` | `false` | ✓ | Pill shape |
 | `icon` | `boolean` | `false` | ✓ | Adds a status icon so the meaning survives without color (`info`/`success`/`warning`/`danger` only) |
 | `dot` | `boolean` | `false` | ✓ | Adds a small leading mark in the text colour — for status labels repeated down a table column. `icon` wins when both are set |
+| `size` | `'sm'\|'md'` | `'md'` | ✓ | `md` caption text · `sm` overline text with no block padding, for a mark inside a line of text |
 
 ## CSS Parts
 
@@ -78,4 +86,4 @@ decorative axis carries no meaning, so no icon is drawn there.
 | `--tag-color` | Text color |
 | `--tag-bg-color` | Background color |
 | `--tag-border-color` | Border color |
-| `--tag-dot-size` | Diameter of the leading `dot` (default 6px) |
+| `--tag-dot-size` | Diameter of the leading `dot` (default 6px · 5px at `size="sm"`) |

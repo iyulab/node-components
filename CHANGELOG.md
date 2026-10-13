@@ -12,6 +12,9 @@
 - **`u-card href` — a card that is a link.** The outer box renders as an `<a>` (with `target`, `rel`, `download`): the
   text stays ink with no underline, the border carries hover, and the card does not lift. The focus ring is drawn
   inside the box, since the card clips its overflow. A host `aria-label` names the link.
+- **`u-tag size="sm"` — a mark inside a line of text.** The overline text size and its leading with no block
+  padding: about 18px with the border, so an attribute next to an id does not grow a dense table row. The default
+  (`md`) is unchanged.
 
 ### Fixed
 
