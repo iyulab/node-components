@@ -30,7 +30,7 @@ export class MyBadge extends UElement {
 | Method | Signature | Description |
 |--------|-----------|-------------|
 | `fire` | `fire<T>(name, options?): boolean` | Dispatch a `CustomEvent` on the host. `bubbles`, `composed`, `cancelable` are `true` by default. Returns `false` if the event was cancelled. |
-| `relay` | `relay(event, options?): void` | Re-dispatch a native DOM event from the host (stops original event, re-fires as new). Useful for surfacing inner element events to light DOM. |
+| `relay` | `relay(event, options?): boolean` | Re-dispatch a DOM event from the host: stops the original and fires the same type with the same init — `bubbles`, `cancelable` and type-specific fields (`InputEvent.data`/`inputType`, `CustomEvent.detail`) — and `composed: true`, so listeners on the host's ancestors receive it. Use it to surface inner element events (a native `change` stays inside the shadow root otherwise). Returns `false` if the event was cancelled. |
 | `replace` | `replace(value, options?): void` | Replace the entire shadow DOM render output with a new Lit `TemplateResult`. Preserves `<style>` tags. |
 
 ## Static members

@@ -42,6 +42,14 @@ export class USwitch extends UFormControlElement<string> {
   /** 체크 여부 */
   @property({ type: Boolean, reflect: true }) checked: boolean = false;
 
+  /** `u-form` 의 `model` 에는 제출값(`value`)이 아니라 켬/끔 상태를 싣는다. */
+  override get modelValue(): unknown {
+    return this.checked;
+  }
+  override set modelValue(value: unknown) {
+    this.checked = Boolean(value);
+  }
+
   /**
    * 네이티브 `defaultChecked` 에 해당하는 값 — **처음 연결될 때의 `checked` 속성**.
    * `checked` 는 반영(reflect)되는 속성이라 사용자가 바꾸면 속성도 바뀐다. 그래서 속성을

@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.22.0] - 2026-10-13
+
+### Added
+
+- `modelValue` on form controls — the value a `u-form` reads into and writes from its `model`. It is `value` by
+  default; `u-checkbox` and `u-switch` exchange `checked`. A custom control whose state lives in another property
+  overrides it.
+
+### Fixed
+
+- Events re-dispatched from a control's host now bubble and cross shadow roots. `relay()` copied the original event
+  with object spread, which does not include `bubbles`, `composed`, `cancelable` or `InputEvent` fields (they are
+  prototype getters), so the re-dispatched event reached only listeners on the host itself. Affected: `change` from
+  `u-checkbox`, `u-switch`, `u-textarea` and `u-file-input`, and `input` from `u-input` and `u-textarea`. A listener
+  on an ancestor — a delegated handler, a dirty-state tracker, `u-form` — now receives each of these once, and
+  `InputEvent.data` and `inputType` are kept.
+- `u-form` keeps `model` in step with checkboxes and switches in both directions. It used to read and write their
+  `value` (the submitted text), so a checked box put `undefined` in the model and `model.agree = true` did not check
+  the box. With the propagation fix above, user edits in a checkbox, switch, textarea or file input now update
+  `model` — before, only `u-input` reached it.
+
 ## [2.21.0] - 2026-10-12
 
 ### Added

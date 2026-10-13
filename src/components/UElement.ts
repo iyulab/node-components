@@ -111,8 +111,12 @@ export class UElement extends LitElement {
 
   /**
    * 네이티브 이벤트를 호스트 엘리먼트에서 (재)발행합니다.
-   * 기존 이벤트를 전달하면 원본을 중단하고 동일 타입으로 재발행하며,
+   * 기존 이벤트를 전달하면 원본을 중단하고 동일 타입·동일 초기값으로 재발행하며,
    * 새 이벤트를 직접 전달할 수도 있습니다.
+   *
+   * 재발행한 이벤트는 원본의 `bubbles`·`cancelable` 과 타입별 값(`InputEvent` 의 `data`·`inputType`,
+   * `CustomEvent` 의 `detail` 등)을 잇고, 호스트가 공개 경계이므로 `composed: true` 로 섀도를 넘는다
+   * (`fire()` 와 같은 전파). 네이티브 `change` 처럼 원본이 섀도 안에 머무는 이벤트도 호스트의 조상에 닿는다.
    *
    * @param event - 재발행할 이벤트 또는 새로 생성한 네이티브 이벤트
    * @param options - EventInit 오버라이드
@@ -121,9 +125,17 @@ export class UElement extends LitElement {
   protected relay(event: Event, options?: EventInit): boolean {
     event.stopImmediatePropagation();
 
+    // 이벤트의 초기값은 프로토타입 getter 라 객체 펼침(`{ ...event }`)에 들어오지 않는다 — 상속 사슬의
+    // 열거 가능한 속성을 전부 옮긴다. 생성자는 자기 초기화 사전에 없는 키를 읽지 않는다.
+    const init: Record<string, unknown> = {};
+    for (const key in event) {
+      init[key] = (event as unknown as Record<string, unknown>)[key];
+    }
+
     const ctor = event.constructor as typeof Event;
     return this.dispatchEvent(new ctor(event.type, {
-        ...event,
+        ...init,
+        composed: true,
         ...options,
       }),
     );

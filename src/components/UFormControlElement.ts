@@ -49,6 +49,18 @@ export abstract class UFormControlElement<T> extends UElement {
   @property() value?: T;
 
   /**
+   * `u-form` 의 `model` 과 주고받는 값. 기본은 `value` 다.
+   * 상태를 다른 속성에 두는 컨트롤(체크박스 · 스위치의 `checked`)은 그 상태를 돌려주고 받도록 재정의한다 —
+   * 제출값(`value`)과 모델이 담을 상태는 다를 수 있다.
+   */
+  get modelValue(): unknown {
+    return this.value;
+  }
+  set modelValue(value: unknown) {
+    this.value = value as T;
+  }
+
+  /**
    * ElementInternals는 폼과의 연동, 유효성 검사 상태 관리 등을 지원하는 네이티브 API입니다.
    */
   protected internals?: ElementInternals;

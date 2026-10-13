@@ -78,6 +78,12 @@ export class MyInput extends UFormControlElement<string> {
 | `form` | `HTMLFormElement \| null` | Associated form element |
 | `validity` | `ValidityState \| undefined` | Native validity state |
 
+## Model value (`u-form`)
+
+`modelValue` (getter/setter, `unknown`) is the value a `u-form` reads into and writes from its `model`. It defaults to
+`value`. Override it when the control's state lives in another property — `u-checkbox` and `u-switch` exchange
+`checked` (a boolean), not the submitted `value`.
+
 ## Abstract Methods (must implement)
 
 | Method | Returns | Description |

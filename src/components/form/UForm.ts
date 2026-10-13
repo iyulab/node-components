@@ -84,7 +84,7 @@ export class UForm extends UElement {
     if (!this.model) return;
     for (const control of this.getControls()) {
       if (control.name && control.name in this.model) {
-        control.value = this.model[control.name];
+        control.modelValue = this.model[control.name];
       }
     }
   }
@@ -120,7 +120,7 @@ export class UForm extends UElement {
     if (!(target instanceof UFormControlElement)) return;
 
     const name = target.name;
-    const value = target.value;
+    const value = target.modelValue;
     if (!name) return;
     if (!this.isIncluded(target)) return;
 

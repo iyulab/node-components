@@ -37,6 +37,10 @@ private handleInput(e: Event) {
 }
 ```
 
+The re-dispatched event keeps the original's type and init — `bubbles`, `cancelable`, `InputEvent.data` and
+`inputType`, `CustomEvent.detail` — and is `composed`, so a listener on any ancestor of the host receives it once.
+A native `change` from an inner `<input>` does not cross the shadow root on its own; the relayed one does.
+
 ---
 
 ## Event Catalog

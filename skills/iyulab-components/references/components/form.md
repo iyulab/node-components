@@ -52,7 +52,7 @@ form.reset();
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `model` | `Record<string, unknown>` | — | Two-way bound data model |
+| `model` | `Record<string, unknown>` | — | Two-way bound data model, keyed by control `name`. Each control exchanges its `modelValue` — `value` for most controls, the `checked` boolean for `u-checkbox` and `u-switch` |
 | `includes` | `string[]` | `[]` | Only include these field names (empty = all) |
 | `excludes` | `string[]` | `[]` | Exclude these field names |
 
@@ -60,7 +60,7 @@ form.reset();
 
 | Event | Description |
 |-------|-------------|
-| `change` | Fires when any control value changes |
+| `change` | Fires when a control in the form changes through user input, after `model` is updated |
 
 ## Methods
 
