@@ -2,12 +2,13 @@ import { html, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { UFloatingElement } from "../UFloatingElement.js";
+import { OverlayManager } from "../../utilities/OverlayManager.js";
 import { styles } from "./UTooltip.styles.js";
 import type { VirtualElement } from '@floating-ui/dom';
 
 /**
  * 특정 요소에 툴팁을 표시하는 컴포넌트입니다.
- * 호버 또는 포커스 시 자동으로 표시합니다.
+ * 호버 또는 포커스 시 자동으로 표시합니다. 열린 툴팁은 Escape 로 닫힌다(포인터·포커스를 옮기지 않고 — WCAG 1.4.13).
  *
  * @slot - 툴팁 콘텐츠
  *
@@ -28,12 +29,20 @@ export class UTooltip extends UFloatingElement {
   private isEmpty: boolean = true;
 
   disconnectedCallback(): void {
+    OverlayManager.closeLayer(this);
     if (this.anchors) this.unbind(this.anchors);
     super.disconnectedCallback();
   }
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
+
+    // 열린 툴팁은 층이다 — 가리는 내용을 포인터·포커스를 옮기지 않고 걷을 수 있어야 한다(WCAG 1.4.13).
+    // 층 스택이 Escape 를 가장 위 층 하나에만 주므로, 대화상자 안의 툴팁은 첫 Escape 에 자기만 닫힌다.
+    if (changedProperties.has('open')) {
+      if (this.open) OverlayManager.openLayer(this, () => { void this.hide(); });
+      else OverlayManager.closeLayer(this);
+    }
 
     if (changedProperties.has('anchors')) {
       const oldAnchors = changedProperties.get('anchors') as HTMLElement[] | undefined;

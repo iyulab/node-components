@@ -115,15 +115,108 @@ export class UField extends UElement {
   /**
    * `hint` — 라벨 옆 정보 아이콘 + 툴팁. 설명은 컨트롤의 `aria-description` 으로 이미 전달되므로 아이콘은 보조기기에서 숨긴다.
    * 툴팁은 라벨 «위»(입력 칸을 가리지 않는다) · 아이콘 왼쪽 끝에 맞추고 화면 밖으로 나가면 밀어 넣는다.
+   *
+   * 여는 길은 셋이다 — 아이콘에 마우스를 올린다 · 필드의 컨트롤에 **키보드로** 들어온다(Tab · 프로그램 `focus()` — 눈으로 보는 키보드
+   * 사용자는 마우스가 없다) · 아이콘을 **탭**한다(터치에는 오버가 없다). 아이콘을 포커스 가능한 버튼으로 만들지 않는
+   * 이유: 칸이 수십 개인 폼에서 탭 정지가 칸마다 하나씩 늘어난다. 닫는 길은 Escape(툴팁이 층이다) · 포커스가 필드를
+   * 떠남 · 바깥 탭.
    */
   private renderHint() {
     if (!this.description || this.effectiveDescriptionDisplay !== 'hint') return nothing;
     return html`
-      <span class="hint" part="hint" aria-hidden="true">
+      <span class="hint" part="hint" aria-hidden="true"
+        @pointerdown=${this.handleHintPointerDown}
+        @click=${this.handleHintClick}>
         <u-icon lib="internal" name="info-circle-fill"></u-icon>
         <u-tooltip part="hint-tooltip" placement="top-start" shift>${this.description}</u-tooltip>
       </span>
     `;
+  }
+
+  private get hintEl(): HTMLElement | null {
+    return this.shadowRoot?.querySelector<HTMLElement>('.hint') ?? null;
+  }
+
+  private get hintTooltip(): (HTMLElement & { open: boolean; show(t: Element): Promise<boolean>; hide(): Promise<boolean> }) | null {
+    return this.shadowRoot?.querySelector('.hint u-tooltip') ?? null;
+  }
+
+  /** 아이콘을 누른 포인터의 종류 — 터치·펜의 탭만 «고정해서 연다». 마우스는 오버가 이미 열었다. */
+  private hintPointerType = '';
+  /** 탭으로 고정해 연 상태 — 오버의 `pointerleave` 가 닫아도 탭이 다시 연다. 바깥 탭 · 두 번째 탭이 푼다. */
+  private hintPinned = false;
+
+  private handleHintPointerDown = (e: PointerEvent) => {
+    this.hintPointerType = e.pointerType;
+  };
+
+  private handleHintClick = () => {
+    if (this.hintPointerType !== 'touch' && this.hintPointerType !== 'pen') return;
+    if (this.hintPinned) {
+      this.unpinHint();
+      void this.hintTooltip?.hide();
+      return;
+    }
+    const hint = this.hintEl;
+    if (!hint) return;
+    this.hintPinned = true;
+    document.addEventListener('pointerdown', this.handleOutsidePointerDown, true);
+    void this.hintTooltip?.show(hint);
+  };
+
+  private handleOutsidePointerDown = (e: PointerEvent) => {
+    const hint = this.hintEl;
+    if (hint && e.composedPath().includes(hint)) return; // 아이콘 자신의 탭은 click 이 가른다
+    this.unpinHint();
+    void this.hintTooltip?.hide();
+  };
+
+  private unpinHint(): void {
+    this.hintPinned = false;
+    document.removeEventListener('pointerdown', this.handleOutsidePointerDown, true);
+  }
+
+  /**
+   * 필드 안을 포인터로 눌러 생긴 포커스인가. `:focus-visible` 로는 가르지 못한다 — 글자를 받는 입력은 마우스로 눌러도
+   * 늘 `:focus-visible` 이다(브라우저 휴리스틱). 그래서 누름을 직접 본다: 필드 안 `pointerdown` 뒤의 첫 포커스가 그것이다.
+   */
+  private focusByPointer = false;
+
+  private handleHostPointerDown = () => {
+    this.focusByPointer = true;
+    // 포커스로 이어지지 않은 누름(라벨 글자 · 빈 곳)이 다음 키보드 진입을 가리지 않게, 이번 작업이 끝나면 푼다.
+    setTimeout(() => { this.focusByPointer = false; });
+  };
+
+  /** 컨트롤에 키보드로 들어오면 설명을 보인다 — 포인터로 누른 포커스에는 열지 않는다(마우스에는 오버가 있다). */
+  private handleFocusIn = () => {
+    const byPointer = this.focusByPointer;
+    this.focusByPointer = false;
+    const hint = this.hintEl;
+    if (!hint || byPointer) return;
+    void this.hintTooltip?.show(hint);
+  };
+
+  private handleFocusOut = (e: FocusEvent) => {
+    const next = e.relatedTarget;
+    if (next instanceof Node && (this.contains(next) || this.shadowRoot?.contains(next))) return;
+    if (this.hintPinned) return;
+    void this.hintTooltip?.hide();
+  };
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener('pointerdown', this.handleHostPointerDown, true);
+    this.addEventListener('focusin', this.handleFocusIn);
+    this.addEventListener('focusout', this.handleFocusOut);
+  }
+
+  disconnectedCallback(): void {
+    this.removeEventListener('pointerdown', this.handleHostPointerDown, true);
+    this.removeEventListener('focusin', this.handleFocusIn);
+    this.removeEventListener('focusout', this.handleFocusOut);
+    this.unpinHint();
+    super.disconnectedCallback();
   }
 
   private renderFooter() {

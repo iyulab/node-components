@@ -6,7 +6,7 @@ import '@iyulab/components/dist/components/tooltip/UTooltip.js';
 
 **Tag:** `u-tooltip`
 
-Hover/focus tooltip anchored to a `for` target. Opens and closes automatically.
+Hover/focus tooltip anchored to a `for` target. Opens and closes automatically; Escape closes an open tooltip without moving the pointer or focus (WCAG 1.4.13) — inside a dialog, the first Escape closes the tooltip and the next one the dialog.
 
 ```html
 <u-button id="save-btn">Save</u-button>

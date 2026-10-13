@@ -103,6 +103,11 @@ render inside their own shadow roots. A field's own `description-display` wins. 
 still shows under the control, the control keeps the text as `aria-description`, and a field without a label shows the
 description inline (there is no label to put the icon beside).
 
+The hint opens three ways — hovering the icon, entering the field's control from the keyboard (Tab, or a programmatic
+`focus()`; a click into the control does not, the mouse has hover), and tapping the icon (touch has no hover; the tap
+pins it until a tap elsewhere or a second tap). Escape closes it, and so does focus leaving the field. The icon itself
+is not a Tab stop — a form of dozens of fields would otherwise double its Tabs.
+
 ## Methods
 
 | Method | Description |

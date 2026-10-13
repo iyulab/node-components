@@ -8,7 +8,15 @@
   a line under the control: `description-display="hint"` on one field, or `UField.descriptionDisplay = 'hint'` once for
   the whole app (that default also reaches the fields `u-input`, `u-select` and the other controls render internally).
   The control keeps the text as `aria-description`, a validation message still shows under the control, and a field
-  without a label keeps the description inline.
+  without a label keeps the description inline. The hint opens on hovering the icon, on entering the field's control
+  from the keyboard (a click into the control does not), and on tapping the icon (touch); Escape or focus leaving the
+  field closes it. The icon is not a Tab stop.
+
+### Fixed
+
+- An open `u-tooltip` closes on Escape — content shown on hover or focus could only be dismissed by moving the pointer
+  or the focus away (WCAG 1.4.13). The tooltip joins the overlay layer stack, so inside a dialog the first Escape
+  closes the tooltip and the next one the dialog.
 
 ## [2.22.0] - 2026-10-13
 

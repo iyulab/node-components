@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import '../../src/components/popover/UPopover.js';
 import '../../src/components/dialog/UDialog.js';
+import '../../src/components/tooltip/UTooltip.js';
+import type { UTooltip } from '../../src/components/tooltip/UTooltip.js';
 import type { UPopover } from '../../src/components/popover/UPopover.js';
 import type { UDialog } from '../../src/components/dialog/UDialog.js';
 import { OverlayManager } from '../../src/utilities/OverlayManager.js';
@@ -163,6 +165,54 @@ describe('layer stack — Escape closes the topmost layer only', () => {
     expect(closed).toBe(1);
     expect(dialog.open).toBe(true);
     expect(OverlayManager.topLayer).toBe(dialog);
+
+    await userEvent.keyboard('{Escape}');
+    await settle();
+    expect(dialog.open).toBe(false);
+  });
+});
+
+describe('layer stack — an open tooltip is a layer (WCAG 1.4.13: dismissible without moving pointer or focus)', () => {
+  beforeEach(async () => {
+    document.body.replaceChildren();
+    await settle(50);
+  });
+
+  it('Escape closes an open tooltip', async () => {
+    const button = document.createElement('button');
+    button.textContent = 'save';
+    const tip = document.createElement('u-tooltip') as UTooltip;
+    tip.textContent = 'Saves the draft';
+    button.appendChild(tip);
+    document.body.appendChild(button);
+    await settle();
+    await userEvent.hover(button);
+    await settle();
+    expect(tip.open).toBe(true);
+
+    await userEvent.keyboard('{Escape}');
+    await settle();
+    expect(tip.open).toBe(false);
+  });
+
+  it('a tooltip inside an open dialog closes first; the dialog closes on the next Escape', async () => {
+    const dialog = document.createElement('u-dialog') as UDialog;
+    const button = document.createElement('button');
+    button.textContent = 'save';
+    const tip = document.createElement('u-tooltip') as UTooltip;
+    tip.textContent = 'Saves the draft';
+    button.appendChild(tip);
+    dialog.appendChild(button);
+    document.body.appendChild(dialog);
+    await dialog.show();
+    await settle();
+    await tip.show(button);
+    await settle();
+
+    await userEvent.keyboard('{Escape}');
+    await settle();
+    expect(tip.open).toBe(false);
+    expect(dialog.open).toBe(true);
 
     await userEvent.keyboard('{Escape}');
     await settle();
