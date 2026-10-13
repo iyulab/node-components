@@ -42,6 +42,8 @@ same chain.
 | `Locale.namespace(name)` | A string table for a package or app area, keyed by its own union — returns a handle (below) |
 | `Locale.subscribe(listener)` | Call `listener` whenever the locale changes (`set` to another locale, any `register`) — returns the unsubscribe function |
 | `Locale.revision` | A number that grows on every change — a snapshot or cache key (`get()` stays the same when only a table changes) |
+| `Locale.matchesSearch(text, query, locale?)` | Whether `text` contains `query` as a person searching means it — the rule registered for the locale, or the default (below) |
+| `Locale.registerSearch(locale, matcher)` | Register a language's own search rule, `(text, query) => boolean` |
 
 ### Switching at runtime
 
@@ -74,6 +76,28 @@ t.textIn(el.locale, 'empty');          // a given locale (e.g. an element's own 
 
 A key missing from every table in the chain returns the key itself, so a gap shows on screen
 instead of rendering as an empty string.
+
+### Search matching
+
+`u-select`'s search filters options with `Locale.matchesSearch`. The default rule belongs to the
+writing system, so it applies under every locale (`defaultSearchMatch`, `foldForSearch` and
+`initialsOf` are exported from `utilities/search`):
+
+- Case and diacritics fold — `Ä`, `ä` and `a` match.
+- Hangul is compared as the jamo in the order they are typed (`과` → `ㄱㅗㅏ`, `닭` → `ㄷㅏㄹㄱ`), so a
+  syllable still being composed matches the word it is becoming: `성` and `서우` on the way to
+  `서울` both match `서울`. Unicode normalization cannot do this — a final `ㅇ` and an initial `ㅇ`
+  are different characters there.
+- A query of Hangul consonants only also matches initials: `ㅅㅇ` finds `서울`.
+
+Register a rule only for what belongs to a language:
+
+```ts
+import { Locale, defaultSearchMatch } from '@iyulab/components';
+
+Locale.registerSearch('tr', (text, query) =>
+  text.toLocaleLowerCase('tr').includes(query.toLocaleLowerCase('tr')) || defaultSearchMatch(text, query));
+```
 
 ## Example
 

@@ -8,6 +8,8 @@
  * 그 외 언어는 register()로 테이블 단위 등록/오버라이드한다.
  */
 
+import { defaultSearchMatch } from './search.js';
+
 /** 라이브러리가 기본 제공하는 로케일. */
 export type SupportedLocale =
   | 'en' | 'ko' | 'ja' | 'zh-CN' | 'zh-TW' | 'es' | 'fr' | 'de' | 'pt-BR' | 'vi' | 'th' | 'id' | 'ru' | 'ar';
@@ -228,6 +230,15 @@ function lookup(locale: string, key: LocaleMessageKey): string {
 const namespaces = new Map<string, Map<string, Record<string, string>>>();
 
 /**
+ * 글자가 검색어를 담는가 — 사람이 «찾았다» 고 여기는 일치. 글자마다 거르는 칸(`u-select` 의 검색 등)이 쓴다.
+ * `text` 는 옵션 글자 같은 대상, `query` 는 사람이 친 검색어(조합 중인 한글 음절을 담을 수 있다).
+ */
+export type SearchMatcher = (text: string, query: string) => boolean;
+
+/** 정규화 로케일 태그 → 그 언어에 등록된 검색 일치. 없으면 문자 체계 기본 규칙(`defaultSearchMatch`). */
+const searchMatchers = new Map<string, SearchMatcher>();
+
+/**
  * 한 패키지(또는 앱 영역)의 문자열 묶음.
  *
  * 키 유니온을 **소비자가** 정하므로 라이브러리의 키셋은 커지지 않는다:
@@ -313,6 +324,29 @@ export class Locale {
    */
   public static getValue(key: LocaleMessageKey, params?: Record<string, string | number>, locale?: LocaleTag): string {
     return interpolate(lookup(locale ?? active, key), params);
+  }
+
+  /**
+   * 한 언어의 검색 일치를 등록합니다 — 그 언어에서 `u-select` 의 검색 같은 거르기가 이 규칙을 씁니다.
+   *
+   * 기본 규칙(대소문자 · 발음 구별 기호 접기, 한글 자모 · 초성 일치)은 문자 체계에 매여 있어 모든 언어에 이미 있습니다.
+   * 언어에 매인 규칙만 여기 둡니다 — 터키어의 `İ`/`ı` 처럼. 기본 규칙을 이어 쓰려면 `defaultSearchMatch` 를 부르세요.
+   */
+  public static registerSearch(locale: LocaleTag, matcher: SearchMatcher): void {
+    searchMatchers.set(locale.toLowerCase(), matcher);
+    notify();
+  }
+
+  /**
+   * `text` 가 `query` 를 담는가 — 활성 로케일(또는 `locale`)에 등록된 검색 일치로, 없으면 기본 규칙으로.
+   * 빈 검색어는 모두를 담습니다.
+   */
+  public static matchesSearch(text: string, query: string, locale?: LocaleTag): boolean {
+    for (const tag of chainOf(locale || active)) {
+      const matcher = searchMatchers.get(tag);
+      if (matcher) return matcher(text, query);
+    }
+    return defaultSearchMatch(text, query);
   }
 
   /**

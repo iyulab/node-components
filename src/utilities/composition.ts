@@ -1,3 +1,5 @@
+import { isHangul } from './search.js';
+
 /**
  * IME 조합(한국어 · 일본어 · 중국어)을 따라가는 입력 도우미 — 조합 중인 음절을 뺀 «확정된 글자» 를 준다.
  *
@@ -42,6 +44,17 @@ export class CompositionTracker implements EventListenerObject {
         this.onEnd?.(input);
         break;
     }
+  }
+
+  /**
+   * 검색어로 쓸 글자 — 확정된 글자에, 글 끝에서 조합 중인 글자가 한글이면 그것까지. 한글의 조합 중 음절은 자모로 풀면 최종
+   * 글자 자모의 앞부분이라(`성` → `ㅅㅓㅇ` ⊂ `서울` → `ㅅㅓㅇㅜㄹ`) 검색 일치(`Locale.matchesSearch`)가 그대로 견줄 수 있다.
+   * 그 성질은 조합이 글 끝에 있을 때만 서고(가운데라면 뒤 글자가 붙는다), 다른 문자 체계의 조합 글자(가나 → 한자 변환 전)는
+   * 최종 글자와 견줄 수 없어 뺀다.
+   */
+  searchable(input: HTMLInputElement | HTMLTextAreaElement): string {
+    const atEnd = this.start !== null && this.start + this.text.length === input.value.length;
+    return atEnd && isHangul(this.text) ? input.value : this.settled(input);
   }
 
   /** 입력의 확정된 글자 — 조합 중인 음절을 뺀 값. 조합 중이 아니면 값 그대로. */

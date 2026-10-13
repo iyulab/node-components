@@ -479,7 +479,7 @@ export class USelect extends UFormControlElement<string | string[]> {
   };
 
   private updateSearch(input: HTMLInputElement) {
-    this.query = this.composition.settled(input).toLowerCase().trim();
+    this.query = this.composition.searchable(input).trim();
     this.applyFilter();
 
     const detail = { query: input.value.toLowerCase().trim(), composing: this.composition.composing };
@@ -498,9 +498,7 @@ export class USelect extends UFormControlElement<string | string[]> {
       if (!query) {
         option.hidden = false;
       } else {
-        const label = option.getText().toLowerCase();
-        const value = option.value.toLowerCase();
-        option.hidden = !label.includes(query) && !value.includes(query);
+        option.hidden = !Locale.matchesSearch(option.getText(), query) && !Locale.matchesSearch(option.value, query);
       }
     }
     this.noMatches = !!this.query && !this.loading && !this.options.some((o) => !o.hidden);

@@ -67,6 +67,27 @@ describe('u-select searchable — 조합 중 거르기와 search', () => {
     expect(seen.at(-1)!.visible).toEqual(['서울']);
   });
 
+  it('치는 도중에도 자모로 좁힌다 — «성» 은 서울 · 성남, «서우» 는 서울만', async () => {
+    const { select, visible } = await openSearchableSelect();
+    const seen: Record<string, (string | null)[]> = {};
+    for (const text of ['ㅅ', '서', '성']) { await compose([text]); await settle(select); seen[text] = visible(); }
+    await commit('서');
+    await compose(['우']);
+    await settle(select);
+    seen['서우'] = visible();
+    expect(seen).toEqual({ 'ㅅ': ['서울', '성남', '부산'], '서': ['서울', '성남'], '성': ['서울', '성남'], '서우': ['서울'] });
+  });
+
+  it('초성만 치면 초성으로 찾는다 — «ㅅㄴ» 은 성남', async () => {
+    const { select, visible } = await openSearchableSelect();
+    await compose(['ㅅ']);
+    await commit('ㅅ');
+    await compose(['ㄴ']);
+    await commit('ㄴ');
+    await settle(select);
+    expect(visible()).toEqual(['성남']);
+  });
+
   it('search 는 조합 단계마다 composing:true, 조합이 끝날 때 composing:false 로 나간다', async () => {
     const { select, searches } = await openSearchableSelect();
     await compose(['ㅅ', '서', '성']);

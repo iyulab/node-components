@@ -25,3 +25,40 @@ onKeydown(e: KeyboardEvent) {
 ```
 
 `u-input` (implicit form submission), `Dialog.prompt`, and the overlay Escape handling already use it.
+
+## Filtering as you type — `CompositionTracker`, `replayInput`
+
+```ts
+import { CompositionTracker, replayInput } from '@iyulab/components';
+// or: '@iyulab/components/dist/utilities/composition.js'
+```
+
+An input that filters or searches on every `input` event sees each step of an IME composition: typing
+«서울» in Korean passes through `ㅅ`, `서`, `성`, `서우`. Filtering on those hides what the person is
+looking for, shows "No results", and — for a server search — sends queries for half-typed syllables.
+Chromium sends the composition's last `input` with `isComposing: true` and then `compositionend`, so
+a handler that only skips composing events never sees the finished text.
+
+Attach a tracker to the input's composition events (it is an event listener object):
+
+```ts
+private readonly ime = new CompositionTracker(replayInput);
+
+render() {
+  return html`<input
+    @compositionstart=${this.ime} @compositionupdate=${this.ime} @compositionend=${this.ime}
+    @input=${this.onInput}>`;
+}
+```
+
+- `ime.composing` — a composition is in progress.
+- `ime.settled(input)` — the text without the part still being composed. Items containing the settled
+  text are a superset of items containing the finished text, so filtering on it never hides a match.
+- `ime.searchable(input)` — the settled text plus a Hangul syllable being composed at the end, for
+  `Locale.matchesSearch`, which matches a partial syllable.
+- `replayInput` as the `onEnd` callback re-runs the input's own `input` handler when the composition
+  ends. Use it for an input that waits: a server search, or a filter whose rule is not «contains»
+  (equals, wildcard) or that announces its value to the outside.
+
+Keep the text bound to the input (`.value=${…}`) as the whole box text — binding the settled text
+re-renders the input mid-composition and cancels it.
