@@ -25,7 +25,7 @@ import { styles } from "./USwitch.styles.js";
  * @cssprop --switch-track-width - 트랙 너비 (2.4em)
  * @cssprop --switch-track-height - 트랙 높이 (1.4em)
  * @cssprop --switch-track-color - 비활성 트랙 배경색
- * @cssprop --switch-track-color-checked - 활성 트랙 배경색
+ * @cssprop --switch-track-color-checked - 활성 트랙 배경색 (기본: --u-selection-color — 테마가 가르지 않으면 --u-primary-color)
  * @cssprop --switch-thumb-size - thumb 크기 (1.1em)
  * @cssprop --switch-thumb-offset - thumb 간격 (0.15em)
  * @cssprop --switch-thumb-color - thumb 색상 (#fff)

@@ -5,7 +5,7 @@ export const styles = css`
     --switch-track-width: 2.4em;
     --switch-track-height: 1.4em;
     --switch-track-color: var(--u-neutral-300, #E0E0E0);
-    --switch-track-color-checked: var(--u-primary-color, #1976D2);
+    --switch-track-color-checked: var(--u-selection-color, #1976D2);
     --switch-thumb-size: 1.1em;
     --switch-thumb-offset: 0.15em;
     --switch-thumb-color: #fff;

@@ -80,7 +80,7 @@ Exposed as a **`switch`** (on/off), not a checkbox — screen readers announce "
 | `--switch-track-width` | Track width |
 | `--switch-track-height` | Track height |
 | `--switch-track-color` | Track color (unchecked) |
-| `--switch-track-color-checked` | Track color (checked) |
+| `--switch-track-color-checked` | Track color (checked) — default `--u-selection-color`, which is `--u-primary-color` unless the theme sets it |
 | `--switch-thumb-size` | Thumb diameter |
 | `--switch-thumb-offset` | Thumb padding from track edge |
 | `--switch-thumb-color` | Thumb color (unchecked) |

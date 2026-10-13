@@ -84,5 +84,5 @@ native radio group and WAI-ARIA APG behaviour.
 
 | Property | Description |
 |----------|-------------|
-| `--radio-color` | Base color of the selected state (default `--u-primary-color`) |
+| `--radio-color` | Base color of the selected state (default `--u-selection-color`, which is `--u-primary-color` unless the theme sets it) |
 | `--radio-color-active` | Selected-state active tone (default `--radio-color` at 85% + black) |

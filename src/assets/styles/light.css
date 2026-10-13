@@ -333,6 +333,12 @@
      ink can point it at an interaction hue instead. */
   --u-focus-ring-color:      var(--u-primary-color-strong);
 
+  /* Selection — the mark of a chosen option (a checked checkbox, a selected radio, a switch that is on, a
+     selected row's checkbox) and the check drawn on it. Defaults to the primary pair; a theme whose primary
+     is a neutral ink can point the selection at an interaction hue, the way it does the focus ring. */
+  --u-selection-color:       var(--u-primary-color);
+  --u-selection-txt-color:   var(--u-primary-txt-color);
+
   /* Background Colors */
   --u-bg-color:              var(--u-neutral-0);
   --u-bg-color-inverse:      var(--u-neutral-900);

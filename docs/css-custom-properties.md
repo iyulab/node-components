@@ -180,7 +180,7 @@ u-button.cta { --btn-color: #0f9d58; }
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--radio-color` | 선택 상태의 기준색 (기본: --u-primary-color) |
+| `--radio-color` | 선택 상태의 기준색 (기본: --u-selection-color — 테마가 가르지 않으면 --u-primary-color) |
 | `--radio-color-active` | 선택 상태 active 톤 (기본: --radio-color 85% + black) |
 
 ## `<u-rating>`
@@ -259,7 +259,7 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--switch-track-width` | 트랙 너비 (2.4em) |
 | `--switch-track-height` | 트랙 높이 (1.4em) |
 | `--switch-track-color` | 비활성 트랙 배경색 |
-| `--switch-track-color-checked` | 활성 트랙 배경색 |
+| `--switch-track-color-checked` | 활성 트랙 배경색 (기본: --u-selection-color — 테마가 가르지 않으면 --u-primary-color) |
 | `--switch-thumb-size` | thumb 크기 (1.1em) |
 | `--switch-thumb-offset` | thumb 간격 (0.15em) |
 | `--switch-thumb-color` | thumb 색상 (#fff) |

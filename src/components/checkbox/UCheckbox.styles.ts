@@ -70,9 +70,11 @@ export const styles = css`
      슬롯이 셋인 이유는 체크 표시가 두 자리에 서기 때문이다 —
      filled 는 **채운 면 위**(그래서 on-color), outline 은 **바탕 위**(그래서 -strong).
      ========================================================================== */
+  /* primary(기본)의 채움은 «선택 표시» 역할을 읽는다 — 기본값이 primary 짝이라 테마가 가르지 않으면 종전과 같다.
+     잉크 primary 테마가 선택을 상호작용 색으로 돌리면 체크도 따라간다. 바탕 위 표시(outlined)는 종전 -strong 단. */
   :host([color="primary"]) {
-    --checkbox-hue: var(--u-primary-color, #1976D2);
-    --checkbox-hue-on-fill: var(--u-primary-txt-color, #FFFFFF);
+    --checkbox-hue: var(--u-selection-color, #1976D2);
+    --checkbox-hue-on-fill: var(--u-selection-txt-color, #FFFFFF);
     --checkbox-hue-strong: var(--u-primary-color-strong, #1565C0);
   }
   :host([color="info"]) {

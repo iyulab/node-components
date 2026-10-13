@@ -292,6 +292,15 @@ A text field (input, select, textarea, the date pickers' field) shows focus on i
 rather than with a ring, and that border reads `--u-input-border-color-focus`. Set it to the same
 hue when the two should match.
 
+### Selection
+
+`--u-selection-color` is the mark of a chosen option — the fill of a checked `u-checkbox` (its default
+`color="primary"`), a selected `u-radio`, a `u-switch` that is on, and the row checkboxes of the data
+tables — and `--u-selection-txt-color` the check drawn on that fill. They default to `--u-primary-color`
+and `--u-primary-txt-color`. A theme with an ink primary points them at its interaction hue, the same
+move as the focus ring, so a checked box reads as a choice rather than an action. Keep the fill at 3:1
+against the background and the check at 3:1 against the fill (WCAG 1.4.11).
+
 ### Field box
 
 Text-entry controls — `u-input`, `u-select`, `u-textarea`, the date pickers — share one box:

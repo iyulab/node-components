@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    --radio-color: var(--u-primary-color, #1976D2);
+    --radio-color: var(--u-selection-color, #1976D2);
     --radio-color-active: color-mix(in srgb, var(--radio-color) 85%, black);
   }
 

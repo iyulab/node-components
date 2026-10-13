@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **A selection role — `--u-selection-color` / `--u-selection-txt-color`.** The mark of a chosen option and the check
+  drawn on it: a checked `u-checkbox` (its default `color="primary"`), a selected `u-radio`, a `u-switch` that is on.
+  They default to `--u-primary-color` / `--u-primary-txt-color`, so nothing changes unless a theme sets them — a theme
+  with an ink primary points them at its interaction hue, the way it does the focus ring, and a checked box then
+  reads as a choice rather than an action. An outlined checkbox keeps its check on `--u-primary-color-strong`.
+
 ## [2.23.2] - 2026-10-13
 
 ### Fixed
