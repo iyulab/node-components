@@ -48,10 +48,10 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--btn-color` | 버튼의 **면** 색. 아래 파생 토큰이 전부 이 값에서 color-mix()로 계산된다 — 보통 이것 하나만 덮으면 된다. |
 | `--btn-txt-color` | 그 **면 위**의 글자색 — appearance="solid" 가 읽는다 (기본: #fff · 역할 값 지정 시 --u-{role}-txt-color) |
 | `--btn-color-strong` | **바탕 위**의 글자색 — appearance="link"·"plain" 이 읽는다. 면과 요구가 반대라 슬롯이 따로 있다 (기본: --btn-color 와 동일 · 역할 값 지정 시 --u-{role}-color-strong) |
-| `--btn-color-strong-hover` | 바탕 위 글자 hover (기본: 85% + black · 역할 값은 움직이지 않고 밑줄로 강조) |
-| `--btn-color-strong-active` | 바탕 위 글자 active (기본: 70% + black · 역할 값은 고정) |
-| `--btn-color-hover` | solid 배경 hover (기본: --btn-color 85% + black) |
-| `--btn-color-active` | solid 배경 active (기본: --btn-color 70% + black) |
+| `--btn-color-strong-hover` | 바탕 위 글자 hover (기본: 85% + black, 어두운 색은 + white · 역할 값은 움직이지 않고 밑줄로 강조) |
+| `--btn-color-strong-active` | 바탕 위 글자 active (기본: 70% + black, 어두운 색은 + white · 역할 값은 고정) |
+| `--btn-color-hover` | solid 배경 hover (기본: --btn-color 85% + black — --btn-color 가 어두우면(OKLab 명도 0.4 미만) + white) |
+| `--btn-color-active` | solid 배경 active (기본: --btn-color 70% + black — 어두우면 + white) |
 | `--btn-color-surface` | soft 배경 (역할 색: --u-{role}-bg-color · 그 밖: --btn-color 12% + 배경색) |
 | `--btn-color-surface-hover` | soft 배경 hover (역할 색: 면에 --btn-color 18% · 그 밖: 22%) |
 | `--btn-color-surface-active` | soft 배경 active (역할 색: 면에 --btn-color 30% · 그 밖: 32%) |

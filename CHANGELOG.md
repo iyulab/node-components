@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **A dark button shows its hover and press.** `u-button` derived its hover and active colours by mixing toward black
+  (85% / 70%), so a near-black brand colour — an ink primary such as `#18191B` — had nowhere to go: the hover was
+  about 1.05:1 against the resting button and the most-pressed button on the screen showed no state. A colour darker
+  than OKLab lightness 0.4 now mixes toward white instead; mid and light colours derive exactly as before. The same
+  rule applies to the `link` text states of the decorative colours. Browsers without relative colour syntax keep the
+  old direction.
+
 ## [2.23.1] - 2026-10-13
 
 ### Fixed

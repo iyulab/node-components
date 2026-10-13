@@ -40,6 +40,8 @@ const INTERNAL: Record<string, string> = {
   '--_dot-w': 'u-carousel 점의 보이는 폭(활성 24px) — 호스트 하한의 투명 테두리 계산 입력',
   '--_dot-bb': 'u-carousel 점의 세로 투명 테두리 = (--u-target-size − 10px)/2, 미설정이면 0',
   '--_dot-bi': 'u-carousel 점의 가로 투명 테두리 = (--u-target-size − 보이는 폭)/2, 미설정이면 0',
+  '--_btn-state-ink': 'u-button 상태 파생의 섞을 끝 — --btn-color 의 OKLab 명도가 0.4 미만이면 흰색, 아니면 검정(상대 색 계산)',
+  '--_btn-strong-state-ink': 'u-button 글자 상태 파생의 섞을 끝 — --btn-color-strong 기준, 같은 규칙',
 
   // 장식 축(`color=` 속성)의 내부 슬롯. `color` 속성이 공개 API 이고 이 슬롯들은 그
   // 구현이다 — 공개하면 hue 스케일의 현재 형태(5슬롯)에 영구히 묶인다. 소비자가

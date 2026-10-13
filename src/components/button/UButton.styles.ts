@@ -18,11 +18,18 @@ export const styles = css`
        장식 축(color="purple" 등)은 세 슬롯이 종전 값으로 수렴하므로 렌더가 변하지 않는다. */
     --btn-txt-color: #fff;
     --btn-color-strong: var(--btn-color);
-    --btn-color-strong-hover: color-mix(in srgb, var(--btn-color-strong) 85%, black);
-    --btn-color-strong-active: color-mix(in srgb, var(--btn-color-strong) 70%, black);
 
-    --btn-color-hover: color-mix(in srgb, var(--btn-color) 85%, black);
-    --btn-color-active: color-mix(in srgb, var(--btn-color) 70%, black);
+    /* ★상태 파생의 방향 — 계약은 «hover·active 가 쉼과 구별된다» 이지 «어두워진다» 가 아니다.
+       이미 검정에 가까운 색(잉크 primary #18191B)을 검정 쪽으로 섞으면 움직일 자리가 없다(hover 대비 ≈1.05:1).
+       그래서 OKLab 명도 0.4 미만인 색은 흰색 쪽으로, 나머지는 종전대로 검정 쪽으로 섞는다 — 중간·밝은 색의 외형은 그대로다.
+       상대 색 문법이 없는 브라우저는 종전 방향(검정)을 쓴다. */
+    --_btn-state-ink: black;
+    --_btn-strong-state-ink: black;
+    --btn-color-strong-hover: color-mix(in srgb, var(--btn-color-strong) 85%, var(--_btn-strong-state-ink));
+    --btn-color-strong-active: color-mix(in srgb, var(--btn-color-strong) 70%, var(--_btn-strong-state-ink));
+
+    --btn-color-hover: color-mix(in srgb, var(--btn-color) 85%, var(--_btn-state-ink));
+    --btn-color-active: color-mix(in srgb, var(--btn-color) 70%, var(--_btn-state-ink));
     --btn-color-surface: color-mix(in srgb, var(--btn-color) 12%, var(--u-bg-color, #FFFFFF));
     --btn-color-surface-hover: color-mix(in srgb, var(--btn-color) 22%, var(--u-bg-color, #FFFFFF));
     --btn-color-surface-active: color-mix(in srgb, var(--btn-color) 32%, var(--u-bg-color, #FFFFFF));
@@ -31,6 +38,14 @@ export const styles = css`
     --btn-color-border-active: color-mix(in srgb, var(--btn-color) 75%, var(--u-bg-color, #FFFFFF));
     --btn-color-outline-hover: color-mix(in srgb, var(--btn-color) 6%, var(--u-bg-color, #FFFFFF));
     --btn-color-outline-active: color-mix(in srgb, var(--btn-color) 12%, var(--u-bg-color, #FFFFFF));
+  }
+
+  @supports (color: oklch(from red l c h)) {
+    :host {
+      /* 명도 0.4 를 경계로 흰색(1) 또는 검정(0) — clamp 가 계단 함수를 만든다. */
+      --_btn-state-ink: oklch(from var(--btn-color) clamp(0, (0.4 - l) * 1000, 1) 0 0);
+      --_btn-strong-state-ink: oklch(from var(--btn-color-strong) clamp(0, (0.4 - l) * 1000, 1) 0 0);
+    }
   }
 
   :host {
