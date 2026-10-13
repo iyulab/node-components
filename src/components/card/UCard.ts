@@ -1,5 +1,6 @@
-import { html } from "lit";
+import { html, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 import { UElement } from "../UElement.js";
 import { styles } from "./UCard.styles.js";
@@ -15,7 +16,7 @@ export type CardAppearance = 'outlined' | 'plain';
  * @slot footer - 카드 하단 푸터 영역
  * @slot media - 카드의 미디어 영역 (이미지, 동영상 등)
  * 
- * @csspart base - 카드 바깥 상자
+ * @csspart base - 카드 바깥 상자(`href` 를 주면 이 상자가 링크 `<a>` 다)
  * @csspart media - 미디어 영역 컨테이너
  * @csspart content - 콘텐츠 영역 컨테이너
  * @csspart header - 헤더 영역 컨테이너
@@ -36,10 +37,37 @@ export class UCard extends UElement {
   @property({ type: String, reflect: true }) appearance: CardAppearance = 'outlined';
   /** 마우스 오버 효과 적용 여부 */
   @property({ type: Boolean, reflect: true }) hoverable = false;
+  /**
+   * 카드 전체가 이동하는 링크 URL. 주면 바깥 상자가 `<a>` 로 그려진다 — 테두리가 hover 를 싣고 들어 올리지 않는다.
+   * 링크 안에는 다른 대화형 요소(버튼·링크)를 두지 않는다(HTML 의 `<a>` 내용 모델).
+   */
+  @property({ type: String, reflect: true }) href?: string;
+  /** 링크 타겟 (`href` 와 함께) */
+  @property({ type: String }) target?: string;
+  /** 링크 관계 (`href` 와 함께) */
+  @property({ type: String }) rel?: string;
+  /** 다운로드 파일명 (`href` 와 함께) */
+  @property({ type: String }) download?: string;
 
   render() {
+    if (this.href) {
+      // 링크의 이름은 기본으로 카드의 글 전부다 — 짧게 하려면 호스트의 `aria-label` 을 링크로 옮긴다.
+      const ariaLabel = this.getAttribute('aria-label') ?? undefined;
+      return html`
+        <a class="base" part="base"
+          href=${this.href}
+          aria-label=${ifDefined(ariaLabel)}
+          target=${ifDefined(this.target)}
+          rel=${ifDefined(this.rel)}
+          download=${ifDefined(this.download)}
+        >${this.renderSections()}</a>
+      `;
+    }
+    return html`<div class="base" part="base">${this.renderSections()}</div>`;
+  }
+
+  private renderSections(): TemplateResult {
     return html`
-      <div class="base" part="base">
       <div class="media" part="media">
         <slot name="media" @slotchange=${this.handleSlotChange}></slot>
       </div>
@@ -53,7 +81,6 @@ export class UCard extends UElement {
         <footer class="footer" part="footer">
           <slot name="footer" @slotchange=${this.handleSlotChange}></slot>
         </footer>
-      </div>
       </div>
     `;
   }

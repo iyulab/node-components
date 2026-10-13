@@ -49,6 +49,24 @@ export const styles = css`
     box-shadow: var(--u-shadow-lg, 0 4px 12px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.06));
   }
 
+  /* 카드 전체 링크 — 카드로 읽힌다: 글자는 잉크, 밑줄 없음. hover 는 테두리가 싣고 들어 올리지 않는다
+     (카드 격자에서 하나만 떠오르면 줄이 흔들린다). 호스트가 overflow 를 자르므로 포커스 링은 안쪽에 그린다. */
+  a.base {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+  }
+  a.base:hover {
+    --card-border-color: var(--u-border-color-strong, #BDBDBD);
+  }
+  a.base:focus-visible {
+    outline-offset: -2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    a.base { transition: none; }
+  }
+
   .media {
     display: none;
     flex-shrink: 0;

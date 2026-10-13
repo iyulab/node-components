@@ -9,6 +9,9 @@
   container, drops the shadow and the transition, and takes no space while closed — for a callout, an error summary
   or a result line. The default look is unchanged.
 - `u-alert` `icon` slot — replaces the status icon (a pencil on a note).
+- **`u-card href` — a card that is a link.** The outer box renders as an `<a>` (with `target`, `rel`, `download`): the
+  text stays ink with no underline, the border carries hover, and the card does not lift. The focus ring is drawn
+  inside the box, since the card clips its overflow. A host `aria-label` names the link.
 
 ### Fixed
 
