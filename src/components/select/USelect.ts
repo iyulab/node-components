@@ -123,6 +123,8 @@ export class USelect extends UFormControlElement<string | string[]> {
   @state() private options: UOption[] = [];
   /** 검색칸의 지금 검색어(소문자 · 앞뒤 공백 없음). */
   private query = '';
+  /** `query` 의 마지막 음절이 아직 조합 중인가 — 검색 일치가 그 음절을 자모 앞부분으로 견준다. */
+  private queryComposing = false;
   /** 검색어가 있는데 보이는 옵션이 없다 — 팝업에 «일치하는 항목 없음» 을 알린다. */
   @state() private noMatches = false;
   /** aria-expanded 배선용 팝오버 열림 상태 */
@@ -479,7 +481,9 @@ export class USelect extends UFormControlElement<string | string[]> {
   };
 
   private updateSearch(input: HTMLInputElement) {
-    this.query = this.composition.searchable(input).trim();
+    const { query, composing } = this.composition.searchQuery(input);
+    this.query = query.trim();
+    this.queryComposing = composing;
     this.applyFilter();
 
     const detail = { query: input.value.toLowerCase().trim(), composing: this.composition.composing };
@@ -498,7 +502,9 @@ export class USelect extends UFormControlElement<string | string[]> {
       if (!query) {
         option.hidden = false;
       } else {
-        option.hidden = !Locale.matchesSearch(option.getText(), query) && !Locale.matchesSearch(option.value, query);
+        const options = { composing: this.queryComposing };
+        option.hidden = !Locale.matchesSearch(option.getText(), query, options)
+          && !Locale.matchesSearch(option.value, query, options);
       }
     }
     this.noMatches = !!this.query && !this.loading && !this.options.some((o) => !o.hidden);

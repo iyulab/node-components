@@ -9,10 +9,12 @@
   fires again with `composing: false` and the finished text; Chromium sends no plain `input` at that point, so a
   consumer that skipped composing events had no way to see the finished query. A consumer that searches a server can
   now skip composing queries. `search` no longer repeats an unchanged query.
-- **Search matching** — `Locale.matchesSearch(text, query)` and `Locale.registerSearch(locale, matcher)`. The default
-  rule folds case and diacritics and compares Hangul as the jamo in typing order, so a syllable still being composed
-  matches the word it is becoming (`성` and `서우` match `서울`), and a query of consonants only matches initials
-  (`ㅅㅇ` finds `서울`). `defaultSearchMatch`, `foldForSearch` and `initialsOf` are exported from `utilities/search`.
+- **Search matching** — `Locale.matchesSearch(text, query, options?)` and `Locale.registerSearch(locale, matcher)`. The
+  default rule folds case and diacritics and compares Hangul syllables whole; with `composing: true` the query's last
+  syllable, still being typed, is compared as the jamo in typing order, so it matches the word it is becoming (`성`
+  and `서우` match `서울`). A query of consonants only matches initials (`ㅅㅇ` finds `서울`). `defaultSearchMatch`,
+  `foldForSearch`, `hangulKeystrokes` and `initialsOf` are exported from `utilities/search`;
+  `CompositionTracker.searchQuery(input)` gives the query and the flag together.
   `u-select searchable` filters with it — typing `서울` with a Korean IME narrows to `서울` and `성남` at `성` and to
   `서울` at `서우`, instead of waiting for the syllable to be committed. A language's own rule is registered with
   `registerSearch`.

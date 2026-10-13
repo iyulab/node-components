@@ -8,7 +8,7 @@
  * 그 외 언어는 register()로 테이블 단위 등록/오버라이드한다.
  */
 
-import { defaultSearchMatch } from './search.js';
+import { defaultSearchMatch, type SearchMatchOptions } from './search.js';
 
 /** 라이브러리가 기본 제공하는 로케일. */
 export type SupportedLocale =
@@ -231,9 +231,9 @@ const namespaces = new Map<string, Map<string, Record<string, string>>>();
 
 /**
  * 글자가 검색어를 담는가 — 사람이 «찾았다» 고 여기는 일치. 글자마다 거르는 칸(`u-select` 의 검색 등)이 쓴다.
- * `text` 는 옵션 글자 같은 대상, `query` 는 사람이 친 검색어(조합 중인 한글 음절을 담을 수 있다).
+ * `text` 는 옵션 글자 같은 대상, `query` 는 사람이 친 검색어 — `options.composing` 이면 마지막 음절이 아직 조합 중이다.
  */
-export type SearchMatcher = (text: string, query: string) => boolean;
+export type SearchMatcher = (text: string, query: string, options: SearchMatchOptions) => boolean;
 
 /** 정규화 로케일 태그 → 그 언어에 등록된 검색 일치. 없으면 문자 체계 기본 규칙(`defaultSearchMatch`). */
 const searchMatchers = new Map<string, SearchMatcher>();
@@ -338,15 +338,21 @@ export class Locale {
   }
 
   /**
-   * `text` 가 `query` 를 담는가 — 활성 로케일(또는 `locale`)에 등록된 검색 일치로, 없으면 기본 규칙으로.
-   * 빈 검색어는 모두를 담습니다.
+   * `text` 가 `query` 를 담는가 — 활성 로케일(또는 `options.locale`)에 등록된 검색 일치로, 없으면 기본 규칙으로.
+   * 빈 검색어는 모두를 담습니다. 질의의 마지막 음절이 아직 IME 로 조합 중이면 `composing: true` 를 넘기세요 — 그 음절은
+   * 자모 앞부분으로 견줍니다(`CompositionTracker.searchQuery()` 가 둘을 함께 줍니다).
    */
-  public static matchesSearch(text: string, query: string, locale?: LocaleTag): boolean {
+  public static matchesSearch(
+    text: string,
+    query: string,
+    options: SearchMatchOptions & { locale?: LocaleTag } = {},
+  ): boolean {
+    const { locale, ...rest } = options;
     for (const tag of chainOf(locale || active)) {
       const matcher = searchMatchers.get(tag);
-      if (matcher) return matcher(text, query);
+      if (matcher) return matcher(text, query, rest);
     }
-    return defaultSearchMatch(text, query);
+    return defaultSearchMatch(text, query, rest);
   }
 
   /**

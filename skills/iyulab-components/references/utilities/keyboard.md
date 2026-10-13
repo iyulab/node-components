@@ -54,8 +54,9 @@ render() {
 - `ime.composing` — a composition is in progress.
 - `ime.settled(input)` — the text without the part still being composed. Items containing the settled
   text are a superset of items containing the finished text, so filtering on it never hides a match.
-- `ime.searchable(input)` — the settled text plus a Hangul syllable being composed at the end, for
-  `Locale.matchesSearch`, which matches a partial syllable.
+- `ime.searchQuery(input)` — `{ query, composing }` for `Locale.matchesSearch(text, query, { composing })`:
+  the settled text plus a Hangul syllable being composed at the end, which the matcher compares as a
+  partial syllable.
 - `replayInput` as the `onEnd` callback re-runs the input's own `input` handler when the composition
   ends. Use it for an input that waits: a server search, or a filter whose rule is not «contains»
   (equals, wildcard) or that announces its value to the outside.

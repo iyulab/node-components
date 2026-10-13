@@ -42,8 +42,8 @@ same chain.
 | `Locale.namespace(name)` | A string table for a package or app area, keyed by its own union — returns a handle (below) |
 | `Locale.subscribe(listener)` | Call `listener` whenever the locale changes (`set` to another locale, any `register`) — returns the unsubscribe function |
 | `Locale.revision` | A number that grows on every change — a snapshot or cache key (`get()` stays the same when only a table changes) |
-| `Locale.matchesSearch(text, query, locale?)` | Whether `text` contains `query` as a person searching means it — the rule registered for the locale, or the default (below) |
-| `Locale.registerSearch(locale, matcher)` | Register a language's own search rule, `(text, query) => boolean` |
+| `Locale.matchesSearch(text, query, options?)` | Whether `text` contains `query` as a person searching means it — the rule registered for the locale (`options.locale`, or the active one), or the default (below). `options.composing`: the query's last syllable is still being composed with an IME |
+| `Locale.registerSearch(locale, matcher)` | Register a language's own search rule, `(text, query, { composing }) => boolean` |
 
 ### Switching at runtime
 
@@ -80,14 +80,16 @@ instead of rendering as an empty string.
 ### Search matching
 
 `u-select`'s search filters options with `Locale.matchesSearch`. The default rule belongs to the
-writing system, so it applies under every locale (`defaultSearchMatch`, `foldForSearch` and
-`initialsOf` are exported from `utilities/search`):
+writing system, so it applies under every locale (`defaultSearchMatch`, `foldForSearch`,
+`hangulKeystrokes` and `initialsOf` are exported from `utilities/search`):
 
-- Case and diacritics fold — `Ä`, `ä` and `a` match.
-- Hangul is compared as the jamo in the order they are typed (`과` → `ㄱㅗㅏ`, `닭` → `ㄷㅏㄹㄱ`), so a
-  syllable still being composed matches the word it is becoming: `성` and `서우` on the way to
-  `서울` both match `서울`. Unicode normalization cannot do this — a final `ㅇ` and an initial `ㅇ`
-  are different characters there.
+- Case and diacritics fold — `Ä`, `ä` and `a` match. Hangul syllables are compared whole: `서` does
+  not match `성남`.
+- With `composing: true`, the query's last syllable is still being typed, and it is compared as the
+  jamo in typing order (`과` → `ㄱㅗㅏ`, `닭` → `ㄷㅏㄹㄱ`) against the start of what follows: `성` and
+  `서우` on the way to `서울` both match `서울`. Unicode normalization cannot do this — a final `ㅇ`
+  and an initial `ㅇ` are different characters there. `CompositionTracker.searchQuery(input)` gives
+  the query and this flag together.
 - A query of Hangul consonants only also matches initials: `ㅅㅇ` finds `서울`.
 
 Register a rule only for what belongs to a language:
@@ -95,8 +97,8 @@ Register a rule only for what belongs to a language:
 ```ts
 import { Locale, defaultSearchMatch } from '@iyulab/components';
 
-Locale.registerSearch('tr', (text, query) =>
-  text.toLocaleLowerCase('tr').includes(query.toLocaleLowerCase('tr')) || defaultSearchMatch(text, query));
+Locale.registerSearch('tr', (text, query, options) =>
+  text.toLocaleLowerCase('tr').includes(query.toLocaleLowerCase('tr')) || defaultSearchMatch(text, query, options));
 ```
 
 ## Example
