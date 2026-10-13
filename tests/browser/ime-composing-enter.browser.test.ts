@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Dialog } from '../../src/utilities/Dialog.js';
 import { isImeComposing } from '../../src/utilities/keyboard.js';
 import type { UDialog } from '../../src/components/dialog/UDialog.js';
+import { compose, commitWithEnter } from './ime.js';
 
 /**
  * IME 조합(한국어·일본어·중국어)을 확정하는 Enter 는 명령이 아니다.
@@ -39,12 +40,20 @@ describe('Dialog.prompt — 조합을 확정하는 Enter 로 닫히지 않는다
     return { input, result: () => settled };
   };
 
-  it.each([
-    ['isComposing', { isComposing: true }],
-    ['keyCode 229(Safari)', { keyCode: 229 }],
-  ])('%s Enter 는 확인이 아니다', async (_n, init) => {
+  it('실제 조합을 Enter 로 확정하면 확인이 아니다 — 글자는 들어간다', async () => {
     const { input, result } = await openPrompt();
-    input.dispatchEvent(enter(init));
+    (input.shadowRoot!.querySelector('input') as HTMLInputElement).focus();
+    await compose(['ㄱ', '가']);
+    await commitWithEnter('가');
+    await new Promise((r) => setTimeout(r, 200));
+    expect(result()).toBeUndefined();
+    expect(document.body.querySelector('u-dialog')).toBeTruthy();
+    expect((input as HTMLElement & { value?: string }).value).toBe('가');
+  });
+
+  it('keyCode 229(Safari — Chromium 이 낼 수 없어 합성 대역) Enter 는 확인이 아니다', async () => {
+    const { input, result } = await openPrompt();
+    input.dispatchEvent(enter({ keyCode: 229 }));
     await new Promise((r) => setTimeout(r, 200));
     expect(result()).toBeUndefined();
     expect(document.body.querySelector('u-dialog')).toBeTruthy();

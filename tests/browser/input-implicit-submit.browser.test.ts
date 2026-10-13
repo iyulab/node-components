@@ -4,6 +4,7 @@ import '../../src/components/input/UInput.js';
 import '../../src/components/option/UOption.js';
 import '../../src/components/button/UButton.js';
 import '../../src/components/checkbox/UCheckbox.js';
+import { compose, commitWithEnter } from './ime.js';
 
 /**
  * `u-input` 의 **암묵 제출** — 네이티브 단일 행 입력처럼 Enter 가 소유 `<form>` 을 제출한다(HTML «implicit submission»).
@@ -104,13 +105,14 @@ describe('u-input 암묵 제출 (Enter → 소유 form)', () => {
 
   it('⚪NEGATIVE — IME 조합을 확정하는 Enter 는 제출하지 않는다 (같은 합성 경로의 대조군은 제출한다)', async () => {
     const { submits, hosts } = await mountForm('<u-input name="q"></u-input><button type="submit">Go</button>');
-    const input = focusInner(hosts[0]);
-    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', isComposing: true, bubbles: true, composed: true }));
+    focusInner(hosts[0]);
+    await compose(['ㄱ', '가']);
+    await commitWithEnter('가');
     await settle();
-    expect(submits, '조합 중 Enter').toEqual([]);
-    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
+    expect(submits, '조합을 확정하는 Enter').toEqual([]);
+    await userEvent.keyboard('{Enter}');
     await settle();
-    expect(submits, '대조군 — 이 경로가 핸들러에 닿는다').toHaveLength(1);
+    expect(submits, '대조군 — 확정 뒤 보통 Enter 는 제출한다').toHaveLength(1);
   });
 
   it('⚪NEGATIVE — Safari 의 조합 확정 키(isComposing 없이 keyCode 229)도 제출하지 않는다', async () => {
