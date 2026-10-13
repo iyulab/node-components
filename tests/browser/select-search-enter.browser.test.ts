@@ -5,6 +5,7 @@ import '../../src/components/option/UOption.js';
 import type { USelect } from '../../src/components/select/USelect.js';
 import type { UOption } from '../../src/components/option/UOption.js';
 import { compose, commitWithEnter } from './ime.js';
+import { axActive } from './ax.js';
 
 /**
  * Enter in a searchable select's search box picks the first match (WAI-ARIA APG «list autocomplete with automatic
@@ -80,6 +81,16 @@ describe('u-select searchable — Enter picks the first match', () => {
     const box = searchBox(select) as HTMLInputElement & { ariaActiveDescendantElement?: Element | null };
     expect(select.shadowRoot!.activeElement).toBe(box);
     expect(box.ariaActiveDescendantElement).toBe(option(select, 'apple'));
+  });
+
+  it('the accessibility tree resolves the search box to the candidate option — what a screen reader reads as current', async () => {
+    const select = await mount(['banana', 'apple']);
+    await open(select);
+    await userEvent.keyboard('ap');
+    await settle();
+    const current = await axActive();
+    expect(current?.role).toBe('option');
+    expect(current?.name).toBe('apple');
   });
 
   it('NEGATIVE with no query there is no candidate, and Enter selects nothing', async () => {
