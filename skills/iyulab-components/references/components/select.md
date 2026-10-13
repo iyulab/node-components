@@ -62,7 +62,7 @@ Dropdown select with single or multiple selection, search, and clear support. Fo
 | Event | Description |
 |-------|-------------|
 | `change` | Fires when selection changes |
-| `search` | Fires on every search input change when `searchable` (`detail: { query: string }`). With `filter="none"` the select hides nothing, so the options you set from the server are shown as they are — otherwise the built-in local filter runs too |
+| `search` | Fires when the search text changes, when `searchable` (`detail: { query: string; composing: boolean }`). While an IME composition is in progress (Korean, Japanese, Chinese) `composing` is `true` and `query` ends in a partial syllable; when it ends the event fires again with `false` — a server search can skip composing queries. While composing, the built-in filter uses only the committed part, so it never hides an option the finished text would match. With `filter="none"` the select hides nothing, so the options you set from the server are shown as they are — otherwise the built-in local filter runs too |
 
 ## Methods
 

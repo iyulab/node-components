@@ -4,12 +4,24 @@
 
 ### Added
 
+- `u-select` `search` carries `detail.composing` — `true` while an IME composition (Korean, Japanese, Chinese) is in
+  progress, so `query` ends in a partial syllable (`ㅅ`, `성` on the way to `서울`). When the composition ends the event
+  fires again with `composing: false` and the finished text; Chromium sends no plain `input` at that point, so a
+  consumer that skipped composing events had no way to see the finished query. A consumer that searches a server can
+  now skip composing queries. `search` no longer repeats an unchanged query.
 - `modelValue` on form controls — the value a `u-form` reads into and writes from its `model`. It is `value` by
   default; `u-checkbox` and `u-switch` exchange `checked`. A custom control whose state lives in another property
   overrides it.
 
 ### Fixed
 
+- `u-select searchable` no longer hides options or announces "No matches" for a syllable still being composed. It
+  filtered on every composition step, so typing «서울» with a Korean IME showed no options and announced "No matches"
+  at «ㅅ», and showed only «성남» at «성». While composing it now filters on the committed part only, which never hides
+  an option the finished text would match; "No matches" appears only when the committed part already matches nothing.
+- `u-input` keeps `value` in step with the box during an IME composition. It used to update only when the composition
+  ended, so the `input` events an ancestor received during composition read an old value (`undefined` or the previous
+  syllable while the box showed «서울»). These events are now re-dispatched from the host and keep `isComposing`.
 - Events re-dispatched from a control's host now bubble and cross shadow roots. `relay()` copied the original event
   with object spread, which does not include `bubbles`, `composed`, `cancelable` or `InputEvent` fields (they are
   prototype getters), so the re-dispatched event reached only listeners on the host itself. Affected: `change` from

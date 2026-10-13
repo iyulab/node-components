@@ -431,7 +431,7 @@ export class UInput extends UFormControlElement<string> {
     }
   };
 
-  // IME(한글·일본어·중국어 등) 조합 상태. 조합 중에는 value 동기화를 보류한다.
+  // IME(한글·일본어·중국어 등) 조합 상태 — Enter 판정(암묵 제출 · 검색 확정)이 조합을 확정하는 키를 거르는 데 쓴다.
   private composing = false;
 
   private handleCompositionStart = () => {
@@ -440,18 +440,16 @@ export class UInput extends UFormControlElement<string> {
 
   private handleCompositionEnd = () => {
     this.composing = false;
-    // 조합 완료 후 동기화·relay는 뒤따르는 native input 이벤트(handleInputInput)가 수행한다.
-    // 일부 환경은 compositionend 후 input을 발생시키지 않으므로 input 요소에서 한 번 재발행해
-    // 보강하되, native input이 뒤따르는 브라우저에서는 handleInputInput의 값 비교로 걸러져
-    // 이중 발화하지 않는다. (여기서 host에 직접 input을 dispatch하면 후속 native input과 중복된다)
+    // 조합 중 `input` 이 값을 이미 옮겼다(handleInputInput). 조합 중 `input` 을 내지 않는 환경을 위해 입력 요소에서 한 번
+    // 보강하되, 값이 이미 같으면 handleInputInput 이 거른다 — 보강은 합성(`isTrusted: false`)이라 실제 이벤트와 갈린다.
+    // (host 에 직접 dispatch 하면 뒤따르는 실제 input 과 중복된다)
     this.inputEl?.dispatchEvent(new InputEvent('input', { bubbles: true }));
   };
 
   private handleInputInput = (e: InputEvent) => {
-    // 조합 중(IME) value를 다시 쓰면 .value=live()가 조합을 취소시켜
-    // 한글 입력·띄어쓰기가 깨진다. 조합 완료(compositionend) 시점에만 동기화한다.
-    if (this.composing) return;
     if (this.type === 'number') {
+      // 숫자는 보이는 글자를 다시 쓴다(`syncNumberFromText`) — 조합 중에 쓰면 조합이 취소된다. 확정 뒤에 옮긴다.
+      if (this.composing) return;
       // 숫자는 보이는 글자와 값이 다르다(`1,5` ↔ `1.5`) — 글자가 바뀌었으면 값이 같아도 입력이다.
       const text = this.inputEl?.value ?? '';
       if (text === this.numberText) return;
@@ -459,9 +457,12 @@ export class UInput extends UFormControlElement<string> {
       this.relay(e);
       return;
     }
+    // 조합 중에도 값은 상자 글자를 따른다 — 상자가 «서울» 인데 `value` 가 «서» 이면 조상이 듣는 `input` 이 낡은 값을 읽는다.
+    // 같은 값을 다시 그리는 것은 `live()` 가 입력 요소에 쓰지 않으므로 조합을 깨지 않는다(실제 조합 시험이 잰다).
+    // 그 `input` 은 `isComposing` 을 싣고 호스트에서 다시 나간다(`relay`) — 소비자가 조합 단계를 거를 수 있다.
     const next = this.inputEl?.value;
-    // compositionend 보강 dispatch와 후속 native input의 이중 relay를 값 비교로 차단한다.
-    if (next === this.value) return;
+    // compositionend 의 합성 보강이 이미 옮긴 값이면 다시 내지 않는다. 실제 이벤트는 언제나 낸다(Firefox 는 조합 끝 뒤에도 낸다).
+    if (!e.isTrusted && next === this.value) return;
     this.value = next;
     this.relay(e);
   }
