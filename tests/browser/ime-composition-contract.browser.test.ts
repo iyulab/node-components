@@ -90,6 +90,17 @@ describe('u-select searchable — 조합 중 거르기와 search', () => {
     expect(status()).not.toBe('');
   });
 
+  it('글 가운데서 조합해도 확정된 부분은 조합 앞뒤의 글자다', async () => {
+    const { select, visible } = await openSearchableSelect();
+    const search = select.shadowRoot!.querySelector('.search-input input') as HTMLInputElement;
+    await userEvent.keyboard('busan');
+    search.setSelectionRange(0, 0);
+    await compose(['ㅅ']);
+    await settle(select);
+    expect(search.value).toBe('ㅅbusan');
+    expect(visible()).toEqual(['부산']);
+  });
+
   it('조합 없는 타이핑은 search 를 composing:false 로 낸다', async () => {
     const { select, searches } = await openSearchableSelect();
     await userEvent.keyboard('bu');

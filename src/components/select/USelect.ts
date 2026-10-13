@@ -9,6 +9,7 @@ import '../spinner/USpinner.js';
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import { CharsWidthController } from "../../utilities/chars.js";
+import { CompositionTracker } from "../../utilities/composition.js";
 // 부수효과 import — 이 모듈이 그리는 `<u-chip>` 을 등록한다(타입만 가져오면 빌드가 import 를 지워 등록되지 않는다).
 import "../chip/UChip.js";
 import type { UChip } from "../chip/UChip.js";
@@ -247,8 +248,9 @@ export class USelect extends UFormControlElement<string | string[]> {
             aria-label=${Locale.getValue('search')}
             aria-controls=${this.listboxId}
             @input=${this.handleSearchInput}
-            @compositionstart=${this.handleSearchCompositionStart}
-            @compositionend=${this.handleSearchCompositionEnd}
+            @compositionstart=${this.composition}
+            @compositionupdate=${this.composition}
+            @compositionend=${this.composition}
             @keydown=${this.handleSearchKeydown}
           />
         </div>
@@ -463,42 +465,24 @@ export class USelect extends UFormControlElement<string | string[]> {
   };
 
   /**
-   * IME 조합이 시작된 검색어 안의 자리 — 조합 중이 아니면 `null`. 조합 중인 음절(«ㅅ» · «성» → «서울» 의 가는 길)은
-   * «진행 중» 이라 거르기에 쓰지 않는다: 확정된 부분을 담는 옵션은 최종 글자를 담는 옵션의 상위 집합이므로, 확정된 부분으로
-   * 거르면 사용자가 찾는 옵션을 숨기지 않고 «일치 없음» 도 정말 없을 때만 알린다.
+   * 검색칸의 IME 조합. 조합 중인 음절(«ㅅ» · «성» → «서울» 의 가는 길)은 «진행 중» 이라 거르기에 쓰지 않는다 — 확정된
+   * 부분으로 거르면 사용자가 찾는 옵션을 숨기지 않고 «일치 없음» 도 정말 없을 때만 알린다. Chromium 은 조합의 마지막
+   * `input` 을 `isComposing: true` 로 내고 끝내므로, 확정된 질의는 조합 끝에 낸다.
    */
-  private compositionStart: number | null = null;
+  private readonly composition = new CompositionTracker((input) => this.updateSearch(input as HTMLInputElement));
 
   /** 마지막으로 낸 `search` — 조합 끝의 `search` 와 그 뒤 브라우저가 내는 `input`(Firefox)이 같은 질의를 두 번 내지 않게. */
   private lastSearch?: { query: string; composing: boolean };
 
-  private handleSearchCompositionStart = (e: CompositionEvent) => {
-    const input = e.target as HTMLInputElement;
-    this.compositionStart = input.selectionStart ?? input.value.length;
-  };
-
-  /** Chromium 은 조합의 마지막 `input` 을 `isComposing: true` 로 내고 끝낸다 — 확정된 질의는 여기서 낸다. */
-  private handleSearchCompositionEnd = (e: CompositionEvent) => {
-    this.compositionStart = null;
-    this.updateSearch(e.target as HTMLInputElement, '');
-  };
-
   private handleSearchInput = (e: InputEvent) => {
-    const composing = this.compositionStart !== null && e.isComposing;
-    this.updateSearch(e.target as HTMLInputElement, composing ? (e.data ?? '') : '');
+    this.updateSearch(e.target as HTMLInputElement);
   };
 
-  /** `composingText` — 검색어 안에서 아직 조합 중인 글자(없으면 빈 문자열). */
-  private updateSearch(input: HTMLInputElement, composingText: string) {
-    const text = input.value;
-    const composing = composingText !== '' && this.compositionStart !== null;
-    const settled = composing
-      ? text.slice(0, this.compositionStart!) + text.slice(this.compositionStart! + composingText.length)
-      : text;
-    this.query = settled.toLowerCase().trim();
+  private updateSearch(input: HTMLInputElement) {
+    this.query = this.composition.settled(input).toLowerCase().trim();
     this.applyFilter();
 
-    const detail = { query: text.toLowerCase().trim(), composing };
+    const detail = { query: input.value.toLowerCase().trim(), composing: this.composition.composing };
     if (this.lastSearch && this.lastSearch.query === detail.query && this.lastSearch.composing === detail.composing) return;
     this.lastSearch = detail;
     this.fire<USelectSearchDetail>('search', { detail, cancelable: false });
