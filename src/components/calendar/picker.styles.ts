@@ -155,4 +155,17 @@ export const styles = css`
     gap: 4px;
     margin-inline-start: auto;
   }
+  /* 강제 색 모드(Windows 고대비)는 box-shadow 를 지운다 - 포커스를 box-shadow 로만 그리면 그 모드에서 포커스가 보이지 않는다(WCAG 2.4.7).
+     시스템 색 Highlight 의 outline 으로 같은 자리에 링을 그린다. */
+  @media (forced-colors: active) {
+    :host(:not([readonly]):not(:disabled)) .container:focus-within {
+      outline: 2px solid Highlight;
+      outline-offset: 1px;
+    }
+    .time-input:focus-visible {
+      outline: 2px solid Highlight;
+      outline-offset: 1px;
+    }
+  }
+
 `;
