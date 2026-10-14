@@ -74,20 +74,25 @@ export function indexExportedTypes(
   const ordered = [...entries].sort((a, b) => (a.key === '.' ? -1 : b.key === '.' ? 1 : 0));
   for (const { key, source } of ordered) {
     const specifier = key === '.' ? packageName : `${packageName}/${key.replace(/^\.\//, '')}`;
-    const declared = localTypeNames(source);
-    const exported = new Set<string>();
-    for (const m of source.matchAll(/^export\s+declare\s+(?:abstract\s+)?(?:class|interface|type|enum)\s+([A-Za-z_$][\w$]*)/gm)) {
-      exported.add(m[1]);
-    }
-    for (const m of source.matchAll(/^export\s*\{([^}]*)\}\s*;?\s*$/gm)) {
-      for (const part of m[1].split(',')) {
-        const [local, alias] = part.trim().replace(/^type\s+/, '').split(/\s+as\s+/);
-        if (local && declared.has(local)) exported.add((alias ?? local).trim());
-      }
-    }
-    for (const name of exported) if (!index.has(name)) index.set(name, specifier);
+    for (const name of exportedTypeNames(source)) if (!index.has(name)) index.set(name, specifier);
   }
   return index;
+}
+
+/** Type-capable names a declaration file exports (`export declare class X` · `export { X }` of a declared `X`). */
+export function exportedTypeNames(source: string): Set<string> {
+  const declared = localTypeNames(source);
+  const exported = new Set<string>();
+  for (const m of source.matchAll(/^export\s+declare\s+(?:abstract\s+)?(?:class|interface|type|enum)\s+([A-Za-z_$][\w$]*)/gm)) {
+    exported.add(m[1]);
+  }
+  for (const m of source.matchAll(/^export\s*\{([^}]*)\}\s*;?\s*$/gm)) {
+    for (const part of m[1].split(',')) {
+      const [local, alias] = part.trim().replace(/^type\s+/, '').split(/\s+as\s+/);
+      if (local && declared.has(local)) exported.add((alias ?? local).trim());
+    }
+  }
+  return exported;
 }
 
 /** Names a declaration file can use as types: its own type declarations and its imports. */
@@ -147,6 +152,14 @@ export function resolveDanglingGlobals(
   globals: Set<string> = new Set(),
 ): string {
   const local = localTypeNames(source);
+  // A class the bundler inlined as a private copy (declared here, exported only by another entry) is a second nominal
+  // type for the same tag — merging both copies into one global map fails with TS2717. Point at the public one.
+  const exportedHere = exportedTypeNames(source);
+  for (const name of [...local]) {
+    if (exportedHere.has(name) || !exportedFrom.has(name)) continue;
+    const declared = new RegExp(`^\\s*(?:export\\s+)?(?:declare\\s+)?(?:abstract\\s+)?(?:class|interface|type|enum)\\s+${name}\\b`, 'm');
+    if (declared.test(source)) local.delete(name); // an import is an explicit binding — kept
+  }
   for (const name of globals) if (!exportedFrom.has(name)) local.add(name);
   let out = '';
   let cursor = 0;

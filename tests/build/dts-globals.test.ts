@@ -63,6 +63,11 @@ describe('resolveDanglingGlobals', () => {
     expect(resolveDanglingGlobals(src, exported)).toBe(src);
   });
 
+  it('points a private copy of a class (declared, not exported here) at the entry that exports it', () => {
+    const src = `export declare const ListPage: unknown;\ndeclare class UListPage extends HTMLElement {}\n${tagMap("        'u-list-page': UListPage;")}`;
+    expect(resolveDanglingGlobals(src, exported)).toContain(`'u-list-page': import('${PKG}/list-page').UListPage;`);
+  });
+
   it('treats an imported name as local', () => {
     const src = `import { UOutlet } from './outlet';\n${tagMap("        'u-outlet': UOutlet;")}`;
     expect(resolveDanglingGlobals(src, exported)).toBe(src);
