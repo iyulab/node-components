@@ -90,8 +90,8 @@ describe('높이(elevation) 축', () => {
       const src = readFileSync(join(root, rel), 'utf-8');
       for (const m of src.matchAll(/box-shadow:\s*([^;]+);/g)) {
         const v = m[1].replace(/\s+/g, ' ').trim();
-        // `0 0 0 …` 은 링(포커스·테두리)이지 높이가 아니다.
-        if (/^0 0 0\b/.test(v) || v === 'none' || v.startsWith('var(--u-shadow-')) continue;
+        // `0 0 0 …` 은 링(포커스·테두리)이지 높이가 아니다. `inset` 도 높이가 아니다 — 안쪽 선(띠의 바닥선)이다.
+        if (/^0 0 0\b/.test(v) || /^inset\b/.test(v) || v === 'none' || v.startsWith('var(--u-shadow-')) continue;
         offenders.push(`${norm}: ${v}`);
       }
     }

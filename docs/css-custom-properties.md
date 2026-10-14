@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 32개 · 프로퍼티 143개**
+**컴포넌트 33개 · 프로퍼티 144개**
 
 ## `<u-alert>`
 
@@ -274,17 +274,17 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--tab-padding-block` | 세로 여백 |
 | `--tab-padding-inline` | 가로 여백 |
 
-## `<u-tab-panel>`
-
-| 프로퍼티 | 설명 |
-|---|---|
-| `--tab-panel-color` | 활성 탭의 기준색 (기본: --u-primary-color) |
-
 ## `<u-tab-nav>`
 
 | 프로퍼티 | 설명 |
 |---|---|
 | `--tab-nav-color` | 현재 탭의 글자·밑줄 색 (기본: --u-primary-color) |
+
+## `<u-tab-panel>`
+
+| 프로퍼티 | 설명 |
+|---|---|
+| `--tab-panel-color` | 활성 탭의 기준색 (기본: --u-primary-color) |
 
 ## `<u-tag>`
 

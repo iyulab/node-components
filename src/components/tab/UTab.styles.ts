@@ -65,7 +65,7 @@ export const styles = css`
     padding: 0 0.5em;
     box-sizing: border-box;
     border-radius: var(--u-radius-pill, 9999px);
-    background-color: var(--u-bg-color-raised, #F5F5F5);
+    background-color: var(--u-bg-color-raised, #FAFAFA);
     color: var(--u-txt-color-weak, #616161);
     font-size: var(--u-text-overline-size, 11px);
     line-height: calc(var(--u-text-overline-leading, 1.45) * 1em);
