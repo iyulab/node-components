@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.27.0] - 2026-10-15
+
+### Added
+
+- `plugins/dts-globals` — `fixPublishedDtsGlobals(packageRoot)`, a build step for packages that bundle their
+  declarations (`vite-plugin-dts` with `bundleTypes`). The bundler copies every `declare global` merge of the source
+  tree into each entry `.d.ts` but drops the classes those merges name when the entry does not reach them, so a
+  consumer that checks library types (`skipLibCheck: false`) fails with `TS2304` just for importing the package. The
+  step points each such name at the public entry that exports it (`import('<package>/<subpath>').Name`), types a tag
+  whose class no entry exports as `HTMLElement`, and leaves built-in types alone. Call it from the plugin's
+  `afterBuild` hook (`import { fixPublishedDtsGlobals } from '@iyulab/components/plugins/dts-globals.js'`).
+
 ## [2.26.1] - 2026-10-14
 
 ### Fixed
