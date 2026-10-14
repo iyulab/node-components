@@ -45,7 +45,10 @@ describe('u-card href', () => {
   });
 
   it('🔴hover 는 테두리 색을 바꾸고 카드를 들어 올리지 않는다', async () => {
-    const card = await mount('<u-card href="#x" style="--u-border-color: rgb(1, 1, 1); --u-border-color-strong: rgb(200, 0, 0)">Body</u-card>');
+    const card = await mount('<button id="away">away</button><u-card href="#x" style="--u-border-color: rgb(1, 1, 1); --u-border-color-strong: rgb(200, 0, 0)">Body</u-card>');
+    // 쉼을 재기 전에 포인터를 카드 밖에 둔다 — 포인터 위치는 시험 파일을 건너 남는다.
+    await userEvent.hover(document.getElementById('away')!);
+    await new Promise((r) => setTimeout(r, 300));
     const before = getComputedStyle(base(card)).borderTopColor;
     await userEvent.hover(card);
     await new Promise((r) => setTimeout(r, 300));

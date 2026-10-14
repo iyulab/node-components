@@ -36,6 +36,9 @@ async function states(primary: string, attrs = '') {
   await el.updateComplete;
   const bg = () => getComputedStyle(el).backgroundColor;
   const settle = () => new Promise((r) => setTimeout(r, 400)); // 전환(220ms) 이 끝난 뒤 — 첫 렌더도 투명에서 전환한다
+  // 쉼을 재기 전에 포인터를 버튼 밖에 둔다 — 포인터 위치는 시험 파일을 건너 남는다. 앞 파일이 남긴 포인터가 이 자리에
+  // 있으면 «쉼» 이 이미 hover 로 재져 차이가 정확히 0 이 된다(CI 에서만 — 파일 순서가 로컬과 달랐다).
+  await userEvent.hover(document.getElementById('away')!);
   await settle();
   const rest = bg();
   expect(rest).not.toBe('rgba(0, 0, 0, 0)');
