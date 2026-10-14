@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.26.1] - 2026-10-14
+
+### Fixed
+
+- **Focus is visible in forced colors mode** (Windows contrast themes). Forced colors drop `box-shadow`, and
+  `u-input`, `u-textarea`, `u-checkbox`, `u-switch`, `u-slider`, `u-file-input`, the calendar day, the picker field
+  and time input and the date range presets drew focus with `box-shadow` alone — tabbing to them showed nothing. They
+  now draw a `Highlight` outline in that mode. Normal rendering is unchanged.
+- **`u-switch` on and off look different in forced colors mode.** The track and thumb were told apart by background
+  colour only, which forced colours paint the same; the track now has a border and the thumb and the checked track use
+  system colours.
+- **Invalid `u-input`, `u-textarea` and `u-select` are marked in forced colors mode** with a dashed outline (their red
+  ring is a `box-shadow`). Focus still wins while the field is focused.
+
 ## [2.26.0] - 2026-10-14
 
 ### Added
