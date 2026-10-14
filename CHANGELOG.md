@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- `u-field` parts `header`, `label`, `required` and `footer` — a theme can draw the label row and the line under the
+  control (description, or the validation message while `invalid`) its own way. Before, only the hint icon and its
+  tooltip were reachable.
+
 ## [2.25.0] - 2026-10-14
 
 ### Added

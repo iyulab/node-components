@@ -51,6 +51,10 @@ export type FieldDescriptionDisplay = 'inline' | 'hint';
  *
  * @slot - 폼 컨트롤 (input, select, textarea 등)
  * @slot label-aside - 라벨 오른쪽 슬롯 영역 (숫자 표시, 알림 등)
+ * @csspart header - 라벨 줄(라벨 · 정보 아이콘 · `label-aside`)
+ * @csspart label - 라벨
+ * @csspart required - 필수 표시
+ * @csspart footer - 컨트롤 아래 줄(설명, 또는 `invalid` 일 때 검증 문구 — `u-field[invalid]::part(footer)` 로 가른다)
  * @csspart hint - `description-display="hint"` 의 정보 아이콘 감싸개
  * @csspart hint-tooltip - 그 툴팁
  */
@@ -97,9 +101,9 @@ export class UField extends UElement {
 
   render() {
     return html`
-      <div class="header" ?hidden=${!this.label}>
-        <label class="label" @click=${this.handleLabelClick}>
-          <span class="required" ?hidden=${!this.required}>*</span>
+      <div class="header" part="header" ?hidden=${!this.label}>
+        <label class="label" part="label" @click=${this.handleLabelClick}>
+          <span class="required" part="required" ?hidden=${!this.required}>*</span>
           ${this.label}
         </label>
         ${this.renderHint()}
@@ -224,7 +228,7 @@ export class UField extends UElement {
       ? this.validationMessage
       : this.effectiveDescriptionDisplay === 'inline' ? this.description : undefined;
     if (!message) return nothing;
-    return html`<div class="footer">${message}</div>`;
+    return html`<div class="footer" part="footer">${message}</div>`;
   }
 
   /** 슬롯에 꽂힌 첫 포커스 가능 자식으로 위임한다 — 라벨 클릭과 같은 대상 탐색 로직을

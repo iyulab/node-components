@@ -112,6 +112,10 @@ is not a Tab stop — a form of dozens of fields would otherwise double its Tabs
 
 | Part | Description |
 |------|-------------|
+| `header` | The label row (label · info icon · `label-aside`) |
+| `label` | The label |
+| `required` | The required marker |
+| `footer` | The line under the control — the description, or the validation message while `invalid` (tell them apart with `u-field[invalid]::part(footer)`) |
 | `hint` | The info icon beside the label (`description-display="hint"`) |
 | `hint-tooltip` | The tooltip that holds the description |
 
