@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.27.1] - 2026-10-15
+
+### Fixed
+
+- `plugins/dts-globals`: a class the declaration bundler inlined into an entry as a private copy (declared there, exported
+  only by another entry) is now pointed at the public export as well. The copy is a second nominal type for the same tag,
+  so a program that loaded both entries failed with `TS2717`.
+
 ## [2.27.0] - 2026-10-15
 
 ### Added
