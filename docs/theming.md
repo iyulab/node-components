@@ -515,6 +515,15 @@ runs and the column alignment breaks. If that matters, append a CJK monospace ex
 }
 ```
 
+### The sibling packages read the same tokens
+
+Setting `--u-font-base` and `--u-font-mono` (and the `--u-text-*` steps) themes more than this package.
+`@iyulab/chat-components` (message, text, code blocks and the prompt input — including the body size and line height),
+`@iyulab/data-components` (`u-rich-table`), `@iyulab/flex-table` (through `--ft-font-family`, which defaults to
+`--u-font-base`) and `@iyulab/router` (`u-error-page`) read them directly, each with its own fallback when the sheet is
+absent. `@iyulab/u-widgets` keeps its own `--u-widget-font-family` / `--u-widget-font-mono` so it works standalone; its
+`themes/components.css` bridge maps them to these tokens.
+
 ### Two limits worth knowing
 
 ⚠**These tokens have no literal fallback.** Unlike colours, font stacks are not wired into

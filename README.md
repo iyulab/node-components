@@ -171,6 +171,7 @@ Theme.set('system');
 | SC 2.5.8 타깃 크기(최소) | 등록된 모든 컴포넌트의 포인터 타깃이 24×24 CSS px 이상이거나 간격 예외(중심 간 24px)를 충족하고, 그 좌표에서 실제로 눌린다 | `tests/browser/target-size.browser.test.ts`(실제 크로미움) |
 | SC 2.1.1 키보드(포인터 커서 검사) | 픽스처가 그리는 어떤 요소도 포인터 커서를 보이면서 상호작용 요소가 아닌 채로 있지 않다 — 클릭만 받는 `div` 가 들어오지 못한다(키 처리 자체는 컴포넌트 테스트가 잰다) | 같은 파일 |
 | SC 1.3.1 정보와 관계 · SC 4.1.2 이름·역할·값 | `u-field` 의 `label`/`description` 이 슬롯된 컨트롤의 접근성 이름·설명으로 실제로 도달한다(네이티브 엘리먼트 · `u-*` 폼 컨트롤 양쪽) | `tests/browser/field-label-association.browser.test.ts` |
+| SC 2.4.7 포커스 표시 · SC 1.4.11 비텍스트 대비(강제 색 모드) | Windows 대비 테마(`forced-colors: active`)에서도 포커스 링이 보이고, `u-switch` 켬/끔과 입력류의 무효 표시가 구분된다 — 색을 시스템 색으로 덮는 그 모드를 에뮬레이션해 Tab·상태 전환 전후의 픽셀로 잰다 | `tests/browser/forced-colors-focus.browser.test.ts` · `tests/browser/forced-colors-state.browser.test.ts` |
 
 🔴**폼 컨트롤의 접근성 이름은 «한 곳에서만» 준다.** `u-field` 는 자기 `label` 을 슬롯된 컨트롤에
 `aria-label` 로 얹고(섀도우 경계를 넘지 못하는 `aria-labelledby` 대신 문자열 복사다), 폼 컨트롤은
