@@ -203,6 +203,20 @@ export const styles = css`
   /* 강제 색 모드(Windows 고대비)는 box-shadow 를 지운다 - 포커스를 box-shadow 로만 그리면 그 모드에서 포커스가 보이지 않는다(WCAG 2.4.7).
      시스템 색 Highlight 의 outline 으로 같은 자리에 링을 그린다. */
   @media (forced-colors: active) {
+    /* 트랙과 손잡이를 배경색만으로 가르면 강제 색 모드가 둘을 같은 색으로 덮어 켬/끔이 같은 화면이 된다 - 시스템 색으로 칠한다. */
+    .track {
+      border: 1px solid CanvasText;
+    }
+    .thumb {
+      background: CanvasText;
+    }
+    :host([checked]) .track {
+      background: Highlight;
+      border-color: Highlight;
+    }
+    :host([checked]) .thumb {
+      background: HighlightText;
+    }
     input:focus-visible ~ .track {
       outline: 2px solid Highlight;
       outline-offset: 2px;

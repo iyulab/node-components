@@ -269,4 +269,13 @@ export const styles = css`
     /* 밀도 단에 비례 — 기본 밀도 14px 에서 16px. */
     font-size: calc(var(--u-density, 14px) * 8 / 7);
   }
+  /* 강제 색 모드(Windows 고대비)는 box-shadow 를 지운다 - 무효 표시를 점선 outline 으로 그린다(포커스는 이미 outline 이다). */
+  @media (forced-colors: active) {
+    /* 무효 표시도 box-shadow 라 지워진다 - 점선 outline 으로(포커스의 실선과 구분). 아래 포커스 규칙이 뒤에 와 포커스가 이긴다. */
+    :host([invalid]:not([readonly]):not(:disabled)) .container {
+      outline: 2px dashed CanvasText;
+      outline-offset: 1px;
+    }
+  }
+
 `;

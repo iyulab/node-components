@@ -186,6 +186,11 @@ export const styles = css`
   /* 강제 색 모드(Windows 고대비)는 box-shadow 를 지운다 - 포커스를 box-shadow 로만 그리면 그 모드에서 포커스가 보이지 않는다(WCAG 2.4.7).
      시스템 색 Highlight 의 outline 으로 같은 자리에 링을 그린다. */
   @media (forced-colors: active) {
+    /* 무효 표시도 box-shadow 라 지워진다 - 점선 outline 으로(포커스의 실선과 구분). 아래 포커스 규칙이 뒤에 와 포커스가 이긴다. */
+    :host([invalid]:not([readonly]):not(:disabled)) .container {
+      outline: 2px dashed CanvasText;
+      outline-offset: 1px;
+    }
     :host(:not([readonly]):not(:disabled)) .container:focus-within {
       outline: 2px solid Highlight;
       outline-offset: 1px;
