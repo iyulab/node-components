@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- `plugins/dts-globals`: augmentations of a bare module — `declare module 'react' { namespace JSX … }` — are resolved like
+  `declare global` blocks. The bundler copies them into every entry the same way, so a JSX props type the entry did not
+  reach was left undeclared (`TS2304` with `skipLibCheck: false`).
+
 ## [2.27.1] - 2026-10-15
 
 ### Fixed

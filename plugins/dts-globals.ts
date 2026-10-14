@@ -143,8 +143,9 @@ export function libGlobalNames(packageRoot: string): Set<string> {
 }
 
 /**
- * Rewrites the dangling names inside each top-level `declare global { … }` block of one
- * declaration file (see `fixPublishedDtsGlobals`). Everything outside those blocks is untouched.
+ * Rewrites the dangling names inside each top-level `declare global { … }` block — and each
+ * augmentation of a bare module specifier, `declare module 'react' { … }` — of one declaration file
+ * (see `fixPublishedDtsGlobals`). Everything outside those blocks is untouched.
  */
 export function resolveDanglingGlobals(
   source: string,
@@ -163,7 +164,9 @@ export function resolveDanglingGlobals(
   for (const name of globals) if (!exportedFrom.has(name)) local.add(name);
   let out = '';
   let cursor = 0;
-  const marker = /declare\s+global\s*\{/g;
+  // A module augmentation (`declare module 'react' { namespace JSX … }`) is copied the same way and
+  // dangles the same way. Only bare specifiers: an entry file is a module, so these are augmentations.
+  const marker = /declare\s+(?:global|module\s+(['"])[^'"./][^'"]*\1)\s*\{/g;
   for (let m = marker.exec(source); m; m = marker.exec(source)) {
     const open = m.index + m[0].length - 1;
     const close = matchingBrace(source, open);

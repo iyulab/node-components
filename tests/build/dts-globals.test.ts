@@ -72,6 +72,18 @@ describe('resolveDanglingGlobals', () => {
     const src = `import { UOutlet } from './outlet';\n${tagMap("        'u-outlet': UOutlet;")}`;
     expect(resolveDanglingGlobals(src, exported)).toBe(src);
   });
+
+  it('rewrites a dangling name inside an augmentation of a bare module (React JSX)', () => {
+    const src = "declare module 'react' {\n    namespace JSX {\n        interface IntrinsicElements {\n            'u-outlet': OutletProps;\n        }\n    }\n}\n";
+    const out = resolveDanglingGlobals(src, new Map([['OutletProps', PKG]]));
+    expect(out).toContain(`'u-outlet': import('${PKG}').OutletProps;`);
+    expect(out).toContain('namespace JSX');
+  });
+
+  it('NEGATIVE: leaves a relative module declaration alone', () => {
+    const src = "declare module './outlet' {\n    interface X {\n        a: OutletProps;\n    }\n}\n";
+    expect(resolveDanglingGlobals(src, new Map([['OutletProps', PKG]]))).toBe(src);
+  });
 });
 
 describe('indexExportedTypes / declarationEntries', () => {
