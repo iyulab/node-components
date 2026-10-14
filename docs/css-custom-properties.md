@@ -280,6 +280,12 @@ u-button.cta { --btn-color: #0f9d58; }
 |---|---|
 | `--tab-panel-color` | 활성 탭의 기준색 (기본: --u-primary-color) |
 
+## `<u-tab-nav>`
+
+| 프로퍼티 | 설명 |
+|---|---|
+| `--tab-nav-color` | 현재 탭의 글자·밑줄 색 (기본: --u-primary-color) |
+
 ## `<u-tag>`
 
 | 프로퍼티 | 설명 |

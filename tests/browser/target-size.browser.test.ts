@@ -275,7 +275,7 @@ function suffixButtons(tag: string): Element[] {
 const NOT_A_TARGET = new Set([
   'u-avatar', 'u-badge', 'u-breadcrumb', 'u-button-group', 'u-card', 'u-divider',
   'u-field', 'u-form', 'u-icon', 'u-menu', 'u-panel', 'u-popover', 'u-progress-bar',
-  'u-progress-ring', 'u-skeleton', 'u-spinner', 'u-steps', 'u-tab-panel', 'u-tag',
+  'u-progress-ring', 'u-skeleton', 'u-spinner', 'u-steps', 'u-tab-nav', 'u-tab-panel', 'u-tag',
   'u-text', 'u-tooltip', 'u-tree',
 ]);
 
@@ -608,6 +608,12 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
       // \`removable\` 탭의 닫기 버튼 — 탭(호스트)과 다른 일을 하는 별도 타깃이다.
       html: '<u-tab-panel><u-tab removable>One</u-tab><u-tab removable>Two</u-tab></u-tab-panel>',
       targets: () => Array.from(document.querySelectorAll('u-tab')).flatMap((t) => parts(t, 'remove-btn')),
+    },
+    {
+      state: '링크',
+      // `u-tab-nav` 안의 링크 탭 — 누르는 것은 안쪽 <a>(호스트는 역할도 포커스도 없다).
+      html: '<u-tab-nav label="Views"><u-tab href="#a">One</u-tab><u-tab href="#b" count="3">Two</u-tab></u-tab-nav>',
+      targets: () => Array.from(document.querySelectorAll('u-tab')).flatMap((t) => parts(t, 'base')),
     },
   ],
   'u-menu-item': [
@@ -975,7 +981,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 28(53상태) · 미판정 0() · 대상아님 22');
+      ).toBe('판정 28(54상태) · 미판정 0() · 대상아님 23');
     });
   });
 

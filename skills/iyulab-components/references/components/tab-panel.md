@@ -8,7 +8,8 @@ import '@iyulab/components/dist/components/panel/UPanel.js';
 
 **Tags:** `u-tab-panel`, `u-tab`
 
-Tab-based content switcher. Pair each `u-tab` with a `u-panel` of the same `value`.
+Tab-based content switcher. Pair each `u-tab` with a `u-panel` of the same `value`. For tabs that are links to other
+URLs (saved views), use [`u-tab-nav`](./tab-nav.md).
 
 ```html
 <u-tab-panel value="home">
@@ -104,6 +105,12 @@ selected tab is a tab stop (arrow keys, Home and End move between tabs and selec
 A control placed in a slot (a button, a link) keeps its own keys and clicks — it does not select or
 activate the tab, and the tab's arrow-key navigation applies only while the tab itself has focus.
 
+**Link tabs.** With `href` the tab renders as a link for [`u-tab-nav`](./tab-nav.md): no tab role and no host tab
+stop (the inner `<a>` is the stop), `aria-current="page"` while `active`, and no remove button.
+
+**Count.** `count` draws a quiet number after the label — smaller, weaker, tabular digits in the active locale — in a
+panel tab or a link tab. It is part of the tab's name.
+
 ### Properties
 
 | Property | Type | Default | Reflect | Description |
@@ -112,6 +119,11 @@ activate the tab, and the tab's arrow-key navigation applies only while the tab 
 | `disabled` | `boolean` | `false` | ✓ | Disable the tab |
 | `removable` | `boolean` | `false` | ✓ | Show close/remove button |
 | `draggable` | `boolean` | `false` | ✓ | Native drag attribute — **no built-in reordering** |
+| `active` | `boolean` | `false` | ✓ | The selected tab — set by the container's `value`; set it yourself on a link tab when `u-tab-nav` has no `value` |
+| `href` | `string` | — | ✓ | Makes the tab a link (inside `u-tab-nav`) |
+| `target` | `string` | — | | Link target (with `href`) |
+| `rel` | `string` | — | | Link relationship (with `href`) |
+| `count` | `number` | — | | Quiet count after the label, in the active locale's digits |
 
 ### Events
 
@@ -123,4 +135,6 @@ activate the tab, and the tab's arrow-key navigation applies only while the tab 
 
 | Part | Description |
 |------|-------------|
+| `base` | Tab box — the `<a>` when `href` is set |
+| `count` | The count (only with `count`) |
 | `remove-btn` | Remove button |

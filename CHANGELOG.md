@@ -15,6 +15,14 @@
 - **`u-tag size="sm"` — a mark inside a line of text.** The overline text size and its leading with no block
   padding: about 18px with the border, so an attribute next to an id does not grow a dense table row. The default
   (`md`) is unchanged.
+- **`u-tab-nav` — a tab strip of links.** For tabs that are URLs (saved views): a `<nav>` landmark named by `label`
+  whose tabs are links (`<u-tab href>`), with the current one marked by `value` (or `active`) and announced as
+  `aria-current="page"`. Each link is a Tab stop; there is no tab role and no arrow-key model — those belong to
+  `u-tab-panel`, which switches panels on one page.
+- `u-tab` `href` / `target` / `rel` — the tab renders as a link for `u-tab-nav` (no tab role, no remove button).
+- `u-tab` `count` — a quiet count after the label (smaller, weaker, tabular digits in the active locale), in a panel
+  tab or a link tab.
+- `u-tab` `active` is now a declared property. The tab panel already set the attribute; a link tab reads it.
 
 ### Fixed
 

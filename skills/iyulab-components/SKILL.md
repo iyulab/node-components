@@ -109,7 +109,8 @@ set on the host yourself always wins and is never overwritten.
 - [`u-menu`](./references/components/menu.md) — Menu container with keyboard navigation and selection modes
 - [`u-menu-item`](./references/components/menu.md) — Menu entry with optional sub-menu
 - [`u-tab-panel`](./references/components/tab-panel.md) — Tab-based content switcher
-- [`u-tab`](./references/components/tab-panel.md) — Individual tab button used inside `u-tab-panel`
+- [`u-tab`](./references/components/tab-panel.md) — Individual tab button used inside `u-tab-panel`; with `href`, a link tab for `u-tab-nav`
+- [`u-tab-nav`](./references/components/tab-nav.md) — Tab strip of links (saved views): a `<nav>` with `aria-current`, not a tablist
 - [`u-tree`](./references/components/tree.md) — Hierarchical tree with select, check, and drag-and-drop
 - [`u-tree-item`](./references/components/tree.md) — Individual node inside `u-tree`
 

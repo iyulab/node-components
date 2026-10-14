@@ -23,7 +23,9 @@ export const styles = css`
     display: inline-flex;
     flex-direction: row;
     align-items: center;
-    padding: var(--tab-padding-block) var(--tab-padding-inline);\n    /* 호스트 하한(--u-target-size, 미설정 = 0). */\n    min-height: var(--u-target-size, 0px);
+    padding: var(--tab-padding-block) var(--tab-padding-inline);
+    /* 호스트 하한(--u-target-size, 미설정 = 0). */
+    min-height: var(--u-target-size, 0px);
     border-radius: inherit;
   }
 
@@ -40,6 +42,36 @@ export const styles = css`
   }
   ::slotted([slot="suffix"]) {
     margin-left: 0.2em;
+  }
+
+  /* 링크 탭 — 탭처럼 보이고(글자 상속 · 밑줄 없음) 포커스 링은 안쪽에 그린다: 담는 띠가 가로로 스크롤하며 넘침을 자른다. */
+  a.base {
+    color: inherit;
+    text-decoration: none;
+    cursor: inherit;
+  }
+  a.base:focus-visible {
+    outline-offset: -2px;
+  }
+  a.base:not([href]) {
+    cursor: not-allowed;
+  }
+
+  /* 조용한 개수 — 레이블보다 작고 약한 표 숫자. 알약 면은 띠 위에서 개수를 레이블과 가른다. */
+  .count {
+    flex-shrink: 0;
+    margin-left: 0.45em;
+    min-width: 1.8em;
+    padding: 0 0.5em;
+    box-sizing: border-box;
+    border-radius: var(--u-radius-pill, 9999px);
+    background-color: var(--u-bg-color-raised, #F5F5F5);
+    color: var(--u-txt-color-weak, #616161);
+    font-size: var(--u-text-overline-size, 11px);
+    line-height: calc(var(--u-text-overline-leading, 1.45) * 1em);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
   }
 
   .remove-btn {

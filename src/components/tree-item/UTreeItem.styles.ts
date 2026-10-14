@@ -26,7 +26,10 @@ export const styles = css`
     padding-left: calc(
       var(--tree-indent-size) * var(--tree-item-depth)
       + var(--tree-indent-guide-offset)
-    );\n    /* 호스트 하한(--u-target-size, 미설정 = 0). */\n    box-sizing: border-box;\n    min-height: var(--u-target-size, 0px);
+    );
+    /* 호스트 하한(--u-target-size, 미설정 = 0). */
+    box-sizing: border-box;
+    min-height: var(--u-target-size, 0px);
     transition: background-color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), color var(--u-duration-fast, 140ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     user-select: none;
     cursor: pointer;

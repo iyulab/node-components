@@ -48,6 +48,7 @@ export * from './components/steps/USteps.js';
 export * from './components/switch/USwitch.js';
 export * from './components/tab/UTab.js';
 export * from './components/tab-panel/UTabPanel.js';
+export * from './components/tab-nav/UTabNav.js';
 export * from './components/tag/UTag.js';
 export * from './components/text/UText.js';
 export * from './components/textarea/UTextarea.js';
