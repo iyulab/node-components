@@ -313,6 +313,6 @@ export class Theme {
   private static log(...args: unknown[]) {
     // 디버그 모드 전용 로거 — 정보성 출력이 이 함수의 본래 목적이다.
     // eslint-disable-next-line no-console
-    if (this._isDebugMode) console.log('[theme]', ...args);
+    if (this._isDebugMode) console.log('[@iyulab/components] Theme:', ...args);
   }
 }

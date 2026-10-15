@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Console diagnostics begin with `[@iyulab/components]`, so a message in a console shared by several packages says which one wrote it (several also say what to do next).
+
 ## [2.28.0] - 2026-10-15
 
 ### Added

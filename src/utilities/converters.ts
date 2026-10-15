@@ -38,7 +38,7 @@ export function jsonAttrConverter<T>(
       try {
         return parser(value);
       } catch {
-        console.warn(`Failed to parse JSON attribute: ${value}`);
+        console.warn(`[@iyulab/components] failed to parse a JSON attribute — pass valid JSON, or set the property instead: ${value}`);
         return undefined;
       }
     },
@@ -47,7 +47,7 @@ export function jsonAttrConverter<T>(
       try {        
         return JSON.stringify(value);
       } catch {
-        console.warn(`Failed to stringify JSON attribute:`, value);
+        console.warn(`[@iyulab/components] failed to write a property back as a JSON attribute:`, value);
         return null;
       }
     }
@@ -111,7 +111,7 @@ export function urlAttrConverter(
         return parser(value);
       }
       catch {
-        console.warn(`Failed to parse URL attribute: ${value}`);
+        console.warn(`[@iyulab/components] failed to parse a URL attribute — pass an absolute URL or one relative to the page: ${value}`);
         return undefined;
       }
     },

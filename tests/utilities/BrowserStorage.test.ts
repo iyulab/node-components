@@ -26,7 +26,7 @@ describe('BrowserStorage — 지원하지 않는 storage type 오류 메시지',
     await storage.set('key', 'value');
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      '[BrowserStorage Error: set]',
+      '[@iyulab/components] BrowserStorage: set failed:',
       expect.objectContaining({
         message: 'Unsupported storage type: "sessionStorage" (expected "localStorage" or "cookie")',
       }),
@@ -39,7 +39,7 @@ describe('BrowserStorage — 지원하지 않는 storage type 오류 메시지',
 
     expect(result).toBeNull();
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      '[BrowserStorage Error: get]',
+      '[@iyulab/components] BrowserStorage: get failed:',
       expect.objectContaining({
         message: 'Unsupported storage type: "sessionStorage" (expected "localStorage" or "cookie")',
       }),
@@ -51,7 +51,7 @@ describe('BrowserStorage — 지원하지 않는 storage type 오류 메시지',
     await storage.remove('key');
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      '[BrowserStorage Error: remove]',
+      '[@iyulab/components] BrowserStorage: remove failed:',
       expect.objectContaining({
         message: 'Unsupported storage type: "sessionStorage" (expected "localStorage" or "cookie")',
       }),

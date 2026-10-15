@@ -35,6 +35,7 @@ export function createDevWarner(scope: string): (key: string, message: string) =
     const scoped = `${scope} ${key}`;
     if (warned.has(scoped)) return;
     warned.add(scoped);
+    // diagnostic: 이 도우미는 받은 scope(호출하는 패키지 이름)로 접두를 붙인다.
     console.warn(`[${scope}] ${message}`);
   };
 }

@@ -64,7 +64,7 @@ export class BrowserStorage {
         throw new Error(`Unsupported storage type: "${(this.options as BrowserStorageOptions).type}" (expected "localStorage" or "cookie")`);
       }
     } catch(e) {
-      console.error('[BrowserStorage Error: set]', e);
+      console.error('[@iyulab/components] BrowserStorage: set failed:', e);
     }
   }
 
@@ -87,7 +87,7 @@ export class BrowserStorage {
         throw new Error(`Unsupported storage type: "${(this.options as BrowserStorageOptions).type}" (expected "localStorage" or "cookie")`);
       }
     } catch(e) {
-      console.error('[BrowserStorage Error: get]', e);
+      console.error('[@iyulab/components] BrowserStorage: get failed:', e);
       return null;
     }
   }
@@ -109,7 +109,7 @@ export class BrowserStorage {
         throw new Error(`Unsupported storage type: "${(this.options as BrowserStorageOptions).type}" (expected "localStorage" or "cookie")`);
       }
     } catch(e) {
-      console.error('[BrowserStorage Error: remove]', e);
+      console.error('[@iyulab/components] BrowserStorage: remove failed:', e);
     }
   }
 }

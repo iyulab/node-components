@@ -126,7 +126,7 @@ export class UCopyButton extends UElement {
         this.copied = false;
       }, this.delay);
     } catch (error) {
-      console.error('Failed to copy text to clipboard:', error);
+      console.error('[@iyulab/components] u-copy-button: failed to copy text to the clipboard:', error);
       this.copied = false;
     }
   }
