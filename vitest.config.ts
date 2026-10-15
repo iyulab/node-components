@@ -26,7 +26,8 @@ export default defineConfig({
           include: ['tests/browser/**/*.test.ts'],
           browser: {
             enabled: true,
-            provider: playwright(),
+            // 실제 스크롤바로 — headless 기본(`--hide-scrollbars`)은 스크롤바 폭이 0 이라 «스크롤바가 폭을 먹는» 결함을 못 본다.
+            provider: playwright({ launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] } }),
             // ⚠`headless: true` 명시가 필요하다 — 지정하지 않으면(로컬 실행 시 UI 기본
             // 켜짐, `browser.ui` 기본값 `!process.env.CI`) 헤드 있는(visible) Chromium
             // 창이 뜨고, 그 창은 Windows 의 디스플레이 배율(이 머신 150%)에 실제로
