@@ -11,6 +11,7 @@ import { Locale } from "../../utilities/Locale.js";
 import { parseNumber } from "../../utilities/format.js";
 import { CharsWidthController } from "../../utilities/chars.js";
 import { UOption } from "../option/UOption.js";
+import { UOptionGroup, collectOptions } from "../option-group/UOptionGroup.js";
 // 부수효과 import — 이 모듈이 그리는 `<u-popover>` 을 등록한다(타입으로만 가져오면 빌드가 import 를 지운다 — 데코레이터 메타데이터가 우연히 붙잡고 있었다).
 import "../popover/UPopover.js";
 import type { UPopover } from "../popover/UPopover.js";
@@ -148,7 +149,18 @@ export class UInput extends UFormControlElement<string> {
 
   private options: UOption[] = [];
 
+  /** 묶음(`u-option-group`) 안의 선택지가 바뀌어도 모은다 — 슬롯의 `slotchange` 는 직속 자식의 변화만 알린다. */
+  private readonly groupObserver = new MutationObserver((records) => {
+    if (records.some((r) => r.target instanceof UOptionGroup)) this.collectOptions();
+  });
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.groupObserver.observe(this, { childList: true, subtree: true });
+  }
+
   disconnectedCallback(): void {
+    this.groupObserver.disconnect();
     this.cleanup(this.options);
     super.disconnectedCallback();
   }
@@ -413,12 +425,14 @@ export class UInput extends UFormControlElement<string> {
     }
   }
 
-  private handleSlotChange = (e: Event) => {
+  private handleSlotChange = () => this.collectOptions();
+
+  /** 슬롯의 선택지를 모은다 — 직속 `u-option` 과 묶음 안의 것(문서 순서). */
+  private collectOptions(): void {
+    const slot = this.renderRoot.querySelector<HTMLSlotElement>('u-popover > slot:not([name])');
+    if (!slot) return;
     this.cleanup(this.options);
-    const slot = e.target as HTMLSlotElement;
-    this.options = slot.assignedElements({ flatten: true }).filter(
-      (el): el is UOption => el instanceof UOption
-    );
+    this.options = collectOptions(slot.assignedElements({ flatten: true }));
     this.setup(this.options);
     // 옵션이 도착했다고 목록을 여는 것은 **사용자가 이 입력에 있을 때**뿐이다 — 자동완성 결과가
     // 타이핑 중에 들어오는 경우. 정적 옵션(마크업에 적힌 것)으로 처음 그려질 때 열면 사용자가

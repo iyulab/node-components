@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Added
+
+- `u-option-group` — a labelled group of `u-option`s in `u-select` and the `u-input` combobox, the native `<optgroup>`.
+  The heading is not an option (no focus, no selection; the arrow keys pass from group to group), the group is
+  `role="group"` named by its `label`, and a group whose options a search filtered out is hidden, heading included.
+  Options added to a group later are picked up.
+
 ### Fixed
 
 - `plugins/dts-globals`: augmentations of a bare module — `declare module 'react' { namespace JSX … }` — are resolved like

@@ -24,6 +24,8 @@ Dropdown select with single or multiple selection, search, and clear support. Fo
 </u-select>
 ```
 
+Options of different kinds can be grouped under headings with [`u-option-group`](./option-group.md) — the native `<optgroup>`; a group whose options a search filtered out is hidden.
+
 ---
 
 ## Slots

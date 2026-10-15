@@ -78,6 +78,7 @@ import { UButton, UInput } from '@iyulab/components/react';
 - [`u-field`](./references/components/field.md) — Layout wrapper providing label, description, and validation message
 - [`u-form`](./references/components/form.md) — Form group with two-way model binding and validation
 - [`u-option`](./references/components/option.md) — Selectable option item for `u-select`, `u-radio`, `u-input`
+- [`u-option-group`](./references/components/option-group.md) — Labelled group of `u-option`s in `u-select` / `u-input` (the native `<optgroup>`)
 
 **`disabled` is exposed where assistive technology and test tools look for it** — on the node that
 carries the control's role, not on the host element. Native nodes use native `disabled`
