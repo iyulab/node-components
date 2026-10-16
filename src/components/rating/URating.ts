@@ -70,6 +70,7 @@ export class URating extends UFormControlElement<number> {
         ?invalid=${this.invalid}
         .label=${this.label}
         .description=${this.description}
+        .descriptionDisplay=${this.descriptionDisplay}
         .validationMessage=${this.validationMessage}
       >
         <div class="symbols" part="container" role="radiogroup"

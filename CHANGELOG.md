@@ -1,5 +1,20 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Form controls (`u-input`, `u-select`, `u-textarea`, `u-date-picker`, `u-date-range-picker`, `u-file-input`,
+  `u-radio`, `u-rating`, `u-slider`) take `description-display` (`inline` · `hint`) for the field they render — empty
+  follows the app-wide `UField.descriptionDisplay`. Fold help text into hints app-wide and keep a note about the
+  current state (why a field is locked, an input limit) under its control.
+
+### Fixed
+
+- `description-display="hint"`: a programmatic `focus()` no longer opens the hint — a drawer or dialog focusing its first
+  field on open showed that field's tooltip over the control and blocked clicks on it. The hint opens on Tab (and on
+  hover and tap, as before). The open tooltip also lets clicks through to what is under it.
+
 ## [2.29.0] - 2026-10-17
 
 ### Added

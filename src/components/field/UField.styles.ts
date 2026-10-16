@@ -58,6 +58,8 @@ export const styles = css`
     white-space: normal;
     font-weight: 400;
     line-height: 1.45;
+    /* 읽기만 하는 상자다 — 공간이 없어 아래로 뒤집혀 컨트롤 위에 떠도 누름은 그 컨트롤에 닿는다. */
+    pointer-events: none;
   }
 
   .label {

@@ -165,3 +165,91 @@ describe('u-field description hint — keyboard and touch', () => {
     expect(tooltip().open).toBe(false);
   });
 });
+
+describe('u-field hint — who moved the focus, and per-control display', () => {
+  beforeEach(() => { document.body.innerHTML = ''; });
+  afterEach(() => { UField.descriptionDisplay = 'inline'; });
+  const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
+  const hintTooltipOf = (control: Element) =>
+    (control.shadowRoot!.querySelector('u-field') as UField).shadowRoot!.querySelector('.hint u-tooltip') as HTMLElement & { open: boolean };
+
+  it('a drawer that focuses its first field on open does not open that field’s hint', async () => {
+    UField.descriptionDisplay = 'hint';
+    document.body.innerHTML = `
+      <button id="opener">Open</button>
+      <u-drawer placement="right">
+        <u-select id="kind" label="Kind" description="Choose the kind first"></u-select>
+        <u-input label="Name"></u-input>
+      </u-drawer>`;
+    await settle();
+    const drawer = document.querySelector('u-drawer') as HTMLElement & { show(): boolean };
+    const opener = document.getElementById('opener')!;
+    opener.addEventListener('click', () => drawer.show());
+    await userEvent.click(opener);
+    await wait(400);
+    const select = document.getElementById('kind')!;
+    expect(select.matches(':focus-within') || select === document.activeElement).toBe(true);
+    expect(hintTooltipOf(select).open).toBe(false);
+  });
+
+  it('Enter on the opener is not Tab either', async () => {
+    UField.descriptionDisplay = 'hint';
+    document.body.innerHTML = `
+      <button id="opener">Open</button>
+      <u-drawer placement="right"><u-select id="kind" label="Kind" description="Choose the kind first"></u-select></u-drawer>`;
+    await settle();
+    const drawer = document.querySelector('u-drawer') as HTMLElement & { show(): boolean };
+    const opener = document.getElementById('opener')!;
+    opener.addEventListener('click', () => drawer.show());
+    opener.focus();
+    await userEvent.keyboard('{Enter}');
+    await wait(400);
+    expect(hintTooltipOf(document.getElementById('kind')!).open).toBe(false);
+  });
+
+  it('programmatic focus() does not open the hint; Tab still does', async () => {
+    document.body.innerHTML = `
+      <button id="before">before</button>
+      <u-input id="name" label="Name" description="As on the ID card" description-display="hint"></u-input>`;
+    await settle();
+    const input = document.getElementById('name') as HTMLElement;
+    input.focus();
+    await wait();
+    expect(hintTooltipOf(input).open).toBe(false);
+    (document.getElementById('before') as HTMLElement).focus();
+    await userEvent.keyboard('{Tab}');
+    await wait();
+    expect(hintTooltipOf(input).open).toBe(true);
+  });
+
+  it('the open hint lets a click through to the control under it', async () => {
+    document.body.innerHTML = `<u-input id="name" label="Name" description="As on the ID card" description-display="hint"></u-input>`;
+    await settle();
+    expect(getComputedStyle(hintTooltipOf(document.getElementById('name')!)).pointerEvents).toBe('none');
+  });
+
+  it('a control takes description-display per field — hint on one, inline beside it under the global default', async () => {
+    document.body.innerHTML = `
+      <u-input id="a" label="A" description="help" description-display="hint"></u-input>
+      <u-select id="b" label="B" description="help"></u-select>`;
+    await settle();
+    const fieldA = document.getElementById('a')!.shadowRoot!.querySelector('u-field') as UField;
+    const fieldB = document.getElementById('b')!.shadowRoot!.querySelector('u-field') as UField;
+    expect(fieldA.shadowRoot!.querySelector('.hint')).not.toBeNull();
+    expect(fieldA.shadowRoot!.querySelector('[part="footer"]')).toBeNull();
+    expect(fieldB.shadowRoot!.querySelector('.hint')).toBeNull();
+    expect(fieldB.shadowRoot!.querySelector('[part="footer"]')?.textContent?.trim()).toBe('help');
+  });
+
+  it('inline on one control wins over the app-wide hint — a status note stays visible', async () => {
+    UField.descriptionDisplay = 'hint';
+    document.body.innerHTML = `
+      <u-textarea id="note" label="Note" description="Locked: the order type cannot change" description-display="inline"></u-textarea>
+      <u-input id="other" label="Other" description="help"></u-input>`;
+    await settle();
+    const note = document.getElementById('note')!.shadowRoot!.querySelector('u-field') as UField;
+    const other = document.getElementById('other')!.shadowRoot!.querySelector('u-field') as UField;
+    expect(note.shadowRoot!.querySelector('[part="footer"]')?.textContent?.trim()).toBe('Locked: the order type cannot change');
+    expect(other.shadowRoot!.querySelector('.hint')).not.toBeNull();
+  });
+});

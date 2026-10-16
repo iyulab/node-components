@@ -151,6 +151,7 @@ export class USlider extends UFormControlElement<number | number[]> {
         ?invalid=${this.invalid}
         .label=${this.label}
         .description=${this.description}
+        .descriptionDisplay=${this.descriptionDisplay}
         .validationMessage=${this.validationMessage}
       >
         <span slot="label-aside" ?hidden=${!this.showValue}>

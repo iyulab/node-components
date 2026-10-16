@@ -83,6 +83,7 @@ the library does not infer one from field meaning.
 | `value` | `string` | — | — | Current value |
 | `label` | `string` | — | — | Field label |
 | `description` | `string` | — | — | Helper text |
+| `descriptionDisplay` | `'inline' \| 'hint'` | — | — | Attribute `description-display`. This field only — `hint` puts the description in a tooltip beside the label, `inline` under the control. Empty: the app-wide `UField.descriptionDisplay` |
 | `validationMessage` | `string` | — | — | Custom validation message |
 
 ## Events

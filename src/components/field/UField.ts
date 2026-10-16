@@ -46,6 +46,25 @@ function isNamedByContent(el: HTMLElement): boolean {
 export type FieldDescriptionDisplay = 'inline' | 'hint';
 
 /**
+ * 지금 일어나는 포커스 이동이 사람의 Tab 키인가 — 문서 하나에 감시자 하나. Tab 의 기본 동작(포커스 이동)은 keydown 과
+ * 같은 작업 안에서 일어나므로, keydown 에서 켜고 그 작업이 끝나면 끈다. 그 사이의 focusin 만 «Tab 으로 들어옴» 이다.
+ * Enter 로 연 서랍이 첫 칸에 `focus()` 하는 것은 Tab 이 아니므로 해당하지 않는다.
+ */
+const tabNavigation = {
+  active: false,
+  installed: false,
+  install(): void {
+    if (this.installed || typeof document === 'undefined') return;
+    this.installed = true;
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      this.active = true;
+      setTimeout(() => { this.active = false; });
+    }, true);
+  },
+};
+
+/**
  * 폼 컨트롤의 공통 레이아웃을 제공하는 필드 컴포넌트입니다.
  * 라벨, 필수 표시, 설명 텍스트, 유효성 검사 메시지를 포함합니다.
  *
@@ -120,8 +139,8 @@ export class UField extends UElement {
    * `hint` — 라벨 옆 정보 아이콘 + 툴팁. 설명은 컨트롤의 `aria-description` 으로 이미 전달되므로 아이콘은 보조기기에서 숨긴다.
    * 툴팁은 라벨 «위»(입력 칸을 가리지 않는다) · 아이콘 왼쪽 끝에 맞추고 화면 밖으로 나가면 밀어 넣는다.
    *
-   * 여는 길은 셋이다 — 아이콘에 마우스를 올린다 · 필드의 컨트롤에 **키보드로** 들어온다(Tab · 프로그램 `focus()` — 눈으로 보는 키보드
-   * 사용자는 마우스가 없다) · 아이콘을 **탭**한다(터치에는 오버가 없다). 아이콘을 포커스 가능한 버튼으로 만들지 않는
+   * 여는 길은 셋이다 — 아이콘에 마우스를 올린다 · 필드의 컨트롤에 **Tab 으로** 들어온다(눈으로 보는 키보드 사용자는 마우스가
+   * 없다 — 프로그램 `focus()` 는 사람이 옮긴 것이 아니라 열지 않는다) · 아이콘을 **탭**한다(터치에는 오버가 없다). 아이콘을 포커스 가능한 버튼으로 만들지 않는
    * 이유: 칸이 수십 개인 폼에서 탭 정지가 칸마다 하나씩 늘어난다. 닫는 길은 Escape(툴팁이 층이다) · 포커스가 필드를
    * 떠남 · 바깥 탭.
    */
@@ -192,12 +211,16 @@ export class UField extends UElement {
     setTimeout(() => { this.focusByPointer = false; });
   };
 
-  /** 컨트롤에 키보드로 들어오면 설명을 보인다 — 포인터로 누른 포커스에는 열지 않는다(마우스에는 오버가 있다). */
+  /**
+   * 사람이 Tab 으로 컨트롤에 들어오면 설명을 보인다. 포인터로 누른 포커스(마우스에는 오버가 있다)와 **프로그램 `focus()`**
+   * (서랍·대화상자가 연 직후 첫 칸에 주는 초기 포커스 · `autofocus`)에는 열지 않는다 — 사람이 시작하지 않은 포커스에 열면
+   * 필요하지 않은 때 화면을 덮고, 덮는 대상이 바로 사람이 다음에 누를 그 칸이다.
+   */
   private handleFocusIn = () => {
     const byPointer = this.focusByPointer;
     this.focusByPointer = false;
     const hint = this.hintEl;
-    if (!hint || byPointer) return;
+    if (!hint || byPointer || !tabNavigation.active) return;
     void this.hintTooltip?.show(hint);
   };
 
@@ -210,6 +233,7 @@ export class UField extends UElement {
 
   connectedCallback(): void {
     super.connectedCallback();
+    tabNavigation.install();
     this.addEventListener('pointerdown', this.handleHostPointerDown, true);
     this.addEventListener('focusin', this.handleFocusIn);
     this.addEventListener('focusout', this.handleFocusOut);

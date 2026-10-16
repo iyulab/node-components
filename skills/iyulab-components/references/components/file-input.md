@@ -45,6 +45,7 @@ No drag-and-drop in this version — it is a minimal wrapper (trigger + status +
 | `name` | `string` | — | — | Form field name |
 | `label` | `string` | — | — | Label text |
 | `description` | `string` | — | — | Helper text below the control |
+| `descriptionDisplay` | `'inline' \| 'hint'` | — | — | Attribute `description-display`. This field only — `hint` puts the description in a tooltip beside the label, `inline` under the control. Empty: the app-wide `UField.descriptionDisplay` |
 | `validationMessage` | `string` | — | — | Custom validation message |
 
 ## Methods

@@ -203,6 +203,7 @@ export class USelect extends UFormControlElement<string | string[]> {
         ?invalid=${this.invalid}
         .label=${this.label}
         .description=${this.description}
+        .descriptionDisplay=${this.descriptionDisplay}
         .validationMessage=${this.validationMessage}
       >
         <span slot="label-aside" class="count" ?hidden=${!this.multiple || !this.maxCount}>

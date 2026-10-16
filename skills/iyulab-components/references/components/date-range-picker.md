@@ -155,6 +155,7 @@ picker.addEventListener('change', () => {
 | `name` | `string` | — | — | Form field name |
 | `label` | `string` | — | — | Field label |
 | `description` | `string` | — | — | Helper text |
+| `descriptionDisplay` | `'inline' \| 'hint'` | — | — | Attribute `description-display`. This field only — `hint` puts the description in a tooltip beside the label, `inline` under the control. Empty: the app-wide `UField.descriptionDisplay` |
 | `validationMessage` | `string` | — | — | Custom validation message |
 
 Validation: `required` with no value → `valueMissing`; a value that is not two ISO days joined by `/`

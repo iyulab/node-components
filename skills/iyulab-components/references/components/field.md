@@ -99,14 +99,18 @@ UField.descriptionDisplay = 'hint';   // once, before the first render — defau
 ```
 
 Sets where every field shows its description, including the fields that `u-input`, `u-select` and the other controls
-render inside their own shadow roots. A field's own `description-display` wins. In `hint` mode a validation message
+render inside their own shadow roots. A field's own `description-display` wins — and so does a control's
+(`<u-input description-display="inline">`), for the field it renders: fold help text into hints app-wide and keep a
+note about the current state (why a field is locked, an input limit) always visible. In `hint` mode a validation message
 still shows under the control, the control keeps the text as `aria-description`, and a field without a label shows the
 description inline (there is no label to put the icon beside).
 
-The hint opens three ways — hovering the icon, entering the field's control from the keyboard (Tab, or a programmatic
-`focus()`; a click into the control does not, the mouse has hover), and tapping the icon (touch has no hover; the tap
+The hint opens three ways — hovering the icon, entering the field's control from the keyboard (Tab; a click into the control
+does not — the mouse has hover — and neither does a programmatic `focus()`, such as a drawer or dialog focusing its first
+field on open), and tapping the icon (touch has no hover; the tap
 pins it until a tap elsewhere or a second tap). Escape closes it, and so does focus leaving the field. The icon itself
-is not a Tab stop — a form of dozens of fields would otherwise double its Tabs.
+is not a Tab stop — a form of dozens of fields would otherwise double its Tabs. The open tooltip lets clicks through: when there is no
+room above and it flips over the control, a click still reaches the control.
 
 ## CSS Parts
 

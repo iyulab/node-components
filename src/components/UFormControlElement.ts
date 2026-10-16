@@ -3,6 +3,7 @@ import { property, state } from 'lit/decorators.js';
 
 import { UElement } from './UElement.js';
 import { styles } from './UFormControlElement.styles.js';
+import type { FieldDescriptionDisplay } from './field/UField.js';
 
 /**
  * 폼 컨트롤 컴포넌트의 공통 기반 클래스입니다.
@@ -41,6 +42,11 @@ export abstract class UFormControlElement<T> extends UElement {
   @property({ type: String }) label?: string;
   /** 보조 설명 텍스트 */
   @property({ type: String }) description?: string;
+  /**
+   * 설명을 보이는 방식(`inline` · `hint`) — 비우면 앱 전역 기본값(`UField.descriptionDisplay`).
+   * 칸마다 가를 때 쓴다: 도움말은 `hint` 로 접고, 지금 상태를 말하는 안내(잠긴 이유 · 입력 상한)는 `inline` 으로 늘 보인다.
+   */
+  @property({ type: String, attribute: 'description-display' }) descriptionDisplay?: FieldDescriptionDisplay;
   /** 폼 제출 시 사용되는 이름 */
   @property({ type: String }) name?: string;
   /** 폼 제출 시 사용되는 값. attribute 선언 시 기본은 raw 문자열로 해석한다 —

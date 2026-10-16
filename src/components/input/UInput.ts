@@ -179,6 +179,7 @@ export class UInput extends UFormControlElement<string> {
         ?invalid=${this.invalid}
         .label=${this.label}
         .description=${this.description}
+        .descriptionDisplay=${this.descriptionDisplay}
         .validationMessage=${this.validationMessage}
       >
         <div class="container" part="container"
