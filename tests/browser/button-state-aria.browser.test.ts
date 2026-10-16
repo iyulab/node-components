@@ -46,6 +46,28 @@ describe('u-button — state ARIA reaches the focus target', () => {
     expect(innerOf(el).hasAttribute('aria-expanded')).toBe(false);
   });
 
+  // React 19 는 커스텀 요소의 불리언 `true` 를 빈 속성으로 쓴다(내장 요소에는 "true") — `<UButton aria-expanded={open}>`.
+  it('🔴an empty state attribute (React 19 boolean true) reaches the inner button as "true"', async () => {
+    const el = await mount<UButton>('<u-button aria-expanded="" aria-pressed="" aria-haspopup="" aria-current="" aria-label="">More</u-button>');
+    const inner = innerOf(el);
+    expect(inner.getAttribute('aria-expanded')).toBe('true');
+    expect(inner.getAttribute('aria-pressed')).toBe('true');
+    expect(inner.getAttribute('aria-haspopup')).toBe('true');
+    expect(inner.getAttribute('aria-current')).toBe('true');
+    expect(inner.getAttribute('aria-label')).toBe(''); // 이름은 상태가 아니다 — 그대로
+    el.setAttribute('aria-expanded', 'false');
+    await el.updateComplete;
+    expect(inner.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('🔴u-icon-button forwards an empty state attribute as "true" too', async () => {
+    const el = await mount<UIconButton>('<u-icon-button name="star" aria-pressed="">Star</u-icon-button>');
+    const btn = el.shadowRoot!.querySelector('u-button') as UButton;
+    await btn.updateComplete;
+    expect(btn.getAttribute('aria-pressed')).toBe('true');
+    expect(innerOf(btn).getAttribute('aria-pressed')).toBe('true');
+  });
+
   it('🔴aria-controls crosses the shadow boundary as an element reference', async () => {
     const host = document.createElement('div');
     host.innerHTML = '<u-button aria-controls="sec-1" aria-expanded="true">Section</u-button><div id="sec-1">body</div>';

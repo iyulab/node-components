@@ -5,7 +5,7 @@ import '../spinner/USpinner.js';
 
 import { UElement } from "../UElement.js";
 import { styles } from "./UButton.styles.js";
-import { FORWARDED_ARIA } from "./forwarded-aria.js";
+import { FORWARDED_ARIA, readForwardedAria } from "./forwarded-aria.js";
 
 
 /**
@@ -213,12 +213,12 @@ export class UButton extends UElement {
   }
 
   render() {
-    const ariaLabel = this.getAttribute('aria-label') ?? undefined;
-    const pressed = this.getAttribute('aria-pressed') ?? undefined;
-    const expanded = this.getAttribute('aria-expanded') ?? undefined;
-    const haspopup = this.getAttribute('aria-haspopup') ?? undefined;
+    const ariaLabel = readForwardedAria(this, 'aria-label');
+    const pressed = readForwardedAria(this, 'aria-pressed');
+    const expanded = readForwardedAria(this, 'aria-expanded');
+    const haspopup = readForwardedAria(this, 'aria-haspopup');
     // 현재 위치(쪽 번호 · 단계 · 메뉴의 현재 항목) — 호스트에 둔 `aria-current` 가 포커스되는 요소에 있어야 읽힌다.
-    const current = this.getAttribute('aria-current') ?? undefined;
+    const current = readForwardedAria(this, 'aria-current');
 
     if (this.href) {
       return html`

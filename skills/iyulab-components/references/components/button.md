@@ -73,6 +73,8 @@ inner `<button>`/`<a>` that actually takes focus: `aria-label`, and the button s
 (menu button) and `aria-current` (the current page, step or item). `aria-pressed` is dropped on a link (`href`), where it is not allowed.
 `aria-controls` is an id reference, which cannot cross the shadow boundary, so it is carried as an
 element reference (`ariaControlsElements`) resolved when the button renders.
+An empty state attribute counts as `"true"` — React 19 writes a boolean `true` on a custom element
+as an empty attribute (`<UButton aria-expanded={open}>`), and an empty value is not valid ARIA.
 
 ```html
 <u-button aria-expanded="false" aria-controls="details">Details</u-button>

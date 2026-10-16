@@ -9,6 +9,7 @@ import { UDivider } from "../divider/UDivider.js";
 import { styles } from "./UMenuItem.styles.js";
 import { type PickEventDetail } from "../../events/PickEvent.js";
 import { isFromNestedControl } from "../../utilities/nestedControl.js";
+import { HostAria } from "../../utilities/hostAria.js";
 
 export type MenuItemIndicator = 'highlight' | 'check';
 export type MenuItemAlign = 'left' | 'center' | 'right';
@@ -56,6 +57,10 @@ export class UMenuItem extends UElement {
     return this._parentItem;
   }
 
+  private readonly aria = new HostAria(this);
+  /** 하위 메뉴를 가진 동안 라벨 글자가 바뀌는 것을 본다 — 이름을 라벨에서 다시 옮긴다. */
+  private labelObserver?: MutationObserver;
+
   private _childItems: UMenuItem[] = [];
   public get childItems(): readonly UMenuItem[] {
     return this._childItems;
@@ -74,8 +79,16 @@ export class UMenuItem extends UElement {
     }
   }
 
+  disconnectedCallback(): void {
+    this.labelObserver?.disconnect();
+    this.labelObserver = undefined;
+    super.disconnectedCallback();
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
+
+    if (changedProperties.has('leaf') || changedProperties.has('expanded')) this.syncSubmenuAria();
 
     if (changedProperties.has('disabled')) {
       this.setAttribute('tabindex', this.disabled ? '-1' : '0');
@@ -125,14 +138,14 @@ export class UMenuItem extends UElement {
 
       ${this.inline
         ? html`
-          <div class="submenu" part="submenu"
+          <div class="submenu" part="submenu" role="menu"
             ?hidden=${this.leaf}
             ?open=${this.expanded}
           >
             <slot name="children" @slotchange=${this.handleChildrenSlotChange}></slot>
           </div>`
         : html`
-          <u-popover class="popover" part="popover"
+          <u-popover class="popover" part="popover" role="menu"
             ?hidden=${this.leaf}
             ?open=${live(this.expanded)}
             for=".header"
@@ -145,6 +158,32 @@ export class UMenuItem extends UElement {
           </u-popover>`
         }
     `;
+  }
+
+  /**
+   * 하위 메뉴를 가진 항목의 이름은 자기 라벨뿐이다. 역할이 호스트에 있고 하위 항목은 호스트의 자식이라, 내용에서 짓는
+   * 이름이 하위 항목의 글자까지 모은다(«테마 라이트 다크 …»). 라벨(기본 슬롯)의 글자를 이름으로 옮기고, 하위 메뉴가 있음과
+   * 열림을 알린다(WAI-ARIA 메뉴 패턴). 작성자가 단 `aria-*` 는 건드리지 않는다(`HostAria`). 잎 항목은 내용이 곧 이름이다.
+   */
+  private syncSubmenuAria() {
+    const parent = !this.leaf;
+    this.aria.set('aria-label', parent ? this.labelText() || null : null);
+    this.aria.set('aria-haspopup', parent ? 'menu' : null);
+    this.aria.set('aria-expanded', parent ? String(this.expanded) : null);
+    if (parent && !this.labelObserver) {
+      this.labelObserver = new MutationObserver(() => this.aria.set('aria-label', this.labelText() || null));
+      this.labelObserver.observe(this, { childList: true, characterData: true, subtree: true });
+    } else if (!parent && this.labelObserver) {
+      this.labelObserver.disconnect();
+      this.labelObserver = undefined;
+    }
+  }
+
+  /** 기본 슬롯(라벨)에 든 글자 — 하위 항목(`slot="children"`)과 앞뒤 슬롯은 빠진다. */
+  private labelText(): string {
+    const slot = this.shadowRoot?.querySelector<HTMLSlotElement>('.content slot');
+    const nodes = slot ? slot.assignedNodes({ flatten: true }) : [];
+    return nodes.map((n) => n.textContent ?? '').join('').replace(/s+/g, ' ').trim();
   }
 
   private propagate() {
@@ -185,6 +224,7 @@ export class UMenuItem extends UElement {
         el.setAttribute('slot', 'children');
       }
     }
+    if (!this.leaf) this.syncSubmenuAria();
   };
 
   private handleChildrenSlotChange = (e: Event) => {

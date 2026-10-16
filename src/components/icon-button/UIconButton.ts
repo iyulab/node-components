@@ -9,7 +9,7 @@ import '../tooltip/UTooltip.js';
 
 import { UElement } from "../UElement.js";
 import { type ButtonAppearance } from "../button/UButton.js";
-import { FORWARDED_ARIA } from "../button/forwarded-aria.js";
+import { FORWARDED_ARIA, readForwardedAria } from "../button/forwarded-aria.js";
 import { type IconLibrary } from "../icon/UIcon.js";
 import { styles } from "./UIconButton.styles.js";
 
@@ -80,11 +80,11 @@ export class UIconButton extends UElement {
 
   render() {
     // 이름: 호스트 `aria-label`, 없으면 툴팁 글자(기본 슬롯) — 아이콘만 그리는 버튼이라 둘 다 없으면 보조기기에 이름이 없다.
-    const ariaLabel = this.getAttribute('aria-label') ?? (this.slotText || undefined);
-    const pressed = this.getAttribute('aria-pressed') ?? undefined;
-    const expanded = this.getAttribute('aria-expanded') ?? undefined;
-    const haspopup = this.getAttribute('aria-haspopup') ?? undefined;
-    const controls = this.getAttribute('aria-controls') ?? undefined;
+    const ariaLabel = readForwardedAria(this, 'aria-label') ?? (this.slotText || undefined);
+    const pressed = readForwardedAria(this, 'aria-pressed');
+    const expanded = readForwardedAria(this, 'aria-expanded');
+    const haspopup = readForwardedAria(this, 'aria-haspopup');
+    const controls = readForwardedAria(this, 'aria-controls');
     return html`
       <u-button part="button"
         aria-label=${ifDefined(ariaLabel)}

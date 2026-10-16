@@ -93,6 +93,12 @@ activate the menu item, and the menu item's arrow-key navigation applies only wh
 | `indicator` | `'highlight'\|'check'` | `'highlight'` | ✓ | Selection indicator |
 | `align` | `'left'\|'center'\|'right'` | `'left'` | ✓ | Text alignment |
 
+### Accessibility
+
+An item with a submenu is named by its own label (the default slot) — not by its children's labels — and
+carries `aria-haspopup="menu"` and `aria-expanded`; the submenu is a `role="menu"`. An `aria-label` you set on
+the item wins.
+
 ### Events
 
 | Event | Description |

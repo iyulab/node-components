@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- `u-button` · `u-icon-button`: an empty state attribute on the host (`aria-pressed` · `aria-expanded` · `aria-haspopup` ·
+  `aria-current`) reaches the inner button as `"true"`. React 19 writes a boolean `true` on a custom element as an empty
+  attribute, so `<UButton aria-expanded={open}>` gave the focused button `aria-expanded=""` — not valid ARIA, read as
+  «not expandable» once opened.
+- `u-menu-item` with a submenu is named by its own label only — the children's labels were part of its name
+  («Theme Light Dark»). It now carries `aria-haspopup="menu"` and `aria-expanded`, and the submenu is `role="menu"`.
+
 ### Changed
 
 - Console diagnostics begin with `[@iyulab/components]`, so a message in a console shared by several packages says which one wrote it (several also say what to do next).
