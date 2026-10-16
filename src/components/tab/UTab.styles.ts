@@ -73,6 +73,16 @@ export const styles = css`
     font-variant-numeric: tabular-nums;
     text-align: center;
   }
+  /* 보조 숫자 — 면 없이 레이블보다 작고 약한 글자. 탭이 많은 상세 화면에서 숫자가 레이블보다 먼저 읽히지 않게. */
+  .count.plain {
+    margin-left: 0.35em;
+    min-width: 0;
+    padding: 0;
+    background-color: transparent;
+    font-size: 0.9em;
+    line-height: inherit;
+    font-weight: 400;
+  }
 
   .remove-btn {
     flex-shrink: 0;

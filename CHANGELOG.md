@@ -8,6 +8,9 @@
   `u-radio`, `u-rating`, `u-slider`) take `description-display` (`inline` · `hint`) for the field they render — empty
   follows the app-wide `UField.descriptionDisplay`. Fold help text into hints app-wide and keep a note about the
   current state (why a field is locked, an input limit) under its control.
+- `u-tab` `count-appearance` — `badge` (the pill, default) or `plain` (no pill: a smaller, weaker number beside the
+  label, for a detail page with many tabs where seven pills read before the labels). `UTab.countAppearance` sets the app
+  default; a tab's own attribute wins.
 
 ### Fixed
 

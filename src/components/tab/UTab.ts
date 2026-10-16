@@ -10,6 +10,9 @@ import { type RemoveEventDetail } from "../../events/RemoveEvent.js";
 import { Locale } from '../../utilities/Locale.js';
 import { formatNumber } from '../../utilities/format.js';
 
+/** `u-tab` 개수의 모양 — `badge` 는 알약 면(눈을 끈다), `plain` 은 면 없는 보조 숫자(정보). */
+export type TabCountAppearance = 'badge' | 'plain';
+
 /**
  * 탭 아이템 — `u-tab-panel` 안에서는 패널을 고르는 탭(`role="tab"`), `href` 를 주면 `u-tab-nav` 안의
  * 이동 링크(저장된 보기 = URL)다. 링크 탭은 탭 역할을 갖지 않는다 — 다른 쪽으로 이동하는 것은 탭이 아니라
@@ -52,6 +55,17 @@ export class UTab extends UElement {
   @property({ type: String }) rel?: string;
   /** 레이블 뒤의 조용한 개수(그 보기의 항목 수) — 현재 로캘의 숫자 표기로 그린다. 없으면 그리지 않는다. */
   @property({ type: Number }) count?: number;
+  /**
+   * 개수의 모양 — `badge`(알약 면, 기본) · `plain`(면 없는 보조 숫자 — 탭이 많아 배지가 레이블보다 먼저 읽힐 때).
+   * 비우면 앱 전역 기본값(`UTab.countAppearance`).
+   */
+  @property({ type: String, attribute: 'count-appearance' }) countAppearance?: TabCountAppearance;
+
+  /**
+   * 앱 전역 기본값 — 앱 시작 때 한 번 정한다(예: `UTab.countAppearance = 'plain'`). 이미 그려진 탭은 다음 렌더부터 따른다.
+   * @default 'badge'
+   */
+  static countAppearance: TabCountAppearance = 'badge';
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -123,7 +137,8 @@ export class UTab extends UElement {
       <slot></slot>
       ${this.count == null || Number.isNaN(this.count)
         ? nothing
-        : html`<span class="count" part="count">${formatNumber(this.count)}</span>`}
+        : html`<span class="count ${(this.countAppearance ?? UTab.countAppearance) === 'plain' ? 'plain' : 'badge'}"
+            part="count">${formatNumber(this.count)}</span>`}
       <slot name="suffix"></slot>
     `;
   }

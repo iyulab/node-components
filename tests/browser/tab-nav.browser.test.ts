@@ -5,7 +5,7 @@ import '../../src/components/tab/UTab.js';
 import '../../src/components/tab-panel/UTabPanel.js';
 import '../../src/components/panel/UPanel.js';
 import { Locale } from '../../src/utilities/Locale.js';
-import type { UTab } from '../../src/components/tab/UTab.js';
+import { UTab } from '../../src/components/tab/UTab.js';
 import type { UTabNav } from '../../src/components/tab-nav/UTabNav.js';
 
 /**
@@ -126,6 +126,29 @@ describe('u-tab count', () => {
     Locale.set('de');
     await tabs[1].updateComplete;
     expect(tabs[1].shadowRoot!.querySelector('[part="count"]')!.textContent).toBe('1.234');
+  });
+
+  it('plain: no pill — a smaller, weaker number beside the label', async () => {
+    const { tabs } = await mount('<u-tab-nav label="Views"><u-tab href="#a" count="2" count-appearance="plain">History</u-tab><u-tab href="#b" count="2">Plans</u-tab></u-tab-nav>');
+    const plain = tabs[0].shadowRoot!.querySelector('[part="count"]') as HTMLElement;
+    const badge = tabs[1].shadowRoot!.querySelector('[part="count"]') as HTMLElement;
+    const p = getComputedStyle(plain);
+    expect(p.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    expect(p.paddingLeft).toBe('0px');
+    expect(getComputedStyle(badge).backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(parseFloat(p.fontSize)).toBeLessThan(parseFloat(getComputedStyle(tabs[0].shadowRoot!.querySelector('[part="base"]')!).fontSize));
+    await expect.element(page.getByRole('link', { name: 'History 2' })).toBeInTheDocument();
+  });
+
+  it('UTab.countAppearance sets the app default; a tab’s own attribute wins', async () => {
+    UTab.countAppearance = 'plain';
+    try {
+      const { tabs } = await mount('<u-tab-nav label="Views"><u-tab href="#a" count="1">A</u-tab><u-tab href="#b" count="1" count-appearance="badge">B</u-tab></u-tab-nav>');
+      expect(tabs[0].shadowRoot!.querySelector('[part="count"]')!.classList.contains('plain')).toBe(true);
+      expect(tabs[1].shadowRoot!.querySelector('[part="count"]')!.classList.contains('badge')).toBe(true);
+    } finally {
+      UTab.countAppearance = 'badge';
+    }
   });
 
   it('NEGATIVE no count, no count element', async () => {
