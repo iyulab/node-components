@@ -139,8 +139,14 @@ export class UFloatingElement extends UElement {
   private showTimer?: number;
   private hideTimer?: number;
 
+  /** `:state(parked)` 를 싣는다 — 닫힌 동안 레이아웃에서 빠진다(아래 `park()`). */
+  private readonly floatingInternals: ElementInternals | undefined =
+    typeof this.attachInternals === 'function' ? this.attachInternals() : undefined;
+  private parkSeq = 0;
+
   connectedCallback(): void {
     super.connectedCallback();
+    if (!this.open) this.setParked(true);
 
     if (!this.anchors || this.anchors.length === 0) {
       const parent = getParentElement(this);
@@ -178,6 +184,8 @@ export class UFloatingElement extends UElement {
     // `show()` 는 `open` 을 켜기 전에 추적을 시작하므로 그 경로에서는 여는 분기가 돌지 않는다.
     // 닫는 분기는 조건 없이 끊는다 — 계산이 아직 끝나지 않은(추적이 걸리기 전) 채 닫혀도 무효화해야 한다.
     if (!changedProperties.has('open')) return;
+    if (this.open) this.unpark();
+    else void this.parkWhenSettled();
     if (this.open && this.cleanup === null) {
       const target = this.targetEl ?? this.anchors?.[0];
       if (target) void this.track(target);
@@ -185,6 +193,33 @@ export class UFloatingElement extends UElement {
       this.untrack();
       this.targetEl = undefined;
     }
+  }
+
+  /**
+   * 닫힌 떠 있는 요소는 레이아웃에서 빠진다(`:state(parked)` → `display: none`). `visibility: hidden` 인 절대 위치 상자도
+   * 스크롤 컨테이너의 넘침에 들어가, 한 번도 열리지 않은 툴팁(폭 수백 px)이 앵커 옆에 남아 세로 목록에 가로 스크롤바를
+   * 만들었다. 닫힘 전환이 끝난 뒤에 빼고(페이드는 그대로), 열거나 재기 전에 꺼낸다.
+   */
+  private setParked(parked: boolean) {
+    const states = this.floatingInternals?.states;
+    if (!states) return;
+    try {
+      if (parked) states.add('parked');
+      else states.delete('parked');
+    } catch { /* CustomStateSet 이 없는 엔진 — 종전처럼 상자를 남긴다 */ }
+  }
+
+  private unpark() {
+    this.parkSeq++;
+    this.setParked(false);
+  }
+
+  private async parkWhenSettled() {
+    const seq = ++this.parkSeq;
+    // getAnimations() 는 대기 중인 스타일 변경을 반영한 뒤 답한다 — 방금 시작한 닫힘 전환도 담긴다.
+    await Promise.all(this.getAnimations().map((a) => a.finished.catch(() => undefined)));
+    if (seq !== this.parkSeq || this.open || this.cleanup !== null || this.showTimer) return;
+    this.setParked(true);
   }
 
   /** 자동 위치 추적을 끊고, 계산 중인 track() 이 뒤늦게 추적을 걸지 못하게 한다. */
@@ -264,7 +299,8 @@ export class UFloatingElement extends UElement {
     // 타겟 엘리먼트 초기화
     await this.updateComplete;
     this.targetEl = undefined;
-    if (!this.open) return true;
+    // 열리기 전(show-delay 대기 중)에 거둔 경우 — 재려고 꺼낸 상자를 다시 넣는다.
+    if (!this.open) { void this.parkWhenSettled(); return true; }
 
     if (this.fire<HideEventDetail>('hide', { bubbles: false, composed: false })) {
       // hide 딜레이 적용
@@ -287,6 +323,8 @@ export class UFloatingElement extends UElement {
    * @param target - 위치 계산에 사용할 타겟 엘리먼트입니다.
    */
   public async reposition(target: Element | VirtualElement) {
+    // 재려면 상자가 있어야 한다 — 닫혀 빠져 있던 요소를 꺼낸다.
+    this.unpark();
     // strategy(absolute/fixed)에 따라 containing block이 달라져 CSS %가 앵커 크기와
     // 어긋날 수 있어(예: fixed는 뷰포트 기준), 앵커의 실제 픽셀 크기를 변수로 노출한다.
     const targetRect = target.getBoundingClientRect();

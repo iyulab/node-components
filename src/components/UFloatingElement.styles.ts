@@ -21,6 +21,11 @@ export const styles = css`
     pointer-events: none;
     transition: opacity var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)), visibility 0s var(--u-duration-normal, 220ms);
   }
+  /* 닫힘 전환이 끝난 닫힌 요소는 레이아웃에서 뺀다 — 숨긴 절대 위치 상자도 스크롤 넘침에 든다(UFloatingElement.park).
+     !important: 소비자가 호스트에 준 display 가 이 상태를 되살리지 못하게 한다. */
+  :host(:state(parked)) {
+    display: none !important;
+  }
   :host([open]) {
     opacity: 1;
     visibility: visible;

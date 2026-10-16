@@ -8,6 +8,10 @@
   `aria-current`) reaches the inner button as `"true"`. React 19 writes a boolean `true` on a custom element as an empty
   attribute, so `<UButton aria-expanded={open}>` gave the focused button `aria-expanded=""` — not valid ARIA, read as
   «not expandable» once opened.
+- `u-tooltip` · `u-popover`: a closed floating element takes no part in layout once its closing fade ends. A hidden
+  absolutely positioned box still counted toward its scroll container’s overflow, so a never-opened wide tooltip next
+  to an anchor near the right edge gave a vertical list a horizontal scrollbar. It is laid out again before it is
+  measured for opening.
 - `u-menu-item` with a submenu is named by its own label only — the children's labels were part of its name
   («Theme Light Dark»). It now carries `aria-haspopup="menu"` and `aria-expanded`, and the submenu is `role="menu"`.
 
