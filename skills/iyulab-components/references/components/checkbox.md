@@ -34,7 +34,7 @@ Checkbox with `indeterminate` state support. Form-associated (`formAssociated = 
 | `checked` | `boolean` | `false` | ✓ | Checked state |
 | `indeterminate` | `boolean` | `false` | ✓ | Partial / indeterminate state |
 | `appearance` | `'solid'\|'outlined'` | `'solid'` | ✓ | `solid` fills the checked box with the colour · `outlined` colours the border and checkmark |
-| `color` | `'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'\|'neutral'` | `'primary'` | ✓ | Accent color — role axis (`primary`…`danger`, follows rebranding) and decorative axis (`blue`…, the palette colour itself, immune to it). `neutral` is grey. `primary` fills with the selection colour `--u-selection-color` (the primary colour unless the theme sets it) |
+| `color` | `'primary'\|'secondary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'\|'neutral'` | `'primary'` | ✓ | Accent color — role axis (`primary`…`danger`, follows rebranding) and decorative axis (`blue`…, the palette colour itself, immune to it). `neutral` is grey. `primary` fills with the selection colour `--u-selection-color` (the primary colour unless the theme sets it) |
 | `disabled` | `boolean` | `false` | ✓ | Disable the control |
 | `readonly` | `boolean` | `false` | ✓ | Read-only |
 | `required` | `boolean` | `false` | ✓ | Required field |

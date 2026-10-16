@@ -82,6 +82,11 @@ export const styles = css`
     --checkbox-hue-on-fill: var(--u-info-txt-color, #FFFFFF);
     --checkbox-hue-strong: var(--u-info-color-strong, #1565C0);
   }
+  :host([color="secondary"]) {
+    --checkbox-hue: var(--u-secondary-color, #8E24AA);
+    --checkbox-hue-on-fill: var(--u-secondary-txt-color, #FFFFFF);
+    --checkbox-hue-strong: var(--u-secondary-color-strong, #7B1FA2);
+  }
   :host([color="success"]) {
     --checkbox-hue: var(--u-success-color, #2E7D32);
     --checkbox-hue-on-fill: var(--u-success-txt-color, #FFFFFF);

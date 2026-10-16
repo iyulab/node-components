@@ -17,7 +17,7 @@ import { contrast, mix, deriveRamp, deriveStrong, deriveOnColor, evaluate } from
  */
 
 const root = resolve(__dirname, '../..');
-const ROLES = ['primary', 'info', 'success', 'warning', 'danger'] as const;
+const ROLES = ['primary', 'secondary', 'info', 'success', 'warning', 'danger'] as const;
 
 function sheet(file: string) {
   const css = readFileSync(join(root, 'src/assets/styles', file), 'utf-8');
@@ -32,7 +32,7 @@ function sheet(file: string) {
 }
 
 describe('시드 → 램프 파생의 재는 자리', () => {
-  it('🔴평가기는 현행 시트(known-good)를 5/5 통과시킨다', () => {
+  it('🔴평가기는 현행 시트(known-good)를 역할 전부 통과시킨다', () => {
     const light = sheet('light.css');
     const bg = light('--u-bg-color');
     const fails: string[] = [];
@@ -47,7 +47,7 @@ describe('시드 → 램프 파생의 재는 자리', () => {
     expect(fails).toEqual([]);
   });
 
-  it('on-color 선택은 계산으로 시트와 5/5 일치한다 (파생 가능한 축)', () => {
+  it('on-color 선택은 계산으로 시트와 역할 전부 일치한다 (파생 가능한 축)', () => {
     const light = sheet('light.css');
     for (const role of ROLES) {
       expect(deriveOnColor(light(`--u-${role}-color`)).toLowerCase())

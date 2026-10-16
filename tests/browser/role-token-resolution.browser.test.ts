@@ -38,9 +38,9 @@ describe('역할 토큰 브라우저 해석', () => {
     document.documentElement.style.cssText = '';
   });
 
-  it('역할 토큰 25개가 전부 빈 값이 아니게 해석된다', () => {
+  it('역할 토큰 30개가 전부 빈 값이 아니게 해석된다', () => {
     const empty: string[] = [];
-    for (const role of ['primary', 'info', 'success', 'warning', 'danger']) {
+    for (const role of ['primary', 'secondary', 'info', 'success', 'warning', 'danger']) {
       for (const step of ['-weakest', '-weaker', '-weak', '', '-strong']) {
         const name = `--u-${role}-color${step}`;
         if (!tokenOf(name)) empty.push(name);
@@ -65,6 +65,7 @@ describe('역할 토큰 브라우저 해석', () => {
       ['--u-warning-color-weak', '--u-yellow-500'],
       ['--u-success-color-weakest', '--u-green-200'],
       ['--u-info-color-weaker', '--u-blue-300'],
+      ['--u-secondary-color', '--u-purple-600'],
     ];
     for (const [role, palette] of expected) {
       expect(tokenOf(role), `${role} 은 ${palette} 와 같아야 한다`).toBe(tokenOf(palette));
@@ -105,7 +106,7 @@ describe('역할 토큰 브라우저 해석', () => {
     expect(px(bar, '--progress-bar-color'), '`-color` 만 덮었는데 진행바가 움직였다').not.toBe(BRAND);
 
     // ★**리브랜딩은 역할당 한 단이 아니라 5단 전부다** — 시트가 그렇게 적어 놓았다
-    // ("아래 25개만 재정의하면"). `-color` 는 **면**의 단이고, 바탕/면 위에 서는 자리
+    // ("아래 30개만 재정의하면"). `-color` 는 **면**의 단이고, 바탕/면 위에 서는 자리
     // (링크·hover 텍스트·아이콘·상태 테두리)는 `-strong` 을 경유한다. 그래서 `-color`
     // 하나만 덮은 상태에서 상태 테두리가 안 따라오는 것은 **결함이 아니라 계약**이다.
     // 이 단언이 그 계약을 지킨다 — 여기서 깨지면 두 단 중 하나가 층을 건너뛴 것이다.

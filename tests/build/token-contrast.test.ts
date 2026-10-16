@@ -97,7 +97,7 @@ function contrast(a: string, b: string): number {
   return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
 }
 
-const ROLES = ['primary', 'info', 'success', 'warning', 'danger'] as const;
+const ROLES = ['primary', 'secondary', 'info', 'success', 'warning', 'danger'] as const;
 
 /** 소수 2자리로 끊어 보고 — 실패 메시지가 실측값을 그대로 담아야 다음 사람이 다시 재지 않는다 */
 const show = (n: number) => n.toFixed(2);
@@ -109,7 +109,7 @@ describe('역할 토큰 대비 계약', () => {
 
       it('`-strong` 은 바탕 위에서 본문 글자로 읽힌다 (AA 4.5)', () => {
         // 1.16.0 에서는 라이트 warning 이 제외돼 있었다(yellow-700 = 1.66). 1.17.0 이
-        // 그 단을 yellow-1000 으로 옮기면서 **제외가 사라졌다** — 5역할 전부 단언한다.
+        // 그 단을 yellow-1000 으로 옮기면서 **제외가 사라졌다** — 역할 전부 단언한다.
         const fails: string[] = [];
         for (const role of ROLES) {
           const c = contrast(t[`--u-${role}-color-strong`], t['--u-bg-color']);
@@ -188,7 +188,7 @@ describe('역할 토큰 대비 계약', () => {
         // 이 단언이 그 자리를 지킨다 — 배경을 다시 진하게 만들면 여기서 걸린다.
         const fails: string[] = [];
         for (const role of ROLES) {
-          if (role === 'primary') continue; // 상태가 아니다 (알림에 primary 는 없다)
+          if (role === 'primary' || role === 'secondary') continue; // 상태가 아니다 (알림에 primary·secondary 는 없다)
           const [fg, bg] = [t[`--u-${role}-color-strong`], t[`--u-${role}-bg-color`]];
           const c = contrast(fg, bg);
           if (c < AA_NONTEXT) fails.push(`--u-${role}-color-strong ${fg} on --u-${role}-bg-color ${bg} = ${show(c)}`);

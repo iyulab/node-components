@@ -45,7 +45,7 @@ overline tracking assumes Latin labels).
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `appearance` | `'solid'\|'soft'\|'outlined'\|'plain'` | `'soft'` | ✓ | How much chrome: `solid` filled · `soft` tint · `outlined` · `plain` coloured text only |
-| `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | `'neutral'` | ✓ | Color — `neutral` (the default) is grey |
+| `color` | `'neutral'\|'primary'\|'secondary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | `'neutral'` | ✓ | Color — `neutral` (the default) is grey |
 | `rounded` | `boolean` | `false` | ✓ | Pill shape |
 | `icon` | `boolean` | `false` | ✓ | Adds a status icon so the meaning survives without color (`info`/`success`/`warning`/`danger` only) |
 | `dot` | `boolean` | `false` | ✓ | Adds a small leading mark in the text colour — for status labels repeated down a table column. `icon` wins when both are set |
@@ -62,7 +62,7 @@ overline tracking assumes Latin labels).
 
 ## Color axes
 
-`color` carries **two** axes. The **role** axis (`primary`·`info`·`success`·`warning`·`danger`)
+`color` carries **two** axes. The **role** axis (`primary`·`secondary`·`info`·`success`·`warning`·`danger`)
 means *semantics* — it follows re-branding and inherits the contrast contract. The **decorative**
 axis (`blue`·`purple` …) means *the color itself* and is deliberately immune to re-branding.
 

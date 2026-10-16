@@ -122,11 +122,12 @@ one-line brand override reach every control instead of half of them.
 }
 ```
 
-### The grid — 5 roles × 5 steps
+### The grid — 6 roles × 5 steps
 
 | Role | Meaning | Default hue |
 |---|---|---|
 | `primary` | brand, emphasis, focus, links, checked states | blue |
+| `secondary` | second brand colour — no status meaning | purple |
 | `info` | informational status | blue |
 | `success` | success, completion | green |
 | `warning` | caution | yellow |
@@ -164,6 +165,11 @@ remap a step, that test tells you whether the result is still readable.
 
 `primary` and `info` share a default hue on purpose: they are different *roles*. Rebranding
 changes `primary` and leaves informational blue where it is.
+
+`secondary` is a second brand seed next to `primary`, for a two-colour identity. Like `primary`
+it carries no status meaning (alerts and progress statuses do not accept it). Its default is the
+purple ramp — distinct from the blue of `primary`/`info` and from the status hues — and a theme
+that sets a secondary seed overrides the `--u-secondary-*` tokens the same way it does `--u-primary-*`.
 
 ### What follows a role override
 
@@ -210,7 +216,7 @@ contrast contract.
 
 | Axis | Values | Follows rebrand | Contrast |
 |---|---|---|---|
-| **Role** | `primary` `info` `success` `warning` `danger` | yes | guaranteed by the contract tests |
+| **Role** | `primary` `secondary` `info` `success` `warning` `danger` | yes | guaranteed by the contract tests |
 | **Decorative** | `blue` `green` `red` `orange` `teal` `cyan` `purple` `pink` (`yellow` where applicable) | no — deliberately immune | you pick the hue, you own the pairing |
 
 If your brand is red, `color="red"` makes *brand* and *danger* the same name. `color="danger"`

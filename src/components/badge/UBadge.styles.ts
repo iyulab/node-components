@@ -55,6 +55,10 @@ export const styles = css`
     color: var(--u-info-txt-color, #FFFFFF);
     background-color: var(--u-info-color, #1976D2);
   }
+  :host([color="secondary"]) {
+    color: var(--u-secondary-txt-color, #FFFFFF);
+    background-color: var(--u-secondary-color, #8E24AA);
+  }
   :host([color="success"]) {
     color: var(--u-success-txt-color, #FFFFFF);
     background-color: var(--u-success-color, #2E7D32);

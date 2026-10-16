@@ -30,7 +30,7 @@ import { resolve, join } from 'path';
  */
 
 const root = resolve(__dirname, '..', '..');
-const ROLES = ['primary', 'info', 'success', 'warning', 'danger'] as const;
+const ROLES = ['primary', 'secondary', 'info', 'success', 'warning', 'danger'] as const;
 const STEPS = ['-color', '-color-strong', '-color-weak', '-color-weaker'] as const;
 const THEMES = ['light', 'dark'] as const;
 

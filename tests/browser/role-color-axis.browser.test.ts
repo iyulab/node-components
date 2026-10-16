@@ -6,7 +6,7 @@ import '../../src/components/badge/UBadge.js';
 import '../../src/components/checkbox/UCheckbox.js';
 
 /**
- * `color` 속성의 **역할 축**(`primary`·`info`·`success`·`warning`·`danger`).
+ * `color` 속성의 **역할 축**(`primary`·`secondary`·`info`·`success`·`warning`·`danger`).
  *
  * 장식 축과 정확히 반대되는 두 성질을 지킨다:
  *   ⑴ **리브랜딩을 따라온다** — 소비자가 역할 토큰을 덮으면 색이 함께 움직인다.
@@ -21,7 +21,7 @@ import '../../src/components/checkbox/UCheckbox.js';
  * `checkbox-color-matrix` 가 증명한다(리팩터 전 캡처한 계산색).
  */
 
-const ROLES = ['primary', 'info', 'success', 'warning', 'danger'] as const;
+const ROLES = ['primary', 'secondary', 'info', 'success', 'warning', 'danger'] as const;
 
 const token = (name: string) =>
   getComputedStyle(document.documentElement).getPropertyValue(name).trim();

@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Role colour `secondary` — a second brand colour next to `primary`, with no status meaning. The token sheets define
+  `--u-secondary-color-weakest` · `-weaker` · `-weak` · `--u-secondary-color` · `-strong`, `--u-secondary-txt-color` and
+  `--u-secondary-bg-color` (default: the purple ramp, distinct from the blue of `primary`/`info` and from the status hues),
+  under the same contrast contract as the other roles in light and dark. `u-button`, `u-tag`, `u-chip`, `u-badge`,
+  `u-checkbox` and `u-spinner` accept `color="secondary"`. Status-only surfaces (`u-alert`, `u-progress-bar` and
+  `u-progress-ring` statuses) do not, as they do not accept `primary`.
+
 ## [2.28.1] - 2026-10-16
 
 ### Fixed

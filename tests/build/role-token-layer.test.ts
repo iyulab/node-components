@@ -9,7 +9,7 @@ const read = (p: string) => readFileSync(p, 'utf-8');
 const styleFiles = () =>
   globSync('src/components/**/*.styles.ts', { cwd: root }).map(p => join(root, p));
 
-const ROLES = ['primary', 'info', 'success', 'warning', 'danger'] as const;
+const ROLES = ['primary', 'secondary', 'info', 'success', 'warning', 'danger'] as const;
 const STEPS = ['-weakest', '-weaker', '-weak', '', '-strong'] as const;
 const HUES = 'blue|red|green|yellow|orange|purple|pink|teal|cyan';
 
@@ -31,7 +31,7 @@ function ruleBlocks(css: string): Array<{ sel: string; body: string }> {
 }
 
 /** 역할 값 — `color=` 를 쓰지만 **의미 축**이라 장식 면제를 받으면 안 된다. */
-const ROLE_VALUES = ['primary', 'info', 'success', 'warning', 'danger'];
+const ROLE_VALUES = ['primary', 'secondary', 'info', 'success', 'warning', 'danger'];
 
 /**
  * `[color=X]` 라고 전부 장식인 것은 아니다.
@@ -46,7 +46,7 @@ const isDecorative = (sel: string) =>
   !ROLE_VALUES.some(r => new RegExp(`\\[color[~^$*]?=["']?${r}["']?\\]`).test(sel));
 
 describe('역할 토큰 층', () => {
-  it('두 시트가 5역할 × 5단 그리드를 전부 정의한다', () => {
+  it('두 시트가 역할 × 5단 그리드를 전부 정의한다', () => {
     for (const sheet of ['light.css', 'dark.css']) {
       const css = read(join(root, 'src/assets/styles', sheet));
       const missing: string[] = [];
@@ -78,7 +78,7 @@ describe('역할 토큰 층', () => {
     const map = (sheet: string) => {
       const css = read(join(root, 'src/assets/styles', sheet));
       const out: Record<string, string> = {};
-      for (const m of css.matchAll(/^\s*(--u-(?:primary|info|success|warning|danger)-color[\w-]*)\s*:\s*var\((--u-[\w-]+)\)/gm)) {
+      for (const m of css.matchAll(/^\s*(--u-(?:primary|secondary|info|success|warning|danger)-color[\w-]*)\s*:\s*var\((--u-[\w-]+)\)/gm)) {
         out[m[1]] = m[2];
       }
       return out;
@@ -195,7 +195,7 @@ describe('역할 토큰 층', () => {
     for (const sheet of ['light.css', 'dark.css']) {
       const css = read(join(root, 'src/assets/styles', sheet));
       const bad = [
-        ...css.matchAll(/^\s*(--u-(?:primary|info|success|warning|danger)-color[\w-]*)\s*:\s*([^;]+);/gm),
+        ...css.matchAll(/^\s*(--u-(?:primary|secondary|info|success|warning|danger)-color[\w-]*)\s*:\s*([^;]+);/gm),
       ]
         .filter(m => !/^var\(--u-[\w-]+\)$/.test(m[2].trim()))
         .map(m => `${sheet}: ${m[1]} = ${m[2].trim()}`);

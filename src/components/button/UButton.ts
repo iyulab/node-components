@@ -17,7 +17,7 @@ export type ButtonType = "button" | "submit" | "reset";
 /**
  * 두 축이 한 속성에 병존한다.
  *
- * - **역할 축**(`primary`·`info`·`success`·`warning`·`danger`) — *의미*를 말한다.
+ * - **역할 축**(`primary`·`secondary`·`info`·`success`·`warning`·`danger`) — *의미*를 말한다.
  *   색은 소비자의 역할 토큰이 정하므로 **리브랜딩을 따라오고**, 대비 계약을 물려받는다.
  * - **장식 축**(`blue`·`purple` …) — *색 자체*를 말한다. 소비자가 고른 색이므로
  *   리브랜딩에 **의도적으로 면역**이다.
@@ -27,7 +27,7 @@ export type ButtonType = "button" | "submit" | "reset";
  */
 export type ButtonColor =
   | "neutral"
-  | "primary" | "info" | "success" | "warning" | "danger"
+  | "primary" | "secondary" | "info" | "success" | "warning" | "danger"
   | "blue" | "green" | "red"
   | "orange" | "teal" | "cyan" | "purple" | "pink";
 export type ButtonSize = "sm" | "md" | "lg";

@@ -33,6 +33,14 @@ export const styles = css`
     --tag-hue-text: var(--u-info-color-strong, #1565C0);
     --tag-hue-text-outlined: var(--u-info-color-strong, #1565C0);
   }
+  :host([color="secondary"]) {
+    --tag-hue-solid: var(--u-secondary-color, #8E24AA);
+    --tag-hue-on-solid: var(--u-secondary-txt-color, #FFFFFF);
+    --tag-hue-line: var(--u-secondary-color-weak, #9C27B0);
+    --tag-hue-surface: var(--u-secondary-bg-color, #F3E5F5);
+    --tag-hue-text: var(--u-secondary-color-strong, #7B1FA2);
+    --tag-hue-text-outlined: var(--u-secondary-color-strong, #7B1FA2);
+  }
   :host([color="success"]) {
     --tag-hue-solid: var(--u-success-color, #2E7D32);
     --tag-hue-on-solid: var(--u-success-txt-color, #FFFFFF);

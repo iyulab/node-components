@@ -9,13 +9,13 @@ import '../icon/UIcon.js';
 /** 외형 정도 — `solid` 꽉 찬 면 · `soft` 옅은 틴트(기본) · `outlined` 테두리 · `plain` 글자만. */
 export type TagAppearance = "solid" | "soft" | "outlined" | "plain";
 /**
- * 두 축이 병존한다 — **역할 축**(`primary`·`info`·`success`·`warning`·`danger`)은 *의미*를
+ * 두 축이 병존한다 — **역할 축**(`primary`·`secondary`·`info`·`success`·`warning`·`danger`)은 *의미*를
  * 말하고 리브랜딩을 따라오며 대비 계약을 물려받는다. **장식 축**(`blue`·`purple` …)은
  * *색 자체*를 말하고 리브랜딩에 의도적으로 면역이다. `neutral`(기본)은 **무채색**이다.
  */
 export type TagColor =
   | "neutral"
-  | "primary" | "info" | "success" | "warning" | "danger"
+  | "primary" | "secondary" | "info" | "success" | "warning" | "danger"
   | "blue" | "green" | "yellow" | "red"
   | "orange" | "teal" | "cyan" | "purple" | "pink";
 /** 크기 — `md`(기본: 캡션 글자) · `sm`(오버라인 글자 · 세로 여백 없음 — 표 칸의 식별자 옆 속성처럼 글줄 안에 앉는 작은 표식). */

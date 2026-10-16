@@ -154,7 +154,7 @@
   /* ==========================================================================
      Role Colors — 의미 역할 층
      컴포넌트는 팔레트 프리미티브가 아니라 이 층을 참조한다.
-     브랜드 색 교체는 아래 25개만 재정의하면 시맨틱 층까지 따라온다.
+     브랜드 색 교체는 아래 30개만 재정의하면 시맨틱 층까지 따라온다.
 
      단은 '강도' 축이다 (weakest -> strong). 용도(배경/테두리/텍스트)는
      소비처가 정한다 -- 단을 속성에 묶으면 primary 버튼의 배경이 어느
@@ -181,6 +181,15 @@
   --u-info-color-weak:           var(--u-blue-500);
   --u-info-color:                var(--u-blue-700);
   --u-info-color-strong:         var(--u-blue-800);
+
+  /* secondary — 보조 브랜드 색 (primary 와 나란한 두 번째 시드 · 상태 의미 없음).
+     기본값은 primary·info 의 파랑과도 상태 색(green·yellow·red)과도 갈리는 purple 이다.
+     purple 램프는 라이트에서 이미 진해 600 이 흰 글자 7.04 를 받는다. */
+  --u-secondary-color-weakest:   var(--u-purple-200);
+  --u-secondary-color-weaker:    var(--u-purple-300);
+  --u-secondary-color-weak:      var(--u-purple-500);
+  --u-secondary-color:           var(--u-purple-600);  /* 7.04 ✓ */
+  --u-secondary-color-strong:    var(--u-purple-700);  /* 8.20 ✓ */
 
   /* success — 성공 · 완료
      ⚠green 은 700 도 4.12 로 미달이라 두 단을 건너뛴다. 계열마다 통과 단이 다른 것이
@@ -272,6 +281,7 @@
      라이트 팔레트의 shade-600 은 8색 중 6색이 흰 글자로 AA 에 미달한다(미해결). */
   --u-primary-txt-color:     #FFFFFF;
   --u-info-txt-color:        #FFFFFF;
+  --u-secondary-txt-color:   #FFFFFF;
   --u-success-txt-color:     #FFFFFF;
   --u-danger-txt-color:      #FFFFFF;
   /* ★warning 만 어둡다 — 취향이 아니라 측정이다. 노랑은 **어떤 단도** 흰 글자로 AA 를
@@ -388,6 +398,7 @@
      휘도 순이 아니므로 같은 단 번호가 같은 세기를 뜻하지 않는다. */
   --u-primary-bg-color:      var(--u-blue-0);
   --u-info-bg-color:         var(--u-blue-0);
+  --u-secondary-bg-color:    var(--u-purple-0);
   --u-success-bg-color:      var(--u-green-0);
   --u-danger-bg-color:       var(--u-red-0);
   --u-warning-bg-color:      var(--u-yellow-200);

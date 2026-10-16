@@ -32,7 +32,7 @@ Exposed as a **`progressbar`** with no value (in progress, amount unknown). Its 
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
-| `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | — | ✓ | Spinner color preset — role axis (`primary`…`danger`, follows rebranding) and decorative axis (`blue`…, immune to it) |
+| `color` | `'neutral'\|'primary'\|'secondary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | — | ✓ | Spinner color preset — role axis (`primary`…`danger`, follows rebranding) and decorative axis (`blue`…, immune to it) |
 
 ## CSS Parts
 

@@ -13,6 +13,7 @@ export const styles = css`
      읽는다. 다크에서 -color 는 바탕 위 3.07 까지 떨어진다(Cycle 141 실측). */
   :host([color="primary"]) { --spinner-indicator-color: var(--u-primary-color-strong, #1565C0); }
   :host([color="info"])    { --spinner-indicator-color: var(--u-info-color-strong, #1565C0); }
+  :host([color="secondary"]) { --spinner-indicator-color: var(--u-secondary-color-strong, #7B1FA2); }
   :host([color="success"]) { --spinner-indicator-color: var(--u-success-color-strong, #1B5E20); }
   :host([color="warning"]) { --spinner-indicator-color: var(--u-warning-color-strong, #8A4A00); }
   :host([color="danger"])  { --spinner-indicator-color: var(--u-danger-color-strong, #C62828); }

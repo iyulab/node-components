@@ -46,7 +46,7 @@ Versatile button with multiple appearances. Renders as an `<a>` element when `hr
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `appearance` | `'solid'\|'soft'\|'outlined'\|'plain'\|'link'` | `'solid'` | ✓ | How much chrome: `solid` filled with the colour · `soft` tint, no outline · `outlined` · `plain` no chrome · `link` |
-| `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | — | ✓ | Color, independent of `appearance`. Unset paints like `primary` (the brand colour) without adding the attribute; `neutral` is an achromatic (grey) button (see notes below). |
+| `color` | `'neutral'\|'primary'\|'secondary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | — | ✓ | Color, independent of `appearance`. Unset paints like `primary` (the brand colour) without adding the attribute; `neutral` is an achromatic (grey) button (see notes below). |
 | `size` | `'sm'\|'md'\|'lg'` | `'md'` | ✓ | Button size (font-size `--u-density` × 6/7 · × 1 · × 8/7 — 12/14/16px at the default density; padding, spinner, and icon slots scale proportionally). |
 | `rounded` | `boolean` | `false` | ✓ | Pill-shaped border radius |
 | `disabled` | `boolean` | `false` | ✓ | Disable the button |
@@ -99,7 +99,7 @@ as an empty attribute (`<UButton aria-expanded={open}>`), and an empty value is 
 | `--btn-txt-color` | Text color on the fill, read by `appearance="solid"` (default `#fff`, or `--u-{role}-txt-color` when a semantic `color` is set) |
 | `--btn-color-strong` | Text color on the surrounding page background, read by `appearance="link"` and `"plain"` — opposite contrast need from the fill, so it's a separate token (default: same as `--btn-color`, or `--u-{role}-color-strong` for a semantic `color`) |
 | `--btn-color-hover` / `--btn-color-active` | `solid` background hover/active (default: `--btn-color` at 85%/70% mixed with black — or with white when `--btn-color` is dark, OKLab lightness below 0.4, so a near-black brand still shows its states) |
-| `--btn-color-surface` / `-hover` / `-active` | `soft` background states — role colors (`primary`·`info`·`success`·`warning`·`danger`) use `--u-{role}-bg-color` and deepen it with 18%/30% of `--btn-color`; other colors mix `--btn-color` at 12%/22%/32%. A colored `plain` button hovers onto the same surface |
+| `--btn-color-surface` / `-hover` / `-active` | `soft` background states — role colors (`primary`·`secondary`·`info`·`success`·`warning`·`danger`) use `--u-{role}-bg-color` and deepen it with 18%/30% of `--btn-color`; other colors mix `--btn-color` at 12%/22%/32%. A colored `plain` button hovers onto the same surface |
 | `--btn-color-border` / `-hover` / `-active` | Border states (default: `--btn-color` at 45%/60%/75%) |
 | `--btn-color-outline-hover` / `-active` | `outlined`/`plain` background hover/active (default: 6%/12%) |
 | `--btn-color-strong-hover` / `-active` | `link` text hover/active — the role value itself doesn't move; hover adds an underline instead (default: `--btn-color-strong` at 85%/70% mixed with black, or white when it is dark) |

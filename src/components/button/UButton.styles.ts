@@ -86,6 +86,12 @@ export const styles = css`
     --btn-txt-color: var(--u-info-txt-color, #FFFFFF);
     --btn-color-surface: var(--u-info-bg-color, #E3F2FD);
   }
+  :host([color="secondary"]) {
+    --btn-color: var(--u-secondary-color, #8E24AA);
+    --btn-color-strong: var(--u-secondary-color-strong, #7B1FA2);
+    --btn-txt-color: var(--u-secondary-txt-color, #FFFFFF);
+    --btn-color-surface: var(--u-secondary-bg-color, #F3E5F5);
+  }
   :host([color="success"]) {
     --btn-color: var(--u-success-color, #2E7D32);
     --btn-color-strong: var(--u-success-color-strong, #1B5E20);
@@ -115,6 +121,7 @@ export const styles = css`
      놀았다. hover/active 는 그 면 위에 면 색을 더 섞어 진해지는 방향으로 파생한다. */
   :host(:not([color])),
   :host([color="primary"]),
+  :host([color="secondary"]),
   :host([color="info"]),
   :host([color="success"]),
   :host([color="warning"]),

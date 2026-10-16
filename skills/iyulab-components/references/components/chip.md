@@ -40,7 +40,7 @@ Interactive chip tag. Supports selectable toggle, removable button, and tooltip.
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `appearance` | `'solid'\|'soft'\|'outlined'\|'plain'` | `'soft'` | ✓ | How much chrome (same as [`u-tag`](./tag.md)) |
-| `color` | `'neutral'\|'primary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | `'neutral'` | ✓ | Color — `neutral` (the default) is grey; `primary` is the brand colour |
+| `color` | `'neutral'\|'primary'\|'secondary'\|'info'\|'success'\|'warning'\|'danger'\|'blue'\|'green'\|'yellow'\|'red'\|'orange'\|'teal'\|'cyan'\|'purple'\|'pink'` | `'neutral'` | ✓ | Color — `neutral` (the default) is grey; `primary` is the brand colour |
 | `rounded` | `boolean` | `false` | ✓ | Pill-shaped |
 | `removable` | `boolean` | `false` | ✓ | Show remove button |
 | `selectable` | `boolean` | `false` | ✓ | Can be toggled selected |
