@@ -199,6 +199,7 @@ export class UAlert extends UElement {
     const suggestion = STATUS_SYNONYMS[status.toLowerCase()];
     devWarnOnce(
       `u-alert:status:${status}`,
+      // html-sink: not HTML — a console diagnostic that names the tag
       `<u-alert status="${status}"> is not a known status, so it renders as a neutral notice. ` +
       (suggestion ? `Did you mean status="${suggestion}"? ` : '') +
       `Use one of: ${ALERT_STATUSES.join(', ')}.`,
