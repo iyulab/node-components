@@ -1,7 +1,7 @@
 import { CSSResultGroup, PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
-import { computePosition, offset, shift, flip, autoPlacement, autoUpdate, arrow, hide } from '@floating-ui/dom';
+import { computePosition, offset, shift, flip, autoPlacement, autoUpdate, arrow, hide, getOverflowAncestors } from '@floating-ui/dom';
 import type { OffsetOptions, Placement, VirtualElement } from '@floating-ui/dom';
 
 import { getParentElement, querySelectorAllWithin } from '../utilities/elements.js';
@@ -238,10 +238,28 @@ export class UFloatingElement extends UElement {
     await this.reposition(target);
     // 계산을 기다리는 사이 닫혔거나(untrack) 다른 타겟으로 다시 불렸다면 추적을 걸지 않는다.
     if (seq !== this.trackSeq) return;
-    this.cleanup = autoUpdate(target, this, () => {
-      this.reposition(target);
-    });
+    const update = () => { void this.reposition(target); };
+    const stopAutoUpdate = autoUpdate(target, this, update);
+    const stopClipObserve = this.observeClippingAncestors(target, update);
+    this.cleanup = () => { stopAutoUpdate(); stopClipObserve(); };
     this.targetEl = target;
+  }
+
+  /**
+   * 앵커를 가리는 조상(overflow 클리핑)의 크기 변화를 따라 다시 잰다. `autoUpdate` 는 앵커·떠 있는 상자의 크기와
+   * 스크롤·리사이즈만 보므로, 클리핑 조상이 커지거나(접힌 절이 펼쳐짐) 줄어 앵커가 가려지거나 드러나도 앵커 자신은
+   * 움직이지 않으면 아무 신호가 없다 — 가려진 순간에 붙은 `anchor-hidden` 이 앵커가 다 드러난 뒤에도 남아 열린 팝업이
+   * 보이지 않았다.
+   */
+  private observeClippingAncestors(target: Element | VirtualElement, update: () => void): () => void {
+    if (typeof ResizeObserver === 'undefined') return () => {};
+    const context = target instanceof Element ? target : target.contextElement;
+    if (!context) return () => {};
+    const observer = new ResizeObserver(update);
+    for (const ancestor of getOverflowAncestors(context)) {
+      if (ancestor instanceof Element) observer.observe(ancestor);
+    }
+    return () => observer.disconnect();
   }
 
   /** 

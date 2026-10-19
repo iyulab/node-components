@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Open floating elements (`u-select`, `u-popover`, `u-tooltip`, menus, pickers) no longer stay `visibility: hidden` when the
+  ancestor that was clipping their anchor changes size. The anchor-hidden check only re-ran on scroll and on anchor/popup
+  resizes, so a collapsed section that expanded after the popup opened left the anchor fully visible and the open popup
+  invisible. Clipping ancestors are now observed for size changes while a popup is tracked.
+
 ## [2.30.0] - 2026-10-17
 
 ### Added
