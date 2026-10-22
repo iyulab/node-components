@@ -289,3 +289,36 @@ describe('역할 토큰 대비 계약', () => {
     //    (약 1.3~1.8)보다 넓어, 위 `구별된다` 단언이 그 하한을 지킨다.
   });
 });
+
+/**
+ * 컴포넌트가 스스로 고른 (글자, 면) 쌍 — 시트 단의 계약과 별개로, 소스가 실제로 쓰는 토큰 쌍을 잰다.
+ * 계기: `u-avatar` 이니셜(흰 글자)이 `--u-neutral-500` 면 위에서 라이트 2.68 · 다크 2.69 였다. 사이드바 계정 메뉴에
+ * 아바타를 그린 화면의 axe 검사가 처음 잡았다 — 시트 계약은 이 쌍을 다루지 않는다.
+ */
+describe('컴포넌트 고유 (글자, 면) 쌍', () => {
+  const PAIRS: { file: string; label: string }[] = [
+    { file: 'src/components/avatar/UAvatar.styles.ts', label: 'u-avatar 이니셜' },
+  ];
+
+  /** `:host` 첫 블록의 `color` · `background-color` 가 가리키는 토큰 이름. */
+  function hostPair(file: string) {
+    const src = readFileSync(join(root, file), 'utf-8');
+    const host = src.match(/:host\s*\{([^}]*)\}/)?.[1] ?? '';
+    const token = (prop: string) => host.match(new RegExp(`(?:^|[\\s;])${prop}\\s*:\\s*var\\((--[\\w-]+)`))?.[1];
+    return { fg: token('color'), bg: token('background-color') };
+  }
+
+  for (const { file, label } of PAIRS) {
+    it(`${label} — 두 테마에서 AA 4.5`, () => {
+      const { fg, bg } = hostPair(file);
+      expect(fg && bg, `${file} 의 :host 에서 color · background-color 토큰을 찾지 못함`).toBeTruthy();
+      const fails: string[] = [];
+      for (const theme of ['light', 'dark'] as Theme[]) {
+        const t = loadTokens(theme);
+        const c = contrast(t[fg!], t[bg!]);
+        if (c < AA_TEXT) fails.push(`${theme}: ${fg} ${t[fg!]} on ${bg} ${t[bg!]} = ${show(c)}`);
+      }
+      expect(fails).toEqual([]);
+    });
+  }
+});

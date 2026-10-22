@@ -10,7 +10,7 @@ export const styles = css`
     font-family: var(--u-font-base);
     font-weight: 600;
     color: var(--u-neutral-0, #FFFFFF);
-    background-color: var(--u-neutral-500, #9E9E9E);
+    background-color: var(--u-neutral-700, #616161);
     vertical-align: middle;
     overflow: hidden;
     user-select: none;

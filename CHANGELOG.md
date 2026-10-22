@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- `u-avatar` initials now meet WCAG AA contrast. The default background moves from `--u-neutral-500` to `--u-neutral-700`
+  (fallback `#9E9E9E` → `#616161`): white initials measured 2.68 (light) and 2.69 (dark) on the old step and 6.19 · 6.08
+  on the new one. Avatars without a `background` of their own render a step darker.
+
 ## [2.31.0] - 2026-10-23
 
 ### Added

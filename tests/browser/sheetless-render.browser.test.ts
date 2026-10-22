@@ -89,6 +89,6 @@ describe('토큰 시트 없이 렌더', () => {
 
   it('아바타 배경이 남는다', async () => {
     const el = await mount('u-avatar', { label: 'AB' }, '');
-    expect(getComputedStyle(el).backgroundColor).toBe('rgb(158, 158, 158)'); // #9E9E9E
+    expect(getComputedStyle(el).backgroundColor).toBe('rgb(97, 97, 97)'); // #616161 — neutral-700, white initials at 6.19
   });
 });
