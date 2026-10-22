@@ -4,6 +4,8 @@ import '../../src/components/input/UInput.js';
 import '../../src/components/select/USelect.js';
 import '../../src/components/switch/USwitch.js';
 import '../../src/components/textarea/UTextarea.js';
+import '../../src/components/radio/URadio.js';
+import '../../src/components/option/UOption.js';
 import { resetDevWarnings } from '../../src/utilities/devWarning.js';
 
 /**
@@ -148,6 +150,19 @@ describe('u-field 개발 모드 경고', () => {
   it('NEGATIVE: 라벨 없는 필드는 컨트롤이 없어도 침묵한다', async () => {
     await mount('<u-field><span>text</span></u-field>');
     expect(ours().length).toBe(0);
+  });
+
+  /**
+   * 라벨을 준 `u-radio` 가 «컨트롤 없음» 경고를 냈다 — 라디오는 자기 섀도의 `u-field` 에 `role="radiogroup"` 상자를
+   * 슬롯하고 항목은 그 상자 안 슬롯으로 들어오는데, 하위 탐색은 슬롯 배정을 따라가지 않는다. 묶음에는 이름이 제대로
+   * 붙어 있었다(오탐). 버튼형(세그먼트)도 같은 구조다.
+   */
+  it('NEGATIVE: 라벨을 준 u-radio 는 침묵한다 — 기본형도 버튼형도', async () => {
+    await mount('<u-radio label="Seal"><u-option value="a">A</u-option><u-option value="b">B</u-option></u-radio>'
+      + '<u-radio label="View" type="button" appearance="soft"><u-option value="a">A</u-option><u-option value="b">B</u-option></u-radio>');
+    expect(ours().length).toBe(0);
+    const group = document.querySelector('u-radio')!.shadowRoot!.querySelector('[role="radiogroup"]')!;
+    expect(group.getAttribute('aria-label')).toBe('Seal');
   });
 
   /**

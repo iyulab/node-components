@@ -11,6 +11,14 @@ import "../tooltip/UTooltip.js";
 
 /** 네이티브로 «폼 컨트롤이거나 포커스를 받도록 저작된» 태그 — 가시성과 무관한 구조 사실이다. */
 const NATIVE_CONTROL_TAGS = new Set(['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON']);
+/**
+ * 그 자체로 조작 대상인 ARIA 위젯 역할. 묶음형 컨트롤은 자기 섀도에서 이 역할의 상자를 이 필드에 슬롯하고,
+ * 항목은 그 상자 안 슬롯으로 들어온다(`u-radio` 의 `role="radiogroup"` 컨테이너) — 하위 탐색은 슬롯 배정을 따라가지
+ * 않으므로, 역할로 세지 않으면 라벨이 실제로 이름 붙인 묶음이 «컨트롤 없음» 이 된다.
+ */
+const WIDGET_ROLES = new Set([
+  'radiogroup', 'listbox', 'combobox', 'textbox', 'searchbox', 'spinbutton', 'slider', 'grid', 'tree', 'treegrid', 'tablist', 'menu', 'menubar',
+]);
 
 /**
  * **구조상** 폼 컨트롤인가 — `UField.hasControlInSubtree` 가 쓰는 술어.
@@ -23,6 +31,8 @@ function isFormControlByStructure(node: Element): boolean {
   if (node.tagName === 'A' && node.hasAttribute('href')) return true;
   if (node.hasAttribute('tabindex')) return true;                 // u-select 트리거 · u-slider thumb · u-rating 심볼
   if (node.hasAttribute('contenteditable')) return true;
+  const role = node.getAttribute('role');
+  if (role && WIDGET_ROLES.has(role)) return true;
   return false;
 }
 

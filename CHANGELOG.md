@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- `u-radio` with a `label` no longer logs «u-field label="…" has no form control» in development. The group was named
+  correctly; the check did not follow the radio's slotted options. An element with an ARIA widget role
+  (`radiogroup`, `listbox`, `combobox`, `slider` and the like) now counts as the control a field label names.
+
 ## [2.30.2] - 2026-10-22
 
 ### Fixed
