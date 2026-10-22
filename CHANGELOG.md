@@ -10,6 +10,11 @@
 - Any form control: while an error is shown, changing `value` from code (clearing it, restoring a default) now re-judges it —
   an error that no longer applies is hidden instead of staying under an empty field. An error is never newly shown this way;
   that stays the job of blur and submit.
+- `u-input type="number"`: the stepper (buttons, ArrowUp/ArrowDown) finds the neighbouring step with the same exact
+  comparison, so it no longer stalls on a small step with a large quotient (`49.699999` with `step="0.000001"`).
+- `IconRegistry` no longer logs an error for an icon request cut off by leaving the page (`pagehide` / `beforeunload`, or an
+  `AbortError`). Any other transient failure is still retried on the next lookup, and is now reported with `console.warn`
+  rather than `console.error`.
 
 ## [2.30.1] - 2026-10-20
 

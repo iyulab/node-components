@@ -662,8 +662,7 @@ export class UInput extends UFormControlElement<string> {
     const max = this.max !== undefined && this.max !== '' ? Number(this.max) : undefined;
     const current = parseNumber(this.numberText) ?? 0;
     const base = min ?? 0;
-    const k = (current - base) / step;
-    const index = delta > 0 ? Math.floor(k + 1e-9) + 1 : Math.ceil(k - 1e-9) - 1;
+    const index = stepIndex(current, base, step, delta);
     const places = Math.max(fractionDigits(step), fractionDigits(base));
     let next = Number((base + index * step).toFixed(places));
     if (min !== undefined && next < min) next = min;
@@ -740,6 +739,23 @@ function fractionDigits(n: number): number {
  * (`49.7 / 0.000001` 의 소수부는 7e-9) 절대 허용오차로는 작은 step 에서 거짓 불일치가 난다 — 가장 긴 소수 자릿수로
  * 정수에 맞춰 정확히 나눠 본다. 자릿수가 정수 정밀도를 넘으면 몫에 상대 허용오차를 쓴다.
  */
+/** 스테퍼가 가야 할 step 번호 — `current` 의 위쪽(+1)·아래쪽(-1) 이웃. 같은 정수 비교라 큰 몫에서도 오차가 없다. */
+function stepIndex(current: number, base: number, step: number, delta: 1 | -1): number {
+  const places = Math.max(fractionDigits(current), fractionDigits(base), fractionDigits(step));
+  const scale = 10 ** places;
+  const scaledCurrent = Math.round(current * scale);
+  const scaledBase = Math.round(base * scale);
+  const scaledStep = Math.round(step * scale);
+  if ([scaledCurrent, scaledBase, scaledStep].every(Number.isSafeInteger) && scaledStep > 0) {
+    const diff = scaledCurrent - scaledBase;
+    const remainder = ((diff % scaledStep) + scaledStep) % scaledStep;
+    const floor = (diff - remainder) / scaledStep;
+    return delta > 0 ? floor + 1 : remainder === 0 ? floor - 1 : floor;
+  }
+  const k = (current - base) / step;
+  return delta > 0 ? Math.floor(k + 1e-9) + 1 : Math.ceil(k - 1e-9) - 1;
+}
+
 function isStepMultiple(n: number, base: number, step: number): boolean {
   const places = Math.max(fractionDigits(n), fractionDigits(base), fractionDigits(step));
   const scale = 10 ** places;

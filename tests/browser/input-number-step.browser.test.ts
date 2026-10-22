@@ -67,6 +67,18 @@ describe('u-input type="number" — step 검사', () => {
     expect(el.invalid).toBe(false);
   });
 
+  it('🔴스테퍼는 작은 step 의 큰 몫에서도 이웃 step 으로 간다 (49.699999 → 49.7 → 49.700001)', async () => {
+    const el = await mount('<u-input type="number" step="0.000001" value="49.699999"></u-input>');
+    inner(el).focus();
+    await userEvent.keyboard('{ArrowUp}');
+    await el.updateComplete;
+    expect(el.value).toBe('49.7');
+    await userEvent.keyboard('{ArrowUp}');
+    expect(el.value).toBe('49.700001');
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}');
+    expect(el.value).toBe('49.699999');
+  });
+
   it('필수 칸을 코드가 비우면 오류는 그대로 남는다(해제만 하고 새로 보이지는 않는다)', async () => {
     const el = await mount('<u-input type="number" required value="3"></u-input>');
     el.invalid = true;

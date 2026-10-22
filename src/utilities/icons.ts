@@ -22,6 +22,19 @@ function setDefaultBaseUrl(url: string): void {
   defaultIconBaseUrl = url;
 }
 
+/** 페이지를 떠나는 중인가 — 그때 끊기는 진행 중 fetch 는 `TypeError: Failed to fetch` 로 오지만 실패가 아니다. */
+let leavingPage = false;
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  window.addEventListener('pagehide', () => { leavingPage = true; });
+  window.addEventListener('beforeunload', () => { leavingPage = true; });
+  // 뒤로 가기 캐시(bfcache)로 돌아온 페이지는 다시 살아 있다.
+  window.addEventListener('pageshow', () => { leavingPage = false; });
+}
+
+function isAbortError(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && (error as { name?: unknown }).name === 'AbortError';
+}
+
 /**
  * vite의 `import.meta.glob`을 사용하여 내부 경로상의 모든 SVG 파일을 빌드 시점에 한 번에 로드합니다.
  * 이 레지스트리는 런타임 동안 불변이며, 아이콘 조회 시 재사용됩니다.
@@ -223,7 +236,11 @@ class IconRegistry {
         return svg;
       } catch (error) {
         // 일시 오류 — 캐시하지 않고 undefined로 종결. 다음 조회 시 재시도된다.
-        console.error(`[@iyulab/components] IconRegistry: Failed to resolve icon '${key}' (will retry):`, error);
+        // 페이지를 떠나며 끊긴 요청(중단 · 이탈 중 실패)은 사용자가 볼 결과가 없어 알리지 않는다. 그 밖의 일시 오류는
+        // 재시도되는 일이라 오류가 아니라 경고다.
+        if (!leavingPage && !isAbortError(error)) {
+          console.warn(`[@iyulab/components] IconRegistry: Failed to resolve icon '${key}' (will retry):`, error);
+        }
         return undefined;
       }
     })();
