@@ -346,8 +346,7 @@ export class UInput extends UFormControlElement<string> {
     if (max !== undefined && n > max) return { flags: { rangeOverflow: true }, message: Locale.getValue('rangeOverflow', { max: this.max ?? '' }) };
     const step = this.step ?? 1;
     if (Number.isFinite(step) && step > 0) {
-      const k = (n - (min ?? 0)) / step;
-      if (Math.abs(k - Math.round(k)) > 1e-9) {
+      if (!isStepMultiple(n, min ?? 0, step)) {
         return { flags: { stepMismatch: true }, message: Locale.getValue('stepMismatch', { step }) };
       }
     }
@@ -734,6 +733,25 @@ function fractionDigits(n: number): number {
   const [mantissa, exponent] = String(n).split('e');
   const digits = (mantissa.split('.')[1] ?? '').length;
   return Math.max(0, digits - Number(exponent ?? 0));
+}
+
+/**
+ * `n` 이 `base` 에서 `step` 의 정수 배만큼 떨어져 있는가. 나눗셈의 부동소수 오차는 몫의 크기에 비례해 자라므로
+ * (`49.7 / 0.000001` 의 소수부는 7e-9) 절대 허용오차로는 작은 step 에서 거짓 불일치가 난다 — 가장 긴 소수 자릿수로
+ * 정수에 맞춰 정확히 나눠 본다. 자릿수가 정수 정밀도를 넘으면 몫에 상대 허용오차를 쓴다.
+ */
+function isStepMultiple(n: number, base: number, step: number): boolean {
+  const places = Math.max(fractionDigits(n), fractionDigits(base), fractionDigits(step));
+  const scale = 10 ** places;
+  // (n - base) 를 먼저 빼면 그 뺄셈이 오차를 만든다 — 각 항을 따로 정수로 옮긴 뒤 뺀다.
+  const scaledN = Math.round(n * scale);
+  const scaledBase = Math.round(base * scale);
+  const scaledStep = Math.round(step * scale);
+  if ([scaledN, scaledBase, scaledStep].every(Number.isSafeInteger) && scaledStep > 0) {
+    return (scaledN - scaledBase) % scaledStep === 0;
+  }
+  const k = (n - base) / step;
+  return Math.abs(k - Math.round(k)) <= Math.max(1e-9, Math.abs(k) * Number.EPSILON * 4);
 }
 
 /** HTML 명세의 «암묵 제출을 막는 필드» — 네이티브 단일 행 입력의 이 type 들. `u-input` 의 type 은 전부 여기에 든다. */

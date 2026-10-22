@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- `u-input type="number"`: a value that is a multiple of `step` is no longer reported as a step mismatch when `step` is small
+  (`49.7` with `step="0.000001"`). The check divided and allowed an absolute error of `1e-9`, but floating-point division
+  error grows with the quotient; it now compares exactly at the longest decimal precision of the value, the minimum and the step.
+- Any form control: while an error is shown, changing `value` from code (clearing it, restoring a default) now re-judges it —
+  an error that no longer applies is hidden instead of staying under an empty field. An error is never newly shown this way;
+  that stays the job of blur and submit.
+
 ## [2.30.1] - 2026-10-20
 
 ### Fixed

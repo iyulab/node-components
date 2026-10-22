@@ -236,6 +236,17 @@ export abstract class UFormControlElement<T> extends UElement {
     // 재렌더가 필요하면 validate()를 호출하는 쪽(blur 등)에서 명시적으로 처리한다.
     if (this.shouldValidate(changedProperties)) {
       this.setValidity();
+      // 오류를 보이고 있는 동안 값이 바뀌면(코드로 비우거나 되돌린 경우 포함) 보이는 상태도 새 값을 따른다 —
+      // 사용자 입력 경로만 `validate()` 를 불러, 코드가 값을 바꾼 뒤에는 옛 오류 문구가 빈 칸 아래에 남았다.
+      // 오류를 «새로» 보이는 일은 없다(해제만): 그것은 blur·제출의 몫이다.
+      if (this.invalid && changedProperties.has('value') && this.internals) {
+        this.quietCheck = true;
+        try {
+          if (this.internals.checkValidity()) this.invalid = false;
+        } finally {
+          this.quietCheck = false;
+        }
+      }
     }
   }
 
