@@ -14,6 +14,8 @@ describe('built-in date range presets', () => {
     ['yesterday', '2026-03-17', '2026-03-17'],
     ['last7Days', '2026-03-12', '2026-03-18'],
     ['last30Days', '2026-02-17', '2026-03-18'],
+    ['last3Months', '2025-12-19', '2026-03-18'],
+    ['last6Months', '2025-09-19', '2026-03-18'],
     ['thisWeek', '2026-03-15', '2026-03-21'],
     ['lastWeek', '2026-03-08', '2026-03-14'],
     ['thisMonth', '2026-03-01', '2026-03-31'],
@@ -26,6 +28,11 @@ describe('built-in date range presets', () => {
   it('crosses a year boundary: last month in January is the previous December', () => {
     expect(resolvePresets(['lastMonth'], new Date(2026, 0, 10))[0]).toMatchObject({ start: '2025-12-01', end: '2025-12-31' });
     expect(resolvePresets(['lastWeek'], new Date(2026, 0, 2))[0]).toMatchObject({ start: '2025-12-21', end: '2025-12-27' });
+  });
+
+  it('months back clamp to the shorter month: the 3 months ending May 31 start on March 1', () => {
+    expect(resolvePresets(['last3Months'], new Date(2026, 4, 31))[0]).toMatchObject({ start: '2026-03-01', end: '2026-05-31' });
+    expect(resolvePresets(['last6Months'], new Date(2026, 7, 31))[0]).toMatchObject({ start: '2026-03-01', end: '2026-08-31' });
   });
 
   it('a Sunday starts its own week', () => {

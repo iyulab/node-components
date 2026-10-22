@@ -5,6 +5,7 @@ import { addDays, addMonths, daysInMonth, parseISODate, toISODate } from "../cal
 export type DateRangePresetName =
   | 'today' | 'yesterday'
   | 'last7Days' | 'last30Days'
+  | 'last3Months' | 'last6Months'
   | 'thisWeek' | 'lastWeek'
   | 'thisMonth' | 'lastMonth'
   | 'thisYear';
@@ -34,6 +35,14 @@ type Builtin = { key: LocaleMessageKey; range: (today: Date) => [Date, Date] };
 // Weeks start on Sunday — the same convention the calendar grid draws.
 const startOfWeek = (d: Date) => addDays(d, -d.getDay());
 const endOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), daysInMonth(d));
+/**
+ * The first day of the `n` months ending `d`: the same day `n` months back, plus one. A day the earlier month lacks
+ * clamps to its last day — the 3 months ending May 31 start on March 1, not on a "February 31".
+ */
+const monthsEnding = (d: Date, n: number) => {
+  const back = addMonths(d, -n);
+  return addDays(new Date(back.getFullYear(), back.getMonth(), Math.min(d.getDate(), daysInMonth(back))), 1);
+};
 
 /** Built-in ranges as pure functions of "today" (a local calendar day). Both ends are inclusive. */
 export const BUILTIN_PRESETS: Record<DateRangePresetName, Builtin> = {
@@ -41,6 +50,8 @@ export const BUILTIN_PRESETS: Record<DateRangePresetName, Builtin> = {
   yesterday: { key: 'yesterday', range: t => [addDays(t, -1), addDays(t, -1)] },
   last7Days: { key: 'last7Days', range: t => [addDays(t, -6), t] },
   last30Days: { key: 'last30Days', range: t => [addDays(t, -29), t] },
+  last3Months: { key: 'last3Months', range: t => [monthsEnding(t, 3), t] },
+  last6Months: { key: 'last6Months', range: t => [monthsEnding(t, 6), t] },
   thisWeek: { key: 'thisWeek', range: t => [startOfWeek(t), addDays(startOfWeek(t), 6)] },
   lastWeek: { key: 'lastWeek', range: t => [addDays(startOfWeek(t), -7), addDays(startOfWeek(t), -1)] },
   thisMonth: { key: 'thisMonth', range: t => [addMonths(t, 0), endOfMonth(t)] },

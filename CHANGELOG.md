@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Added
+
+- `u-date-range-picker`: built-in presets `last3Months` and `last6Months` — the months ending today, the quick periods a
+  business list offers beside «last 7 days». A day the earlier month lacks clamps to its end (the 3 months ending May 31
+  start on March 1). Labels in all 14 locale tables.
+
 ### Fixed
 
 - `u-radio` with a `label` no longer logs «u-field label="…" has no form control» in development. The group was named

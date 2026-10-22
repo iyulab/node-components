@@ -77,7 +77,7 @@ const dayPart = (half: string) => splitDateTime(half).day;
  * `change` and closes the calendar. Escape while an anchor is set drops it; Escape again closes.
  *
  * `presets` adds a list of quick ranges beside the calendar — built-in names (`today`, `yesterday`,
- * `last7Days`, `last30Days`, `thisWeek`, `lastWeek`, `thisMonth`, `lastMonth`, `thisYear`, which
+ * `last7Days`, `last30Days`, `last3Months`, `last6Months`, `thisWeek`, `lastWeek`, `thisMonth`, `lastMonth`, `thisYear`, which
  * can be written as a space-separated attribute) and app-defined `{ label, range }` objects, in the
  * order given. Picking one sets the range at once, fires `change` and closes the calendar. A preset
  * whose range reaches outside `min`/`max` is disabled; the one equal to the current range is

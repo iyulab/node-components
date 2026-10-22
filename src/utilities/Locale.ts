@@ -51,6 +51,8 @@ export type LocaleMessageKey =
   | 'yesterday'
   | 'last7Days'
   | 'last30Days'
+  | 'last3Months'
+  | 'last6Months'
   | 'thisWeek'
   | 'lastWeek'
   | 'thisMonth'

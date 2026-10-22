@@ -99,6 +99,8 @@ so "Last 7 days" is always the last seven days.
 | `yesterday` | yesterday |
 | `last7Days` | the 7 days ending today |
 | `last30Days` | the 30 days ending today |
+| `last3Months` | the 3 months ending today (from the day after the same date 3 months back; a day the earlier month lacks clamps to its end) |
+| `last6Months` | the 6 months ending today, counted the same way |
 | `thisWeek` | Sunday–Saturday of this week |
 | `lastWeek` | Sunday–Saturday of last week |
 | `thisMonth` | the whole of this month |
