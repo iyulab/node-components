@@ -8,6 +8,8 @@ import '@iyulab/components/dist/components/tooltip/UTooltip.js';
 
 Hover/focus tooltip anchored to a `for` target. Opens and closes automatically; Escape closes an open tooltip without moving the pointer or focus (WCAG 1.4.13) — inside a dialog, the first Escape closes the tooltip and the next one the dialog.
 
+Assistive technology: the host gets `role="tooltip"` and an `id`, and each `for` target gets that `id` appended to its `aria-describedby` (an existing value is kept; an author's own `id`/`role` is never overwritten). A screen reader therefore reads the tooltip text as the target's description. An `interactive` tooltip (one that holds links or controls) is not an APG tooltip — it gets the description link but no `role="tooltip"`; for content a user must operate, prefer a non-modal dialog or a toggletip.
+
 ```html
 <u-button id="save-btn">Save</u-button>
 <u-tooltip for="#save-btn" placement="top">

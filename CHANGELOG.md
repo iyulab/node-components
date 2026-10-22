@@ -12,6 +12,10 @@
   that stays the job of blur and submit.
 - `u-input type="number"`: the stepper (buttons, ArrowUp/ArrowDown) finds the neighbouring step with the same exact
   comparison, so it no longer stalls on a small step with a large quotient (`49.699999` with `step="0.000001"`).
+- `u-tooltip`: the tooltip text now reaches assistive technology. The host gets `role="tooltip"` and an `id`, and each target gets
+  that `id` appended to `aria-describedby` (existing values are kept, an author's own `id`/`role` is left alone, and the link is
+  withdrawn when the tooltip leaves or `for` changes). An `interactive` tooltip keeps the description link but gets no
+  `role="tooltip"`, since content a user operates is not a tooltip in the WAI-ARIA pattern.
 - `IconRegistry` no longer logs an error for an icon request cut off by leaving the page (`pagehide` / `beforeunload`, or an
   `AbortError`). Any other transient failure is still retried on the next lookup, and is now reported with `console.warn`
   rather than `console.error`.

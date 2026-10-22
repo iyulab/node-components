@@ -4,7 +4,10 @@ import { customElement, property } from "lit/decorators.js";
 import { UFloatingElement } from "../UFloatingElement.js";
 import { OverlayManager } from "../../utilities/OverlayManager.js";
 import { styles } from "./UTooltip.styles.js";
+import { HostAria } from '../../utilities/hostAria.js';
 import type { VirtualElement } from '@floating-ui/dom';
+
+let nextTooltipId = 0;
 
 /**
  * 특정 요소에 툴팁을 표시하는 컴포넌트입니다.
@@ -28,10 +31,54 @@ export class UTooltip extends UFloatingElement {
 
   private isEmpty: boolean = true;
 
+  private readonly aria = new HostAria(this);
+  /** 우리가 `id` 를 준 경우 — 떠날 때 걷는다(작성자가 준 `id` 는 건드리지 않는다). */
+  private givenId: string | null = null;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.syncAria();
+    if (this.anchors) this.describe(this.anchors, true);
+  }
+
   disconnectedCallback(): void {
     OverlayManager.closeLayer(this);
-    if (this.anchors) this.unbind(this.anchors);
+    if (this.anchors) {
+      this.describe(this.anchors, false);
+      this.unbind(this.anchors);
+    }
+    if (this.givenId && this.id === this.givenId) this.removeAttribute('id');
+    this.givenId = null;
     super.disconnectedCallback();
+  }
+
+  /**
+   * 열린 툴팁의 글이 보조기술에 닿으려면 호스트가 `tooltip` 역할을 갖고 대상이 `aria-describedby` 로 그것을 가리켜야 한다
+   * (WAI-ARIA APG 툴팁 패턴). 링크 등을 담는 `interactive` 툴팁은 APG 상 툴팁이 아니라(비모달 대화상자·토글팁 쪽) 역할은
+   * 덧씌우지 않고 설명 연결만 둔다.
+   */
+  private syncAria(): void {
+    this.aria.set('role', this.interactive ? null : 'tooltip');
+  }
+
+  /** 대상의 `aria-describedby` 에 이 툴팁의 id 를 더하거나(덧붙임) 걷는다 — 대상에 이미 있는 값은 보존한다. */
+  private describe(anchors: HTMLElement[], on: boolean): void {
+    if (on && !this.id) {
+      this.id = `u-tooltip-${++nextTooltipId}`;
+      this.givenId = this.id;
+    }
+    const id = this.id;
+    if (!id) return;
+    for (const anchor of anchors) {
+      const tokens = (anchor.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean);
+      const has = tokens.includes(id);
+      if (on && !has) anchor.setAttribute('aria-describedby', [...tokens, id].join(' '));
+      if (!on && has) {
+        const rest = tokens.filter((t) => t !== id);
+        if (rest.length) anchor.setAttribute('aria-describedby', rest.join(' '));
+        else anchor.removeAttribute('aria-describedby');
+      }
+    }
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -48,9 +95,11 @@ export class UTooltip extends UFloatingElement {
       const oldAnchors = changedProperties.get('anchors') as HTMLElement[] | undefined;
       const newAnchors = this.anchors as HTMLElement[] | undefined;
 
-      if (oldAnchors) this.unbind(oldAnchors);
-      if (newAnchors) this.bind(newAnchors);
+      if (oldAnchors) { this.describe(oldAnchors, false); this.unbind(oldAnchors); }
+      if (newAnchors) { this.describe(newAnchors, true); this.bind(newAnchors); }
     }
+
+    if (changedProperties.has('interactive')) this.syncAria();
 
     if (changedProperties.has('offset') || changedProperties.has('interactive')) {
       if (this.interactive) {
