@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators.js";
 import { UElement } from "../UElement.js";
 import { HostAria } from "../../utilities/hostAria.js";
 import { styles } from "./UAutoScroll.styles.js";
+import { UNATTENDED_IDLE_MS } from "../../utilities/unattended.js";
 
 /**
  * 넘치는 내용을 스스로 천천히 굴리는 상자 — 아무도 손대지 않는 화면(벽걸이 보드, 키오스크)에서 한 화면보다 긴 목록을
@@ -13,6 +14,9 @@ import { styles } from "./UAutoScroll.styles.js";
  * 움직이지 않는다. 사람이 손을 대면 비킨다 — 포인터가 위에 있거나 초점이 안에 있으면 멈추고, 직접 굴리는 것은 언제나 된다.
  * 동작 줄이기(`prefers-reduced-motion: reduce`)를 켠 사용자에게는 움직이지 않는다(WCAG 2.2.2 — 손으로 굴리면 된다).
  * 화면에서 사라졌다가 다시 보이면(캐러셀이 그 장으로 돌아오면) 맨 위부터 다시 시작한다.
+ *
+ * `unattended` 는 아무도 앞에서 조작하지 않는 화면이다 — 포인터가 위에 있어도 멈추지 않고(전체 화면이면 커서가 늘 위에 있다),
+ * 눌러서 들어온 초점으로도 멈추지 않는다. 키보드 초점으로 멈춘 것은 `resume-delay`(기본 30초) 동안 손대지 않으면 다시 움직인다. `paused` 는 그대로다.
  *
  * 넘치는 동안 호스트는 키보드로 닿는 스크롤 영역이다(`tabindex="0"` — 소비자가 단 값은 덮지 않는다).
  *
@@ -33,6 +37,13 @@ export class UAutoScroll extends UElement {
   @property({ type: Number }) pause = 3000;
   /** 굴리지 않는다 — 손으로만 굴린다 */
   @property({ type: Boolean, reflect: true }) paused = false;
+  /**
+   * 아무도 조작하지 않는 화면 — 포인터가 위에 있거나 눌러서 초점이 들어와도 멈추지 않고, 키보드 초점으로 멈춘 것은 `resume-delay`(기본 30초)
+   * 동안 손대지 않으면 다시 움직인다. `u-carousel` 의 같은 속성과 짝이다.
+   */
+  @property({ type: Boolean, reflect: true }) unattended = false;
+  /** `unattended` 에서 키보드 초점으로 멈춘 굴림이 다시 움직이기까지 손대지 않은 시간 (ms). */
+  @property({ type: Number, attribute: 'resume-delay' }) resumeDelay = UNATTENDED_IDLE_MS;
 
   private readonly aria = new HostAria(this);
   private frame?: number;
@@ -44,6 +55,8 @@ export class UAutoScroll extends UElement {
   private legFrom = 0;
   private hovered = false;
   private focused = false;
+  /** 마지막으로 키 · 포인터를 누른 시각 — `unattended` 의 초점 멈춤이 풀리는 기준. */
+  private lastActivity = 0;
   private visible = false;
   private reducedMotion?: MediaQueryList;
   private intersection?: IntersectionObserver;
@@ -56,6 +69,8 @@ export class UAutoScroll extends UElement {
     this.addEventListener('pointerleave', this.onPointerLeave);
     this.addEventListener('focusin', this.onFocusIn);
     this.addEventListener('focusout', this.onFocusOut);
+    this.addEventListener('keydown', this.onActivity);
+    this.addEventListener('pointerdown', this.onActivity);
     this.intersection = new IntersectionObserver((entries) => {
       const now = entries.some((e) => e.isIntersecting);
       if (now && !this.visible) this.restart();
@@ -76,6 +91,8 @@ export class UAutoScroll extends UElement {
     this.removeEventListener('pointerleave', this.onPointerLeave);
     this.removeEventListener('focusin', this.onFocusIn);
     this.removeEventListener('focusout', this.onFocusOut);
+    this.removeEventListener('keydown', this.onActivity);
+    this.removeEventListener('pointerdown', this.onActivity);
     super.disconnectedCallback();
   }
 
@@ -96,7 +113,10 @@ export class UAutoScroll extends UElement {
   }
 
   private get moving() {
-    return !this.paused && !this.hovered && !this.focused && this.visible && !this.reducedMotion?.matches;
+    const held = this.unattended
+      ? this.focused && performance.now() - this.lastActivity < this.resumeDelay
+      : this.hovered || this.focused;
+    return !this.paused && !held && this.visible && !this.reducedMotion?.matches;
   }
 
   private tick = (time: number) => {
@@ -144,8 +164,15 @@ export class UAutoScroll extends UElement {
   private onPointerLeave = () => {
     this.hovered = false;
   };
-  private onFocusIn = () => {
+  /** `unattended` 에서는 키보드 초점만 멈춘다 — 줄을 눌러 들어온 초점은 아무도 앞에 없는 화면에 남아 굴림을 영영 세운다. */
+  private onFocusIn = (e: FocusEvent) => {
+    const origin = e.composedPath()[0];
+    if (this.unattended && !(origin instanceof Element && origin.matches(':focus-visible'))) return;
     this.focused = true;
+    this.lastActivity = performance.now();
+  };
+  private onActivity = () => {
+    this.lastActivity = performance.now();
   };
   private onFocusOut = (e: FocusEvent) => {
     if (!this.contains(e.relatedTarget as Node | null)) this.focused = false;

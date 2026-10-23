@@ -86,6 +86,65 @@ describe('u-carousel rotation control', () => {
     expect(el.index).toBe(at);
   });
 
+  describe('unattended (벽걸이 화면)', () => {
+    it('🔴포인터가 위에 있어도 넘어간다 — 전체 화면이면 커서가 늘 위에 있다', async () => {
+      const el = await mount('autoplay unattended');
+      await userEvent.hover(el);
+      await el.updateComplete;
+      const at = el.index; // 기준점은 포인터가 올라간 뒤 — 그 전에 넘어간 것을 재면 판별하지 않는다
+      await wait(INTERVAL * 3);
+      expect(el.index).toBeGreaterThan(at);
+    });
+
+    it('NEGATIVE: unattended 가 아니면 포인터가 위에 있는 동안 멈춘다', async () => {
+      const el = await mount();
+      await userEvent.hover(el);
+      await el.updateComplete;
+      const at = el.index;
+      await wait(INTERVAL * 3);
+      expect(el.index).toBe(at);
+    });
+
+    it('🔴키보드 초점으로 멈춘 회전은 resume-delay 동안 손대지 않으면 다시 돈다', async () => {
+      const el = await mount('autoplay unattended resume-delay="300"');
+      (document.getElementById('before') as HTMLElement).focus();
+      await userEvent.tab();
+      await el.updateComplete;
+      expect(button(el)!.getAttribute('aria-label')).toBe('Start automatic slide show');
+      const at = el.index;
+      await wait(150);
+      expect(el.index).toBe(at);
+      await wait(400);
+      await el.updateComplete;
+      expect(button(el)!.getAttribute('aria-label')).toBe('Stop automatic slide show');
+      await wait(INTERVAL * 3);
+      expect(el.index).toBeGreaterThan(at);
+    });
+
+    it('정지 버튼으로 멈춘 것은 unattended 에서도 저절로 다시 돌지 않는다(2.2.2)', async () => {
+      const el = await mount('autoplay unattended resume-delay="200"');
+      await userEvent.click(button(el)!);
+      await el.updateComplete;
+      const at = el.index;
+      await wait(500);
+      expect(el.index).toBe(at);
+      expect(button(el)!.getAttribute('aria-label')).toBe('Start automatic slide show');
+    });
+
+    it('startRotation() · stopRotation() 이 회전을 다시 시작하고 멈춘다', async () => {
+      const el = await mount();
+      el.stopRotation();
+      await el.updateComplete;
+      const at = el.index;
+      await wait(INTERVAL * 3);
+      expect(el.index).toBe(at);
+      el.startRotation();
+      await el.updateComplete;
+      await wait(INTERVAL * 3);
+      expect(el.index).toBeGreaterThan(at);
+    });
+  });
+
   describe('prefers-reduced-motion: reduce', () => {
     /** 동작 줄이기 질의만 가짜로 답한다 — 다른 질의는 브라우저에 맡긴다. */
     function fakeReducedMotion(initial: boolean) {

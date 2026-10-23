@@ -8,6 +8,7 @@ import '../icon/UIcon.js';
 import { UElement } from "../UElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import { HostAria } from "../../utilities/hostAria.js";
+import { UNATTENDED_IDLE_MS } from "../../utilities/unattended.js";
 import { styles } from "./UCarousel.styles.js";
 
 /**
@@ -19,6 +20,10 @@ import { styles } from "./UCarousel.styles.js";
  * 있는 동안은 잠시 멈추고, 키보드 초점이 안으로 들어오면 사용자가 다시 시작할 때까지 멈춘다
  * (WAI-ARIA APG Carousel · WCAG 2.2.2). 사용자가 동작 줄이기(`prefers-reduced-motion: reduce`)를
  * 켜 두었으면 정지 상태로 시작하고(시작 버튼으로 켤 수 있다), 보는 중에 그 설정이 켜지면 멈춘다.
+ *
+ * `unattended` 는 아무도 앞에서 조작하지 않는 화면(벽걸이 보드 · 로비 · 키오스크)이다 — 전체 화면이면 마우스 커서가 늘 그 위에
+ * 있으므로 포인터로는 멈추지 않고, 키보드 초점으로 멈춘 회전은 `resume-delay`(기본 30초) 동안 손대지 않으면 다시 돈다. 정지 버튼으로 멈춘 것은
+ * 그대로 멈춰 있다(멈출 수단은 남는다 — 2.2.2).
  *
  * 보조기기에는 WAI-ARIA APG Carousel 구조로 나간다 — 호스트는 «캐러셀» 역할 설명을 단 영역(`region`), 각 슬라이드는
  * «슬라이드» 역할 설명과 «n / 전체» 이름을 단 그룹이다. 캐러셀의 이름은 호스트의 `aria-label` 로 준다(영역은 이름이
@@ -56,6 +61,13 @@ export class UCarousel extends UElement {
   @property({ type: String, reflect: true, attribute: 'pagination-style' }) paginationStyle: 'dots' | 'labels' = 'dots';
   /** 드래그로 슬라이드 이동 */
   @property({ type: Boolean, reflect: true }) draggable = false;
+  /**
+   * 아무도 조작하지 않는 화면 — 포인터가 위에 있어도 멈추지 않고, 키보드 초점으로 멈춘 회전은 `resume-delay`(기본 30초) 동안 손대지
+   * 않으면 다시 돈다. 정지 버튼으로 멈춘 것은 그대로다. `u-auto-scroll` 의 같은 속성과 짝이다.
+   */
+  @property({ type: Boolean, reflect: true }) unattended = false;
+  /** `unattended` 에서 키보드 초점으로 멈춘 회전이 다시 돌기까지 손대지 않은 시간 (ms). */
+  @property({ type: Number, attribute: 'resume-delay' }) resumeDelay = UNATTENDED_IDLE_MS;
   /** 한 화면에 표시할 슬라이드 수 */
   @property({ type: Number, attribute: 'slides-per-view' }) slidesPerView = 1;
   /** 한 번에 이동할 슬라이드 수 */
@@ -70,8 +82,11 @@ export class UCarousel extends UElement {
   @state() private dragOffset = 0;
   /** 사용자가 회전을 멈췄다(정지 버튼, 또는 키보드 초점 진입). 다시 시작할 때까지 유지된다. */
   @state() private rotationStopped = false;
-  /** 포인터가 캐러셀 위에 있다 — 그동안만 잠시 멈춘다. */
+  /** 포인터가 캐러셀 위에 있다 — 그동안만 잠시 멈춘다(`unattended` 가 아닐 때). */
   @state() private hovered = false;
+  /** 왜 멈췄는가 — `unattended` 에서 초점으로 멈춘 것만 손대지 않으면 다시 돈다. */
+  private stopReason?: 'user' | 'focus' | 'motion';
+  private idleTimer?: number;
 
   private autoplayTimer?: number;
   /** 호스트 역할(region · «캐러셀» 역할 설명)을 속성으로 — 소비자의 `role`·`aria-roledescription` 이 있으면 그것이 이긴다. */
@@ -87,7 +102,7 @@ export class UCarousel extends UElement {
 
   /** 지금 자동으로 넘기고 있는가. */
   private get rotating() {
-    return this.autoplay && !this.rotationStopped && !this.hovered;
+    return this.autoplay && !this.rotationStopped && (this.unattended || !this.hovered);
   }
 
   private get showDots() {
@@ -121,6 +136,8 @@ export class UCarousel extends UElement {
     this.addEventListener('focusin', this.handleFocusIn);
     this.addEventListener('pointerenter', this.handlePointerEnter);
     this.addEventListener('pointerleave', this.handlePointerLeave);
+    this.addEventListener('keydown', this.handleActivity);
+    this.addEventListener('pointerdown', this.handleActivity);
     this.reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     this.reducedMotion?.addEventListener('change', this.handleReducedMotionChange);
     if (this.rotating) this.startAutoplay();
@@ -133,6 +150,9 @@ export class UCarousel extends UElement {
     this.removeEventListener('focusin', this.handleFocusIn);
     this.removeEventListener('pointerenter', this.handlePointerEnter);
     this.removeEventListener('pointerleave', this.handlePointerLeave);
+    this.removeEventListener('keydown', this.handleActivity);
+    this.removeEventListener('pointerdown', this.handleActivity);
+    this.clearIdle();
     super.disconnectedCallback();
   }
 
@@ -143,6 +163,7 @@ export class UCarousel extends UElement {
     // 정지 상태로 시작한다(움직임은 사용자가 시작 버튼으로 고른다).
     if (changedProperties.has('autoplay') && this.autoplay) {
       this.rotationStopped = !!this.reducedMotion?.matches;
+      this.stopReason = this.rotationStopped ? 'motion' : undefined;
     }
 
     if (changedProperties.has('slidesPerView')) {
@@ -386,22 +407,65 @@ export class UCarousel extends UElement {
   };
 
   private toggleRotation = () => {
-    this.rotationStopped = !this.rotationStopped;
+    if (this.rotationStopped) this.startRotation();
+    else this.stopRotation();
+  };
+
+  /** 자동 넘김을 다시 시작한다 — 정지 버튼 · 초점 · 동작 줄이기로 멈춘 것 모두(`autoplay` 일 때만 돈다). */
+  public startRotation(): void {
+    this.clearIdle();
+    this.stopReason = undefined;
+    this.rotationStopped = false;
+  }
+
+  /** 자동 넘김을 멈춘다 — 정지 버튼과 같다(`unattended` 에서도 저절로 다시 돌지 않는다). */
+  public stopRotation(): void {
+    this.clearIdle();
+    this.stopReason = 'user';
+    this.rotationStopped = true;
+  }
+
+  /** `unattended` 에서 초점으로 멈췄으면, 손대지 않고 `resumeDelay` 가 지나면 다시 돈다 — 키 · 포인터를 누를 때마다 다시 잰다. */
+  private scheduleIdleResume() {
+    this.clearIdle();
+    if (!this.unattended || this.stopReason !== 'focus') return;
+    this.idleTimer = window.setTimeout(() => {
+      this.idleTimer = undefined;
+      if (this.unattended && this.stopReason === 'focus') {
+        this.stopReason = undefined;
+        this.rotationStopped = false;
+      }
+    }, this.resumeDelay);
+  }
+
+  private clearIdle() {
+    if (this.idleTimer !== undefined) window.clearTimeout(this.idleTimer);
+    this.idleTimer = undefined;
+  }
+
+  private handleActivity = () => {
+    if (this.idleTimer !== undefined) this.scheduleIdleResume();
   };
 
   /** 키보드 초점이 들어오면 멈춘다 — 포인터로 누른 초점은 멈추지 않는다(누른 버튼이 정지 버튼이면 그 클릭이 결정한다). */
   private handleFocusIn = (e: FocusEvent) => {
     if (!this.autoplay) return;
     const origin = e.composedPath()[0];
-    if (origin instanceof Element && origin.matches(':focus-visible')) {
+    if (origin instanceof Element && origin.matches(':focus-visible') && this.stopReason !== 'user') {
       this.rotationStopped = true;
+      this.stopReason = 'focus';
+      this.scheduleIdleResume();
     }
   };
 
   /** 보는 중에 동작 줄이기가 켜지면 멈춘다. 꺼질 때는 다시 시작하지 않는다 — 멈춘 것을 움직이게
    *  하는 것은 사용자의 몫이다. */
   private handleReducedMotionChange = (e: MediaQueryListEvent) => {
-    if (e.matches && this.autoplay) this.rotationStopped = true;
+    if (e.matches && this.autoplay) {
+      this.clearIdle();
+      this.rotationStopped = true;
+      this.stopReason = 'motion';
+    }
   };
 
   private handlePointerEnter = (e: PointerEvent) => {

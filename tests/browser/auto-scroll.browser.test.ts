@@ -101,4 +101,36 @@ describe('u-auto-scroll', () => {
       expect(took).toBeGreaterThan(1000);
     }
   });
+
+  describe('unattended (벽걸이 화면)', () => {
+    it('🔴포인터가 위에 있어도, 눌러서 들어온 초점이 있어도 굴린다', async () => {
+      const el = await mount(20, 'speed="600" pause="50" unattended tabindex="0"');
+      await userEvent.click(el);
+      await userEvent.hover(el);
+      await wait(50);
+      const at = el.scrollTop; // 기준점은 포인터 · 초점이 들어온 뒤
+      await wait(300);
+      expect(el.scrollTop).toBeGreaterThan(at);
+    });
+
+    it('NEGATIVE: unattended 가 아니면 포인터가 위에 있는 동안 서 있다', async () => {
+      const el = await mount(20, 'speed="600" pause="50"');
+      await userEvent.hover(el);
+      await wait(50);
+      const at = el.scrollTop;
+      await wait(400);
+      expect(el.scrollTop).toBe(at);
+    });
+
+    it('🔴키보드 초점으로 멈춘 것은 resume-delay 동안 손대지 않으면 다시 움직인다', async () => {
+      const el = await mount(20, 'speed="600" pause="50" unattended resume-delay="300"');
+      (document.getElementById('away') as HTMLElement).focus();
+      await userEvent.tab();
+      expect(document.activeElement).toBe(el);
+      await wait(200);
+      expect(el.scrollTop).toBe(0);
+      await wait(500);
+      expect(el.scrollTop).toBeGreaterThan(0);
+    });
+  });
 });

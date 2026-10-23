@@ -14,6 +14,11 @@
 
 ### Added
 
+- **`unattended` on `u-carousel` and `u-auto-scroll`** — for a wall display, lobby or kiosk screen nobody operates. A
+  full-screen board always has the cursor over it, and a tap leaves focus in it; without it the carousel stopped on
+  that slide and the list stopped scrolling, for good. With `unattended` the pointer and focus from a tap do not stop
+  them, and a stop caused by keyboard focus ends after `resume-delay` (30 s by default) without a key press or a click.
+  The carousel's stop button still stops it (WCAG 2.2.2). `u-carousel` also gets `startRotation()` / `stopRotation()`.
 - **Type-ahead on a non-searchable `u-select`** — a letter on the closed trigger picks the next option whose text
   starts with it (`change` fires), the same letter again cycles, and letters typed within half a second form a word;
   on an open list the letters move the focus instead. This is what a native `<select>` does.
