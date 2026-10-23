@@ -23,6 +23,7 @@ export type DialogPlacement =
  * @csspart panel - 다이얼로그의 패널 요소
  * @csspart header - 다이얼로그의 헤더 요소
  * @csspart body - 다이얼로그의 본문 요소
+ * @csspart footer - 푸터 영역(여백 · 구분선) — 꽂힌 것이 없으면 그리지 않는다
  * @csspart close-btn - 닫기 버튼 요소
  */
 @customElement('u-dialog')
@@ -37,6 +38,7 @@ export class UDialog extends UOverlayElement {
   @property({ type: Number, reflect: true }) offset = 0;
 
   @state() private hasHeader = false;
+  @state() private hasFooter = false;
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
@@ -65,10 +67,16 @@ export class UDialog extends UOverlayElement {
           <div class="body" part="body">
             <slot></slot>
           </div>
-          <slot name="footer"></slot>
+          <div class="footer" part="footer" ?hidden=${!this.hasFooter}>
+            <slot name="footer" @slotchange=${this.handleFooterSlotChange}></slot>
+          </div>
         </div>
       </div>
     `;
+  }
+
+  private handleFooterSlotChange(e: Event) {
+    this.hasFooter = (e.target as HTMLSlotElement).assignedNodes({ flatten: true }).length > 0;
   }
 
   private handleHeaderSlotChange(e: Event) {

@@ -97,13 +97,20 @@ export const styles = css`
     overflow: auto;
   }
 
-  ::slotted([slot="footer"]) {
+  /* 바닥 영역의 여백 · 구분선은 섀도 안 .footer 가 그린다 — ::slotted 에 둔 여백 · 테두리는 문서의 전역 리셋(Tailwind preflight 류)에
+     진다(캡슐화 문맥이 다르면 문서 쪽 normal 선언이 이긴다). 꽂힌 요소의 배치(flex · 간격)는 리셋이 건드리지 않아 그대로 둔다. */
+  .footer {
     flex-shrink: 0;
+    padding: var(--u-space-md, 12px) var(--u-space-lg, 16px);
+    border-top: 1px solid var(--u-border-color, #E0E0E0);
+  }
+  .footer[hidden] {
+    display: none;
+  }
+  ::slotted([slot="footer"]) {
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: var(--u-space-sm, 8px);
-    padding: var(--u-space-md, 12px) var(--u-space-lg, 16px);
-    border-top: 1px solid var(--u-border-color, #E0E0E0);
   }
 `;

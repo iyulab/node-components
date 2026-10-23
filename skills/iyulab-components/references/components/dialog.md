@@ -94,4 +94,5 @@ message that needs a response.
 | `panel` | The dialog panel |
 | `header` | Header area |
 | `body` | Body area |
+| `footer` | Footer area around the `footer` slot — its padding and top divider (not drawn when the slot is empty). They live here, not on the slotted element, so a document-wide reset such as Tailwind's preflight cannot strip them |
 | `close-btn` | Close button |

@@ -19,6 +19,7 @@ export type DrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
  * @csspart panel - 드로어 패널 전체
  * @csspart header - 헤더 영역
  * @csspart body - 본문 영역
+ * @csspart footer - 푸터 영역(여백 · 구분선) — 꽂힌 것이 없으면 그리지 않는다
  * @csspart close-btn - 닫기 버튼
  *
  * @cssprop --drawer-size - 드로어 패널의 슬라이드 축 방향 크기 (기본값: 좌우 28rem / 상하 16rem).
@@ -35,6 +36,7 @@ export class UDrawer extends UOverlayElement {
   @property({ type: String, reflect: true }) placement: DrawerPlacement = 'left';
 
   @state() private hasHeader = false;
+  @state() private hasFooter = false;
 
   render() {
     return html`
@@ -53,9 +55,15 @@ export class UDrawer extends UOverlayElement {
         <div class="body" part="body">
           <slot></slot>
         </div>
-        <slot name="footer"></slot>
+        <div class="footer" part="footer" ?hidden=${!this.hasFooter}>
+          <slot name="footer" @slotchange=${this.handleFooterSlotChange}></slot>
+        </div>
       </div>
     `;
+  }
+
+  private handleFooterSlotChange(e: Event) {
+    this.hasFooter = (e.target as HTMLSlotElement).assignedNodes({ flatten: true }).length > 0;
   }
 
   private handleHeaderSlotChange(e: Event) {

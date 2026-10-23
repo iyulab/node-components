@@ -12,6 +12,14 @@
   `::part(search-input)` is that input, and `focus()` focuses it. Closing the list clears the query (a `search` event
   with an empty query follows), so the trigger shows the value again. `Escape` keeps the focus in the input.
 
+### Fixed
+
+- **`u-dialog` and `u-drawer` footers keep their padding and divider under a document-wide reset.** They were set on
+  the slotted footer element, and document rules beat `::slotted()` rules whatever their specificity, so Tailwind's
+  preflight (`* { padding: 0; border: 0 solid }`) stripped them. A new `footer` part inside the shadow root draws
+  them now; the slotted element keeps its flex row and gap. Padding or a border you set on the slotted element now
+  adds inside the footer.
+
 ### Added
 
 - **`unattended` on `u-carousel` and `u-auto-scroll`** — for a wall display, lobby or kiosk screen nobody operates. A
