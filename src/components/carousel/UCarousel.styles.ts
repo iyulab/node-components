@@ -132,6 +132,73 @@ export const styles = css`
   .dot:hover {
     background-color: var(--u-neutral-200, #EEEEEE);
   }
+  /* ── Labels (pagination-style="labels") — 슬라이드 아래 줄: 이름과 진행 막대 ── */
+  :host([pagination-style="labels"]) {
+    display: flex;
+    flex-direction: column;
+  }
+  :host([pagination-style="labels"]) .slides-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  :host([pagination-style="labels"]) .indicator {
+    position: static;
+    transform: none;
+    display: flex;
+    align-items: end;
+    gap: var(--u-space-lg, 16px);
+    padding-top: var(--u-space-lg, 16px);
+  }
+  .tab {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--u-space-sm, 8px);
+    padding: var(--u-space-xs, 6px) 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: var(--u-text-label-size, 13px);
+    text-align: start;
+    color: var(--u-txt-color-weak, #616161);
+    cursor: pointer;
+  }
+  .tab[active] {
+    font-weight: 700;
+    color: var(--u-txt-color, #212121);
+  }
+  .tab-label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .tab-track {
+    display: block;
+    height: 6px;
+    border-radius: var(--u-radius-pill, 9999px);
+    background: var(--u-border-color, #E0E0E0);
+    overflow: hidden;
+  }
+  .tab-fill {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: currentColor;
+  }
+  .tab-fill[full] {
+    width: 100%;
+  }
+  .tab-fill.running {
+    animation-name: u-carousel-progress;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+  @keyframes u-carousel-progress {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
   .dot[active] {
     --_dot-w: 24px;
     /* 안쪽 모서리가 5px 이 되도록 테두리 두께만큼 바깥 반지름을 키운다(축마다). */

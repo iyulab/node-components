@@ -34,6 +34,23 @@ position ("2 of 5"). Name the carousel with `aria-label` on the host — a regio
 landmark. A `role`, `aria-roledescription` or `aria-label` you put on a slide is kept; only the empty
 ones are filled.
 
+### A rotating wall display — `pagination-style="labels"`
+
+For a screen read from across a room, the dots are not enough: the viewer has to see which page this is, what comes
+next and when it changes. `labels` draws a row under the slides (never over them — it would cover a list's last
+row): each tab is named by its slide's `aria-label` (the position when there is none), the passed tabs are full, and
+the current tab fills over `autoplay-interval` while the carousel rotates. When rotation stops, the fill stops too.
+
+```html
+<u-carousel autoplay loop pagination pagination-style="labels" autoplay-interval="20000" aria-label="Floor board">
+  <section aria-label="Late">…</section>
+  <section aria-label="Stages">…</section>
+  <section aria-label="Batches">…</section>
+</u-carousel>
+```
+
+Give the carousel a height (`flex: 1` in a full-screen column, or a fixed height) — the row takes its share of it.
+
 ---
 
 ## Slots
@@ -51,6 +68,7 @@ ones are filled.
 | `loop` | `boolean` | `false` | Loop from last to first |
 | `navigation` | `boolean` | `false` | Show prev/next buttons |
 | `pagination` | `boolean` | `false` | Show dot pagination |
+| `paginationStyle` | `'dots'\|'labels'` | `'dots'` | `pagination-style` — `labels` puts a row under the slides: each slide's name and a progress bar (see below) |
 | `draggable` | `boolean` | `false` | Drag to navigate |
 | `slidesPerView` | `number` | `1` | Visible slides at once |
 | `slidesPerMove` | `number` | `1` | Slides to advance per step |
@@ -73,5 +91,8 @@ ones are filled.
 | `prev-button` | Previous navigation button |
 | `next-button` | Next navigation button |
 | `indicator` | Pagination indicator wrapper |
-| `dot` | Individual pagination dot |
+| `dot` | Individual pagination dot — with `labels`, one named tab |
+| `dot-label` | A tab's name (`labels` only) |
+| `dot-track` | A tab's progress track (`labels` only) |
+| `dot-progress` | A tab's fill — runs over `autoplay-interval` on the current tab while rotating (`labels` only) |
 | `rotation-button` | Stop/start button (only with `autoplay`, inside the indicator) |

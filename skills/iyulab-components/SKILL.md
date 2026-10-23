@@ -118,7 +118,8 @@ set on the host yourself always wins and is never overwritten.
 ### Layout & Display
 
 - [`u-card`](./references/components/card.md) — Content card with media, header, and footer slots
-- [`u-carousel`](./references/components/carousel.md) — Slide carousel with autoplay, navigation, and pagination
+- [`u-auto-scroll`](./references/components/auto-scroll.md) — A box that scrolls its overflowing content by itself, for a screen nobody touches (wall display, kiosk)
+- [`u-carousel`](./references/components/carousel.md) — Slide carousel with autoplay, navigation, and pagination (dots, or named tabs with progress for a wall display)
 - [`u-split-panel`](./references/components/split-panel.md) — Resizable two-panel layout
 - [`u-panel`](./references/components/panel.md) — General-purpose content panel
 - [`u-expander`](./references/components/expander.md) — Disclosure section; header toggles the body open/closed

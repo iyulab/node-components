@@ -13,6 +13,7 @@ export * from './components/breadcrumb-item/UBreadcrumbItem.js';
 export * from './components/button/UButton.js';
 export * from './components/button-group/UButtonGroup.js';
 export * from './components/card/UCard.js';
+export * from './components/auto-scroll/UAutoScroll.js';
 export * from './components/carousel/UCarousel.js';
 export * from './components/checkbox/UCheckbox.js';
 export * from './components/chip/UChip.js';

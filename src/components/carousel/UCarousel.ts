@@ -1,6 +1,7 @@
 import { html, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { keyed } from "lit/directives/keyed.js";
 import '../button/UButton.js';
 import '../icon/UIcon.js';
 
@@ -27,7 +28,10 @@ import { styles } from "./UCarousel.styles.js";
  * @csspart prev-button - 이전 버튼
  * @csspart next-button - 다음 버튼
  * @csspart indicator - 페이지네이션 컨테이너
- * @csspart dot - 페이지네이션 점
+ * @csspart dot - 페이지네이션 점 (`pagination-style="labels"` 이면 이름 칸)
+ * @csspart dot-label - 이름 칸의 글자 (`labels` 일 때만)
+ * @csspart dot-track - 이름 칸의 진행 막대 자리 (`labels` 일 때만)
+ * @csspart dot-progress - 진행 막대의 채움 — 넘기는 동안 현재 칸이 간격만큼 차오른다 (`labels` 일 때만)
  * @csspart rotation-button - 자동 넘김 정지/시작 버튼 (`autoplay` 일 때만, 인디케이터 안)
  */
 @customElement('u-carousel')
@@ -44,6 +48,12 @@ export class UCarousel extends UElement {
   @property({ type: Boolean, reflect: true }) navigation = false;
   /** 페이지 페이지네이션 표시 */
   @property({ type: Boolean, reflect: true }) pagination = false;
+  /**
+   * 페이지네이션 모양 — `dots`(기본, 슬라이드 위에 겹친 점) · `labels`(슬라이드 아래 줄에 각 슬라이드의 이름과 진행 막대).
+   * `labels` 는 벽걸이 화면처럼 «지금 어느 장이고 다음은 무엇이며 언제 넘어가는가» 를 멀리서 읽어야 할 때다. 이름은 슬라이드에
+   * 단 `aria-label` 이고(없으면 순번), 넘기는 동안 현재 칸의 막대가 `autoplay-interval` 만큼 차오른다.
+   */
+  @property({ type: String, reflect: true, attribute: 'pagination-style' }) paginationStyle: 'dots' | 'labels' = 'dots';
   /** 드래그로 슬라이드 이동 */
   @property({ type: Boolean, reflect: true }) draggable = false;
   /** 한 화면에 표시할 슬라이드 수 */
@@ -204,7 +214,7 @@ export class UCarousel extends UElement {
             <u-icon lib="internal" name=${this.rotationStopped ? 'player-play-fill' : 'player-pause-fill'}></u-icon>
           </button>
         ` : nothing}
-        ${!this.showDots ? nothing : Array.from({ length: this.pageCount }, (_, i) => html`
+        ${!this.showDots ? nothing : this.paginationStyle === 'labels' ? this.renderLabels() : Array.from({ length: this.pageCount }, (_, i) => html`
           <button part="dot" class="dot"
             aria-label=${Locale.getValue('goToSlide', { n: i + 1 })}
             aria-current=${i === this.currentPage ? 'true' : 'false'}
@@ -214,6 +224,34 @@ export class UCarousel extends UElement {
         `)}
       </div>
     `;
+  }
+
+  /** 이름 칸 — 지나온 칸은 찬 막대, 현재 칸은 넘기는 동안 간격만큼 차오르는 막대(멈추면 빈 막대). */
+  private renderLabels() {
+    const current = this.currentPage;
+    return Array.from({ length: this.pageCount }, (_, i) => {
+      const fill = i === current && this.rotating
+        // 장이 바뀌거나 다시 넘기기 시작하면 새 요소로 — 애니메이션이 처음부터 타이머와 함께 돈다.
+        ? keyed(`${this.index}`, html`<span part="dot-progress" class="tab-fill running"
+            style="animation-duration: ${this.autoplayInterval}ms"></span>`)
+        : html`<span part="dot-progress" class="tab-fill" ?full=${i < current}></span>`;
+      return html`
+        <button part="dot" class="tab"
+          aria-current=${i === current ? 'true' : 'false'}
+          ?active=${i === current}
+          @click=${() => this.goTo(Math.min(i * this.perMove, this.maxIndex))}>
+          <span part="dot-label" class="tab-label">${this.pageLabel(i)}</span>
+          <span part="dot-track" class="tab-track">${fill}</span>
+        </button>
+      `;
+    });
+  }
+
+  /** 한 칸의 이름 — 그 칸 첫 슬라이드에 소비자가 단 `aria-label`, 없으면 순번. */
+  private pageLabel(page: number): string {
+    const slide = this.slides[Math.min(page * this.perMove, this.maxIndex)];
+    const ours = slide ? this.ownedSlideAttrs.get(slide)?.includes('aria-label') : true;
+    return (!ours && slide?.getAttribute('aria-label')) || String(page + 1);
   }
 
   public prev = () => {

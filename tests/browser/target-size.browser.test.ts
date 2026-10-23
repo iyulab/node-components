@@ -273,7 +273,7 @@ function suffixButtons(tag: string): Element[] {
  * 이것들에 자를 대면 정당한 컴포넌트 전건에 발화한다.
  */
 const NOT_A_TARGET = new Set([
-  'u-avatar', 'u-badge', 'u-breadcrumb', 'u-button-group', 'u-card', 'u-divider',
+  'u-auto-scroll', 'u-avatar', 'u-badge', 'u-breadcrumb', 'u-button-group', 'u-card', 'u-divider',
   'u-field', 'u-form', 'u-icon', 'u-menu', 'u-option-group', 'u-panel', 'u-popover', 'u-progress-bar',
   'u-progress-ring', 'u-skeleton', 'u-spinner', 'u-steps', 'u-tab-nav', 'u-tab-panel', 'u-tag',
   'u-text', 'u-tooltip', 'u-tree',
@@ -981,7 +981,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 28(54상태) · 미판정 0() · 대상아님 24');
+      ).toBe('판정 28(54상태) · 미판정 0() · 대상아님 25');
     });
   });
 

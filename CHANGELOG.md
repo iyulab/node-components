@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`u-auto-scroll`** — a box that scrolls its own overflowing content, slowly, for a screen nobody touches (a wall
+  display, a kiosk): it waits at the top, scrolls to the end, waits, and starts over. It stands still under the
+  pointer or with focus inside, never moves for reduced motion, scrolls by hand as usual, and starts over from the
+  top when it comes back into view (a carousel returning to its slide).
+- **`u-carousel` `pagination-style="labels"`** — a row under the slides naming each slide (its `aria-label`) with a
+  progress bar: passed tabs are full and the current one fills over `autoplay-interval` while rotating. For a
+  rotating wall display read from across the room. Parts `dot-label`, `dot-track`, `dot-progress`.
+
 ## [2.31.1] - 2026-10-23
 
 ### Fixed
