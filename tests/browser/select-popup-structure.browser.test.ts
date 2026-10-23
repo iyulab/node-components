@@ -54,24 +54,25 @@ describe('u-select 팝업 구조', () => {
     expect(el.shadowRoot!.querySelector('u-popover')!.hasAttribute('role')).toBe(false);
   });
 
-  it('🔴검색 가능: 트리거 → dialog(이름 있음) · 그 안에 검색 입력과 listbox · listbox 는 option 만 담는다', async () => {
+  it('🔴검색 가능: 콤보박스는 트리거 안의 편집 입력이다(APG editable combobox) → listbox · 팝업 자체는 역할이 없다', async () => {
     const el = await mount('searchable label="Fruit"');
-    const trigger = el.shadowRoot!.querySelector('[role="combobox"]')!;
-    const dialog = el.shadowRoot!.getElementById(trigger.getAttribute('aria-controls')!)!;
-    expect(trigger.getAttribute('aria-haspopup')).toBe('dialog');
-    expect(dialog.getAttribute('role')).toBe('dialog');
-    expect(dialog.getAttribute('aria-label')).toBe('Fruit');
-
-    const input = dialog.querySelector('.search-input input')!;
-    const listbox = dialog.querySelector('[role="listbox"]')!;
-    expect(input.getAttribute('aria-controls')).toBe(listbox.id);
-    expect(listbox.contains(input), '입력이 listbox 밖에 있어야 한다').toBe(false);
+    const combos = el.shadowRoot!.querySelectorAll('[role="combobox"]');
+    expect(combos.length, '콤보박스는 하나').toBe(1);
+    const input = combos[0] as HTMLInputElement;
+    expect(input.tagName).toBe('INPUT');
+    expect(input.getAttribute('aria-autocomplete')).toBe('list');
+    expect(input.getAttribute('aria-haspopup')).toBe('listbox');
+    expect(input.getAttribute('aria-label')).toBe('Fruit');
+    const listbox = el.shadowRoot!.getElementById(input.getAttribute('aria-controls')!)!;
+    expect(listbox.getAttribute('role')).toBe('listbox');
     expect(flatChildren(listbox).map((c) => c.getAttribute('role'))).toEqual(['option', 'option']);
+    expect(el.shadowRoot!.querySelector('u-popover')!.hasAttribute('role')).toBe(false);
+    expect(el.shadowRoot!.querySelector('[role="dialog"]')).toBeNull();
   });
 
-  it('검색 가능 · 레이블 없음: dialog 이름은 로케일의 «Search»', async () => {
+  it('검색 가능 · 레이블 없음: 입력 이름은 로케일의 «Search»', async () => {
     const el = await mount('searchable');
-    expect(el.shadowRoot!.querySelector('[role="dialog"]')!.getAttribute('aria-label')).toBe('Search');
+    expect(el.shadowRoot!.querySelector('input.search')!.getAttribute('aria-label')).toBe('Search');
   });
 
   it('다중 선택이면 listbox 가 aria-multiselectable 을 밝힌다', async () => {
@@ -87,10 +88,10 @@ describe('u-select 팝업 구조', () => {
     expect(document.activeElement).toBe(el.querySelector('u-option'));
   });
 
-  it('🔴검색 가능: 열면 포커스가 dialog 의 첫 컨트롤인 검색 입력으로 간다 · ↓ 로 첫 옵션 · Esc 로 닫힌다', async () => {
+  it('🔴검색 가능: 열면 포커스는 트리거의 검색 입력에 있다 · ↓ 로 첫 옵션 · Esc 로 닫힌다', async () => {
     const el = await mount('searchable');
     await open(el);
-    const input = el.shadowRoot!.querySelector('.search-input input');
+    const input = el.shadowRoot!.querySelector('input.search');
     expect(el.shadowRoot!.activeElement).toBe(input);
 
     await userEvent.keyboard('{ArrowDown}');

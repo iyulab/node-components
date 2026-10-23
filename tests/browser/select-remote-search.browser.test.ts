@@ -23,7 +23,7 @@ async function mount(attrs: string, options: Array<[string, string]>): Promise<U
 }
 
 async function type(el: USelect, text: string) {
-  const input = el.shadowRoot!.querySelector('.search-input input') as HTMLInputElement;
+  const input = el.shadowRoot!.querySelector('input.search') as HTMLInputElement;
   input.value = text;
   input.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true }));
   await el.updateComplete;

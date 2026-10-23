@@ -170,6 +170,52 @@ export const styles = css`
     inline-size: var(--_chars, auto);
   }
 
+  /* 표시 글자(또는 칩)와 검색 가능일 때의 검색 입력이 함께 서는 자리. */
+  .value-area {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  /* 검색 입력 — 트리거 안의 편집 칸(검색 가능일 때의 콤보박스). 단일 선택이면 표시 글자 위에 겹쳐 서고, 글자를 치는 동안만
+     표시 글자를 가린다. 다중 선택이면 칩 뒤에 이어 선다. */
+  input.search {
+    all: unset;
+    box-sizing: border-box;
+    min-width: 0;
+    line-height: 1.5;
+    min-block-size: 1.5em;
+    color: inherit;
+    cursor: inherit;
+  }
+  :host(:not([multiple])) input.search {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+  }
+  :host([multiple]) input.search {
+    flex: 1 1 2ch;
+  }
+  /* 칩 묶음은 제 폭(칩들의 한 줄)을 지키고 입력이 남는 폭을 쓴다 — 둘이 폭을 나누면(flex: 1 끼리) 칩 묶음이 0 쪽으로 줄어
+     칩이 한 줄에 하나씩 쌓인다. 칩이 넘치면 입력이 다음 줄로 간다. */
+  :host([multiple][searchable]) .chips-content {
+    flex: 0 1 auto;
+  }
+  .container.typing slot[name="display"] {
+    visibility: hidden;
+  }
+  :host([multiple]) .container.typing slot[name="display"] {
+    visibility: visible;
+  }
+  /* 다중 선택에서 글자를 치는 동안 «선택하세요» 는 친 글자와 겹친다 — 자리표시만 가린다. */
+  :host([multiple]) .container.typing .placeholder {
+    display: none;
+  }
+
   .chips-content {
     flex: 1;
     min-width: 0;
@@ -186,6 +232,9 @@ export const styles = css`
   }
 
   .suffix-item {
+    /* 표시 영역(.value-area — 검색 입력을 겹쳐 세우려고 위치를 잡는다)보다 뒤에 칠한다: 지우기의 받는 상자는 음수 여백으로
+       표시 영역 쪽으로 넓어지는데, 위치 잡은 표시 영역이 그 위를 덮으면 그 자리를 누른 것이 지우기에 닿지 않는다. */
+    position: relative;
     margin-left: 0.25em;
     font-size: 1em;
     color: var(--u-icon-color, #616161);
@@ -234,26 +283,6 @@ export const styles = css`
   }
   .no-matches {
     padding: var(--u-field-padding-block, 0.3em) var(--u-field-padding-inline, 0.6em);
-    color: var(--u-txt-color-weak, #616161);
-  }
-
-  .search-input {
-    display: flex;
-    align-items: center;
-    gap: 0.4em;
-    padding: var(--u-field-padding-block, 0.3em) var(--u-field-padding-inline, 0.6em);
-    color: var(--u-txt-color-weak, #616161);
-    border-bottom: 1px solid var(--u-border-color, #E0E0E0);
-  }
-  .search-input input {
-    all: unset;
-    /* 포인터를 받는 것은 이 입력이다 — 글자 크기와 무관하게 24px 이상(WCAG 2.5.8). */
-    min-block-size: max(24px, var(--u-target-size, 0px));
-    flex: 1;
-    min-width: 0;
-    line-height: 1.5;
-  }
-  .search-input input::placeholder {
     color: var(--u-txt-color-weak, #616161);
   }
 

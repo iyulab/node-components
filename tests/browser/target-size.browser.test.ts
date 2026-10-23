@@ -471,19 +471,9 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
     },
     {
       state: '검색',
-      // `searchable` 은 목록 팝오버 맨 위에 검색 입력을 그린다(섀도 안 `.search-input input`). 포인터를 받는 것은
-      // 감싼 `div` 가 아니라 `<input>` 이다 — div 의 여백을 눌러도 입력에 포커스가 가지 않는다. 열림 신호는 목록과 같다.
+      // `searchable` 의 콤보박스는 트리거 안의 편집 입력이다 — 트리거(`.container`) 어디를 눌러도 그 입력에 포커스가 가므로
+      // 타깃은 닫힘 상태와 같은 트리거다.
       html: '<u-select searchable style="width:200px"><u-option value="a">A</u-option><u-option value="b">B</u-option></u-select>',
-      prepare: async (host) => {
-        const root = host.shadowRoot!;
-        (root.querySelector('.container') as HTMLElement).click();
-        const popover = root.querySelector('u-popover')!;
-        for (let i = 0; i < 50 && !popover.hasAttribute('open'); i++) {
-          await new Promise((r) => setTimeout(r, 20));
-        }
-        if (!popover.hasAttribute('open')) throw new Error('목록 팝오버가 열리지 않았다 — 닫힌 입력을 재면 미탐이다');
-      },
-      targets: () => [document.querySelector('u-select')!.shadowRoot!.querySelector('.search-input input')!],
     },
   ],
   'u-file-input': [

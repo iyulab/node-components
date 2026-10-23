@@ -40,7 +40,7 @@ async function openSearchableSelect() {
   await settle(select);
   await userEvent.click(select);
   await sleep(100);
-  const search = select.shadowRoot!.querySelector('.search-input input') as HTMLInputElement;
+  const search = select.shadowRoot!.querySelector('input.search') as HTMLInputElement;
   search.focus();
   const visible = () => [...select.querySelectorAll('u-option')].filter((o) => !o.hidden).map((o) => o.textContent);
   const status = () => select.shadowRoot!.querySelector('.no-matches')!.textContent!.trim();
@@ -113,7 +113,7 @@ describe('u-select searchable — 조합 중 거르기와 search', () => {
 
   it('글 가운데서 조합해도 확정된 부분은 조합 앞뒤의 글자다', async () => {
     const { select, visible } = await openSearchableSelect();
-    const search = select.shadowRoot!.querySelector('.search-input input') as HTMLInputElement;
+    const search = select.shadowRoot!.querySelector('input.search') as HTMLInputElement;
     await userEvent.keyboard('busan');
     search.setSelectionRange(0, 0);
     await compose(['ㅅ']);
@@ -157,5 +157,37 @@ describe('u-input — 조합 중 value 와 input', () => {
     expect(heard.length).toBeGreaterThan(0);
     for (const h of heard) expect(typeof h.value).toBe('string');
     expect(heard.at(-1)!.value).toBe('서울');
+  });
+});
+
+describe('u-select searchable — 닫힌 채 조합을 시작하면 (#1896)', () => {
+  it('🔴Tab 으로 들어가 바로 친 한글의 첫 음절부터 검색어다 — 목록이 열리고 조합 중에도 좁혀진다', async () => {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `<button>before</button><u-select searchable label="City">
+      <u-option value="seoul">서울</u-option>
+      <u-option value="seongnam">성남</u-option>
+      <u-option value="busan">부산</u-option>
+    </u-select>`;
+    document.body.appendChild(wrap);
+    const select = wrap.querySelector('u-select') as USelect;
+    await settle(select);
+    (wrap.querySelector('button') as HTMLButtonElement).focus();
+    await userEvent.tab();
+    const search = select.shadowRoot!.querySelector('input.search') as HTMLInputElement;
+    expect(select.shadowRoot!.activeElement, '닫힌 콤보박스의 포커스는 편집 칸이다').toBe(search);
+    const popover = select.shadowRoot!.querySelector('u-popover') as HTMLElement & { open: boolean };
+    expect(popover.open).toBe(false);
+
+    await compose(['ㅂ']);
+    await settle(select);
+    await sleep(50);
+    expect(popover.open, '조합이 시작되면 연다').toBe(true);
+    const visible = () => [...select.querySelectorAll('u-option')].filter((o) => !o.hidden).map((o) => o.textContent);
+    expect(visible()).toEqual(['부산']);
+    await compose(['부']);
+    await commit('부');
+    await settle(select);
+    expect(search.value).toBe('부');
+    expect(visible()).toEqual(['부산']);
   });
 });

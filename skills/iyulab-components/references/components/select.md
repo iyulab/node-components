@@ -73,20 +73,25 @@ Options of different kinds can be grouped under headings with [`u-option-group`]
 |--------|-------------|
 | `validate()` | Validate; sets `invalid` |
 | `reset()` | Reset value |
-| `focus(options?)` | Focus the trigger |
+| `focus(options?)` | Focus the trigger (its search input, when `searchable`) |
 | `blur()` | Blur the trigger |
 
 ## Keyboard & accessibility
 
-The trigger is a `role="combobox"`. Without `searchable` the dropdown holds a `role="listbox"`
-and opening it focuses the first option. With `searchable` the dropdown is a `role="dialog"`
-(named by `label`, or "Search") that holds the search field and the listbox; opening it focuses
-the search field, so typing filters at once. While there is a query, the first visible option is the
-**active candidate** — shown like a hovered option and announced through the search field's
-`aria-activedescendant` — and `Enter` picks it (closing the list, or toggling it with `multiple`); the
-`Enter` that commits an IME composition does not. From the search field `ArrowDown`/`ArrowUp` move to
-the first/last visible option; on an option, arrows, `Home`/`End`, `Enter`/`Space` (select) and
-`Escape` (close) work as usual.
+Without `searchable` the trigger is a `role="combobox"` (APG *select-only combobox*) whose dropdown holds a
+`role="listbox"`; opening it focuses the first option. Typing on the closed trigger is **type-ahead**: a letter picks
+the next option whose text starts with it (repeat the letter to cycle), and letters typed within half a second form a
+word (`ch` → *cherry*); on an open list the same keys move the focus instead of picking.
+
+With `searchable` the combobox is an **editable input inside the trigger** (APG *editable combobox with list
+autocomplete*): `Tab` lands in it, and typing — including the first syllable of an IME composition — opens the list and
+becomes the query at once, so nothing typed is lost. While there is a query the selected value is hidden behind it
+(`multiple` keeps its chips and types after them). The first visible option is the **active candidate** — shown like a
+hovered option and announced through the input's `aria-activedescendant` — and `Enter` picks it (closing the list, or
+toggling it with `multiple`); the `Enter` that commits an IME composition does not. `ArrowDown`/`ArrowUp` open a closed
+list and, on an open one, move to the first/last visible option; letters typed on an option go back to the input.
+`Escape` closes the list (the focus stays in the input) and closing clears the query, so the trigger shows the value
+again. On an option, arrows, `Home`/`End`, `Enter`/`Space` (select) and `Escape` (close) work as usual.
 
 ## CSS Parts
 
@@ -95,7 +100,7 @@ the first/last visible option; on an option, arrows, `Home`/`End`, `Enter`/`Spac
 | `field` | Outer field wrapper |
 | `container` | Trigger area |
 | `popover` | Dropdown list container |
-| `search-input` | Search input inside dropdown |
+| `search-input` | The search input inside the trigger (the combobox, when `searchable`) |
 | `no-matches` | *No matches* status line in the dropdown (empty and hidden otherwise) |
 
 ## CSS Custom Properties

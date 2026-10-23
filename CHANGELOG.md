@@ -1,5 +1,23 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- **A searchable `u-select` is an editable combobox: its search input lives in the trigger.** Focus lands in it, so
+  typing on the closed select opens the list and the typed text — the first syllable of a Korean, Japanese or Chinese
+  composition included — is the query. Before, the trigger was not editable: the first keystrokes were dropped (an
+  input method cannot compose there) and the list had to be opened with ↓ or a click first. The dropdown no longer
+  holds a search field and no longer has `role="dialog"`; the combobox is the input (`aria-autocomplete="list"`),
+  `::part(search-input)` is that input, and `focus()` focuses it. Closing the list clears the query (a `search` event
+  with an empty query follows), so the trigger shows the value again. `Escape` keeps the focus in the input.
+
+### Added
+
+- **Type-ahead on a non-searchable `u-select`** — a letter on the closed trigger picks the next option whose text
+  starts with it (`change` fires), the same letter again cycles, and letters typed within half a second form a word;
+  on an open list the letters move the focus instead. This is what a native `<select>` does.
+
 ## [2.33.0] - 2026-10-23
 
 ### Added

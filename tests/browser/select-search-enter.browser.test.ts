@@ -32,7 +32,7 @@ async function mount(values: string[], attrs: Record<string, string> = {}): Prom
   return select;
 }
 
-const searchBox = (s: USelect) => s.shadowRoot!.querySelector<HTMLInputElement>('.search-input input')!;
+const searchBox = (s: USelect) => s.shadowRoot!.querySelector<HTMLInputElement>('input.search')!;
 const option = (s: USelect, v: string) => s.querySelector<UOption>(`u-option[value="${v}"]`)!;
 const isOpen = (s: USelect) => s.shadowRoot!.querySelector<HTMLElement & { open: boolean }>('u-popover')!.open;
 const active = (s: USelect) => [...s.querySelectorAll<UOption>('u-option[active]')].map(o => o.value);

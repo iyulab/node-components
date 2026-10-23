@@ -22,7 +22,7 @@ function createSelect(values: string[], attrs: Record<string, string> = {}): USe
 }
 
 function typeSearch(select: USelect, value: string) {
-  const input = select.shadowRoot!.querySelector('.search-input input') as HTMLInputElement;
+  const input = select.shadowRoot!.querySelector('input.search') as HTMLInputElement;
   input.value = value;
   input.dispatchEvent(new InputEvent('input', { bubbles: true }));
 }
@@ -85,7 +85,6 @@ describe('USelect search 이벤트 (원격/서버 검색 지원)', () => {
     document.body.appendChild(select);
     await settle(select);
 
-    const input = select.shadowRoot!.querySelector('.search-input') as HTMLElement;
-    expect(input.hidden).toBe(true);
+    expect(select.shadowRoot!.querySelector('input.search')).toBeNull();
   });
 });

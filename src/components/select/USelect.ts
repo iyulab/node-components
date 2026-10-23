@@ -1,4 +1,4 @@
-import { html, PropertyValues } from "lit";
+import { html, nothing, PropertyValues } from "lit";
 import type { FieldAppearance, FieldSize } from '../input/UInput.js';
 import { customElement, property, query, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
@@ -39,7 +39,7 @@ import { styles } from "./USelect.styles.js";
  * @csspart field - u-field 요소
  * @csspart container - 트리거 영역을 감싸는 요소
  * @csspart popover - 옵션 목록이 표시되는 팝오버 요소
- * @csspart search-input - 검색 입력 영역
+ * @csspart search-input - 검색 가능일 때 트리거 안의 검색 입력(콤보박스 자신)
  * @csspart no-matches - 검색어에 맞는 옵션이 없을 때의 «일치하는 항목 없음» 상태 줄
  * 
  * @cssprop --u-select-display - 호스트의 display (기본값: inline-block). 폼/그리드 셀에서
@@ -136,7 +136,11 @@ export class USelect extends UFormControlElement<string | string[]> {
   @state() private noMatches = false;
   /** aria-expanded 배선용 팝오버 열림 상태 */
   @state() private open: boolean = false;
-  /** combobox → 팝업 연결용 고유 id (aria-controls). 검색 가능이면 팝업은 dialog 이고 그 안에 listbox 가 있다. */
+  /** 트리거의 검색 입력에 글자가 있다(조합 중 포함) — 선택값 표시를 가리고 친 글자를 보인다. */
+  @state() private typing = false;
+  /** 검색 불가 트리거의 type-ahead 버퍼 — APG select-only: 첫 글자들로 옵션을 찾는다(짧은 간격의 연속 입력은 이어 붙인다). */
+  private typeahead = { text: '', at: 0 };
+  /** 팝업 · listbox 의 고유 id — 콤보박스(검색 불가면 트리거, 검색 가능이면 트리거 안 입력)의 aria-controls 가 listbox 를 가리킨다. */
   private readonly idBase = `u-select-${Math.random().toString(36).slice(2, 8)}`;
   private readonly listboxId = `${this.idBase}-listbox`;
   private readonly popupId = `${this.idBase}-popup`;
@@ -210,17 +214,44 @@ export class USelect extends UFormControlElement<string | string[]> {
           ${this.valueAsArray.length} / ${this.maxCount}
         </span>
 
-        <div class="container" part="container" tabindex=${this.effectivelyDisabled ? "-1" : "0"}
+        <!-- 검색 가능이면 콤보박스는 트리거 안의 입력이다(APG «editable combobox with list autocomplete») — 포커스가
+             처음부터 편집 칸에 있어야 닫힌 채 친 글자(한글 조합의 첫 음절까지)가 검색어가 된다. 편집할 수 없는 칸에서는
+             입력기가 조합을 시작하지 못한다. 검색 불가면 트리거 자신이 콤보박스다(APG «select-only»). -->
+        <div class="container ${this.typing ? 'typing' : ''}" part="container"
+          tabindex=${ifDefined(this.searchable ? undefined : this.effectivelyDisabled ? "-1" : "0")}
           style=${`--_clear: ${this.clearable && this.hasValue && !this.effectivelyDisabled && !this.readonly ? 1 : 0}${chars ? `; --select-min-text: ${chars}; --_chars: ${chars}` : ''}`}
-          role="combobox"
-          aria-disabled=${ifDefined(this.effectivelyDisabled ? 'true' : undefined)}
-          aria-label=${ifDefined(this.resolvedAriaLabel)}
-          aria-description=${ifDefined(this.resolvedAriaDescription)}
-          aria-haspopup=${this.searchable ? 'dialog' : 'listbox'}
-          aria-expanded=${this.open}
-          aria-controls=${this.searchable ? this.popupId : this.listboxId}>
+          role=${ifDefined(this.searchable ? undefined : 'combobox')}
+          aria-disabled=${ifDefined(!this.searchable && this.effectivelyDisabled ? 'true' : undefined)}
+          aria-label=${ifDefined(this.searchable ? undefined : this.resolvedAriaLabel)}
+          aria-description=${ifDefined(this.searchable ? undefined : this.resolvedAriaDescription)}
+          aria-haspopup=${ifDefined(this.searchable ? undefined : 'listbox')}
+          aria-expanded=${ifDefined(this.searchable ? undefined : String(this.open))}
+          aria-controls=${ifDefined(this.searchable ? undefined : this.listboxId)}
+          @click=${this.handleContainerClick}
+          @keydown=${this.handleTriggerKeydown}>
           <slot name="prefix"></slot>
-          <slot name="display">${this.renderContent()}</slot>
+          <div class="value-area">
+            <slot name="display">${this.renderContent()}</slot>
+            ${this.searchable ? html`<input class="search" part="search-input"
+              type="text"
+              role="combobox"
+              autocomplete="off"
+              spellcheck="false"
+              aria-autocomplete="list"
+              aria-haspopup="listbox"
+              aria-expanded=${String(this.open)}
+              aria-controls=${this.listboxId}
+              aria-label=${this.resolvedAriaLabel || Locale.getValue('search')}
+              aria-description=${ifDefined(this.resolvedAriaDescription)}
+              ?disabled=${this.effectivelyDisabled}
+              ?readonly=${this.readonly}
+              @input=${this.handleSearchInput}
+              @compositionstart=${this.handleCompositionStart}
+              @compositionupdate=${this.composition}
+              @compositionend=${this.composition}
+              @keydown=${this.handleSearchKeydown}
+            />` : nothing}
+          </div>
           <slot name="suffix"></slot>
 
           <u-icon class="suffix-item"
@@ -244,37 +275,20 @@ export class USelect extends UFormControlElement<string | string[]> {
         </div>
       </u-field>
 
-      <!-- listbox 는 option(과 group)만 담는다 — 검색 입력은 그 밖에 둔다. 검색 가능이면 입력과 목록을 함께 담는
-           팝업이 dialog 가 된다(WAI-ARIA APG «combobox with dialog popup» — 포커스가 팝업 안으로 들어가는 지금의
-           키보드 모델 그대로다). 검색 불가면 팝업은 역할 없는 컨테이너이고 목록만 담는다. -->
+      <!-- 팝업은 역할 없는 컨테이너이고 listbox 와 «일치 없음» 상태 줄만 담는다(listbox 는 option 과 group 만).
+           검색 가능이면 여닫기는 이 요소가 한다(trigger="manual") — 트리거 안 입력의 스페이스 · Enter 는 글자와 고르기다. -->
       <u-popover part="popover"
         id=${this.popupId}
-        role=${ifDefined(this.searchable ? 'dialog' : undefined)}
-        aria-label=${ifDefined(this.searchable ? (this.resolvedAriaLabel || Locale.getValue('search')) : undefined)}
         scrollable
-        autofocus
+        ?autofocus=${!this.searchable}
         for=".container"
-        trigger="click"
+        trigger=${this.searchable ? 'manual' : 'click'}
         @show=${() => { this.open = true; this.updateActiveOption(); }}
         @hide=${this.handlePopoverHide}
         strategy="fixed"
         placement="bottom-start"
         offset="1"
       >
-        <div class="search-input" part="search-input" 
-          ?hidden=${!this.searchable}>
-          <u-icon lib="internal" name="search"></u-icon>
-          <input
-            type="text"
-            aria-label=${Locale.getValue('search')}
-            aria-controls=${this.listboxId}
-            @input=${this.handleSearchInput}
-            @compositionstart=${this.composition}
-            @compositionupdate=${this.composition}
-            @compositionend=${this.composition}
-            @keydown=${this.handleSearchKeydown}
-          />
-        </div>
         <div class="no-matches" part="no-matches" role="status">${this.noMatches ? Locale.getValue('noMatches') : ''}</div>
         <div class="listbox" role="listbox" id=${this.listboxId}
           aria-multiselectable=${ifDefined(this.multiple ? 'true' : undefined)}>
@@ -344,11 +358,11 @@ export class USelect extends UFormControlElement<string | string[]> {
    *  네이티브 `disabled` `<input>`에서 얻는 것과 같은 no-op을 여기서 직접 재현한다. */
   public focus(options?: FocusOptions): void {
     if (this.effectivelyDisabled) return;
-    this.containerEl?.focus(options);
+    (this.searchable ? this.searchInputEl : this.containerEl)?.focus(options);
   }
 
   public blur(): void {
-    this.containerEl?.blur();
+    (this.searchable ? this.searchInputEl : this.containerEl)?.blur();
   }
 
   private setup(options: UOption[]) {
@@ -421,9 +435,81 @@ export class USelect extends UFormControlElement<string | string[]> {
     this.open = false;
     this.setActiveOption(undefined);
     if (this.popoverEl?.matches(':focus-within')) {
-      this.containerEl?.focus();
+      this.focus();
+    }
+    // 닫히면 검색어를 비운다 — 트리거가 다시 고른 값을 보이고, 다음에 열 때 전체 목록에서 시작한다. 원격 검색 소비자도
+    // 빈 검색어의 `search` 로 옵션을 되돌린다.
+    const input = this.searchInputEl;
+    if (this.searchable && input && input.value) {
+      input.value = '';
+      this.updateSearch(input);
     }
   };
+
+  /** 검색 가능일 때 목록을 연다(여닫기는 이 요소가 한다 — 팝오버는 `trigger="manual"`). */
+  private openPopup() {
+    if (this.open || this.effectivelyDisabled || this.readonly || !this.containerEl) return;
+    void this.popoverEl?.show(this.containerEl);
+  }
+
+  /** 트리거를 누르면 — 검색 가능이면 입력에 포커스를 두고 여닫는다(열린 채 입력을 눌러 캐럿을 옮기는 것은 닫지 않는다). */
+  private handleContainerClick = (e: MouseEvent) => {
+    if (!this.searchable || this.effectivelyDisabled || this.readonly) return;
+    const input = this.searchInputEl;
+    if (!input) return;
+    if (this.shadowRoot?.activeElement !== input) input.focus();
+    if (!this.open) this.openPopup();
+    else if (!e.composedPath().includes(input)) void this.popoverEl?.hide();
+  };
+
+  /** 조합이 시작되면 연다 — 첫 음절부터 검색어다. */
+  private handleCompositionStart = (e: CompositionEvent) => {
+    this.composition.handleEvent(e);
+    this.typing = true;
+    this.openPopup();
+  };
+
+  /**
+   * 검색 불가 트리거의 type-ahead(APG select-only combobox · 네이티브 select). 인쇄 가능한 글자 — 닫혀 있으면 그 글자로
+   * 시작하는 다음 옵션을 바로 고르고(값 바뀜 → change), 열려 있으면 그 옵션으로 포커스를 옮긴다. 같은 글자를 거듭 치면
+   * 그 글자로 시작하는 옵션을 돈다. 여러 글자는 짧은 간격(0.5초) 안에 이어 친 것만 한 낱말이다.
+   */
+  private handleTriggerKeydown = (e: KeyboardEvent) => {
+    if (this.searchable || e.target !== this.containerEl) return;
+    this.typeAhead(e);
+  };
+
+  private typeAhead(e: KeyboardEvent): boolean {
+    if (this.effectivelyDisabled || this.readonly) return false;
+    if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1 || isImeComposing(e)) return false;
+    const now = e.timeStamp || Date.now();
+    const fresh = now - this.typeahead.at > 500;
+    if (e.key === ' ' && (fresh || !this.typeahead.text)) return false; // 스페이스는 여닫기 · 고르기 키다(낱말 중간이 아니면)
+    e.preventDefault();
+    this.typeahead = { text: fresh ? e.key : this.typeahead.text + e.key, at: now };
+    const text = this.typeahead.text.toLowerCase();
+    const repeat = [...text].every((c) => c === text[0]);
+    const needle = repeat ? text[0] : text;
+    const options = this.options.filter((o) => !o.hidden && !o.disabled);
+    if (!options.length) return true;
+    const focused = options.find((o) => o.matches(':focus'));
+    const current = focused ?? options.find((o) => o.value === this.value) ?? options.find((o) => o.selected);
+    const start = current ? options.indexOf(current) + (repeat || !focused ? 1 : 0) : 0;
+    const ordered = [...options.slice(start), ...options.slice(0, start)];
+    const match = ordered.find((o) => o.getText().trim().toLowerCase().startsWith(needle));
+    if (!match) return true;
+    if (this.open) {
+      match.focus();
+    } else if (!this.multiple) {
+      if (match.value !== this.value) {
+        this.value = match.value;
+        this.emitChange();
+      }
+    } else {
+      void this.popoverEl?.show(this.containerEl!).then(() => match.focus());
+    }
+    return true;
+  }
 
   private handleOptionClick = (e: PointerEvent) => {
     const option = e.currentTarget as UOption;
@@ -452,6 +538,16 @@ export class USelect extends UFormControlElement<string | string[]> {
     const currentOption = e.currentTarget as UOption;
     const currentIndex = options.indexOf(currentOption);
     if (currentIndex === -1) return;
+
+    // 목록 안에서 친 글자 — 검색 가능이면 검색 입력으로 돌아가 이어 치고(포커스가 먼저 옮겨 가 그 글자가 입력에 들어간다),
+    // 아니면 type-ahead 로 옵션을 찾는다.
+    if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1 && !(e.key === ' ' && !this.typeahead.text)) {
+      if (this.searchable) {
+        this.searchInputEl?.focus();
+        return;
+      }
+      if (this.typeAhead(e)) return;
+    }
 
     switch (e.key) {
       case 'Enter':
@@ -503,6 +599,8 @@ export class USelect extends UFormControlElement<string | string[]> {
   };
 
   private updateSearch(input: HTMLInputElement) {
+    this.typing = input.value !== '' || this.composition.composing;
+    if (this.typing) this.openPopup();
     const { query, composing } = this.composition.searchQuery(input);
     this.query = query.trim();
     this.queryComposing = composing;
@@ -555,14 +653,31 @@ export class USelect extends UFormControlElement<string | string[]> {
   }
 
   private get searchInputEl(): HTMLInputElement | null {
-    return this.shadowRoot?.querySelector<HTMLInputElement>('.search-input input') ?? null;
+    return this.shadowRoot?.querySelector<HTMLInputElement>('input.search') ?? null;
   }
 
   private handleSearchKeydown = (e: KeyboardEvent) => {
-    // Enter 는 활성 후보를 고른다 — 조합을 확정하는 Enter(IME)는 입력기의 것이라 고르지 않는다.
-    if (e.key === 'Enter' && !isImeComposing(e) && this.activeOption) {
-      e.preventDefault();
-      this.activeOption.click();
+    // Enter 는 활성 후보를 고른다 — 조합을 확정하는 Enter(IME)는 입력기의 것이라 고르지 않는다. 닫혀 있으면 연다.
+    if (e.key === 'Enter' && !isImeComposing(e)) {
+      if (this.open && this.activeOption) {
+        e.preventDefault();
+        this.activeOption.click();
+      } else if (!this.open) {
+        e.preventDefault();
+        this.openPopup();
+      }
+      return;
+    }
+    if (!this.open) {
+      // 닫힌 콤보박스 — 화살표가 연다(APG). Escape 는 남은 검색어를 지운다.
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        this.openPopup();
+      } else if (e.key === 'Escape' && (e.target as HTMLInputElement).value) {
+        e.preventDefault();
+        (e.target as HTMLInputElement).value = '';
+        this.updateSearch(e.target as HTMLInputElement);
+      }
       return;
     }
     const options = this.options.filter(o => !o.hidden && !o.disabled);
@@ -589,7 +704,12 @@ export class USelect extends UFormControlElement<string | string[]> {
     e.stopPropagation();
     this.reset();
     this.emitChange();
-    this.containerEl?.click();
+    if (this.searchable) {
+      this.searchInputEl?.focus();
+      this.openPopup();
+    } else {
+      this.containerEl?.click();
+    }
   };
 
   /** suffix `u-icon`은 순수 표시 요소(버튼 아님)라 네이티브 키보드 활성화가 없다 —

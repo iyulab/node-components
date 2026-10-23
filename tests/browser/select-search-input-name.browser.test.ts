@@ -23,7 +23,7 @@ describe('u-select 검색 입력 — 접근성 이름', () => {
       '<u-select searchable style="width:200px"><u-option value="a">A</u-option></u-select>';
     const select = document.querySelector('u-select') as HTMLElement & { updateComplete: Promise<boolean> };
     await select.updateComplete;
-    return select.shadowRoot!.querySelector('.search-input input') as HTMLInputElement;
+    return select.shadowRoot!.querySelector('input.search') as HTMLInputElement;
   }
 
   it('검색 입력은 로케일의 «Search» 로 이름 붙는다', async () => {

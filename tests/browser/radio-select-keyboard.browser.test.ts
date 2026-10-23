@@ -225,11 +225,12 @@ describe('u-select — 키보드', () => {
 
   describe('searchable', () => {
     const searchInput = (select: USelect) =>
-      select.shadowRoot!.querySelector('.search-input input') as HTMLInputElement;
+      select.shadowRoot!.querySelector('input.search') as HTMLInputElement;
 
-    it('열면 검색칸에 포커스한다 — ArrowDown 은 첫 옵션, ArrowUp 은 마지막 옵션으로', async () => {
-      const { select, before } = await mountSelect(['a', 'b', 'c'], { searchable: '' });
+    it('Tab 은 검색 입력(콤보박스)에 서고, 열어도 포커스는 그대로 — ArrowDown 은 첫 옵션, ArrowUp 은 마지막 옵션으로', async () => {
+      const { select, before, popover } = await mountSelect(['a', 'b', 'c'], { searchable: '' });
       await openWithKey(before);
+      expect(popover.open).toBe(true);
       expect(select.shadowRoot!.activeElement).toBe(searchInput(select));
       await userEvent.keyboard('{ArrowUp}');
       expect(focusedValue()).toBe('c');
@@ -252,13 +253,89 @@ describe('u-select — 키보드', () => {
       expect(select.value).toBe('apricot');
     });
 
-    it('검색칸의 Escape 는 닫고 콤보박스로 돌아간다', async () => {
-      const { select, before, container, popover } = await mountSelect(['a', 'b'], { searchable: '' });
+    it('검색칸의 Escape 는 닫고 포커스는 콤보박스(검색 입력)에 남는다', async () => {
+      const { select, before, popover } = await mountSelect(['a', 'b'], { searchable: '' });
       await openWithKey(before);
       await userEvent.keyboard('{Escape}');
       await frames();
       expect(popover.open).toBe(false);
-      expect(select.shadowRoot!.activeElement).toBe(container);
+      expect(select.shadowRoot!.activeElement).toBe(searchInput(select));
+    });
+
+    it('🔴닫힌 채 글자를 치면 열리고 그 글자가 검색어의 첫머리다 — 첫 글자를 잃지 않는다', async () => {
+      const { select, before, popover } = await mountSelect(['apple', 'banana', 'blueberry'], { searchable: '' });
+      before.focus();
+      await userEvent.tab();
+      expect(popover.open).toBe(false);
+      await userEvent.keyboard('bl');
+      await frames();
+      expect(popover.open).toBe(true);
+      expect(searchInput(select).value).toBe('bl');
+      const visible = [...select.querySelectorAll('u-option')].filter((o) => !o.hidden).map((o) => o.getAttribute('value'));
+      expect(visible).toEqual(['blueberry']);
+      await userEvent.keyboard('{Enter}');
+      await frames();
+      expect(select.value).toBe('blueberry');
+      expect(popover.open).toBe(false);
+      expect(searchInput(select).value, '닫히면 검색어를 비운다').toBe('');
+    });
+
+    it('목록의 옵션 위에서 친 글자는 검색 입력으로 돌아가 이어진다', async () => {
+      const { select, before } = await mountSelect(['apple', 'banana', 'apricot'], { searchable: '' });
+      await openWithKey(before, '{ArrowDown}');
+      await userEvent.keyboard('{ArrowDown}');
+      expect(focusedValue()).toBe('apple');
+      await userEvent.keyboard('ap');
+      expect(select.shadowRoot!.activeElement).toBe(searchInput(select));
+      expect(searchInput(select).value).toBe('ap');
+    });
+  });
+
+  describe('type-ahead (검색 불가)', () => {
+    // type-ahead 는 옵션의 «글자» 로 찾는다 — 이 파일의 기본 글자(«Option x»)를 값으로 바꾼다.
+    const textAsValue = (select: USelect) => select.querySelectorAll('u-option').forEach((o) => { o.textContent = o.getAttribute('value'); });
+
+    it('🔴닫힌 콤보박스에서 글자를 치면 그 글자로 시작하는 옵션을 고른다 — 같은 글자를 거듭 치면 돈다', async () => {
+      const { select, before, popover, changes } = await mountSelect(['apple', 'banana', 'blueberry', 'cherry']);
+      textAsValue(select);
+      before.focus();
+      await userEvent.tab();
+      await userEvent.keyboard('b');
+      await frames();
+      expect(popover.open).toBe(false);
+      expect(select.value).toBe('banana');
+      await new Promise((r) => setTimeout(r, 600));
+      await userEvent.keyboard('b');
+      expect(select.value).toBe('blueberry');
+      expect(changes).toEqual(['banana', 'blueberry']);
+    });
+
+    it('이어 친 글자는 한 낱말이다 — «ch» 는 cherry', async () => {
+      const { select, before } = await mountSelect(['apple', 'cabbage', 'cherry']);
+      textAsValue(select);
+      before.focus();
+      await userEvent.tab();
+      await userEvent.keyboard('ch');
+      expect(select.value).toBe('cherry');
+    });
+
+    it('열린 목록에서는 고르지 않고 그 옵션으로 포커스를 옮긴다', async () => {
+      const { select, before } = await mountSelect(['apple', 'banana', 'cherry']);
+      textAsValue(select);
+      await openWithKey(before);
+      await userEvent.keyboard('c');
+      expect(focusedValue()).toBe('cherry');
+      expect(select.value).toBeFalsy();
+    });
+
+    it('NEGATIVE: 맞는 옵션이 없으면 값은 그대로다', async () => {
+      const { select, before, changes } = await mountSelect(['apple', 'banana']);
+      textAsValue(select);
+      before.focus();
+      await userEvent.tab();
+      await userEvent.keyboard('z');
+      expect(select.value).toBeFalsy();
+      expect(changes).toEqual([]);
     });
   });
 });
