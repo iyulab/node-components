@@ -37,6 +37,11 @@ export const styles = css`
     /* 호스트 하한(--u-target-size, 미설정 = 0). */
     min-height: var(--u-target-size, 0px);
     border-radius: inherit;
+    /* 단추형 라디오의 칸 구분선 — 담는 쪽(u-radio)이 폭 · 색을 넘기고 여기서 그린다(꽂힌 옵션에 ::slotted 로 준 테두리는 문서의 전역
+       리셋에 진다). */
+    border-style: solid;
+    border-width: var(--_option-divider-width, 0);
+    border-color: var(--_option-divider-color, transparent);
   }
   :host(:focus-visible) {
     outline: none;

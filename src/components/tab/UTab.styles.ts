@@ -27,6 +27,11 @@ export const styles = css`
     /* 호스트 하한(--u-target-size, 미설정 = 0). */
     min-height: var(--u-target-size, 0px);
     border-radius: inherit;
+    /* 테두리는 담는 쪽(u-tab-panel 의 card · pill)이 사용자 정의 속성으로 정하고 여기서 그린다 — 꽂힌 탭에 ::slotted 로 준 테두리는
+       문서의 전역 리셋(Tailwind preflight 류)에 진다. */
+    border-style: solid;
+    border-width: var(--_tab-border-width, 0);
+    border-color: var(--_tab-border-color, transparent);
   }
 
   :host(:hover:not([disabled])) {

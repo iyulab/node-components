@@ -93,8 +93,10 @@ export const styles = css`
   :host([type="button"]:not([appearance="soft"])[orientation="horizontal"]) ::slotted(u-option:last-child) {
     border-radius: 0 0.35em 0.35em 0;
   }
+  /* 칸 구분선은 옵션이 자기 섀도 안(.base)에서 그린다 — 폭 · 색만 넘긴다(::slotted 에 둔 테두리는 문서의 전역 리셋에 진다). */
   :host([type="button"]:not([appearance="soft"])[orientation="horizontal"]) ::slotted(u-option:not(:last-child)) {
-    border-right: 1px solid var(--u-neutral-300, #E0E0E0);
+    --_option-divider-width: 0 1px 0 0;
+    --_option-divider-color: var(--u-neutral-300, #E0E0E0);
   }
 
   /* === Button - Vertical 배치 === */
@@ -109,7 +111,8 @@ export const styles = css`
     border-radius: 0 0 0.35em 0.35em;
   }
   :host([type="button"]:not([appearance="soft"])[orientation="vertical"]) ::slotted(u-option:not(:last-child)) {
-    border-bottom: 1px solid var(--u-neutral-300, #E0E0E0);
+    --_option-divider-width: 0 0 1px 0;
+    --_option-divider-color: var(--u-neutral-300, #E0E0E0);
   }
 
   /* === Button + Soft — a segmented control ===

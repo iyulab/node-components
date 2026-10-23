@@ -141,36 +141,36 @@ export const styles = css`
     background-color: var(--u-neutral-0, #FFFFFF);
   }
 
+  /* 탭의 테두리는 탭이 자기 섀도 안(.base)에서 그린다 — 폭 · 색만 넘긴다(::slotted 에 둔 테두리는 문서의 전역 리셋에 진다). */
+  :host([appearance="card"]) ::slotted(u-tab) {
+    --_tab-border-color: var(--u-border-color, #E0E0E0);
+  }
   :host([appearance="card"][placement="top"]) ::slotted(u-tab) {
-    border-bottom: 1px solid var(--u-border-color, #E0E0E0);
-    border-right: 1px solid var(--u-border-color, #E0E0E0);
+    --_tab-border-width: 0 1px 1px 0;
   }
   :host([appearance="card"][placement="top"]) ::slotted(u-tab[active]) {
-    border-bottom: none;
+    --_tab-border-width: 0 1px 0 0;
   }
 
   :host([appearance="card"][placement="bottom"]) ::slotted(u-tab) {
-    border-top: 1px solid var(--u-border-color, #E0E0E0);
-    border-right: 1px solid var(--u-border-color, #E0E0E0);
+    --_tab-border-width: 1px 1px 0 0;
   }
   :host([appearance="card"][placement="bottom"]) ::slotted(u-tab[active]) {
-    border-top: none;
+    --_tab-border-width: 0 1px 0 0;
   }
 
   :host([appearance="card"][placement="left"]) ::slotted(u-tab) {
-    border-right: 1px solid var(--u-border-color, #E0E0E0);
-    border-bottom: 1px solid var(--u-border-color, #E0E0E0);
+    --_tab-border-width: 0 1px 1px 0;
   }
   :host([appearance="card"][placement="left"]) ::slotted(u-tab[active]) {
-    border-right: none;
+    --_tab-border-width: 0 0 1px 0;
   }
 
   :host([appearance="card"][placement="right"]) ::slotted(u-tab) {
-    border-left: 1px solid var(--u-border-color, #E0E0E0);
-    border-bottom: 1px solid var(--u-border-color, #E0E0E0);
+    --_tab-border-width: 0 0 1px 1px;
   }
   :host([appearance="card"][placement="right"]) ::slotted(u-tab[active]) {
-    border-left: none;
+    --_tab-border-width: 0 0 1px 0;
   }
 
   /* Appearance: pill */
@@ -182,11 +182,11 @@ export const styles = css`
     border-radius: var(--u-radius-xl, 8px);
   }
   :host([appearance="pill"]) ::slotted(u-tab) {
-    border: 1px solid transparent;
+    --_tab-border-width: 1px;
     border-radius: var(--u-radius-lg, 6px);
   }
   :host([appearance="pill"]) ::slotted(u-tab[active]) {
-    border-color: var(--u-border-color, #E0E0E0);
+    --_tab-border-color: var(--u-border-color, #E0E0E0);
     background-color: var(--u-neutral-0, #FFFFFF);
     box-shadow: var(--u-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04));
   }

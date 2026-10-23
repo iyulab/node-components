@@ -24,6 +24,9 @@
   slot was a margin on the slotted element, which a reset like Tailwind's preflight removes, so icons sat against the
   text. The slots now sit in a box inside the shadow root that carries the gap, and that box takes no space while
   its slot is empty.
+- **`u-tab-panel` card and pill tab borders, and the dividers of a button-style `u-radio`, survive a document-wide
+  reset.** They were borders on the slotted tabs and options. The container now hands the width and colour down
+  through custom properties and each tab or option draws them on its own inner box.
 
 ### Added
 
