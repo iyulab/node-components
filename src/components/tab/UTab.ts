@@ -10,6 +10,7 @@ import { type RemoveEventDetail } from "../../events/RemoveEvent.js";
 import { Locale } from '../../utilities/Locale.js';
 import { formatNumber } from '../../utilities/format.js';
 
+import { SlotPresence } from "../../utilities/slotPresence.js";
 /** `u-tab` 개수의 모양 — `badge` 는 알약 면(눈을 끈다), `plain` 은 면 없는 보조 숫자(정보). */
 export type TabCountAppearance = 'badge' | 'plain';
 
@@ -33,6 +34,8 @@ export type TabCountAppearance = 'badge' | 'plain';
 @customElement('u-tab')
 export class UTab extends UElement {
   static styles = [super.styles, styles];
+  /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
+  private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);
 
   /** 탭 비활성화 여부 */
   @property({ type: Boolean, reflect: true }) disabled = false;
@@ -133,13 +136,13 @@ export class UTab extends UElement {
 
   private renderLabel(): TemplateResult {
     return html`
-      <slot name="prefix"></slot>
+      <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
       <slot></slot>
       ${this.count == null || Number.isNaN(this.count)
         ? nothing
         : html`<span class="count ${(this.countAppearance ?? UTab.countAppearance) === 'plain' ? 'plain' : 'badge'}"
             part="count">${formatNumber(this.count)}</span>`}
-      <slot name="suffix"></slot>
+      <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
     `;
   }
 

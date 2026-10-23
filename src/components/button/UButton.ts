@@ -8,6 +8,7 @@ import { styles } from "./UButton.styles.js";
 import { FORWARDED_ARIA, readForwardedAria } from "./forwarded-aria.js";
 
 
+import { SlotPresence } from "../../utilities/slotPresence.js";
 /**
  * 외형 정도(chrome) — 컴포넌트 공통 어휘. `solid` 꽉 찬 면 · `soft` 옅은 틴트 면 · `outlined` 테두리 ·
  * `plain` 외형 없음 · `link` 링크처럼(버튼류만).
@@ -74,6 +75,8 @@ export type ButtonSize = "sm" | "md" | "lg";
 @customElement('u-button')
 export class UButton extends UElement {
   static styles = [ super.styles, styles ];
+  /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
+  private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);
   static formAssociated = true;
   /**
    * 호스트의 `.focus()` 를 섀도 안의 네이티브 `<button>`/`<a>` 로 위임한다. 호스트는 포커스
@@ -258,11 +261,11 @@ export class UButton extends UElement {
 
   private renderContent(): TemplateResult {
     return html`
-      <slot name="prefix"></slot>
+      <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
       <div class="content" part="content">
         <slot></slot>
       </div>
-      <slot name="suffix"></slot>
+      <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
     `;
   }
 

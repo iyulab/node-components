@@ -5,6 +5,7 @@ import '../icon/UIcon.js';
 import { UElement } from "../UElement.js";
 import { styles } from "./UOption.styles.js";
 
+import { SlotPresence } from "../../utilities/slotPresence.js";
 export type OptionMarker = 'radio' | 'check';
 
 /**
@@ -37,6 +38,8 @@ export type OptionMarker = 'radio' | 'check';
 @customElement('u-option')
 export class UOption extends UElement {
   static styles = [ super.styles, styles ];
+  /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
+  private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);
 
   /** 비활성화 여부 */
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
@@ -84,11 +87,11 @@ export class UOption extends UElement {
     return html`
       <div class="base" part="base">
         ${this.renderMarker()}
-        <slot name="prefix"></slot>
+        <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
         <div class="content" part="content">
           <slot></slot>
         </div>
-        <slot name="suffix"></slot>
+        <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
       </div>
     `;
   }

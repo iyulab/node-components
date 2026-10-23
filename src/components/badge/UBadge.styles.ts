@@ -151,10 +151,19 @@ export const styles = css`
   }
 
   /* === Slots === */
-  ::slotted([slot="prefix"]) {
+  /* 접두 · 접미 옆 간격은 섀도 안 상자가 갖는다 — ::slotted 의 여백은 문서의 전역 리셋(Tailwind preflight 류)에 진다. */
+  .affix {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+  }
+  .affix[hidden] {
+    display: none;
+  }
+  .affix-prefix {
     margin-right: 0.25em;
   }
-  ::slotted([slot="suffix"]) {
+  .affix-suffix {
     margin-left: 0.25em;
   }
 `;

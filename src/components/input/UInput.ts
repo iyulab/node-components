@@ -18,6 +18,7 @@ import type { UPopover } from "../popover/UPopover.js";
 import { styles } from "./UInput.styles.js";
 import { isImeComposing } from '../../utilities/keyboard.js';
 
+import { SlotPresence } from "../../utilities/slotPresence.js";
 export type InputType = 'text' | 'password' | 'email' | 'tel' | 'url' | 'search' | 'number' | 'date' | 'time' | 'datetime-local' | 'month' | 'week';
 export type InputModeOption = 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
 export type EnterKeyHint = 'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send';
@@ -72,6 +73,8 @@ export type FieldSize = 'sm' | 'md' | 'lg';
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
 export class UInput extends UFormControlElement<string> {
   static styles = [ super.styles, styles ];
+  /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
+  private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);
 
   /** 외형 정도 */
   @property({ type: String, reflect: true }) appearance: FieldAppearance = 'outlined';
@@ -185,7 +188,7 @@ export class UInput extends UFormControlElement<string> {
         <div class="container" part="container"
           style=${`--_icons: ${(showStepper ? 2 : 0) + (showClear ? 1 : 0) + (showToggle ? 1 : 0)}${this.charsWidth.width ? `; --input-min-text: ${this.charsWidth.width}` : ''}`}>
 
-          <slot name="prefix"></slot>
+          <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
 
           <input part="input"
             style=${ifDefined(this.charsWidth.width ? `inline-size: ${this.charsWidth.width}` : undefined)}
@@ -220,7 +223,7 @@ export class UInput extends UFormControlElement<string> {
             @compositionend=${this.handleCompositionEnd}
           />
 
-          <slot name="suffix"></slot>
+          <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
 
           <u-icon class="suffix-item"
             ?hidden=${!showToggle}

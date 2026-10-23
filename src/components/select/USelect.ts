@@ -22,6 +22,7 @@ import type { UPopover } from "../popover/UPopover.js";
 import { styles } from "./USelect.styles.js";
 
 
+import { SlotPresence } from "../../utilities/slotPresence.js";
 /**
  * 드롭다운 목록에서 값을 선택하는 폼 컨트롤 컴포넌트입니다.
  * 단일 선택 및 다중 선택, 검색 기능을 지원합니다.
@@ -63,6 +64,8 @@ import { styles } from "./USelect.styles.js";
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
 export class USelect extends UFormControlElement<string | string[]> {
   static styles = [ super.styles, styles ];
+  /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
+  private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);
 
   /** 트리거 영역의 스타일 변형 */
   /** 외형 정도 */
@@ -229,7 +232,7 @@ export class USelect extends UFormControlElement<string | string[]> {
           aria-controls=${ifDefined(this.searchable ? undefined : this.listboxId)}
           @click=${this.handleContainerClick}
           @keydown=${this.handleTriggerKeydown}>
-          <slot name="prefix"></slot>
+          <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
           <div class="value-area">
             <slot name="display">${this.renderContent()}</slot>
             ${this.searchable ? html`<input class="search" part="search-input"
@@ -252,7 +255,7 @@ export class USelect extends UFormControlElement<string | string[]> {
               @keydown=${this.handleSearchKeydown}
             />` : nothing}
           </div>
-          <slot name="suffix"></slot>
+          <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
 
           <u-icon class="suffix-item"
             ?hidden=${!this.clearable || !this.hasValue || this.effectivelyDisabled || this.readonly}

@@ -19,6 +19,11 @@
   preflight (`* { padding: 0; border: 0 solid }`) stripped them. A new `footer` part inside the shadow root draws
   them now; the slotted element keeps its flex row and gap. Padding or a border you set on the slotted element now
   adds inside the footer.
+- **Prefix and suffix spacing survives a document-wide reset** on `u-button`, `u-badge`, `u-breadcrumb-item`,
+  `u-input`, `u-menu-item`, `u-option`, `u-tab`, `u-tree-item` and `u-select`. The gap beside a `prefix` or `suffix`
+  slot was a margin on the slotted element, which a reset like Tailwind's preflight removes, so icons sat against the
+  text. The slots now sit in a box inside the shadow root that carries the gap, and that box takes no space while
+  its slot is empty.
 
 ### Added
 

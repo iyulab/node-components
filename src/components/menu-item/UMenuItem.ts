@@ -11,6 +11,7 @@ import { type PickEventDetail } from "../../events/PickEvent.js";
 import { isFromNestedControl } from "../../utilities/nestedControl.js";
 import { HostAria } from "../../utilities/hostAria.js";
 
+import { SlotPresence } from "../../utilities/slotPresence.js";
 export type MenuItemIndicator = 'highlight' | 'check';
 export type MenuItemAlign = 'left' | 'center' | 'right';
 
@@ -34,6 +35,8 @@ export type MenuItemAlign = 'left' | 'center' | 'right';
 @customElement('u-menu-item')
 export class UMenuItem extends UElement {
   static styles = [ super.styles, styles ];
+  /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
+  private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);
 
   /** 서브메뉴 확장 여부 */
   @property({ type: Boolean, reflect: true }) expanded: boolean = false;
@@ -115,11 +118,11 @@ export class UMenuItem extends UElement {
           name="check"
         ></u-icon>
 
-        <slot name="prefix"></slot>
+        <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
         <div class="content" part="content">
           <slot @slotchange=${this.handleSlotChange}></slot>
         </div>
-        <slot name="suffix"></slot>
+        <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
 
         ${this.inline
           ? html`

@@ -6,6 +6,7 @@ import { statusIcon } from "../../utilities/statusIcon.js";
 import { styles } from "./UBadge.styles.js";
 import '../icon/UIcon.js';
 
+import { SlotPresence } from "../../utilities/slotPresence.js";
 export type BadgeShape = "pill" | "dot" | "square";
 /** 역할 축(`primary`…`danger`, 의미 · 리브랜딩을 따라옴)과 장식 축(`blue`…, 색 자체 · 면역)이 병존한다. */
 export type BadgeColor =
@@ -29,6 +30,8 @@ export type BadgeAnchor =
 @customElement('u-badge')
 export class UBadge extends UElement {
   static styles = [ super.styles, styles ];
+  /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
+  private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);
 
   /** 배지 유형 */
   @property({ type: String, reflect: true }) shape: BadgeShape = "pill";
@@ -52,9 +55,9 @@ export class UBadge extends UElement {
         ${iconName
           ? html`<u-icon class="icon" part="icon" lib="internal" name=${iconName}></u-icon>`
           : nothing}
-        <slot name="prefix"></slot>
+        <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
         <slot></slot>
-        <slot name="suffix"></slot>
+        <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
       </div>
     `;
   }

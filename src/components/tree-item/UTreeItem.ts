@@ -12,6 +12,7 @@ import { type ExpandEventDetail } from "../../events/ExpandEvent.js";
 import { type CollapseEventDetail } from "../../events/CollapseEvent.js";
 import { isFromNestedControl } from "../../utilities/nestedControl.js";
 
+import { SlotPresence } from "../../utilities/slotPresence.js";
 /** 이 항목이 속한 트리 — 탭 정지(트리 전체에 하나)는 트리가 정한다. */
 interface TabStopOwner { syncTabStop(preferred?: UTreeItem): void }
 
@@ -38,6 +39,8 @@ export type TreeItemTrigger = 'item' | 'icon';
 @customElement('u-tree-item')
 export class UTreeItem extends UElement {
   static styles = [ super.styles, styles ];
+  /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
+  private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);
 
   /** 비활성화 여부 */
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
@@ -161,11 +164,11 @@ export class UTreeItem extends UElement {
           ></u-icon>
         </span>
 
-        <slot name="prefix"></slot>
+        <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
         <div class="content" part="content">
           <slot @slotchange=${this.handleSlotChange}></slot>
         </div>
-        <slot name="suffix"></slot>
+        <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
       </div>
 
       <div class="subtree" part="subtree" ?hidden=${!this.expanded || this.leaf}>
