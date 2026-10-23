@@ -11,6 +11,9 @@
 - **`u-carousel` `pagination-style="labels"`** — a row under the slides naming each slide (its `aria-label`) with a
   progress bar: passed tabs are full and the current one fills over `autoplay-interval` while rotating. For a
   rotating wall display read from across the room. Parts `dot-label`, `dot-track`, `dot-progress`.
+- **`Theme.override(theme)`** — applies a theme to the document without changing or storing the user's preference
+  (`get()` keeps answering it); `null` returns to the preference. For a screen that owns its background, such as a
+  floor board that stays dark.
 
 ## [2.31.1] - 2026-10-23
 

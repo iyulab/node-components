@@ -190,12 +190,12 @@ export class Theme {
       } else if (theme === 'dark') {
         media.removeEventListener('change', this.handleSystemThemeChanged);
         document.documentElement.setAttribute('data-theme', 'dark');
-        document.documentElement.setAttribute('theme', 'dark');
+        if (!this.overridden) document.documentElement.setAttribute('theme', 'dark');
         this.log('dark theme applied (data-theme=dark, theme=dark)');
       } else if (theme === 'light') {
         media.removeEventListener('change', this.handleSystemThemeChanged);
         document.documentElement.setAttribute('data-theme', 'light');
-        document.documentElement.setAttribute('theme', 'light');
+        if (!this.overridden) document.documentElement.setAttribute('theme', 'light');
         this.log('light theme applied (data-theme=light, theme=light)');
       } else {
         throw new Error(`Invalid theme: ${theme}. Use 'light', 'dark', or 'system'.`);
@@ -215,8 +215,41 @@ export class Theme {
     }
   }
 
+  /** 지금 걸린 일시 테마({@link override}) — 없으면 선호가 적용된다. */
+  private static overridden: 'light' | 'dark' | null = null;
+
+  /**
+   * 선호를 바꾸지 않고 **지금 문서에만** 테마를 겁니다 — 저장하지 않고, `get()`(선호)도 그대로입니다.
+   * `null` 이면 걷고 선호(`set()` 으로 고른 값, 또는 system 의 OS 값)로 돌아갑니다.
+   *
+   * 화면 하나가 자기 바탕을 정할 때 씁니다 — 벽에 거는 현장 보드는 사용자가 밝은 테마를 골랐어도 어둡게 서야 하고,
+   * 그 화면을 떠나면 사용자의 선택으로 돌아와야 합니다. `set()` 으로 하면 그 선택을 덮어 저장해 버립니다.
+   *
+   * ```ts
+   * Theme.override('dark');  // 보드에 들어올 때
+   * Theme.override(null);    // 떠날 때 — 선호로 돌아간다
+   * ```
+   */
+  public static override(theme: 'light' | 'dark' | null) {
+    this.overridden = theme;
+    const root = document.documentElement;
+    if (theme) {
+      root.setAttribute('theme', theme);
+    } else {
+      const preference = this.get();
+      const applied = preference === 'dark' || preference === 'light'
+        ? preference
+        : window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      root.setAttribute('theme', applied);
+    }
+    this.applyAccent();
+    this.log('theme override', theme ?? '(cleared)');
+  }
+
   /** 시스템 테마 변경을 처리하는 메서드 */
   private static handleSystemThemeChanged = (_?: MediaQueryListEvent) => {
+    // 일시 테마가 걸려 있는 동안은 OS 변경이 그것을 덮지 않는다 — 걷힐 때 그때의 OS 값으로 돌아간다.
+    if (this.overridden) return;
     if (document.documentElement.getAttribute('data-theme') === 'system') {
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       document.documentElement.setAttribute('theme', isDark ? 'dark' : 'light');

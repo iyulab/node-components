@@ -61,6 +61,15 @@ changes**, because those targets are relative to the page background.
 > `iyu.base`, so an unlayered `:root` override applies in both themes. Scope a mode-specific value
 > yourself with `:root[theme="dark"] { … }`.
 
+## A screen with its own theme
+
+`Theme.override('dark')` applies a theme to the document without touching the user's preference: nothing is stored,
+`get()` still answers the preference, `resolved()` and `<html theme>` answer the override. `Theme.override(null)` clears
+it and returns to the preference (under `'system'`, the OS value at that moment). A preference set while an override
+is on waits until it is cleared. Use it for a screen that owns its background — a floor board on a TV stays dark even
+where the user chose light — and clear it when that screen goes (`@iyulab/modern-app` does both for a route with
+`metadata: { theme }`).
+
 ## API
 
 | Member | Type | Description |
@@ -69,6 +78,7 @@ changes**, because those targets are relative to the page background.
 | `Theme.get()` | `ThemeType \| undefined` | Get current theme |
 | `Theme.set(theme)` | `void` | Set theme (`'light'`, `'dark'`, `'system'`) |
 | `Theme.resolved()` | `'light' \| 'dark'` | The theme actually applied — use this, not `get()`, for brightness branches |
+| `Theme.override(theme)` | `void` | Apply `'light'` / `'dark'` without changing or storing the preference; `null` returns to the preference |
 | `Theme.accent(seed)` | `void` | Derive the `--u-primary-*` ramp from a brand color; `null` clears it |
 | `Theme.isInitialized` | `boolean` | Whether `init()` has been called |
 
