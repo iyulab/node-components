@@ -63,6 +63,7 @@
   "ok": "OK",
   "stepComplete": "Abgeschlossen",
   "stepOnHold": "Angehalten",
+  "stepSkipped": "Übersprungen",
   "apply": "Übernehmen",
   "dateUnavailable": "Dieses Datum ist nicht verfügbar",
   "startTime": "Startzeit",

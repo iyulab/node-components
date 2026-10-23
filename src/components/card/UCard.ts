@@ -7,9 +7,16 @@ import { styles } from "./UCard.styles.js";
 
 export type CardOrientation = 'vertical' | 'horizontal';
 export type CardAppearance = 'outlined' | 'plain';
+/** 카드의 강조 톤. */
+export type CardTone = 'primary' | 'info' | 'success' | 'warning' | 'danger';
 
 /**
  * 콘텐츠를 카드 형태로 표시하는 컴포넌트입니다.
+ *
+ * `tone` 은 카드가 이웃보다 먼저 읽혀야 할 때다 — `warning`·`danger`·`success`·`info` 는 그 상태의 옅은 면과 테두리
+ * («확인할 것», «막힌 것»), `primary` 는 면은 그대로 두고 주 색 테두리(«다음 할 일» — 화면의 한 곳). 색만으로 전하지
+ * 않도록 카드의 제목이 그 뜻을 말해야 한다. 톤은 안쪽 상자에 칠하므로 바깥에서 건 `--card-border-color`(하우스 시트 등)가
+ * 덮지 않는다.
  *
  * @slot - 카드의 본문 콘텐츠
  * @slot header - 카드 상단 헤더 영역
@@ -37,6 +44,8 @@ export class UCard extends UElement {
   @property({ type: String, reflect: true }) appearance: CardAppearance = 'outlined';
   /** 마우스 오버 효과 적용 여부 */
   @property({ type: Boolean, reflect: true }) hoverable = false;
+  /** 강조 — 상태의 면과 테두리(`warning`·`danger`·`success`·`info`) 또는 주 색 테두리(`primary`). 없으면 보통 카드 */
+  @property({ type: String, reflect: true }) tone?: CardTone;
   /**
    * 카드 전체가 이동하는 링크 URL. 주면 바깥 상자가 `<a>` 로 그려진다 — 테두리가 hover 를 싣고 들어 올리지 않는다.
    * 링크 안에는 다른 대화형 요소(버튼·링크)를 두지 않는다(HTML 의 `<a>` 내용 모델).

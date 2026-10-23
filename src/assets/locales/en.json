@@ -63,6 +63,7 @@
   "ok": "OK",
   "stepComplete": "Completed",
   "stepOnHold": "On hold",
+  "stepSkipped": "Skipped",
   "apply": "Apply",
   "dateUnavailable": "This date is not available",
   "startTime": "Start time",

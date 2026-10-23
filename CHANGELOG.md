@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`u-steps appearance="bars"`** — each step an equal column with a bar on top and its name and description (a date)
+  under it; travelled and current bars filled, the current name bold. For a detail page header with seven dated steps.
+- **`u-steps` status `skipped`** — a step this record's route does not have (an order with no proof): a dashed ring, or
+  an empty bar, and the hidden word «Skipped» (`stepSkipped`, in every bundled locale).
+- **`u-card tone`** — `warning` · `danger` · `success` · `info` give the card that status's face and border, `primary` a
+  main-colour border for the one card holding the next action. Painted on the inner box, so a page-set
+  `--card-border-color` does not cover it.
+
 ## [2.32.0] - 2026-10-23
 
 ### Added

@@ -63,6 +63,7 @@
   "ok": "OK",
   "stepComplete": "完了",
   "stepOnHold": "保留",
+  "stepSkipped": "スキップ",
   "apply": "適用",
   "dateUnavailable": "この日付は選択できません",
   "startTime": "開始時刻",

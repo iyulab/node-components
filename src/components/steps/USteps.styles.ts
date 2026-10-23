@@ -97,6 +97,63 @@ export const styles = css`
     background: var(--steps-connector-done-color, var(--u-txt-color-weak, #616161));
   }
 
+  /* 건너뜀 — 지나갔지만 한 일이 없다: 점선 고리, 이름은 물러선다 */
+  .step[data-status="skipped"] {
+    color: var(--u-txt-color-weaker, #757575);
+  }
+  .step[data-status="skipped"] .marker {
+    border-style: dashed;
+  }
+
+  /* ── 막대(appearance="bars") — 단계마다 칸을 고르게, 막대 아래 이름과 보조 문구 ── */
+  :host([appearance="bars"]) .base {
+    align-items: flex-start;
+  }
+  :host([appearance="bars"]) .list {
+    display: grid;
+    align-items: start;
+    gap: var(--u-space-sm, 8px);
+  }
+  :host([appearance="bars"]) .step {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    min-width: 0;
+    white-space: normal;
+  }
+  :host([appearance="bars"]) .marker {
+    width: auto;
+    height: var(--steps-bar-height, 6px);
+    margin-bottom: var(--u-space-xs, 6px);
+    border: 0;
+    border-radius: var(--u-radius-pill, 9999px);
+    background: var(--u-border-color, #E0E0E0);
+  }
+  :host([appearance="bars"]) .step[data-status="complete"] .marker,
+  :host([appearance="bars"]) .step[data-status="current"] .marker {
+    border: 0;
+    background: var(--steps-bar-color, var(--u-primary-color, #1976D2));
+  }
+  :host([appearance="bars"]) .step[data-status="hold"] .marker {
+    border: 0;
+    background: var(--u-warning-color, #FDD835);
+  }
+  :host([appearance="bars"]) .step[data-status="skipped"] .marker {
+    border: 0;
+    background: var(--u-border-color, #E0E0E0);
+  }
+  :host([appearance="bars"]) .title {
+    font-size: var(--u-text-body-size, 14px);
+    color: var(--u-txt-color, #212121);
+  }
+  :host([appearance="bars"]) .step[data-status="upcoming"] .title,
+  :host([appearance="bars"]) .step[data-status="skipped"] .title {
+    color: var(--u-txt-color-weak, #616161);
+  }
+  :host([appearance="bars"]) .description {
+    font-variant-numeric: tabular-nums;
+  }
+
   .sr-only {
     position: absolute;
     width: 1px;

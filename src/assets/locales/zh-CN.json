@@ -63,6 +63,7 @@
   "ok": "确定",
   "stepComplete": "已完成",
   "stepOnHold": "已暂停",
+  "stepSkipped": "已跳过",
   "apply": "应用",
   "dateUnavailable": "该日期不可选",
   "startTime": "开始时间",

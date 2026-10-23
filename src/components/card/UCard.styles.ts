@@ -37,6 +37,35 @@ export const styles = css`
     --card-border-width: 0;
     box-shadow: none;
   }
+  /* 톤 — 안쪽 상자(.base)에 칠한다: 호스트에 건 --card-border-color(바깥 시트)가 덮지 못하게. */
+  :host([tone]) .base {
+    border-width: max(var(--card-border-width), 1px);
+  }
+  :host([tone="primary"]) .base {
+    border-color: var(--u-primary-color, #1976D2);
+    box-shadow: inset 0 0 0 1px var(--u-primary-color, #1976D2);
+  }
+  :host([tone="info"]) .base {
+    border-color: var(--u-info-color-weak, #2196F3);
+    background-color: var(--u-info-bg-color, #E3F2FD);
+  }
+  :host([tone="success"]) .base {
+    border-color: var(--u-success-color-weak, #4CAF50);
+    background-color: var(--u-success-bg-color, #E8F5E9);
+  }
+  :host([tone="warning"]) .base {
+    border-color: var(--u-warning-color-weak, #FFEB3B);
+    background-color: var(--u-warning-bg-color, #FFF59D);
+  }
+  :host([tone="danger"]) .base {
+    border-color: var(--u-danger-color-weak, #F44336);
+    background-color: var(--u-danger-bg-color, #FFEBEE);
+  }
+  @media (forced-colors: active) {
+    :host([tone]) .base {
+      border-color: CanvasText;
+    }
+  }
   :host([shadowless]) {
     box-shadow: none;
   }

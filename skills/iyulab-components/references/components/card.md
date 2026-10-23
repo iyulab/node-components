@@ -33,6 +33,17 @@ border carries hover, and the card does not lift (a lifting card shakes a grid r
 — buttons, links — out of a link card; an `<a>` cannot contain them. The link's accessible name is all of the card's
 text unless the host has an `aria-label`, which moves to the link.
 
+**A card that must be read first (`tone`).** `warning`, `danger`, `success` and `info` give the card that status's
+soft face and border — «Check these 2», «Blocked» — and `primary` keeps the face and draws the main colour around it,
+for the one card on a screen that holds the next action. The card's heading says what the tone means; colour alone
+does not. The tone paints the inner box, so a `--card-border-color` set on the host from outside (a theme sheet does)
+does not cover it.
+
+```html
+<u-card tone="warning"><h2 slot="header">Check these 2</h2>…</u-card>
+<u-card tone="primary"><h2 slot="header">Next</h2>…<u-button>Assign 100 copies</u-button></u-card>
+```
+
 ---
 
 ## Slots
@@ -52,6 +63,7 @@ text unless the host has an `aria-label`, which moves to the link.
 | `shadowless` | `boolean` | `false` | ✓ | Remove drop shadow |
 | `appearance` | `'outlined'\|'plain'` | `'outlined'` | ✓ | `outlined` border and drop shadow · `plain` no border and no shadow (layout only) |
 | `hoverable` | `boolean` | `false` | ✓ | Lift effect on hover |
+| `tone` | `'primary'\|'info'\|'success'\|'warning'\|'danger'` | — | ✓ | Emphasis — a status face and border, or (`primary`) a main-colour border |
 | `href` | `string` | — | ✓ | Makes the whole card a link to this URL |
 | `target` | `string` | — | | Link target (with `href`) |
 | `rel` | `string` | — | | Link relationship (with `href`) |

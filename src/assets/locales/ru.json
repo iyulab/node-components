@@ -63,6 +63,7 @@
   "ok": "ОК",
   "stepComplete": "Завершено",
   "stepOnHold": "Приостановлено",
+  "stepSkipped": "Пропущен",
   "apply": "Применить",
   "dateUnavailable": "Эта дата недоступна",
   "startTime": "Время начала",

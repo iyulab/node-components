@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 33개 · 프로퍼티 144개**
+**컴포넌트 33개 · 프로퍼티 146개**
 
 ## `<u-alert>`
 
@@ -251,6 +251,8 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--steps-connector-color` | 아직 지나지 않은 연결선 색 |
 | `--steps-connector-done-color` | 지나온 연결선·완료 표식 색 |
 | `--steps-label-width` | 트랙 이름 칸 폭 (기본 56px) |
+| `--steps-bar-height` | `bars` 의 막대 두께 (기본 6px) |
+| `--steps-bar-color` | `bars` 의 채운 막대 색 (기본 주 색) |
 
 ## `<u-switch>`
 

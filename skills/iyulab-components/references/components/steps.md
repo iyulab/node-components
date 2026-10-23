@@ -26,9 +26,26 @@ moving to the next step is the consumer's own action, placed beside it. For seve
 ```
 
 Status is told by marker shape as well as colour — complete = check, current = heavy ring,
-hold = warning tint, upcoming = empty ring. Assistive tech hears the current step through
-`aria-current="step"` and complete/hold through a hidden status word (`stepComplete`,
-`stepOnHold` locale keys).
+hold = warning tint, upcoming = empty ring, skipped = dashed ring. Assistive tech hears the current step through
+`aria-current="step"` and complete/hold/skipped through a hidden status word (`stepComplete`,
+`stepOnHold`, `stepSkipped` locale keys). `skipped` is a step this record's route does not have — an order with no
+proof still shows «Proof», passed over.
+
+### Bars — `appearance="bars"`
+
+Each step takes an equal column: a bar on top, the step's name and its description (a date) under it. The travelled
+and current bars are filled, upcoming and skipped ones empty, a held step's bar is the warning colour; the current
+step's name is bold. For a detail page's header, where seven steps each carry a date.
+
+```html
+<u-steps appearance="bars" current="3" .items=${[
+  { label: 'Intake', description: '10/21' },
+  { label: 'Proof', description: 'none', status: 'skipped' },
+  { label: 'Check', description: '10/21' },
+  { label: 'Plate', description: '10/21 · batch 50' },
+  { label: 'Print' }, { label: 'Foil · pack' }, { label: 'Ship' },
+]}></u-steps>
+```
 
 ---
 
@@ -39,8 +56,9 @@ hold = warning tint, upcoming = empty ring. Assistive tech hears the current ste
 | `items` | `StepItem[]` | `[]` | — | `{ label, description?, status? }` (property only) |
 | `current` | `number` | — | — | Index of the current step; steps without `status` before it are `complete`, after it `upcoming` |
 | `label` | `string` | — | — | Track name shown at the start; also the list's accessible name |
+| `appearance` | `'line'\|'bars'` | `'line'` | ✓ | `line` markers and connectors · `bars` a bar per step with the text under it |
 
-`StepStatus` = `'complete' | 'current' | 'hold' | 'upcoming'`. An item's own `status` wins over
+`StepStatus` = `'complete' | 'current' | 'hold' | 'upcoming' | 'skipped'`. An item's own `status` wins over
 the inference from `current`.
 
 ## CSS Parts
@@ -64,3 +82,5 @@ the inference from `current`.
 | `--steps-connector-color` | Connector not yet travelled |
 | `--steps-connector-done-color` | Travelled connector and complete marker |
 | `--steps-label-width` | Width of the track name (default 56px) |
+| `--steps-bar-height` | Bar thickness with `bars` (default 6px) |
+| `--steps-bar-color` | Filled bar colour with `bars` (default the primary colour) |

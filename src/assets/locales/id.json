@@ -63,6 +63,7 @@
   "ok": "OK",
   "stepComplete": "Selesai",
   "stepOnHold": "Ditahan",
+  "stepSkipped": "Dilewati",
   "apply": "Terapkan",
   "dateUnavailable": "Tanggal ini tidak tersedia",
   "startTime": "Waktu mulai",

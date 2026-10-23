@@ -63,6 +63,7 @@
   "ok": "ตกลง",
   "stepComplete": "เสร็จสิ้น",
   "stepOnHold": "พักไว้",
+  "stepSkipped": "ข้ามแล้ว",
   "apply": "นำไปใช้",
   "dateUnavailable": "ไม่สามารถเลือกวันที่นี้ได้",
   "startTime": "เวลาเริ่มต้น",
