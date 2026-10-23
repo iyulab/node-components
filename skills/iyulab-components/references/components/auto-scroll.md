@@ -22,15 +22,17 @@ While its content overflows, the box is a keyboard scroll region (`tabindex="0"`
 <u-carousel autoplay loop pagination pagination-style="labels" autoplay-interval="20000" style="height: 100vh">
   <section aria-label="Late" style="display: flex; flex-direction: column">
     <h1>Late orders</h1>
-    <u-auto-scroll speed="40" pause="3000" style="flex: 1">
+    <u-auto-scroll duration="20000" pause="3000" style="flex: 1">
       <ol>…</ol>
     </u-auto-scroll>
   </section>
 </u-carousel>
 ```
 
-Give it a height — a fixed one, or `flex: 1` in a column with `min-height: 0` (the host sets it). A slide shown for
-20 seconds fits about `(20 - 2 × pause) × speed` pixels of travel; choose `speed` from the list's length.
+Give it a height — a fixed one, or `flex: 1` in a column with `min-height: 0` (the host sets it). Where the time on
+screen is fixed — a carousel slide shown for 20 seconds — set `duration` to that time: the box then works out its own
+speed from the distance, so a list of any length reaches its end within the slide (the two waits come out of it).
+Otherwise it scrolls at `speed`.
 
 ---
 
@@ -44,7 +46,8 @@ Give it a height — a fixed one, or `flex: 1` in a column with `min-height: 0` 
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
-| `speed` | `number` | `30` | — | Scroll speed in px per second |
+| `speed` | `number` | `30` | — | Scroll speed in px per second — `duration` overrides it |
+| `duration` | `number` | `0` | — | Time for one round (wait + scroll + wait), in ms; the speed follows from the distance. `0` uses `speed` |
 | `pause` | `number` | `3000` | — | Wait at the top and at the end, in ms |
 | `paused` | `boolean` | `false` | ✓ | Do not scroll by itself — by hand only |
 

@@ -22,8 +22,13 @@ import { styles } from "./UAutoScroll.styles.js";
 export class UAutoScroll extends UElement {
   static styles = [super.styles, styles];
 
-  /** 굴리는 속도 (px/초) */
+  /** 굴리는 속도 (px/초) — `duration` 을 주면 그것이 정한다 */
   @property({ type: Number }) speed = 30;
+  /**
+   * 한 바퀴(위에서 멈춤 + 굴림 + 끝에서 멈춤)에 쓸 시간 (ms). 주면 속도는 남은 거리와 이 시간에서 나온다 — 캐러셀의 한 장처럼
+   * 보이는 시간이 정해진 자리에서, 목록 길이와 상관없이 그 시간 안에 끝까지 보이게 한다. 0 이면 `speed` 를 쓴다.
+   */
+  @property({ type: Number }) duration = 0;
   /** 맨 위와 끝에서 멈추는 시간 (ms) */
   @property({ type: Number }) pause = 3000;
   /** 굴리지 않는다 — 손으로만 굴린다 */
@@ -113,7 +118,7 @@ export class UAutoScroll extends UElement {
       this.legFrom = this.scrollTop;
     }
     const end = this.scrollHeight - this.clientHeight;
-    const position = Math.min(end, this.legFrom + (this.speed * (time - this.legStart)) / 1000);
+    const position = Math.min(end, this.legFrom + (this.pace(end - this.legFrom) * (time - this.legStart)) / 1000);
     this.scrollTop = position;
     if (position >= end) {
       this.phase = 'end';
@@ -121,6 +126,13 @@ export class UAutoScroll extends UElement {
       this.waitUntil = time + this.pause;
     }
   };
+
+  /** px/초 — `duration` 이 있으면 남은 거리를 그 시간에서 두 번의 멈춤을 뺀 동안에 간다(최소 1초). */
+  private pace(distance: number): number {
+    if (!(this.duration > 0)) return this.speed;
+    const travel = Math.max(1000, this.duration - 2 * this.pause);
+    return Math.max(1, distance) / (travel / 1000);
+  }
 
   private syncTabStop = () => {
     this.aria.set('tabindex', this.overflowing ? '0' : null);

@@ -77,13 +77,13 @@ export const styles = css`
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    /* 호스트 하한(--u-target-size)이 있으면 그 값 — 미설정이면 24px. */
-    width: max(24px, var(--u-target-size, 0px));
-    height: max(24px, var(--u-target-size, 0px));
+    /* 글자 단계를 따른다(13px 에서 24px — 큰 글자 화면에서 함께 커진다). 호스트 하한(--u-target-size)이 더 크면 그 값. */
+    width: max(calc(var(--u-text-label-size, 13px) * 24 / 13), var(--u-target-size, 0px));
+    height: max(calc(var(--u-text-label-size, 13px) * 24 / 13), var(--u-target-size, 0px));
     padding: 0;
     border: none;
     border-radius: var(--u-radius-circle, 50%);
-    font-size: 12px;
+    font-size: calc(var(--u-text-label-size, 13px) * 12 / 13);
     color: var(--u-neutral-900, #212121);
     background-color: var(--u-neutral-100, #F5F5F5);
     box-shadow: var(--u-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.05));

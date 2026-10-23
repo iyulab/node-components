@@ -72,4 +72,13 @@ describe('u-carousel labeled pagination', () => {
     expect(getComputedStyle(indicator).position).toBe('absolute');
     expect(tabs(el)[0].textContent!.trim()).toBe('');
   });
+
+  it('the stop/start button follows the type ladder — a large-text screen gets a larger one', async () => {
+    const el = await mount('pagination pagination-style="labels" autoplay');
+    const size = () => el.shadowRoot!.querySelector('[part="rotation-button"]')!.getBoundingClientRect().width;
+    expect(Math.round(size())).toBe(24);
+    el.style.setProperty('--u-text-label-size', '26px');
+    await wait(0);
+    expect(Math.round(size())).toBe(48);
+  });
 });

@@ -87,4 +87,18 @@ describe('u-auto-scroll', () => {
     await wait(80);
     expect(el.scrollTop).toBe(0);
   });
+
+  it('duration fits the run into a fixed time, whatever the list length', async () => {
+    for (const rows of [20, 45]) {
+      const el = await mount(rows, 'duration="1600" pause="100"');
+      const end = el.scrollHeight - el.clientHeight;
+      const start = performance.now();
+      while (el.scrollTop < end - 1 && performance.now() - start < 3000) await wait(25);
+      const took = performance.now() - start;
+      expect(el.scrollTop).toBeGreaterThanOrEqual(end - 1);
+      // 멈춤 100 + 굴림 1400 — 프레임 여유를 두고 그 안에 닿는다(목록이 두 배여도 같은 시간).
+      expect(took).toBeLessThan(1900);
+      expect(took).toBeGreaterThan(1000);
+    }
+  });
 });
