@@ -24,19 +24,24 @@ describe('u-auto-scroll item mode', () => {
     return el;
   }
 
-  async function stops(el: UAutoScroll, samples = 90, every = 25): Promise<number[]> {
+  // 멈춘 자리 — 같은 값이 `pause` 의 절반 넘게 이어진 곳. 미끄러짐의 감속 끝은 1px 안에서 100ms 넘게 머물러(반올림한
+  // 값이 그대로다) «연달아 셋» 으로 세면 꼬리를 멈춤으로 잘못 센다.
+  const PAUSE = 600;
+  async function stops(el: UAutoScroll, samples = 160, every = 25): Promise<number[]> {
     const seen: number[] = [];
     for (let i = 0; i < samples; i++) { seen.push(Math.round(el.scrollTop)); await wait(every); }
-    // 멈춘 자리 — 같은 값이 연달아 셋 이상 이어진 곳.
+    const minRun = Math.ceil(PAUSE / 2 / every);
     const held: number[] = [];
-    for (let i = 2; i < seen.length; i++) {
-      if (seen[i] === seen[i - 1] && seen[i] === seen[i - 2] && held[held.length - 1] !== seen[i]) held.push(seen[i]);
+    let run = 1;
+    for (let i = 1; i < seen.length; i++) {
+      run = seen[i] === seen[i - 1] ? run + 1 : 1;
+      if (run === minRun && held[held.length - 1] !== seen[i]) held.push(seen[i]);
     }
     return held;
   }
 
   it('stops on item boundaries, one item at a time', async () => {
-    const el = await mount('mode="item" pause="250"');
+    const el = await mount(`mode="item" pause="${PAUSE}"`);
     const held = await stops(el);
     expect(held.length).toBeGreaterThanOrEqual(3);
     for (const top of held) expect(top % 50).toBe(0);
@@ -48,7 +53,7 @@ describe('u-auto-scroll item mode', () => {
   });
 
   it('steps through a wrapping list’s children', async () => {
-    const el = await mount('mode="item" pause="250"', true);
+    const el = await mount(`mode="item" pause="${PAUSE}"`, true);
     const held = (await stops(el)).filter((v) => v > 0);
     expect(held.length).toBeGreaterThanOrEqual(2);
     expect(held[0]).toBe(50);
