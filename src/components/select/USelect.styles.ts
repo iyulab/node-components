@@ -200,6 +200,11 @@ export const styles = css`
   :host([multiple]) input.search {
     flex: 1 1 2ch;
   }
+  /* 단일 선택의 입력은 고른 값의 글자를 값으로 갖지만(보조기술이 읽는 값), 치기 전에는 표시 요소(옵션의 내용 —
+     아이콘 등)가 그린다. 글자만 투명하게 하고 색은 남겨 캐럿 · 고름 표시는 보인다. */
+  :host(:not([multiple])) .container:not(.typing) input.search {
+    -webkit-text-fill-color: transparent;
+  }
   /* 칩 묶음은 제 폭(칩들의 한 줄)을 지키고 입력이 남는 폭을 쓴다 — 둘이 폭을 나누면(flex: 1 끼리) 칩 묶음이 0 쪽으로 줄어
      칩이 한 줄에 하나씩 쌓인다. 칩이 넘치면 입력이 다음 줄로 간다. */
   :host([multiple][searchable]) .chips-content {

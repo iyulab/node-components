@@ -147,6 +147,7 @@ export class USelect extends UFormControlElement<string | string[]> {
   private readonly idBase = `u-select-${Math.random().toString(36).slice(2, 8)}`;
   private readonly listboxId = `${this.idBase}-listbox`;
   private readonly popupId = `${this.idBase}-popup`;
+  private readonly chipsId = `${this.idBase}-chips`;
 
   protected shouldValidate(changed: PropertyValues): boolean {
     return super.shouldValidate(changed)
@@ -192,6 +193,7 @@ export class USelect extends UFormControlElement<string | string[]> {
 
     if (['value','options'].some(k => changedProperties.has(k))) {
       this.onChangeValue();
+      this.syncSearchInput();
     }
     // `open`은 `@state()`(비공개) — 공개 속성으로 반사하지 않고 `:state(open)`으로만
     // 노출한다. 팝오버가 열려 있을 때 트리거를 다르게 그리고 싶은 소비자는
@@ -246,9 +248,11 @@ export class USelect extends UFormControlElement<string | string[]> {
               aria-controls=${this.listboxId}
               aria-label=${this.resolvedAriaLabel || Locale.getValue('search')}
               aria-description=${ifDefined(this.resolvedAriaDescription)}
+              aria-describedby=${ifDefined(this.multiple && this.valueAsArray.length ? this.chipsId : undefined)}
               ?disabled=${this.effectivelyDisabled}
               ?readonly=${this.readonly}
               @input=${this.handleSearchInput}
+              @focus=${this.handleSearchFocus}
               @compositionstart=${this.handleCompositionStart}
               @compositionupdate=${this.composition}
               @compositionend=${this.composition}
@@ -309,7 +313,7 @@ export class USelect extends UFormControlElement<string | string[]> {
       }
       
       return html`
-        <div class="chips-content">
+        <div class="chips-content" id=${this.chipsId}>
           ${values.map(v => html`
               <u-chip 
                 removable
@@ -440,13 +444,45 @@ export class USelect extends UFormControlElement<string | string[]> {
     if (this.popoverEl?.matches(':focus-within')) {
       this.focus();
     }
-    // 닫히면 검색어를 비운다 — 트리거가 다시 고른 값을 보이고, 다음에 열 때 전체 목록에서 시작한다. 원격 검색 소비자도
+    // 닫히면 친 글자를 걷고 고른 값의 글자로 되돌린다 — 다음에 열 때 전체 목록에서 시작한다. 원격 검색 소비자도
     // 빈 검색어의 `search` 로 옵션을 되돌린다.
     const input = this.searchInputEl;
-    if (this.searchable && input && input.value) {
-      input.value = '';
-      this.updateSearch(input);
-    }
+    if (this.searchable && input && this.isEdited(input)) this.revertSearchInput(input);
+  };
+
+  /**
+   * 검색 가능 단일 선택의 입력 글자 = 고른 옵션의 글자(APG «editable combobox»: 입력의 값이 곧 콤보박스의 값이다).
+   * 보조기술 · 접근성 트리는 닫힌 콤보박스의 값을 이 글자로 읽는다. 다중 선택에서는 입력이 검색어 칸이라 비어 있고,
+   * 고른 값(칩 묶음)은 `aria-describedby` 로 잇는다.
+   */
+  private get inputText(): string {
+    if (this.multiple) return '';
+    return this.options.find(o => o.value === this.value)?.getText().trim() ?? '';
+  }
+
+  /** 입력에 사용자가 친 글자가 있는가 — 고른 값의 글자 그대로면 검색어가 아니다. */
+  private isEdited(input: HTMLInputElement): boolean {
+    return input.value !== this.inputText;
+  }
+
+  /** 친 글자가 없을 때 입력을 고른 값의 글자에 맞춘다(값 · 옵션이 바뀔 때). 치는 중이면 건드리지 않는다. */
+  private syncSearchInput() {
+    const input = this.searchable ? this.searchInputEl : null;
+    if (!input || this.typing) return;
+    const text = this.inputText;
+    if (input.value !== text) input.value = text;
+  }
+
+  /** 친 글자를 걷고 고른 값의 글자로 — 빈 검색어의 `search` 가 함께 나간다. */
+  private revertSearchInput(input: HTMLInputElement) {
+    input.value = this.inputText;
+    this.updateSearch(input);
+  }
+
+  /** 들어오면 고른 값의 글자를 통째로 고른다 — 첫 글자(한글 조합의 첫 음절까지)가 그것을 바꿔 검색어가 된다. */
+  private handleSearchFocus = (e: FocusEvent) => {
+    const input = e.target as HTMLInputElement;
+    if (!this.isEdited(input) && input.value) input.select();
   };
 
   /** 검색 가능일 때 목록을 연다(여닫기는 이 요소가 한다 — 팝오버는 `trigger="manual"`). */
@@ -461,6 +497,8 @@ export class USelect extends UFormControlElement<string | string[]> {
     const input = this.searchInputEl;
     if (!input) return;
     if (this.shadowRoot?.activeElement !== input) input.focus();
+    // 누른 자리에 캐럿이 놓여 포커스 때의 «통째 고름» 이 풀린다 — 열 때 다시 고른다.
+    if (!this.open && !this.isEdited(input) && input.value) input.select();
     if (!this.open) this.openPopup();
     else if (!e.composedPath().includes(input)) void this.popoverEl?.hide();
   };
@@ -602,14 +640,15 @@ export class USelect extends UFormControlElement<string | string[]> {
   };
 
   private updateSearch(input: HTMLInputElement) {
-    this.typing = input.value !== '' || this.composition.composing;
+    const edited = this.isEdited(input);
+    this.typing = edited || this.composition.composing;
     if (this.typing) this.openPopup();
-    const { query, composing } = this.composition.searchQuery(input);
+    const { query, composing } = this.typing ? this.composition.searchQuery(input) : { query: '', composing: false };
     this.query = query.trim();
     this.queryComposing = composing;
     this.applyFilter();
 
-    const detail = { query: input.value.toLowerCase().trim(), composing: this.composition.composing };
+    const detail = { query: this.typing ? input.value.toLowerCase().trim() : '', composing: this.composition.composing };
     if (this.lastSearch && this.lastSearch.query === detail.query && this.lastSearch.composing === detail.composing) return;
     this.lastSearch = detail;
     this.fire<USelectSearchDetail>('search', { detail, cancelable: false });
@@ -676,10 +715,9 @@ export class USelect extends UFormControlElement<string | string[]> {
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
         this.openPopup();
-      } else if (e.key === 'Escape' && (e.target as HTMLInputElement).value) {
+      } else if (e.key === 'Escape' && this.isEdited(e.target as HTMLInputElement)) {
         e.preventDefault();
-        (e.target as HTMLInputElement).value = '';
-        this.updateSearch(e.target as HTMLInputElement);
+        this.revertSearchInput(e.target as HTMLInputElement);
       }
       return;
     }

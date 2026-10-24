@@ -277,7 +277,8 @@ describe('u-select — 키보드', () => {
       await frames();
       expect(select.value).toBe('blueberry');
       expect(popover.open).toBe(false);
-      expect(searchInput(select).value, '닫히면 검색어를 비운다').toBe('');
+      // 닫히면 친 글자를 걷고 고른 옵션의 글자로 — 입력의 값이 곧 콤보박스의 값이다(APG editable combobox).
+      expect(searchInput(select).value, '닫히면 고른 값의 글자').toBe(select.querySelector('u-option[value="blueberry"]')!.textContent!.trim());
     });
 
     it('목록의 옵션 위에서 친 글자는 검색 입력으로 돌아가 이어진다', async () => {

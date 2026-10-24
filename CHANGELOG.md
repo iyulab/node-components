@@ -17,6 +17,15 @@
   other names stay in the list for assistive technology. New part `summary`, new custom properties
   `--steps-segment-width` and `--steps-current-color`.
 
+### Fixed
+
+- **A searchable `u-select` reads its chosen value again.** Since 2.34.0 its combobox is the edit field in the trigger,
+  and that field stayed empty while closed — the chosen text was drawn beside it — so the accessibility tree and screen
+  readers read «label, combobox, blank» (WCAG 4.1.2), and role-based test queries found no value. Closed, the field now
+  holds the chosen option's text (WAI-ARIA APG editable combobox); focusing it selects that text, so the first key
+  replaces it and becomes the query; closing or Escape puts the chosen text back. The `search` event still carries only
+  what was typed. With `multiple`, the field stays the search box and the chosen chips are its description.
+
 ## [2.34.0] - 2026-10-23
 
 ### Changed

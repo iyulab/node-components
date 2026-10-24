@@ -100,7 +100,7 @@ again. On an option, arrows, `Home`/`End`, `Enter`/`Space` (select) and `Escape`
 | `field` | Outer field wrapper |
 | `container` | Trigger area |
 | `popover` | Dropdown list container |
-| `search-input` | The search input inside the trigger (the combobox, when `searchable`) |
+| `search-input` | The edit field inside the trigger (the combobox, when `searchable`) — closed, it holds the chosen option's text (single selection) |
 | `no-matches` | *No matches* status line in the dropdown (empty and hidden otherwise) |
 
 ## CSS Custom Properties
