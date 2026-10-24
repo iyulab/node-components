@@ -37,6 +37,7 @@ const INTERNAL: Record<string, string> = {
   '--_icon-box': 'u-input 접미 아이콘 하나의 받는 상자 = max(1.5em, 24px, --u-target-size) — 글자 영역 하한(min-inline-size) 식의 항',
   '--_min-text': '날짜 피커 글자 영역 하한 — 공용 피커 시트의 min-inline-size 가 읽는 항, 공개 값은 --date-picker-min-text·--date-range-picker-min-text',
   '--_target-pad': 'u-input·u-select·날짜 피커·file-input 접미 아이콘 받는 여백 = max(0.25em, 12px − 0.5em, --u-target-size/2 − 0.5em) — 글자 크기와 무관하게 24px(또는 호스트 하한)를 보장하는 식',
+  '--_tab-bg': 'u-tab-nav(tiles) 가 꽂힌 탭에 넘기는 면 — 탭이 자기 .base 에 그린다(::slotted 면은 문서 전역 리셋에 질 수 있다)',
   '--_tab-border-width': 'u-tab-panel 이 꽂힌 탭에 넘기는 테두리 폭 — 탭이 자기 .base 에 그린다(::slotted 테두리는 문서 전역 리셋에 진다)',
   '--_tab-border-color': 'u-tab-panel 이 꽂힌 탭에 넘기는 테두리 색 — 위와 같다',
   '--_option-divider-width': 'u-radio 단추형이 꽂힌 옵션에 넘기는 칸 구분선 폭 — 옵션이 자기 .base 에 그린다',

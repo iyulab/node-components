@@ -24,7 +24,30 @@ export const styles = css`
   ::slotted(u-tab[active]) {
     color: var(--tab-nav-color);
   }
-  ::slotted(u-tab[active])::after {
+  /* ── 칸(appearance="tiles") — 같은 폭의 칸, 현재 칸은 채운 면 ── */
+  :host([appearance="tiles"]) .base {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--tab-nav-tile-min, 7rem), 1fr));
+    gap: var(--u-space-sm, 8px);
+    box-shadow: none;
+    overflow: visible;
+  }
+  :host([appearance="tiles"]) ::slotted(u-tab) {
+    --_tab-border-width: 0.125rem;
+    --_tab-border-color: var(--u-border-color, #E0E0E0);
+    --_tab-bg: var(--u-bg-color, #FFFFFF);
+    --tab-padding-block: var(--u-space-sm, 8px);
+    --tab-padding-inline: var(--u-space-md, 12px);
+    border-radius: var(--u-radius-lg, 6px);
+    color: var(--u-txt-color, #212121);
+  }
+  :host([appearance="tiles"]) ::slotted(u-tab[active]) {
+    --_tab-border-color: var(--tab-nav-color);
+    --_tab-bg: var(--tab-nav-color);
+    color: var(--tab-nav-contrast, var(--u-primary-txt-color, #FFFFFF));
+  }
+
+  :host(:not([appearance="tiles"])) ::slotted(u-tab[active])::after {
     content: '';
     position: absolute;
     left: 0;

@@ -32,6 +32,14 @@ export const styles = css`
     border-style: solid;
     border-width: var(--_tab-border-width, 0);
     border-color: var(--_tab-border-color, transparent);
+    /* 면도 담는 쪽(u-tab-nav 의 tiles)이 정하고 여기서 그린다 — 같은 이유. */
+    background: var(--_tab-bg, transparent);
+  }
+  /* 큰 숫자 — 레이블 위, 숫자 아래로 세로로 선다. */
+  .base.stacked {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
   }
 
   :host(:hover:not([disabled])) {
@@ -96,6 +104,19 @@ export const styles = css`
     font-size: 0.9em;
     line-height: inherit;
     font-weight: 400;
+  }
+
+  /* 큰 숫자 — 레이블 아래, 탭을 고르는 이유가 숫자일 때(칸형 탭 띠). 글자색은 탭을 따른다. */
+  .count.figure {
+    margin: 0;
+    min-width: 0;
+    padding: 0;
+    background-color: transparent;
+    color: inherit;
+    font-size: var(--u-text-display-size, 26px);
+    line-height: var(--u-text-display-leading, 1.4);
+    font-weight: var(--u-text-display-weight, 700);
+    text-align: start;
   }
 
   .remove-btn {

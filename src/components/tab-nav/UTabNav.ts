@@ -16,8 +16,16 @@ import { styles } from "./UTabNav.styles.js";
  *
  * @csspart base - `<nav>` 띠
  *
- * @cssprop --tab-nav-color - 현재 탭의 글자·밑줄 색 (기본: --u-primary-color)
+ * `appearance="tiles"` 면 탭이 같은 폭의 칸으로 늘어서고 현재 칸은 `--tab-nav-color` 면에 그 위 글자색이다 — 현장 단말의 공정 칸처럼
+ * 칸 하나가 손가락 하나만 하고, 탭마다 쌓인 일의 수(`count-appearance="figure"`)가 고르는 이유인 자리.
+ *
+ * @cssprop --tab-nav-color - 현재 탭의 글자·밑줄 색, `tiles` 의 현재 칸 면 (기본: --u-primary-color)
+ * @cssprop --tab-nav-contrast - `tiles` 의 현재 칸 글자색 (기본: --u-primary-txt-color)
+ * @cssprop --tab-nav-tile-min - `tiles` 의 칸 최소 폭 (기본 7rem) — 이보다 좁아지면 다음 줄로 넘어간다
  */
+/** 탭 띠의 외형 — `line`(기본 — 밑줄) · `tiles`(같은 폭의 칸 — 현재 칸은 채운 면). */
+export type TabNavAppearance = 'line' | 'tiles';
+
 @customElement('u-tab-nav')
 export class UTabNav extends UElement {
   static styles = [super.styles, styles];
@@ -29,6 +37,8 @@ export class UTabNav extends UElement {
   @property({ type: String, reflect: true }) value = '';
   /** 띠의 접근 가능한 이름 — 랜드마크가 여럿인 쪽에서 «무엇의 보기인가» 를 가른다(예: `Saved views`). */
   @property({ type: String }) label = '';
+  /** 외형 — `line`(기본) · `tiles` */
+  @property({ type: String, reflect: true }) appearance: TabNavAppearance = 'line';
 
   @state() private tabs: UTab[] = [];
 

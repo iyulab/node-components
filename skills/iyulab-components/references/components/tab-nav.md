@@ -23,6 +23,21 @@ Each `u-tab` needs an `href`. Mark the current view with `value` on the strip (t
 `active`), or leave `value` empty and put `active` on the current tab yourself. With a router, set `value` from the
 route.
 
+### Tiles — `appearance="tiles"`
+
+Equal tiles instead of an underlined strip; the current tile is filled with `--tab-nav-color` and its text takes
+`--tab-nav-contrast`. For a shop-floor terminal's stations, where a tile is a finger's width and how much is waiting at
+each is why you pick one — pair it with `count-appearance="figure"` on the tabs, which draws the count as a large
+number under the label. Tiles narrower than `--tab-nav-tile-min` wrap onto another row.
+
+```html
+<u-tab-nav label="Stations" appearance="tiles" value="press-1">
+  <u-tab value="press-1" href="?station=press-1" count="383" count-appearance="figure">Press 1</u-tab>
+  <u-tab value="press-2" href="?station=press-2" count="125" count-appearance="figure">Press 2</u-tab>
+  <u-tab value="foil" href="?station=foil" count="137" count-appearance="figure">Foil</u-tab>
+</u-tab-nav>
+```
+
 ### Accessibility
 
 - The strip is a `<nav>` named by `label` — give it one when the page has other navigation.
@@ -41,6 +56,7 @@ route.
 |----------|------|---------|---------|-------------|
 | `value` | `string` | `''` | ✓ | The current view — the tab with this `value` becomes `active`. Empty leaves `active` to the tabs |
 | `label` | `string` | `''` | | Accessible name of the navigation landmark |
+| `appearance` | `'line' \| 'tiles'` | `'line'` | ✓ | `line` an underlined strip · `tiles` equal tiles, the current one filled |
 
 `u-tab` properties for link tabs (`href`, `target`, `rel`, `active`, `count`) are in [tab-panel.md](./tab-panel.md#u-tab).
 
@@ -60,4 +76,6 @@ route.
 
 | Property | Description |
 |----------|-------------|
-| `--tab-nav-color` | Text and underline colour of the current tab (default: `--u-primary-color`) |
+| `--tab-nav-color` | Text and underline colour of the current tab, and the current tile's fill with `tiles` (default: `--u-primary-color`) |
+| `--tab-nav-contrast` | Text colour of the current tile with `tiles` (default: `--u-primary-txt-color`) |
+| `--tab-nav-tile-min` | Narrowest a tile gets before tiles wrap (default `7rem`) |

@@ -4,6 +4,10 @@
 
 ### Added
 
+- **`<u-tab-nav appearance="tiles">` and `<u-tab count-appearance="figure">` — tiles for stations.** Equal tiles
+  instead of an underlined strip, the current one filled (`--tab-nav-color`, text `--tab-nav-contrast`), wrapping when
+  narrower than `--tab-nav-tile-min`. A `figure` count is a large number under the label — for a shop-floor terminal's
+  stations, where how much waits at each is why you pick one. New type `TabNavAppearance`.
 - **`<u-steps appearance="compact">` — seven steps on one line.** One small segment per step and the current step's
   name beside them, for a list table's progress column, a preview panel or a card header. Travelled segments are
   filled, the current one takes the primary colour, a held one the warning colour and a skipped one is dashed. The

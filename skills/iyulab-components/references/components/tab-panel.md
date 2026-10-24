@@ -124,7 +124,7 @@ panel tab or a link tab. It is part of the tab's name.
 | `target` | `string` | — | | Link target (with `href`) |
 | `rel` | `string` | — | | Link relationship (with `href`) |
 | `count` | `number` | — | | Quiet count after the label, in the active locale's digits |
-| `countAppearance` | `'badge' \| 'plain'` | — | | Attribute `count-appearance`. `badge` (a pill) or `plain` (no pill — a smaller, weaker number, for a row of many tabs where pills would read before the labels). Empty: the app-wide `UTab.countAppearance` (default `badge`) |
+| `countAppearance` | `'badge' \| 'plain' \| 'figure'` | — | | Attribute `count-appearance`. `badge` (a pill), `plain` (no pill — a smaller, weaker number, for a row of many tabs where pills would read before the labels) or `figure` (a large number under the label — for `u-tab-nav appearance="tiles"`, where the count is why you pick the tab). Empty: the app-wide `UTab.countAppearance` (default `badge`) |
 
 ### Events
 

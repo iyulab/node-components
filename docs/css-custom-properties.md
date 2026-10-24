@@ -17,7 +17,7 @@ u-button.cta { --btn-color: #0f9d58; }
 전역 테마 토큰(`--u-*`)의 전체 목록은 [design-tokens.md](design-tokens.md),
 넣는 방법과 브랜딩 지침은 [theming.md](theming.md) 를 보세요.
 
-**컴포넌트 33개 · 프로퍼티 146개**
+**컴포넌트 33개 · 프로퍼티 150개**
 
 ## `<u-alert>`
 
@@ -253,6 +253,8 @@ u-button.cta { --btn-color: #0f9d58; }
 | `--steps-label-width` | 트랙 이름 칸 폭 (기본 56px) |
 | `--steps-bar-height` | `bars` 의 막대 두께 (기본 6px) |
 | `--steps-bar-color` | `bars` 의 채운 막대 색 (기본 주 색) |
+| `--steps-segment-width` | `compact` 의 칸 폭 (기본 0.875rem) |
+| `--steps-current-color` | `compact` 의 지금 칸 색 (기본 `--steps-bar-color`) — 주 색이 잉크인 테마에서 지나온 칸과 가르려고 |
 
 ## `<u-switch>`
 
@@ -280,7 +282,9 @@ u-button.cta { --btn-color: #0f9d58; }
 
 | 프로퍼티 | 설명 |
 |---|---|
-| `--tab-nav-color` | 현재 탭의 글자·밑줄 색 (기본: --u-primary-color) |
+| `--tab-nav-color` | 현재 탭의 글자·밑줄 색, `tiles` 의 현재 칸 면 (기본: --u-primary-color) |
+| `--tab-nav-contrast` | `tiles` 의 현재 칸 글자색 (기본: --u-primary-txt-color) |
+| `--tab-nav-tile-min` | `tiles` 의 칸 최소 폭 (기본 7rem) — 이보다 좁아지면 다음 줄로 넘어간다 |
 
 ## `<u-tab-panel>`
 

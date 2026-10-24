@@ -11,8 +11,11 @@ import { Locale } from '../../utilities/Locale.js';
 import { formatNumber } from '../../utilities/format.js';
 
 import { SlotPresence } from "../../utilities/slotPresence.js";
-/** `u-tab` 개수의 모양 — `badge` 는 알약 면(눈을 끈다), `plain` 은 면 없는 보조 숫자(정보). */
-export type TabCountAppearance = 'badge' | 'plain';
+/**
+ * `u-tab` 개수의 모양 — `badge` 는 알약 면(눈을 끈다), `plain` 은 면 없는 보조 숫자(정보), `figure` 는 레이블 아래의 큰 숫자
+ * (칸형 탭 띠 — 공정마다 쌓인 일처럼 숫자가 탭을 고르는 이유일 때).
+ */
+export type TabCountAppearance = 'badge' | 'plain' | 'figure';
 
 /**
  * 탭 아이템 — `u-tab-panel` 안에서는 패널을 고르는 탭(`role="tab"`), `href` 를 주면 `u-tab-nav` 안의
@@ -59,7 +62,8 @@ export class UTab extends UElement {
   /** 레이블 뒤의 조용한 개수(그 보기의 항목 수) — 현재 로캘의 숫자 표기로 그린다. 없으면 그리지 않는다. */
   @property({ type: Number }) count?: number;
   /**
-   * 개수의 모양 — `badge`(알약 면, 기본) · `plain`(면 없는 보조 숫자 — 탭이 많아 배지가 레이블보다 먼저 읽힐 때).
+   * 개수의 모양 — `badge`(알약 면, 기본) · `plain`(면 없는 보조 숫자 — 탭이 많아 배지가 레이블보다 먼저 읽힐 때) ·
+   * `figure`(레이블 아래의 큰 숫자 — `u-tab-nav appearance="tiles"` 처럼 숫자가 고르는 이유일 때).
    * 비우면 앱 전역 기본값(`UTab.countAppearance`).
    */
   @property({ type: String, attribute: 'count-appearance' }) countAppearance?: TabCountAppearance;
@@ -109,7 +113,7 @@ export class UTab extends UElement {
   render() {
     if (this.href) {
       return html`
-        <a class="base" part="base"
+        <a class="base ${this.stacked ? 'stacked' : ''}" part="base"
           href=${ifDefined(this.disabled ? undefined : this.href)}
           aria-current=${this.active ? 'page' : nothing}
           aria-disabled=${this.disabled ? 'true' : nothing}
@@ -119,7 +123,7 @@ export class UTab extends UElement {
       `;
     }
     return html`
-      <div class="base" part="base">
+      <div class="base ${this.stacked ? 'stacked' : ''}" part="base">
         ${this.renderLabel()}
 
         <u-button class="remove-btn" part="remove-btn"
@@ -134,13 +138,19 @@ export class UTab extends UElement {
     `;
   }
 
+  /** 개수가 레이블 아래 큰 숫자인가 — 그러면 상자가 세로로 선다. */
+  private get stacked(): boolean {
+    return this.count != null && !Number.isNaN(this.count) && (this.countAppearance ?? UTab.countAppearance) === 'figure';
+  }
+
   private renderLabel(): TemplateResult {
+    const appearance = this.countAppearance ?? UTab.countAppearance;
     return html`
       <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
       <slot></slot>
       ${this.count == null || Number.isNaN(this.count)
         ? nothing
-        : html`<span class="count ${(this.countAppearance ?? UTab.countAppearance) === 'plain' ? 'plain' : 'badge'}"
+        : html`<span class="count ${appearance === 'plain' || appearance === 'figure' ? appearance : 'badge'}"
             part="count">${formatNumber(this.count)}</span>`}
       <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
     `;
