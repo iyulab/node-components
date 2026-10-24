@@ -49,6 +49,7 @@
   "loading": "Cargando",
   "search": "Buscar",
   "noMatches": "Sin coincidencias",
+  "searchFailed": "No se pudo buscar en {source}",
   "alertError": "Error",
   "alertWarning": "Advertencia",
   "alertSuccess": "Éxito",

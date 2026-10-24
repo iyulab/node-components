@@ -199,6 +199,9 @@ export abstract class UOverlayElement extends UElement {
    * (`tests/browser/overlay-initial-focus.browser.test.ts` 가 둘 다 감시한다.)
    */
   private resolveInitialFocus(): HTMLElement | false | undefined {
+    // 자기 섀도에 입력을 그리는 오버레이(명령 팔레트)는 그것을 먼저 준다 — 위 순서는 슬롯 자식만 본다.
+    const own = this.ownInitialFocus();
+    if (own && this.focusLands(own)) return false;
     // 섀도 경계 안쪽까지 — 슬롯 자식이 컴포넌트면 컨트롤은 그 템플릿에 있다.
     const content = Array.from(this.children);
     const target = querySelectorDeep(content, '[autofocus]', isFocusCandidate)
@@ -213,6 +216,11 @@ export abstract class UOverlayElement extends UElement {
     if (target && this.focusLands(target)) return false;
     const first = querySelectorDeep(content, '*', (el) => isFocusCandidate(el) && this.focusLands(el));
     return first ? false : undefined; // 없으면 focus-trap 기본값(`fallbackFocus` — 호스트)에 맡긴다
+  }
+
+  /** 열릴 때 가장 먼저 포커스할 자기 섀도 안의 요소 — 기본은 없음(슬롯 자식에서 찾는다). */
+  protected ownInitialFocus(): HTMLElement | null {
+    return null;
   }
 
   /** `el` 을 포커스하고, 실제 포커스가 그 안(섀도 포함)에 들어갔는가. */

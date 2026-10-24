@@ -99,6 +99,7 @@ set on the host yourself always wins and is never overwritten.
 
 - [`u-dialog`](./references/components/dialog.md) — Modal/non-modal dialog with configurable placement
 - [`u-drawer`](./references/components/drawer.md) — Side-panel that slides in from any edge
+- [`u-command-palette`](./references/components/command-palette.md) — Find-anything dialog (Ctrl/⌘ K style): a search field over results grouped by source, async sources with cancellation
 - [`u-popover`](./references/components/popover.md) — Anchored floating panel with flexible trigger/dismiss policies
 - [`u-tooltip`](./references/components/tooltip.md) — Hover/focus tooltip anchored to a target element
 

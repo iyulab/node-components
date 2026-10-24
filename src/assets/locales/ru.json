@@ -49,6 +49,7 @@
   "loading": "Загрузка",
   "search": "Поиск",
   "noMatches": "Нет совпадений",
+  "searchFailed": "Не удалось выполнить поиск: {source}",
   "alertError": "Ошибка",
   "alertWarning": "Предупреждение",
   "alertSuccess": "Успешно",

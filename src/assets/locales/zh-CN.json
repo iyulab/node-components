@@ -49,6 +49,7 @@
   "loading": "加载中",
   "search": "搜索",
   "noMatches": "没有匹配项",
+  "searchFailed": "无法搜索{source}",
   "alertError": "错误",
   "alertWarning": "警告",
   "alertSuccess": "成功",

@@ -4,6 +4,15 @@
 
 ### Added
 
+- **`<u-command-palette>` — find anything from one field.** A dialog with a search field (WAI-ARIA APG combobox) over
+  results grouped by source: give it `sources` (`{ id, label, search(query, { signal }) }`, sync or async), and it asks
+  each with the empty query when opened, then again `debounce` ms after typing stops, aborting the previous request;
+  a failing or slow source does not hold back the others. ↑/↓ move, Enter or a click chooses — a cancelable
+  `command` event (`detail: { item, source }`), after which an item with `href` is followed unless canceled — and
+  Escape closes; focus returns to where it was. The shortcut that opens it is the app's. `filterCommands(items, query)`
+  filters static items with the locale's search match. New locale key `searchFailed`. New types `CommandItem`,
+  `CommandSource`, `CommandSearch`, `UCommandPaletteCommandDetail`, `UCommandPaletteEventMap`.
+
 - **`u-carousel` says which slide is shown, and slides out of view are out of reach.** A `change` event fires when the
   shown slide changes — by a person or by autoplay — with `detail: { index, previousIndex, cause }` (`'user'` or
   `'autoplay'`); setting `index` does not fire it and it does not bubble, like `u-tab-panel`'s. A wall screen whose

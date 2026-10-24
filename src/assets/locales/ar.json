@@ -49,6 +49,7 @@
   "loading": "جارٍ التحميل",
   "search": "بحث",
   "noMatches": "لا توجد نتائج مطابقة",
+  "searchFailed": "تعذّر البحث في {source}",
   "alertError": "خطأ",
   "alertWarning": "تحذير",
   "alertSuccess": "نجاح",

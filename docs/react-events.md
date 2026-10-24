@@ -21,7 +21,7 @@ import { UDialog } from '@iyulab/components/react';
 
 `detail` 열이 `unknown` 이면: 표준 DOM 이벤트 이름(`change`·`input`·`copy` …)은 그 DOM 타입(`HTMLElementEventMap[이름]` — `Event`·`ClipboardEvent` 등, `detail` 없음), 그 밖의 이름은 `CustomEvent`(detail 타입 미지정)로 노출된다.
 
-**컴포넌트 30개 · 이벤트 46개**
+**컴포넌트 31개 · 이벤트 49개**
 
 ## `<u-alert>`
 
@@ -54,6 +54,14 @@ import { UDialog } from '@iyulab/components/react';
 |---|---|---|---|
 | `onPick` | `pick` | `PickEventDetail` | 선택 시 발생 |
 | `onRemove` | `remove` | `RemoveEventDetail` | 삭제 버튼 클릭 시 발생 |
+
+## `<u-command-palette>`
+
+| React prop | 이벤트 | detail | 설명 |
+|---|---|---|---|
+| `onShow` | `show` | `ShowEventDetail` | 열리기 직전(취소하면 열리지 않는다). |
+| `onHide` | `hide` | `HideEventDetail` | 닫히기 직전(취소하면 닫히지 않는다). |
+| `onCommand` | `command` | `UCommandPaletteCommandDetail` | 항목을 골랐다. `detail: { item, source }` · 취소 가능 · 거품 없음. |
 
 ## `<u-copy-button>`
 

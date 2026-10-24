@@ -49,6 +49,7 @@
   "loading": "Wird geladen",
   "search": "Suchen",
   "noMatches": "Keine Treffer",
+  "searchFailed": "{source} konnte nicht durchsucht werden",
   "alertError": "Fehler",
   "alertWarning": "Warnung",
   "alertSuccess": "Erfolg",

@@ -128,7 +128,7 @@ npx skills add ./node_modules/@iyulab/components
 
 **Form Controls** — `u-input`, `u-textarea`, `u-select`, `u-date-picker`, `u-date-range-picker`, `u-file-input`, `u-checkbox`, `u-radio`, `u-switch`, `u-slider`, `u-rating`, `u-field`, `u-form`, `u-option`, `u-option-group`
 
-**Overlay & Floating** — `u-dialog`, `u-drawer`, `u-popover`, `u-tooltip`
+**Overlay & Floating** — `u-dialog`, `u-drawer`, `u-command-palette`, `u-popover`, `u-tooltip`
 
 **Navigation** — `u-menu`, `u-menu-item`, `u-tab-panel`, `u-tab-nav`, `u-breadcrumb`, `u-breadcrumb-item`, `u-pagination`, `u-tree`, `u-tree-item`
 

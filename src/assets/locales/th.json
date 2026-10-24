@@ -49,6 +49,7 @@
   "loading": "กำลังโหลด",
   "search": "ค้นหา",
   "noMatches": "ไม่พบรายการที่ตรงกัน",
+  "searchFailed": "ค้นหาใน {source} ไม่ได้",
   "alertError": "ข้อผิดพลาด",
   "alertWarning": "คำเตือน",
   "alertSuccess": "สำเร็จ",

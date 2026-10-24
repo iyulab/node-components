@@ -49,6 +49,7 @@
   "loading": "Memuat",
   "search": "Cari",
   "noMatches": "Tidak ada yang cocok",
+  "searchFailed": "Tidak dapat mencari {source}",
   "alertError": "Kesalahan",
   "alertWarning": "Peringatan",
   "alertSuccess": "Berhasil",

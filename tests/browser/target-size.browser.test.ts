@@ -729,6 +729,20 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
     html: '<u-dialog closable open>body</u-dialog>',
     targets: () => parts(document.querySelector('u-dialog')!, 'close-btn'),
   },
+  // 항목(`option` part)은 출처가 준 데이터로 그려진다 — 열고 출처가 답한 뒤에 잰다. 끝내 그려지지 않으면 던진다.
+  'u-command-palette': {
+    html: '<u-command-palette></u-command-palette>',
+    prepare: async (host) => {
+      const palette = host as HTMLElement & { sources: unknown; show(): boolean; updateComplete: Promise<unknown> };
+      palette.sources = [{ id: 's', label: 'Screens', search: () => [{ id: 'a', label: 'Orders' }, { id: 'b', label: 'Customers' }] }];
+      palette.show();
+      for (let i = 0; i < 50 && parts(host, 'option').length < 2; i++) {
+        await new Promise((r) => setTimeout(r, 20));
+      }
+      if (parts(host, 'option').length < 2) throw new Error('팔레트 항목이 그려지지 않았다');
+    },
+    targets: () => parts(document.querySelector('u-command-palette')!, 'option'),
+  },
   'u-drawer': {
     html: '<u-drawer closable open>body</u-drawer>',
     targets: () => parts(document.querySelector('u-drawer')!, 'close-btn'),
@@ -971,7 +985,7 @@ describe('WCAG 2.2 SC 2.5.8 — 타깃 크기(최소) 게이트', () => {
       //   그때 이 줄을 함께 고치는 것이 그 작업의 완료 신호다.
       expect(
         `판정 ${judged}(${states}상태) · 미판정 ${unjudged.length}(${unjudged.join(' ')}) · 대상아님 ${NOT_A_TARGET.size}`,
-      ).toBe('판정 28(54상태) · 미판정 0() · 대상아님 25');
+      ).toBe('판정 29(55상태) · 미판정 0() · 대상아님 25');
     });
   });
 
