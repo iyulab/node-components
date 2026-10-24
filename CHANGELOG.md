@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **`u-steps` no longer cuts off steps in a narrow box.** The default `line` form kept every step on one row, so in a
+  narrow container (seven steps in a 22rem side panel) the steps past the edge were clipped. When the steps do not fit
+  the element's width it now folds to one step per row, with the connectors running down from the markers, and
+  returns to one row when the width allows. `bars` and `compact` are unchanged.
+
 ## [2.35.0] - 2026-10-24
 
 ### Added

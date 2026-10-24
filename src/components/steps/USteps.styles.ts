@@ -97,6 +97,22 @@ export const styles = css`
     background: var(--steps-connector-done-color, var(--u-txt-color-weak, #616161));
   }
 
+  /* 세로로 접힘(line 이 자기 폭에 들어가지 않을 때) — 단계마다 한 줄, 연결선은 표식 가운데 아래로 */
+  .list.folded {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .list.folded .step {
+    white-space: normal;
+  }
+  .list.folded .connector {
+    flex: none;
+    min-width: 0;
+    width: 1.5px;
+    height: var(--u-space-sm, 8px);
+    margin: 2px 0 2px calc(var(--steps-marker-size, 18px) / 2 - 0.75px);
+  }
+
   /* 건너뜀 — 지나갔지만 한 일이 없다: 점선 고리, 이름은 물러선다 */
   .step[data-status="skipped"] {
     color: var(--u-txt-color-weaker, #757575);

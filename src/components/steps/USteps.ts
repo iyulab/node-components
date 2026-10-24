@@ -1,5 +1,6 @@
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import type { PropertyValues } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 
 import { UElement } from "../UElement.js";
@@ -43,6 +44,8 @@ export interface StepItem {
  * `appearance="compact"` 면 단계마다 작은 칸만 그리고(지나온 칸은 채우고 지금 칸은 주 색, 보류는 경고 칸) 그 옆에 지금
  * 단계의 이름 하나를 쓴다 — 나머지 단계 이름은 화면에서 숨지만 목록에는 남아 보조기기가 전부 읽는다. 지금 단계가 없으면
  * 마지막으로 지나온 단계의 이름을 쓴다.
+ * 기본(`line`)은 단계가 자기 폭에 다 들어가지 않으면 세로로 접힌다 — 단계마다 한 줄, 연결선은 표식 아래로. 폭이 다시 넉넉해지면
+ * 가로로 돌아온다(단계 수를 CSS 가 알 수 없어 가로 배치의 실제 폭을 재서 가른다).
  * 보조기기에는 지금 단계를 `aria-current="step"` 으로, 완료·보류를 숨은 글자로 전한다.
  *
  * @csspart base - 바깥 상자
@@ -76,6 +79,54 @@ export class USteps extends UElement {
   @property({ type: String }) label?: string;
   /** 모양 — `line`(기본) · `bars` · `compact` */
   @property({ type: String, reflect: true }) appearance: StepsAppearance = 'line';
+
+  /** `line` 이 자기 폭에 들어가지 않아 세로로 접혔는가 — 배치만 바꾸므로 다시 그리지 않고 목록의 클래스로 건다. */
+  private folded = false;
+  /** 가로로 놓였을 때 목록이 필요로 하는 폭 — 접힌 뒤 펼칠지를 이것과 지금 폭으로 가른다. */
+  private naturalWidth = 0;
+  private resizeObserver?: ResizeObserver;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver ??= new ResizeObserver(() => this.measureFold());
+      this.resizeObserver.observe(this);
+    }
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.resizeObserver?.disconnect();
+  }
+
+  protected willUpdate(changed: PropertyValues<this>): void {
+    // 단계나 모양이 바뀌면 가로 폭을 다시 잰다 — 일단 펼쳐 그린 뒤 updated 에서.
+    if (changed.has('items') || changed.has('appearance') || changed.has('label')) this.setFolded(false);
+  }
+
+  protected updated(): void {
+    this.measureFold();
+  }
+
+  private measureFold() {
+    const list = this.renderRoot.querySelector<HTMLElement>('.list');
+    if (!list) return;
+    if (this.appearance !== 'line') return this.setFolded(false);
+    if (!this.folded) {
+      if (list.scrollWidth > list.clientWidth + 1) {
+        this.naturalWidth = list.scrollWidth;
+        this.setFolded(true);
+      }
+    } else if (list.clientWidth >= this.naturalWidth) {
+      this.setFolded(false);
+    }
+  }
+
+  private setFolded(folded: boolean) {
+    this.folded = folded;
+    if (!folded) this.naturalWidth = 0;
+    this.renderRoot?.querySelector('.list')?.classList.toggle('folded', folded);
+  }
 
   /** 단계의 실효 상태. */
   statusOf(index: number): StepStatus {

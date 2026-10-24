@@ -31,6 +31,10 @@ hold = warning tint, upcoming = empty ring, skipped = dashed ring. Assistive tec
 `stepOnHold`, `stepSkipped` locale keys). `skipped` is a step this record's route does not have — an order with no
 proof still shows «Proof», passed over.
 
+When the steps do not fit the element's width, `line` folds to one step per row (connectors run down from the
+markers) and goes back to one row when the width returns — nothing past the edge is cut off. In a fixed narrow place
+(a table cell, a card header) `compact` is still the better shape.
+
 ### Bars — `appearance="bars"`
 
 Each step takes an equal column: a bar on top, the step's name and its description (a date) under it. The travelled
