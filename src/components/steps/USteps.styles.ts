@@ -154,6 +154,59 @@ export const styles = css`
     font-variant-numeric: tabular-nums;
   }
 
+  /* ── 압축(appearance="compact") — 단계마다 작은 칸, 옆에 지금 단계 이름 하나 ── */
+  :host([appearance="compact"]) .base {
+    gap: var(--u-space-sm, 8px);
+  }
+  :host([appearance="compact"]) .list {
+    flex: none;
+    gap: var(--u-space-3xs, 2px);
+  }
+  :host([appearance="compact"]) .step {
+    position: relative;
+  }
+  :host([appearance="compact"]) .label,
+  :host([appearance="compact"]) .title,
+  :host([appearance="compact"]) .description {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  :host([appearance="compact"]) .marker {
+    width: var(--steps-segment-width, 0.875rem);
+    height: var(--steps-bar-height, 6px);
+    border: 0;
+    border-radius: var(--u-radius-sm, 3px);
+    background: var(--u-border-color, #E0E0E0);
+  }
+  :host([appearance="compact"]) .step[data-status="complete"] .marker {
+    border: 0;
+    background: var(--steps-connector-done-color, var(--u-txt-color, #212121));
+  }
+  :host([appearance="compact"]) .step[data-status="current"] .marker {
+    border: 0;
+    background: var(--steps-current-color, var(--steps-bar-color, var(--u-primary-color, #1976D2)));
+  }
+  :host([appearance="compact"]) .step[data-status="hold"] .marker {
+    border: 0;
+    background: var(--u-warning-color, #FDD835);
+  }
+  :host([appearance="compact"]) .step[data-status="skipped"] .marker {
+    border: 0;
+    background: repeating-linear-gradient(90deg, var(--u-border-color, #E0E0E0) 0 0.125rem, transparent 0.125rem 0.25rem);
+  }
+  .summary {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--u-txt-color-weak, #616161);
+  }
+
   .sr-only {
     position: absolute;
     width: 1px;

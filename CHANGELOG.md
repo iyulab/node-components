@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`<u-steps appearance="compact">` — seven steps on one line.** One small segment per step and the current step's
+  name beside them, for a list table's progress column, a preview panel or a card header. Travelled segments are
+  filled, the current one takes the primary colour, a held one the warning colour and a skipped one is dashed. The
+  other names stay in the list for assistive technology. New part `summary`, new custom properties
+  `--steps-segment-width` and `--steps-current-color`.
+
 ## [2.34.0] - 2026-10-23
 
 ### Changed

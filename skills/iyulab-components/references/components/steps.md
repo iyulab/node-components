@@ -47,6 +47,18 @@ step's name is bold. For a detail page's header, where seven steps each carry a 
 ]}></u-steps>
 ```
 
+### Compact — `appearance="compact"`
+
+One small segment per step and, beside them, the current step's name — for one line of height: a list table's
+progress column, a preview panel, a card header. Travelled segments are filled, the current one takes the primary
+colour, a held one the warning colour, upcoming ones stay empty and a skipped one is dashed. The other step names
+and the track `label` are hidden from view but stay in the list, so assistive technology still reads every step and
+the current one. With no current or held step the name shown is the last step passed.
+
+```html
+<u-steps appearance="compact" label="Order C-271988" current="1" .items=${steps}></u-steps>
+```
+
 ---
 
 ## Properties
@@ -56,7 +68,7 @@ step's name is bold. For a detail page's header, where seven steps each carry a 
 | `items` | `StepItem[]` | `[]` | — | `{ label, description?, status? }` (property only) |
 | `current` | `number` | — | — | Index of the current step; steps without `status` before it are `complete`, after it `upcoming` |
 | `label` | `string` | — | — | Track name shown at the start; also the list's accessible name |
-| `appearance` | `'line'\|'bars'` | `'line'` | ✓ | `line` markers and connectors · `bars` a bar per step with the text under it |
+| `appearance` | `'line'\|'bars'\|'compact'` | `'line'` | ✓ | `line` markers and connectors · `bars` a bar per step with the text under it · `compact` a segment per step and the current step's name, on one line |
 
 `StepStatus` = `'complete' | 'current' | 'hold' | 'upcoming' | 'skipped'`. An item's own `status` wins over
 the inference from `current`.
@@ -73,6 +85,7 @@ the inference from `current`.
 | `title` | Step name |
 | `description` | Step's secondary text |
 | `connector` | Line between steps |
+| `summary` | The current step's name beside the segments with `compact` |
 
 ## CSS Custom Properties
 
@@ -84,3 +97,5 @@ the inference from `current`.
 | `--steps-label-width` | Width of the track name (default 56px) |
 | `--steps-bar-height` | Bar thickness with `bars` (default 6px) |
 | `--steps-bar-color` | Filled bar colour with `bars` (default the primary colour) |
+| `--steps-segment-width` | Segment width with `compact` (default 0.875rem) |
+| `--steps-current-color` | Current segment with `compact` (default `--steps-bar-color`) — set it where the primary colour is ink and would match the travelled segments |

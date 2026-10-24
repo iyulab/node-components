@@ -16,8 +16,11 @@ import { styles } from "./USteps.styles.js";
  */
 export type StepStatus = 'complete' | 'current' | 'hold' | 'upcoming' | 'skipped';
 
-/** 단계 줄의 모양 — `line`(표식과 연결선) · `bars`(단계마다 막대, 그 아래 이름과 보조 문구). */
-export type StepsAppearance = 'line' | 'bars';
+/**
+ * 단계 줄의 모양 — `line`(표식과 연결선) · `bars`(단계마다 막대, 그 아래 이름과 보조 문구) ·
+ * `compact`(단계마다 작은 칸 하나와 지금 단계의 이름 — 표 칸 · 미리보기 · 카드 머리처럼 한 줄 높이에).
+ */
+export type StepsAppearance = 'line' | 'bars' | 'compact';
 
 export interface StepItem {
   /** 단계 이름 */
@@ -37,6 +40,9 @@ export interface StepItem {
  * 완료 = 체크 · 지금 = 굵은 고리 · 보류 = 경고 면 · 예정 = 빈 고리 · 건너뜀 = 점선 고리.
  * `appearance="bars"` 면 단계마다 막대가 칸을 고르게 나눠 갖고, 그 아래에 이름과 보조 문구(날짜 등)가 선다 —
  * 지나온 칸과 지금 칸은 채운 막대, 예정 · 건너뜀은 빈 막대, 지금 단계의 이름은 굵게, 보류는 경고 막대.
+ * `appearance="compact"` 면 단계마다 작은 칸만 그리고(지나온 칸은 채우고 지금 칸은 주 색, 보류는 경고 칸) 그 옆에 지금
+ * 단계의 이름 하나를 쓴다 — 나머지 단계 이름은 화면에서 숨지만 목록에는 남아 보조기기가 전부 읽는다. 지금 단계가 없으면
+ * 마지막으로 지나온 단계의 이름을 쓴다.
  * 보조기기에는 지금 단계를 `aria-current="step"` 으로, 완료·보류를 숨은 글자로 전한다.
  *
  * @csspart base - 바깥 상자
@@ -47,6 +53,7 @@ export interface StepItem {
  * @csspart title - 단계 이름
  * @csspart description - 단계 보조 문구
  * @csspart connector - 단계 사이의 선
+ * @csspart summary - `compact` 에서 칸 옆에 쓰는 지금 단계 이름
  *
  * @cssprop --steps-marker-size - 표식 지름 (기본 18px)
  * @cssprop --steps-connector-color - 아직 지나지 않은 연결선 색
@@ -54,6 +61,8 @@ export interface StepItem {
  * @cssprop --steps-label-width - 트랙 이름 칸 폭 (기본 56px)
  * @cssprop --steps-bar-height - `bars` 의 막대 두께 (기본 6px)
  * @cssprop --steps-bar-color - `bars` 의 채운 막대 색 (기본 주 색)
+ * @cssprop --steps-segment-width - `compact` 의 칸 폭 (기본 0.875rem)
+ * @cssprop --steps-current-color - `compact` 의 지금 칸 색 (기본 `--steps-bar-color`) — 주 색이 잉크인 테마에서 지나온 칸과 가르려고
  */
 @customElement('u-steps')
 export class USteps extends UElement {
@@ -65,7 +74,7 @@ export class USteps extends UElement {
   @property({ type: Number }) current?: number;
   /** 트랙 이름 — 여러 트랙을 줄지어 둘 때 앞머리에 보인다. 목록의 접근 가능한 이름이기도 하다. */
   @property({ type: String }) label?: string;
-  /** 모양 — `line`(기본) · `bars` */
+  /** 모양 — `line`(기본) · `bars` · `compact` */
   @property({ type: String, reflect: true }) appearance: StepsAppearance = 'line';
 
   /** 단계의 실효 상태. */
@@ -78,9 +87,19 @@ export class USteps extends UElement {
     return 'upcoming';
   }
 
+  /** `compact` 가 칸 옆에 쓰는 이름 — 지금(또는 보류) 단계, 없으면 마지막으로 지나온 단계. */
+  private summaryLabel(): string {
+    const statuses = this.items.map((_, i) => this.statusOf(i));
+    let at = statuses.findIndex((st) => st === 'current' || st === 'hold');
+    if (at < 0) at = statuses.lastIndexOf('complete');
+    return at < 0 ? '' : this.items[at].label;
+  }
+
   protected render() {
     const last = this.items.length - 1;
     const bars = this.appearance === 'bars';
+    const compact = this.appearance === 'compact';
+    const plain = bars || compact;
     return html`
       <div class="base" part="base">
         ${this.label ? html`<span class="label" part="label" aria-hidden="true">${this.label}</span>` : nothing}
@@ -92,19 +111,20 @@ export class USteps extends UElement {
             return html`
               <li class="step" part="step step-${status}" data-status=${status}
                 aria-current=${ifDefined(status === 'current' ? 'step' : undefined)}>
-                <span class="marker" part="marker" aria-hidden="true">${status === 'complete' && !bars ? CHECK : nothing}</span>
+                <span class="marker" part="marker" aria-hidden="true">${status === 'complete' && !plain ? CHECK : nothing}</span>
                 <span class="title" part="title">${item.label}</span>
                 ${item.description ? html`<span class="description" part="description">${item.description}</span>` : nothing}
                 ${status === 'complete' || status === 'hold' || status === 'skipped'
                   ? html`<span class="sr-only">${Locale.getValue(STATUS_WORD[status])}</span>`
                   : nothing}
               </li>
-              ${i < last && !bars
+              ${i < last && !plain
                 ? html`<li class="connector ${travelled ? 'travelled' : ''}" part="connector" aria-hidden="true"></li>`
                 : nothing}
             `;
           })}
         </ol>
+        ${compact ? html`<span class="summary" part="summary" aria-hidden="true">${this.summaryLabel()}</span>` : nothing}
       </div>
     `;
   }
