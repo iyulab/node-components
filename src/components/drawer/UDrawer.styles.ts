@@ -30,6 +30,22 @@ export const styles = css`
     }
   }
 
+  /* 안전 영역 — 패널이 닿는 화면 가장자리만큼 안으로 물린다(노치 · 홈 표시줄 아래로 머리 줄의 X 나 바닥 동작이 들어가지 않게).
+     페이지가 viewport-fit=cover 를 쓰지 않으면 env() 는 0 이라 아무것도 바뀌지 않는다. 배경은 패널이 그대로 끝까지 칠한다. */
+  :host([placement="left"]) .panel,
+  :host([placement="right"]) .panel {
+    padding-block: env(safe-area-inset-top, 0px) env(safe-area-inset-bottom, 0px);
+  }
+  :host([placement="left"]) .panel  { padding-left: env(safe-area-inset-left, 0px); }
+  :host([placement="right"]) .panel { padding-right: env(safe-area-inset-right, 0px); }
+  :host([placement="top"]) .panel,
+  :host([placement="bottom"]) .panel {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+  :host([placement="top"]) .panel    { padding-top: env(safe-area-inset-top, 0px); }
+  :host([placement="bottom"]) .panel { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
   /*
    * placement별 border. 토큰 폴백은 backdrop(--u-overlay-bg-color)과 동일 정책 —
    * 테마 토큰 미정의 소비자도 패널이 보이도록 CSS 시스템 컬러로 폴백한다.

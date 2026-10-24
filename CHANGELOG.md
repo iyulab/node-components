@@ -4,6 +4,10 @@
 
 ### Fixed
 
+- **A drawer that fills a phone screen keeps its close button and actions off the notch.** The panel now pads the
+  screen edges it touches by `env(safe-area-inset-*)` — top, bottom and its own side for a side drawer — so on a page
+  with `viewport-fit=cover` the header and footer no longer sit under a notch or home indicator. Pages without it see
+  no change (the insets are 0).
 - **An empty `u-date-range-picker` shows its whole placeholder.** The text box took the input's default width (about
   twenty characters), shorter than the range placeholder, so its end was cut off («YYYY-MM-DD – YYYY-MM-DI»). Without
   `chars` the box is now as wide as the longer of the placeholder and a filled range, measured in the rendered font;
