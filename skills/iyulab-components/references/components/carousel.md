@@ -65,6 +65,21 @@ default) without a key press or a click in it. The stop button still stops it, a
 <u-carousel autoplay loop unattended pagination pagination-style="labels" autoplay-interval="20000" aria-label="Floor board">…</u-carousel>
 ```
 
+### Following the shown slide — `change`
+
+A heading or legend outside the carousel that names the current slide listens for `change`. It fires when the shown
+slide changes — by a person (buttons, dots, drag, `next()` / `prev()` / `goTo()`) or by autoplay — with
+`detail: { index, previousIndex, cause: 'user' | 'autoplay' }`. Setting `index` does not fire it, and it does not
+bubble (like `u-tab-panel`'s `change`) — listen on the carousel.
+
+```js
+board.addEventListener('change', (e) => { title.textContent = titles[e.detail.index]; });
+```
+
+Slides out of view are `inert`: their links and buttons leave the Tab order and assistive technology reads only the
+slides on screen. With `slides-per-view` above 1, only slides outside that range are inert. An `inert` you put on a
+slide yourself is left as it is.
+
 ---
 
 ## Slots
@@ -90,6 +105,12 @@ default) without a key press or a click in it. The stop button still stops it, a
 | `slidesPerMove` | `number` | `1` | Slides to advance per step |
 | `gap` | `number` | `0` | Gap between slides in px |
 | `index` | `number` | `0` | Active slide index |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `change` | `{ index, previousIndex, cause: 'user' \| 'autoplay' }` | The shown slide changed (not when `index` is set). Does not bubble |
 
 ## Methods
 

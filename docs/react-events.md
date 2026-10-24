@@ -21,7 +21,7 @@ import { UDialog } from '@iyulab/components/react';
 
 `detail` 열이 `unknown` 이면: 표준 DOM 이벤트 이름(`change`·`input`·`copy` …)은 그 DOM 타입(`HTMLElementEventMap[이름]` — `Event`·`ClipboardEvent` 등, `detail` 없음), 그 밖의 이름은 `CustomEvent`(detail 타입 미지정)로 노출된다.
 
-**컴포넌트 29개 · 이벤트 45개**
+**컴포넌트 30개 · 이벤트 46개**
 
 ## `<u-alert>`
 
@@ -35,6 +35,12 @@ import { UDialog } from '@iyulab/components/react';
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
 | `onNavigate` | `navigate` | `NavigateEventDetail` | 링크 클릭 시 발생 (취소 가능) |
+
+## `<u-carousel>`
+
+| React prop | 이벤트 | detail | 설명 |
+|---|---|---|---|
+| `onChange` | `change` | `UCarouselChangeDetail` | 보이는 장이 바뀌었다 — 사람(단추 · 점 · 끌기 · `next()`/`prev()`/`goTo()`)이든 자동 넘김이든. `detail` 은 새 순번 · 직전 순번 · `cause`(`user` · `autoplay`). `index` 를 대입하면 내지 않고, 거품을 일으키지 않는다(`u-tab-panel` 과 같다). |
 
 ## `<u-checkbox>`
 

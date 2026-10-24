@@ -29,6 +29,9 @@ import { styles } from "./UCarousel.styles.js";
  * «슬라이드» 역할 설명과 «n / 전체» 이름을 단 그룹이다. 캐러셀의 이름은 호스트의 `aria-label` 로 준다(영역은 이름이
  * 있어야 랜드마크다). 슬라이드에 소비자가 이미 단 `role`·`aria-roledescription`·`aria-label` 은 덮지 않는다.
  *
+ * 보이지 않는 장은 `inert` 다 — 화면 밖 장의 링크 · 단추가 Tab 순서와 읽기 순서에서 빠진다(소비자가 처음부터 단 `inert` 는 덮지 않는다).
+ *
+ * @event change - 보이는 장이 바뀌었다 — 사람(단추 · 점 · 끌기 · `next()`/`prev()`/`goTo()`)이든 자동 넘김이든. `detail` 은 새 순번 · 직전 순번 · `cause`(`user` · `autoplay`). `index` 를 대입하면 내지 않고, 거품을 일으키지 않는다(`u-tab-panel` 과 같다).
  * @csspart slides - 슬라이드 컨테이너
  * @csspart prev-button - 이전 버튼
  * @csspart next-button - 다음 버튼
@@ -40,6 +43,7 @@ import { styles } from "./UCarousel.styles.js";
  * @csspart rotation-button - 자동 넘김 정지/시작 버튼 (`autoplay` 일 때만, 인디케이터 안)
  */
 @customElement('u-carousel')
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
 export class UCarousel extends UElement {
   static styles = [super.styles, styles];
   
@@ -177,6 +181,10 @@ export class UCarousel extends UElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
+    if (changedProperties.has('index') || changedProperties.has('slideCount') || changedProperties.has('slidesPerView')) {
+      this.syncInertSlides();
+    }
+
     if (
       changedProperties.has('autoplay') ||
       changedProperties.has('autoplayInterval') ||
@@ -295,14 +303,29 @@ export class UCarousel extends UElement {
 
   public goTo = (index: number) => {
     if (index < 0 || index > this.maxIndex || index === this.index) return;
+    const previousIndex = this.index;
     this.index = index;
     if (this.rotating) this.startAutoplay();
+    // 바깥(장마다 따라가는 제목 · 범례)이 지금 장을 알게 — 형제 `u-tab-panel` 과 같은 이름 · 같은 전파(거품 없음).
+    this.fire<UCarouselChangeDetail>('change', {
+      detail: { index, previousIndex, cause: this.moveCause },
+      bubbles: false,
+      composed: false,
+    });
   }
+
+  /** 지금 넘김을 일으킨 것 — 자동 넘김 타이머만 `autoplay` 로 바꾸고 곧바로 되돌린다. */
+  private moveCause: UCarouselChangeDetail['cause'] = 'user';
 
   private startAutoplay() {
     this.stopAutoplay();
     this.autoplayTimer = window.setInterval(() => {
-      this.next();
+      this.moveCause = 'autoplay';
+      try {
+        this.next();
+      } finally {
+        this.moveCause = 'user';
+      }
     }, this.autoplayInterval);
   }
 
@@ -336,7 +359,7 @@ export class UCarousel extends UElement {
   private labelSlide(slide: Element, i: number, total: number) {
     let owned = this.ownedSlideAttrs.get(slide);
     if (!owned) {
-      owned = ['role', 'aria-roledescription', 'aria-label'].filter((name) => !slide.hasAttribute(name));
+      owned = ['role', 'aria-roledescription', 'aria-label', 'inert'].filter((name) => !slide.hasAttribute(name));
       this.ownedSlideAttrs.set(slide, owned);
     }
     const values: Record<string, string> = {
@@ -344,7 +367,20 @@ export class UCarousel extends UElement {
       'aria-roledescription': Locale.getValue('slide'),
       'aria-label': Locale.getValue('slideOf', { n: i + 1, total }),
     };
-    for (const name of owned) slide.setAttribute(name, values[name]);
+    for (const name of owned) if (name in values) slide.setAttribute(name, values[name]);
+  }
+
+  /**
+   * 보이지 않는 장을 `inert` 로 — 화면 밖 장의 링크 · 단추가 Tab 순서에 남고 읽기 순서에서 보이는 장과 섞이지 않게(APG Carousel).
+   * 여러 장을 함께 보이면(`slides-per-view`) 그 범위 밖만. 소비자가 처음부터 단 `inert` 는 우리 것이 아니라 건드리지 않는다.
+   */
+  private syncInertSlides() {
+    const from = this.index;
+    const to = this.index + this.perView;
+    this.slides.forEach((slide, i) => {
+      if (!this.ownedSlideAttrs.get(slide)?.includes('inert')) return;
+      slide.toggleAttribute('inert', i < from || i >= to);
+    });
   }
 
   /** 슬롯을 떠난 슬라이드에서 우리가 단 속성을 걷는다. */
@@ -480,6 +516,33 @@ export class UCarousel extends UElement {
     e.preventDefault();
     e.stopPropagation();
   };
+}
+
+/** `<u-carousel>` 의 `change` detail. */
+export interface UCarouselChangeDetail {
+  /** 지금 장(첫 보이는 장)의 순번. */
+  index: number;
+  /** 바뀌기 전 순번. */
+  previousIndex: number;
+  /** 사람이 넘겼는가(단추 · 점 · 끌기 · 메서드) · 자동 넘김인가. */
+  cause: 'user' | 'autoplay';
+}
+
+/** Events `<u-carousel>` dispatches. */
+export interface UCarouselEventMap {
+  /** The shown slide changed — by a person (buttons, dots, drag, `next()`/`prev()`/`goTo()`) or by autoplay. Not when `index` is set. Does not bubble. */
+  'change': CustomEvent<UCarouselChangeDetail>;
+}
+
+/** Typed listeners for {@link UCarouselEventMap} — element-scoped, the DOM's own pattern (`HTMLMediaElementEventMap`). */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
+export interface UCarousel {
+  addEventListener<K extends keyof UCarouselEventMap>(type: K, listener: (this: UCarousel, ev: UCarouselEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void;
+  addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: UCarousel, ev: HTMLElementEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof UCarouselEventMap>(type: K, listener: (this: UCarousel, ev: UCarouselEventMap[K]) => unknown, options?: boolean | EventListenerOptions): void;
+  removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: UCarousel, ev: HTMLElementEventMap[K]) => unknown, options?: boolean | EventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 
 declare global {

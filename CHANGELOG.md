@@ -4,6 +4,14 @@
 
 ### Added
 
+- **`u-carousel` says which slide is shown, and slides out of view are out of reach.** A `change` event fires when the
+  shown slide changes — by a person or by autoplay — with `detail: { index, previousIndex, cause }` (`'user'` or
+  `'autoplay'`); setting `index` does not fire it and it does not bubble, like `u-tab-panel`'s. A wall screen whose
+  heading follows each slide can now follow it. Slides out of view are now `inert`, so their links and buttons leave
+  the Tab order and assistive technology reads only what is on screen (WAI-ARIA APG Carousel); with
+  `slides-per-view` above 1 only the slides outside the range. An `inert` the page set on a slide is kept. New types
+  `UCarouselChangeDetail`, `UCarouselEventMap`.
+
 - **`<u-auto-scroll mode="item">` — one item at a time.** For a board read from across the room, where nothing can be
   read while it moves: it glides to the top of the next item and waits `pause` there. The items are the slotted
   elements, or a single wrapper's children. New type `AutoScrollMode`.

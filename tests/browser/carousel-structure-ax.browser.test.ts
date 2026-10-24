@@ -28,10 +28,17 @@ describe('u-carousel 접근성 구조 (APG Carousel)', () => {
     expect(prop(region!, 'roledescription')).toBe('carousel');
   });
 
+  // 보이지 않는 장은 `inert` 라 트리에 없다(carousel-change-inert) — 이름을 재는 시험은 모든 장을 함께 보인다.
   it('슬라이드마다 «slide» 그룹 · «n of 전체» 이름', async () => {
-    await mount('<u-carousel aria-label="Featured"><div>A</div><div>B</div><div>C</div></u-carousel>');
+    await mount('<u-carousel aria-label="Featured" slides-per-view="3"><div>A</div><div>B</div><div>C</div></u-carousel>');
     const groups = (await nodes()).filter((n) => n.role?.value === 'group' && prop(n, 'roledescription') === 'slide');
     expect(groups.map((g) => g.name?.value)).toEqual(['1 of 3', '2 of 3', '3 of 3']);
+  });
+
+  it('한 장씩 보이면 트리에는 지금 장만 있다', async () => {
+    await mount('<u-carousel aria-label="Featured"><div>A</div><div>B</div><div>C</div></u-carousel>');
+    const groups = (await nodes()).filter((n) => n.role?.value === 'group' && prop(n, 'roledescription') === 'slide');
+    expect(groups.map((g) => g.name?.value)).toEqual(['1 of 3']);
   });
 
   it('슬라이드를 더하면 이름이 따라오고, 떠난 슬라이드에서 우리 속성을 걷는다', async () => {
@@ -44,20 +51,20 @@ describe('u-carousel 접근성 구조 (APG Carousel)', () => {
     const first = el.firstElementChild!;
     first.remove();
     await new Promise((r) => setTimeout(r, 50));
-    expect(first.hasAttribute('role') || first.hasAttribute('aria-label') || first.hasAttribute('aria-roledescription')).toBe(false);
+    expect(first.hasAttribute('role') || first.hasAttribute('aria-label') || first.hasAttribute('aria-roledescription') || first.hasAttribute('inert')).toBe(false);
     expect(extra.getAttribute('aria-label')).toBe('2 of 2');
   });
 
   it('로캘을 따른다', async () => {
     Locale.set('ko');
-    await mount('<u-carousel aria-label="추천"><div>A</div><div>B</div></u-carousel>');
+    await mount('<u-carousel aria-label="추천" slides-per-view="2"><div>A</div><div>B</div></u-carousel>');
     const all = await nodes();
     expect(prop(all.find((n) => n.role?.value === 'region')!, 'roledescription')).toBe('캐러셀');
     expect(all.filter((n) => prop(n, 'roledescription') === '슬라이드').map((g) => g.name?.value)).toEqual(['2개 중 1번째', '2개 중 2번째']);
   });
 
   it('런타임에 로캘을 바꾸면 역할 설명·슬라이드 이름이 따라온다', async () => {
-    await mount('<u-carousel aria-label="Featured"><div>A</div><div>B</div></u-carousel>');
+    await mount('<u-carousel aria-label="Featured" slides-per-view="2"><div>A</div><div>B</div></u-carousel>');
     Locale.set('ko');
     await new Promise((r) => setTimeout(r, 50));
     const all = await nodes();
