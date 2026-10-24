@@ -13,6 +13,8 @@ export interface CharsWidthOptions {
   text(): HTMLElement | null | undefined;
   /** 측정용 요소를 붙일 자리(글자 영역을 담는 컨테이너). */
   box(): HTMLElement | null | undefined;
+  /** 잴 글 — 주면 `0` N개 대신 이 글을 그려 잰다(자리표시처럼 글자가 정해진 칸). `chars()` 가 없으면 재지 않는다. */
+  sample?(): string | undefined;
 }
 
 /** 측정용 요소에 옮기는 글꼴 속성 — 그려지는 글자 폭을 바꾸는 것 전부. */
@@ -105,7 +107,7 @@ export class CharsWidthController implements ReactiveController {
     const sizer = this.sizer;
     const source = getComputedStyle(this.options.text() ?? box);
     for (const prop of FONT_PROPS) sizer.style.setProperty(prop, source.getPropertyValue(prop));
-    const digits = '0'.repeat(n);
+    const digits = this.options.sample?.() || '0'.repeat(n);
     if (sizer.textContent !== digits) sizer.textContent = digits;
     if (this.watch && this.watch.textContent !== digits) this.watch.textContent = digits;
   }

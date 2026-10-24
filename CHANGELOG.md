@@ -4,6 +4,10 @@
 
 ### Fixed
 
+- **An empty `u-date-range-picker` shows its whole placeholder.** The text box took the input's default width (about
+  twenty characters), shorter than the range placeholder, so its end was cut off («YYYY-MM-DD – YYYY-MM-DI»). Without
+  `chars` the box is now as wide as the longer of the placeholder and a filled range, measured in the rendered font;
+  a width set on the host still decides.
 - **`u-steps` no longer cuts off steps in a narrow box.** The default `line` form kept every step on one row, so in a
   narrow container (seven steps in a 22rem side panel) the steps past the edge were clipped. When the steps do not fit
   the element's width it now folds to one step per row, with the connectors running down from the markers, and

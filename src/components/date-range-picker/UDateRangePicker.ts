@@ -10,7 +10,7 @@ import '../popover/UPopover.js';
 
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
-import { CharsWidthController } from "../../utilities/chars.js";
+import { CharsWidthController, charsCount } from "../../utilities/chars.js";
 import {
   dateTextPattern, formatDateRangeText, formatDateTimeRangeText, parseDateRange, parseDateTimeRange,
   type DateTextFormat,
@@ -135,6 +135,28 @@ export class UDateRangePicker extends UFormControlElement<string> {
     text: () => this.renderRoot.querySelector<HTMLElement>(".text-input"),
     box: () => this.renderRoot.querySelector<HTMLElement>('.container'),
   });
+  /**
+   * `chars` 가 없을 때의 자연 폭 — 자리표시와 범위 글(두 날짜 + 구분자) 중 긴 쪽을 그려 잰다. 입력의 기본 폭(`size` 20)은 범위
+   * 자리표시보다 짧아 끝이 잘렸다. 치는 동안의 글자로는 늘리지 않는다(칸이 들썩이지 않게).
+   */
+  private readonly naturalWidth = new CharsWidthController(this, {
+    chars: () => (charsCount(this.chars) ? undefined : this.naturalSample().length),
+    sample: () => this.naturalSample(),
+    text: () => this.renderRoot.querySelector<HTMLElement>(".text-input"),
+    box: () => this.renderRoot.querySelector<HTMLElement>('.container'),
+  });
+
+  private textPattern(): string {
+    return this.mode === 'datetime' ? `${dateTextPattern(this.format)} ${this.seconds ? 'HH:mm:ss' : 'HH:mm'}` : dateTextPattern(this.format);
+  }
+
+  /** 자연 폭을 정하는 글 — 자리표시, 또는 같은 꼴의 범위 값(패턴 글자 자리에 숫자) 중 긴 쪽. */
+  private naturalSample(): string {
+    const pattern = this.textPattern();
+    const placeholder = this.placeholder ?? `${pattern} – ${pattern}`;
+    const valueShape = `${pattern} – ${pattern}`.replace(/[A-Za-z]/g, '0');
+    return placeholder.length >= valueShape.length ? placeholder : valueShape;
+  }
 
   /** Earliest selectable day (ISO `YYYY-MM-DD`), inclusive. */
   @property({ type: String }) min?: string;
@@ -303,7 +325,9 @@ export class UDateRangePicker extends UFormControlElement<string> {
 
   render() {
     const chars = this.charsWidth.width;
-    const pattern = this.mode === 'datetime' ? `${dateTextPattern(this.format)} ${this.seconds ? 'HH:mm:ss' : 'HH:mm'}` : dateTextPattern(this.format);
+    const pattern = this.textPattern();
+    const placeholder = this.placeholder ?? `${pattern} – ${pattern}`;
+    const width = chars ?? this.naturalWidth.width;
     return html`
       <u-field part="field"
         ?required=${this.required}
@@ -317,7 +341,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
         <div class="container" part="container" @click=${this.textEntry.handleContainerClick}
           style=${`--_icons: ${this.suffixButtonCount()}${chars ? `; --date-range-picker-min-text: ${chars}` : ''}`}>
           <input class="text-input" part="input"
-            style=${ifDefined(chars ? `inline-size: ${chars}` : undefined)}
+            style=${ifDefined(width ? `inline-size: ${width}` : undefined)}
             type="text"
             autocomplete="off"
             role="combobox"
@@ -327,7 +351,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
             aria-label=${ifDefined(this.resolvedAriaLabel)}
             aria-description=${ifDefined(this.resolvedAriaDescription)}
             aria-invalid=${this.textEntry.badText ? 'true' : 'false'}
-            placeholder=${this.placeholder ?? `${pattern} – ${pattern}`}
+            placeholder=${placeholder}
             .value=${this.textEntry.text}
             ?disabled=${this.effectivelyDisabled}
             ?readonly=${this.readonly}
