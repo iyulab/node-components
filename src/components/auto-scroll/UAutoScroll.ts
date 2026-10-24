@@ -18,14 +18,26 @@ import { UNATTENDED_IDLE_MS } from "../../utilities/unattended.js";
  * `unattended` 는 아무도 앞에서 조작하지 않는 화면이다 — 포인터가 위에 있어도 멈추지 않고(전체 화면이면 커서가 늘 위에 있다),
  * 눌러서 들어온 초점으로도 멈추지 않는다. 키보드 초점으로 멈춘 것은 `resume-delay`(기본 30초) 동안 손대지 않으면 다시 움직인다. `paused` 는 그대로다.
  *
+ * `mode="item"` 은 흐르지 않고 한 항목씩 넘긴다 — 다음 항목의 윗변까지 짧게 미끄러지고 `pause` 만큼 멈춘다. 멀리서 읽는 보드에서
+ * 줄이 움직이는 동안에는 읽히지 않으므로, 멈춰 있는 시간이 읽는 시간이다. 항목은 꽂힌 요소들이다 — 꽂힌 요소가 하나면(목록 하나를
+ * 감싼 경우) 그 자식들로, 다시 하나면 또 그 자식들로 내려간다.
+ *
  * 넘치는 동안 호스트는 키보드로 닿는 스크롤 영역이다(`tabindex="0"` — 소비자가 단 값은 덮지 않는다).
  *
  * @slot - 굴릴 내용
  */
+/** `u-auto-scroll` 의 움직임 — `continuous` 흐름 · `item` 한 항목씩. */
+export type AutoScrollMode = 'continuous' | 'item';
+
+/** `item` 에서 다음 항목까지 미끄러지는 시간(ms) — 읽히는 것은 멈춘 동안이라 짧고 일정하게 둔다. */
+const ITEM_GLIDE_MS = 600;
+
 @customElement('u-auto-scroll')
 export class UAutoScroll extends UElement {
   static styles = [super.styles, styles];
 
+  /** 움직임 — `continuous`(기본 — 끝까지 흐른다) · `item`(한 항목씩 넘기고 `pause` 만큼 멈춘다) */
+  @property({ type: String, reflect: true }) mode: AutoScrollMode = 'continuous';
   /** 굴리는 속도 (px/초) — `duration` 을 주면 그것이 정한다 */
   @property({ type: Number }) speed = 30;
   /**
@@ -53,6 +65,8 @@ export class UAutoScroll extends UElement {
   /** 지금 굴리는 구간을 시작한 시각과 그때의 위치 — 소수 픽셀도 잃지 않는다(scrollTop 만 더하면 느린 속도에서 0 이 된다). */
   private legStart?: number;
   private legFrom = 0;
+  /** `item` 에서 이번 구간이 닿을 위치. */
+  private legTo?: number;
   private hovered = false;
   private focused = false;
   /** 마지막으로 키 · 포인터를 누른 시각 — `unattended` 의 초점 멈춤이 풀리는 기준. */
@@ -136,8 +150,22 @@ export class UAutoScroll extends UElement {
     if (this.legStart === undefined) {
       this.legStart = time;
       this.legFrom = this.scrollTop;
+      if (this.mode === 'item') this.legTo = this.nextItemTop();
     }
     const end = this.scrollHeight - this.clientHeight;
+    if (this.mode === 'item') {
+      const to = Math.min(end, this.legTo ?? end);
+      const t = Math.min(1, (time - this.legStart) / ITEM_GLIDE_MS);
+      const eased = 1 - (1 - t) ** 3;
+      this.scrollTop = this.legFrom + (to - this.legFrom) * eased;
+      if (t >= 1) {
+        this.scrollTop = to;
+        this.legStart = undefined;
+        this.waitUntil = time + this.pause;
+        if (to >= end - 1) this.phase = 'end';
+      }
+      return;
+    }
     const position = Math.min(end, this.legFrom + (this.pace(end - this.legFrom) * (time - this.legStart)) / 1000);
     this.scrollTop = position;
     if (position >= end) {
@@ -146,6 +174,17 @@ export class UAutoScroll extends UElement {
       this.waitUntil = time + this.pause;
     }
   };
+
+  /** 지금 위치 다음 항목의 윗변(스크롤 좌표). 없으면 끝. */
+  private nextItemTop(): number {
+    const end = this.scrollHeight - this.clientHeight;
+    let items = (this.renderRoot.querySelector('slot') as HTMLSlotElement | null)?.assignedElements({ flatten: true }) ?? [];
+    while (items.length === 1 && items[0].children.length > 0) items = [...items[0].children];
+    const origin = this.getBoundingClientRect().top - this.scrollTop + this.clientTop;
+    const tops = items.map((el) => el.getBoundingClientRect().top - origin).sort((a, b) => a - b);
+    const next = tops.find((top) => top > this.scrollTop + 1);
+    return next === undefined ? end : Math.min(end, next);
+  }
 
   /** px/초 — `duration` 이 있으면 남은 거리를 그 시간에서 두 번의 멈춤을 뺀 동안에 간다(최소 1초). */
   private pace(distance: number): number {

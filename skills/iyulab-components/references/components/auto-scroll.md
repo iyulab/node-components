@@ -45,13 +45,30 @@ Otherwise it scrolls at `speed`.
 |------|-------------|
 | *(default)* | The content to scroll |
 
+### One item at a time — `mode="item"`
+
+On a board read from across the room nothing can be read while it moves, so the time standing still is the reading
+time. `mode="item"` does not flow: it glides to the top of the next item, then waits `pause`, and from the end goes
+back to the top. The items are the slotted elements — when there is only one (a list wrapped in one element), its
+children, and so on down.
+
+```html
+<u-auto-scroll mode="item" pause="3000" unattended style="height: 60vh">
+  <ul>${late.map((o) => html`<li>…</li>`)}</ul>
+</u-auto-scroll>
+```
+
+To show where the list is ("6–12 of 22"), listen for the host's native `scroll` event — `u-auto-scroll` is itself the
+scroll container.
+
 ## Properties
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
-| `speed` | `number` | `30` | — | Scroll speed in px per second — `duration` overrides it |
+| `mode` | `'continuous' \| 'item'` | `'continuous'` | ✓ | `continuous` flows to the end · `item` steps one item at a time and waits `pause` at each |
+| `speed` | `number` | `30` | — | Scroll speed in px per second — `duration` overrides it. Not used by `item` |
 | `duration` | `number` | `0` | — | Time for one round (wait + scroll + wait), in ms; the speed follows from the distance. `0` uses `speed` |
-| `pause` | `number` | `3000` | — | Wait at the top and at the end, in ms |
+| `pause` | `number` | `3000` | — | Wait at the top and at the end, in ms — with `item`, also at every item |
 | `paused` | `boolean` | `false` | ✓ | Do not scroll by itself — by hand only |
 | `unattended` | `boolean` | `false` | ✓ | A screen nobody operates — the pointer over it and focus that came from a tap do not stop it; keyboard focus does, until `resumeDelay` passes without a key press or a click |
 | `resumeDelay` | `number` | `30000` | — | `resume-delay` — with `unattended`, the idle time in ms before a stop caused by keyboard focus ends |

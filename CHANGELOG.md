@@ -4,6 +4,9 @@
 
 ### Added
 
+- **`<u-auto-scroll mode="item">` — one item at a time.** For a board read from across the room, where nothing can be
+  read while it moves: it glides to the top of the next item and waits `pause` there. The items are the slotted
+  elements, or a single wrapper's children. New type `AutoScrollMode`.
 - **`<u-tab-nav appearance="tiles">` and `<u-tab count-appearance="figure">` — tiles for stations.** Equal tiles
   instead of an underlined strip, the current one filled (`--tab-nav-color`, text `--tab-nav-contrast`), wrapping when
   narrower than `--tab-nav-tile-min`. A `figure` count is a large number under the label — for a shop-floor terminal's
