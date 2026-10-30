@@ -64,6 +64,7 @@ import { SlotPresence } from "../../utilities/slotPresence.js";
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
 export class USelect extends UFormControlElement<string | string[]> {
   static styles = [ super.styles, styles ];
+  protected static override fieldBox = true;
   /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
   private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);
 

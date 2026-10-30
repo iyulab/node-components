@@ -120,6 +120,7 @@ const dayPart = (half: string) => splitDateTime(half).day;
 @customElement('u-date-range-picker')
 export class UDateRangePicker extends UFormControlElement<string> {
   static styles = [super.styles, pickerStyles, styles];
+  protected static override fieldBox = true;
 
   /** 크기 — 다른 필드·버튼과 같은 세 단(`md` = `--u-density`(14px) · `sm` = 그 6/7(12px) · `lg` = 8/7(16px) — 밀도 단을 바꾸면 셋이 함께 움직인다). */
   @property({ type: String, reflect: true }) size: FieldSize = 'md';

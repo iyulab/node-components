@@ -31,6 +31,7 @@ type TextareaResize = 'none' | 'vertical' | 'horizontal' | 'both' | 'auto';
 @customElement('u-textarea')
 export class UTextarea extends UFormControlElement<string> {
   static styles = [ super.styles, styles ];
+  protected static override fieldBox = true;
 
   /** 스타일 변형 */
   /** 외형 정도 */

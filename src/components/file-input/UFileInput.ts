@@ -32,6 +32,7 @@ import { styles } from "./UFileInput.styles.js";
 @customElement('u-file-input')
 export class UFileInput extends UFormControlElement<File[] | null> {
   static styles = [ super.styles, styles ];
+  protected static override fieldBox = true;
 
   /** 값은 attribute로 표현될 수 없다 — 항상 프로그램적으로만 설정된다. */
   @property({ attribute: false }) value: File[] | null = null;

@@ -86,10 +86,15 @@ const tabNavigation = {
  * @csspart footer - 컨트롤 아래 줄(설명, 또는 `invalid` 일 때 검증 문구 — `u-field[invalid]::part(footer)` 로 가른다)
  * @csspart hint - `description-display="hint"` 의 정보 아이콘 감싸개
  * @csspart hint-tooltip - 그 툴팁
+ *
+ * 감싼 칸처럼 `:state(field)` 를 싣는다 — 줄 배치에서 아래 끝으로 서는 «입력 상자를 가진 컨트롤» 이다(`UFormControlElement.fieldBox`).
  */
 @customElement('u-field')
 export class UField extends UElement {
   static styles = [super.styles, styles];
+
+  private readonly fieldInternals?: ElementInternals =
+    typeof this.attachInternals === "function" ? this.attachInternals() : undefined;
 
   /** 비활성화 여부 */
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
@@ -244,6 +249,7 @@ export class UField extends UElement {
   connectedCallback(): void {
     super.connectedCallback();
     tabNavigation.install();
+    this.fieldInternals?.states.add("field");
     this.addEventListener('pointerdown', this.handleHostPointerDown, true);
     this.addEventListener('focusin', this.handleFocusIn);
     this.addEventListener('focusout', this.handleFocusOut);

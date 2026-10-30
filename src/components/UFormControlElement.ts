@@ -136,11 +136,18 @@ export abstract class UFormControlElement<T> extends UElement {
     this.addEventListener('invalid', this.handleInvalid);
   }
 
+  /**
+   * 입력 상자를 그리는 컨트롤인가(`u-input` · `u-select` · 날짜 피커 …) — 참이면 `:state(field)` 를 싣는다.
+   * 체크박스 · 스위치처럼 글자 옆에 서는 토글은 거짓이다. 하위 클래스가 `static override fieldBox = true` 로 켠다.
+   */
+  protected static fieldBox = false;
+
   connectedCallback(): void {
     super.connectedCallback();
     if (!this.internals && 'attachInternals' in this) {
       this.internals = this.attachInternals();
     }
+    if ((this.constructor as typeof UFormControlElement).fieldBox) this.internals?.states.add('field');
   }
 
   /** 자기 `validate()` 가 `internals.checkValidity()` 를 부르는 동안 — 그때 오는 `invalid` 는 보고가 아니다. */

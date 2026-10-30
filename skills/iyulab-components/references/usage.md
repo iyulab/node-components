@@ -274,6 +274,20 @@ input.reset();    // empties this control and clears its validation state
 
 A native `form.reset()` (or `u-button type="reset"`) returns each control to its default — the `value` attribute, `checked` for checkbox/switch — not to empty. A disabled `<fieldset>` disables every control inside it (and `u-button`), exactly like the control's own `disabled` attribute. Style disabled controls with `:disabled`, not `[disabled]`.
 
+### Lining up fields with buttons — `:state(field)`
+
+Controls that draw an input box — `u-input`, `u-select`, `u-textarea`, `u-date-picker`, `u-date-range-picker`, `u-file-input` (and the `u-field` wrapper) — carry the custom state `:state(field)`. Toggles that sit beside their text (`u-checkbox`, `u-switch`, `u-radio`) do not. A row that mixes fields and buttons can stand the fields on their bottom edge and everything else on one text line, without listing tags:
+
+```css
+.filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
+.filters > * { align-self: last baseline; }
+.filters > :state(field) { align-self: auto; }
+```
+
+Write the rule in the positive form, as above. Chromium does not recompute a `:not(:state(field))` rule when the state arrives as the control connects, so a negated selector keeps matching a field.
+
+A control from another package that draws a box sets the state the same way (`protected static override fieldBox = true` on a `UFormControlElement` subclass).
+
 ### Using `u-form` for model binding
 
 ```ts

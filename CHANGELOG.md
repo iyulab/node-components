@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`:state(field)` on controls that draw an input box** — `u-input`, `u-select`, `u-textarea`, `u-date-picker`,
+  `u-date-range-picker`, `u-file-input` and the `u-field` wrapper. Toggles that sit beside their text (`u-checkbox`,
+  `u-switch`, `u-radio`) do not carry it. A layout that stands fields on their bottom edge and buttons, toggles and text
+  on one text line can select `:state(field)` instead of listing tags (write it as an override of a rule for every
+  item — Chromium does not recompute a negated `:not(:state(field))` when the state arrives). A `UFormControlElement` subclass from
+  another package opts in with `protected static override fieldBox = true`.
+
 ## [2.36.0] - 2026-10-30
 
 ### Added
