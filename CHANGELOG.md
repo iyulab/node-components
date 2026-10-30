@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Added
+
+- **`applyNumberFormat(value, format, locale?)`** — one number format for tables, sheets and widgets: a spreadsheet
+  format code (`#,##0.00`, `0.0%`, `#,##0;[Red](#,##0)`, `#,##0원`, sections, scaling, literals, `[$₩-412]`) or
+  `Intl.NumberFormat` options. Returns `{ text, tone? }` — a section color becomes a theme status tone — or `null`
+  for code syntax it does not support. Neither path writes a signed zero. Exported with the `NumberFormat`,
+  `FormattedNumber` and `FormatTone` types.
+
 ### Fixed
 
 - **`u-button` shows its keyboard focus ring.** The ring is the inner button's outline, drawn 2px outside the

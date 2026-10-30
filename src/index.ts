@@ -79,6 +79,7 @@ export * from './utilities/devWarning.js';
 export * from './utilities/Dialog.js';
 export * from './utilities/elements.js';
 export * from './utilities/format.js';
+export * from './utilities/numberFormat.js';
 export * from './utilities/icons.js';
 export * from './utilities/keyboard.js';
 export * from './utilities/composition.js';

@@ -149,6 +149,7 @@ set on the host yourself always wins and is never overwritten.
 - [`Locale`](./references/utilities/locale.md) — Validation-message locale registry and lookup utility · search matching (`matchesSearch` — Hangul jamo and initials)
 - [`elements`](./references/utilities/elements.md) — Shadow-DOM-aware DOM query helpers
 - [`format`](./references/utilities/format.md) — Locale-aware number, currency and date formatting
+- [`number-format`](./references/utilities/number-format.md) — One number format for tables, sheets and widgets: spreadsheet codes or `Intl` options
 - [`clipboard`](./references/utilities/clipboard.md) — `copyFromKey` / `pasteFromKey` / `isTextEntry`, Ctrl/Cmd + C · X · V for a grid or list selection in every browser (Safari fires no copy event without a text selection)
 - [`keyboard`](./references/utilities/keyboard.md) — `isImeComposing` for Enter handlers that must not fire mid-composition (Korean/Japanese/Chinese input) · `CompositionTracker` / `replayInput` for inputs that filter as you type
 - [`tsv`](./references/utilities/tsv.md) — `encodeTsv` / `decodeTsv`, the spreadsheet clipboard format with RFC 4180 quoting

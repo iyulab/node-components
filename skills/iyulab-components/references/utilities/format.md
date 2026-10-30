@@ -12,6 +12,8 @@ They add no formatting rules of their own — everything `Intl` accepts is passe
 through. Reach for them instead of calling `Intl` directly when you want the active locale
 applied without threading it through every call site.
 
+For spreadsheet-style format codes (`#,##0;[Red](#,##0)`), see [`number-format`](./number-format.md).
+
 ## Functions
 
 ### `formatNumber(value, options?, locale?)`
