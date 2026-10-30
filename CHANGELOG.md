@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **`u-button` shows its keyboard focus ring.** The ring is the inner button's outline, drawn 2px outside the
+  host box, and the host clipped its overflow — so a focused `u-button` (every appearance, link buttons too) looked
+  exactly like an unfocused one (WCAG 2.4.7). The host no longer clips; the inner button does, which keeps the content
+  inside the rounded box without cutting its own outline.
+- **The focused name tab of `u-carousel pagination-style="labels"` shows its whole ring.** The row spans the host's width
+  at its bottom edge and the host clips its slides, so the ring drawn outside the tab was cut on three sides; it is now
+  drawn just inside the tab.
+- **A `u-button` label too long for its width ends in «…».** The label box did not shrink, so the declared ellipsis
+  never applied and the text was simply cut at the edge.
+
 ## [2.35.1] - 2026-10-25
 
 ### Fixed

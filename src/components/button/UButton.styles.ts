@@ -59,7 +59,8 @@ export const styles = css`
     background-color: transparent;
 
     transition: all var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
-    overflow: hidden;
+    /* 호스트는 자르지 않는다 — 포커스 링(안쪽 button/a 의 outline, offset 2px)이 호스트 상자 바깥에 그려진다.
+       2.35.1 까지 여기 overflow: hidden 이 있어 링이 통째로 잘렸다(WCAG 2.4.7). 자르기는 안쪽 상자가 한다. */
     user-select: none;
     cursor: pointer;
   }
@@ -335,6 +336,8 @@ export const styles = css`
     padding: var(--btn-padding-block, 0.5em) var(--btn-padding-inline, 1em);
     border: 1px solid var(--btn-border-color, transparent);
     border-radius: inherit;
+    /* 내용은 여기서 자른다 — 요소의 overflow 는 자식만 자르고 자기 outline 은 자르지 않는다. */
+    overflow: hidden;
 
     /* ★**글자 버튼의 자연 높이를 그대로 바닥값으로 쓴다** — 값을 새로 고른 것이 아니라
      * 같은 식을 다시 쓴 것이다:
@@ -379,7 +382,8 @@ export const styles = css`
   }
 
   .content {
-    flex: 1 0 auto;
+    /* 줄어들 수 있어야 말줄임이 선다 — 1 0 auto 는 폭이 모자라도 줄지 않아 글자가 잘리기만 했다. */
+    flex: 1 1 auto;
     min-width: 0;
     line-height: 1.5;
     display: inline-flex;

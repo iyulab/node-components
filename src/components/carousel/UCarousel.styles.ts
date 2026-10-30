@@ -164,6 +164,10 @@ export const styles = css`
     color: var(--u-txt-color-weak, #616161);
     cursor: pointer;
   }
+  /* 이름 칸 줄은 호스트 폭을 다 쓰고 호스트 아래 끝에 붙는다 — 호스트가 슬라이드를 자르므로 링은 안쪽에 그린다. */
+  .tab:focus-visible {
+    outline-offset: -2px;
+  }
   .tab[active] {
     font-weight: 700;
     color: var(--u-txt-color, #212121);
