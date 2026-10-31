@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`u-file-input` `directory`** — picks a folder instead of files. Every file under the folder lands in `value`
+  (still `File[]`), each with its `webkitRelativePath`; the form submits them like `multiple`. The trigger reads
+  "Choose folder" and the status shows the folder name and the file count (new locale strings `chooseFolder` and
+  `folderSelected` in all fourteen built-in languages). Browsers do not apply `accept` to a folder pick.
+
 ## [2.37.0] - 2026-10-31
 
 ### Added

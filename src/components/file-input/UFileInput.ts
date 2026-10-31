@@ -40,6 +40,12 @@ export class UFileInput extends UFormControlElement<File[] | null> {
   @property({ type: String }) accept?: string;
   /** 여러 파일을 한 번에 선택할 수 있는지 여부. */
   @property({ type: Boolean, reflect: true }) multiple: boolean = false;
+  /**
+   * 파일 대신 폴더를 고른다 — 안쪽 입력에 `webkitdirectory` 를 건다(모든 주요 브라우저가 지원). 고른 폴더 아래 파일 전부가
+   * `value` 에 담기고 각 `File` 의 `webkitRelativePath` 가 폴더 기준 상대 경로다. 폴더 하나가 여러 파일이므로 `multiple` 을
+   * 함의한다. 브라우저는 폴더 모드에서 `accept` 를 쓰지 않는다 — 걸러야 하면 `change` 에서 `value` 를 거른다.
+   */
+  @property({ type: Boolean, reflect: true }) directory: boolean = false;
 
   @query('.trigger', true) triggerEl?: HTMLButtonElement;
   @query('input[type="file"]', true) inputEl?: HTMLInputElement;
@@ -85,17 +91,25 @@ export class UFileInput extends UFormControlElement<File[] | null> {
    */
   private get triggerAriaLabel(): string | undefined {
     const label = this.resolvedAriaLabel;
-    return label ? `${Locale.getValue('chooseFile')}, ${label}` : undefined;
+    return label ? `${this.triggerText}, ${label}` : undefined;
+  }
+
+  private get triggerText(): string {
+    return Locale.getValue(this.directory ? 'chooseFolder' : 'chooseFile');
+  }
+
+  /** 폴더 모드의 상태 글자 — 고른 폴더 이름(상대 경로의 첫 마디)과 파일 수. 경로가 없으면(코드가 넣은 값) 파일 모드의 글자로. */
+  private statusText(files: File[]): string {
+    if (files.length === 0) return Locale.getValue('noFileChosen');
+    const folder = this.directory ? files[0].webkitRelativePath?.split('/')[0] : '';
+    if (folder) return Locale.getValue('folderSelected', { name: folder, count: files.length });
+    return files.length === 1 ? files[0].name : Locale.getValue('filesSelected', { count: files.length });
   }
 
   render() {
     const files = this.value ?? [];
     const hasFiles = files.length > 0;
-    const status = !hasFiles
-      ? Locale.getValue('noFileChosen')
-      : files.length === 1
-        ? files[0].name
-        : Locale.getValue('filesSelected', { count: files.length });
+    const status = this.statusText(files);
 
     return html`
       <u-field part="field"
@@ -113,7 +127,7 @@ export class UFileInput extends UFormControlElement<File[] | null> {
             aria-label=${ifDefined(this.triggerAriaLabel)}
             ?disabled=${this.effectivelyDisabled || this.readonly}
             @click=${this.handleTriggerClick}
-          >${Locale.getValue('chooseFile')}</button>
+          >${this.triggerText}</button>
 
           <span class="status" part="status" ?data-empty=${!hasFiles}>${status}</span>
 
@@ -133,7 +147,8 @@ export class UFileInput extends UFormControlElement<File[] | null> {
             hidden
             name=${ifDefined(this.name)}
             accept=${ifDefined(this.accept)}
-            ?multiple=${this.multiple}
+            ?multiple=${this.multiple || this.directory}
+            ?webkitdirectory=${this.directory}
             ?disabled=${this.effectivelyDisabled || this.readonly}
             @change=${this.handleInputChange}
           />

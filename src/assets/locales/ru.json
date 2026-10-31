@@ -45,6 +45,8 @@
   "chooseFile": "Выбрать файл",
   "noFileChosen": "Файл не выбран",
   "filesSelected": "Выбрано файлов: {count}",
+  "chooseFolder": "Выбрать папку",
+  "folderSelected": "{name} (файлов: {count})",
   "resizePanels": "Изменить размер панелей",
   "loading": "Загрузка",
   "search": "Поиск",

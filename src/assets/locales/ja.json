@@ -45,6 +45,8 @@
   "chooseFile": "ファイルを選択",
   "noFileChosen": "ファイルが選択されていません",
   "filesSelected": "{count}個のファイルを選択しました",
+  "chooseFolder": "フォルダーを選択",
+  "folderSelected": "{name}({count}個のファイル)",
   "resizePanels": "パネルのサイズ変更",
   "loading": "読み込み中",
   "search": "検索",

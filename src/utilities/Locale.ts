@@ -69,6 +69,9 @@ export type LocaleMessageKey =
   | 'chooseFile'
   | 'noFileChosen'
   | 'filesSelected'
+  // 폴더 모드(`u-file-input[directory]`)의 트리거 글자와 상태 — 고른 것이 파일이 아니라 폴더라 «파일 선택» 은 거짓말이 된다.
+  | 'chooseFolder'
+  | 'folderSelected'
   | 'resizePanels'
   // 이름 없는 `u-spinner` 의 접근성 이름 — 진행 표시는 글자가 없으면 보조기기에 «무엇이 진행 중인지» 가 없다.
   | 'loading'

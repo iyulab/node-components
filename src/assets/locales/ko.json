@@ -45,6 +45,8 @@
   "chooseFile": "파일 선택",
   "noFileChosen": "선택된 파일 없음",
   "filesSelected": "{count}개 파일 선택됨",
+  "chooseFolder": "폴더 선택",
+  "folderSelected": "{name} (파일 {count}개)",
   "resizePanels": "패널 크기 조절",
   "loading": "로딩 중",
   "search": "검색",

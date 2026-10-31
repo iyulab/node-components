@@ -45,6 +45,8 @@
   "chooseFile": "Pilih berkas",
   "noFileChosen": "Tidak ada berkas dipilih",
   "filesSelected": "{count} berkas dipilih",
+  "chooseFolder": "Pilih folder",
+  "folderSelected": "{name} ({count} berkas)",
   "resizePanels": "Ubah ukuran panel",
   "loading": "Memuat",
   "search": "Cari",

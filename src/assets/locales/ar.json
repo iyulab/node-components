@@ -45,6 +45,8 @@
   "chooseFile": "اختر ملفًا",
   "noFileChosen": "لم يتم اختيار أي ملف",
   "filesSelected": "تم اختيار {count} ملفات",
+  "chooseFolder": "اختر مجلدًا",
+  "folderSelected": "{name} ({count} ملفات)",
   "resizePanels": "تغيير حجم اللوحات",
   "loading": "جارٍ التحميل",
   "search": "بحث",

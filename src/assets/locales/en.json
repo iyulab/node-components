@@ -45,6 +45,8 @@
   "chooseFile": "Choose file",
   "noFileChosen": "No file chosen",
   "filesSelected": "{count} files selected",
+  "chooseFolder": "Choose folder",
+  "folderSelected": "{name} ({count} files)",
   "resizePanels": "Resize panels",
   "loading": "Loading",
   "search": "Search",

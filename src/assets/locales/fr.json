@@ -45,6 +45,8 @@
   "chooseFile": "Choisir un fichier",
   "noFileChosen": "Aucun fichier choisi",
   "filesSelected": "{count} fichiers sélectionnés",
+  "chooseFolder": "Choisir un dossier",
+  "folderSelected": "{name} ({count} fichiers)",
   "resizePanels": "Redimensionner les panneaux",
   "loading": "Chargement",
   "search": "Rechercher",

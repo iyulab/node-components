@@ -18,6 +18,8 @@ matching what a native `<input type="file" multiple>` submits.
 <u-file-input name="attachment" required accept="image/*"></u-file-input>
 
 <u-file-input name="attachments" multiple accept=".csv,.xlsx"></u-file-input>
+
+<u-file-input name="drawings" directory label="Drawing folder"></u-file-input>
 ```
 
 ```ts
@@ -26,6 +28,11 @@ picker.addEventListener('change', () => {
   console.log(picker.value); // File[] | null
 });
 ```
+
+`directory` picks a folder instead of files: every file under it lands in `value`, and each `File`'s
+`webkitRelativePath` is its path from the picked folder (`plans/sub/b.txt`). The trigger reads "Choose folder"
+and the status shows the folder name and file count. A folder implies `multiple`; browsers ignore `accept` in
+folder mode, so filter `value` in `change` if you need to.
 
 No drag-and-drop in this version — it is a minimal wrapper (trigger + status + clear), by design.
 
@@ -38,6 +45,7 @@ No drag-and-drop in this version — it is a minimal wrapper (trigger + status +
 | `value` | `File[] \| null` | `null` | — | Selected files (always an array, even for single-file selection). Setting it to `null` (or `[]`) clears the native input as `reset()` does, so the same file can be picked again |
 | `accept` | `string` | — | — | Passed through to the native `accept` attribute |
 | `multiple` | `boolean` | `false` | ✓ | Allow selecting more than one file |
+| `directory` | `boolean` | `false` | ✓ | Pick a folder — all files under it, each with `webkitRelativePath`; implies `multiple`, `accept` is not applied |
 | `disabled` | `boolean` | `false` | ✓ | Disable the control |
 | `readonly` | `boolean` | `false` | ✓ | Read-only (trigger and clear button inert) |
 | `required` | `boolean` | `false` | ✓ | Required field |
@@ -64,7 +72,7 @@ No drag-and-drop in this version — it is a minimal wrapper (trigger + status +
 | `field` | Inner `u-field` element (label/description/validation layout) |
 | `container` | Wrapper around the trigger, status text, and clear button |
 | `trigger` | The file-picker trigger button |
-| `status` | Status text — "No file chosen", the filename, or "N files selected" |
+| `status` | Status text — "No file chosen", the filename, "N files selected", or (folder mode) "folder (N files)" |
 | `clear-button` | Clear-selection button (a `u-icon`) |
 | `input` | The hidden native `<input type="file">` |
 
