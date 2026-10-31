@@ -59,6 +59,10 @@ interface ParsedFormat {
   sections: Section[];
 }
 
+/** `Intl.NumberFormat` 의 `minimumIntegerDigits` 상한 · `maximumFractionDigits` 상한. */
+const MAX_INTEGER_DIGITS = 21;
+const MAX_FRACTION_DIGITS = 100;
+
 const cache = new Map<string, ParsedFormat | null>();
 
 /** Split on `;` outside quotes, brackets and escapes. */
@@ -205,6 +209,9 @@ function parseSection(src: string): Section | null {
   }
   closeNumber();
   flushLiteral();
+  // `Intl.NumberFormat` 이 받는 자리 수는 정수 1–21 · 소수 0–100 — 넘는 코드는 쓸 수 없는 코드다(던지지 않고 `null`).
+  // 자르면 코드가 말하는 것과 다른 글자를 쓴다.
+  if (intZeros > MAX_INTEGER_DIGITS || maxFraction > MAX_FRACTION_DIGITS) return null;
   return { tokens, tone, intZeros, minFraction, maxFraction, grouping, scale, percent, hasNumber: numberSeen };
 }
 
@@ -296,7 +303,8 @@ export type NumberFormat = string | Intl.NumberFormatOptions;
  * - Neither path writes a signed zero: a negative that rounds to zero reads `0`, as in Excel. For options,
  *   that is `signDisplay: 'negative'` unless the options set `signDisplay` themselves.
  * - Returns `null` when a format code uses syntax this engine does not support (conditions `[>100]`,
- *   `[Color N]`, scientific `E+`, fractions) — the caller decides how to show the value then.
+ *   `[Color N]`, scientific `E+`, fractions) or more digit placeholders than `Intl.NumberFormat` takes (21 integer,
+ *   100 fraction) — the caller decides how to show the value then.
  *
  * Separators follow `locale`, or the app locale (`Locale.get()`) when omitted.
  */

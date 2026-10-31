@@ -82,6 +82,17 @@ describe('applyNumberFormat — spreadsheet format codes', () => {
     Locale.set('de');
     expect(text(1234.5, '#,##0.00')).toBe('1.234,50');
   });
+
+  it('a code with more digit placeholders than Intl takes is unsupported (null), not a throw', () => {
+    // Intl.NumberFormat takes 1–21 integer and 0–100 fraction digits
+    expect(applyNumberFormat(5, '0'.repeat(21), 'en')?.text).toBe('000000000000000000005');
+    expect(applyNumberFormat(5, '0'.repeat(22), 'en')).toBeNull();
+    expect(applyNumberFormat(5, '0.' + '0'.repeat(100), 'en')?.text).toBe('5.' + '0'.repeat(100));
+    expect(applyNumberFormat(5, '0.' + '0'.repeat(101), 'en')).toBeNull();
+    expect(applyNumberFormat(5, '0.' + '#'.repeat(101), 'en')).toBeNull();
+    // in any section
+    expect(applyNumberFormat(-5, '0;' + '0'.repeat(22), 'en')).toBeNull();
+  });
 });
 
 describe('applyNumberFormat — Intl options', () => {

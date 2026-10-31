@@ -9,6 +9,13 @@
   "Choose folder" and the status shows the folder name and the file count (new locale strings `chooseFolder` and
   `folderSelected` in all fourteen built-in languages). Browsers do not apply `accept` to a folder pick.
 
+### Fixed
+
+- **`applyNumberFormat` returns `null` for a format code with more digit placeholders than `Intl.NumberFormat` takes**
+  (more than 21 integer or 100 fraction) instead of throwing a `RangeError` — the answer it already gives for code syntax
+  it cannot write, so a caller that shows the plain value for `null` no longer has to guard the call. A `flex-table`
+  column whose `format` was a mistyped long run of `0` threw while rendering its cells.
+
 ## [2.37.0] - 2026-10-31
 
 ### Added
