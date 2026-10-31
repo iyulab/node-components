@@ -8,6 +8,7 @@ import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import { styles } from "./URating.styles.js";
 
+import { delegate } from "../../utilities/listenInShadow.js";
 /**
  * 별점 등의 숫자 입력을 지원하는 레이팅 컴포넌트입니다.
  *
@@ -90,7 +91,7 @@ export class URating extends UFormControlElement<number> {
                 data-score=${score}
                 @pointermove=${this.handleSymbolPointerMove}
                 @pointerleave=${this.handleSymbolPointerLeave}
-                @click=${this.handleSymbolClick}
+                ${delegate('click', this.handleSymbolClick)}
                 @keydown=${this.handleSymbolKeydown}
               >
                 ${this.symbolOff
@@ -213,10 +214,10 @@ export class URating extends UFormControlElement<number> {
     this.buffer = -1;
   }
 
-  private handleSymbolClick = (e: PointerEvent) => {
+  private handleSymbolClick = (e: PointerEvent, symbol: HTMLElement) => {
     if (this.effectivelyDisabled || this.readonly) return;
-    const score = Number((e.currentTarget as HTMLElement).dataset.score);
-    const val = this.precision < 1 ? this.calibrate(e, score) : score;
+    const score = Number(symbol.dataset.score);
+    const val = this.precision < 1 ? this.calibrate(e, score, symbol) : score;
     const next = this.value === val ? 0 : val;
     if (next === this.value) return;
     this.value = next;
@@ -273,8 +274,8 @@ export class URating extends UFormControlElement<number> {
     }
   }
 
-  private calibrate(e: PointerEvent, score: number): number {
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+  private calibrate(e: PointerEvent, score: number, symbol = e.currentTarget as HTMLElement): number {
+    const rect = symbol.getBoundingClientRect();
     const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
     const raw = (score - 1) + ratio;
     const p = Math.max(0.01, Math.min(1, this.precision));

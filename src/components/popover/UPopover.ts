@@ -151,7 +151,14 @@ export class UPopover extends UFloatingElement {
     switch (this.trigger) {
       case 'click':
         for (const anchor of anchors) {
-          anchor.addEventListener('click', this.handleAnchorClick);
+          // 클릭은 앵커가 속한 루트(문서 · 섀도 루트)에서 듣는다 — 앵커(소비자의 버튼 · 콤보상자 칸)에 건
+          // click 리스너는 스크린리더가 그 요소를 «클릭 가능» 으로 읽게 한다.
+          const root = anchor.getRootNode() as Document | ShadowRoot;
+          const listener = (e: Event) => {
+            if (e.composedPath().includes(anchor)) this.handleAnchorClick(anchor);
+          };
+          root.addEventListener('click', listener);
+          this.anchorClickStops.push(() => root.removeEventListener('click', listener));
           anchor.addEventListener('keydown', this.handleAnchorKeydown);
         }
         break;
@@ -196,9 +203,11 @@ export class UPopover extends UFloatingElement {
     }
   }
 
+  private anchorClickStops: Array<() => void> = [];
+
   private unbind(anchors: HTMLElement[]): void {
+    for (const stop of this.anchorClickStops.splice(0)) stop();
     for (const anchor of anchors) {
-      anchor.removeEventListener('click', this.handleAnchorClick);
       anchor.removeEventListener('keydown', this.handleAnchorKeydown);
       anchor.removeEventListener('pointerenter', this.handleAnchorPointerEnter);
       anchor.removeEventListener('pointerleave', this.handleAnchorPointerLeave);
@@ -221,11 +230,11 @@ export class UPopover extends UFloatingElement {
     }
   }
 
-  private handleAnchorClick = (e: Event) => {
+  private handleAnchorClick = (anchor: HTMLElement) => {
     if (this.open) {
       this.hide();
     } else {
-      this.show(e.currentTarget as HTMLElement);
+      this.show(anchor);
     }
   };
 

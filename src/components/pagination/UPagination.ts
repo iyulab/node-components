@@ -9,6 +9,7 @@ import { UElement } from "../UElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import { styles } from "./UPagination.styles.js";
 
+import { delegate } from "../../utilities/listenInShadow.js";
 export type PaginationSize = 'sm' | 'md' | 'lg';
 
 /** `page-change` 의 detail — 0 기준 페이지와 그때의 페이지 크기. */
@@ -98,7 +99,7 @@ export class UPagination extends UElement {
           <u-button part="prev" class="step" appearance="plain" size=${this.size}
             aria-label=${Locale.getValue('previousPage')}
             ?disabled=${current <= 0}
-            @click=${() => this.go(current - 1)}>
+            ${delegate('click', () => this.go(current - 1))}>
             <u-icon lib="internal" name="chevron-left"></u-icon>
           </u-button>
           ${this.cells(current, last).map((cell) => cell === 'gap'
@@ -107,11 +108,11 @@ export class UPagination extends UElement {
                 appearance=${cell === current ? 'soft' : 'plain'}
                 aria-label=${Locale.getValue('pageN', { n: cell + 1 })}
                 aria-current=${cell === current ? 'page' : nothing}
-                @click=${() => this.go(cell)}>${cell + 1}</u-button>`)}
+                ${delegate('click', () => this.go(cell))}>${cell + 1}</u-button>`)}
           <u-button part="next" class="step" appearance="plain" size=${this.size}
             aria-label=${Locale.getValue('nextPage')}
             ?disabled=${current >= last}
-            @click=${() => this.go(current + 1)}>
+            ${delegate('click', () => this.go(current + 1))}>
             <u-icon lib="internal" name="chevron-right"></u-icon>
           </u-button>
         </div>

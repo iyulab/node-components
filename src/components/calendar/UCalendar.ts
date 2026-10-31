@@ -12,6 +12,7 @@ import {
 } from "./dates.js";
 import { styles } from "./UCalendar.styles.js";
 
+import { delegate } from "../../utilities/listenInShadow.js";
 /** Cells to render for one month — leading `null`s pad the previous month's weekday offset. */
 function buildMonthGrid(month: Date): (Date | null)[] {
   const first = startOfMonth(month);
@@ -167,11 +168,11 @@ export class UCalendar extends UElement {
       <div class="month" part="calendar-month">
         <div class="calendar-header" part="calendar-header">
           ${first
-            ? html`<u-icon-button lib="internal" name="chevron-left" aria-label=${Locale.getValue('previousMonth')} @click=${this.handlePrevMonth}></u-icon-button>`
+            ? html`<u-icon-button lib="internal" name="chevron-left" aria-label=${Locale.getValue('previousMonth')} ${delegate('click', this.handlePrevMonth)}></u-icon-button>`
             : html`<span class="nav-spacer"></span>`}
           <span class="calendar-title" part="calendar-title">${monthLabel}</span>
           ${last
-            ? html`<u-icon-button lib="internal" name="chevron-right" aria-label=${Locale.getValue('nextMonth')} @click=${this.handleNextMonth}></u-icon-button>`
+            ? html`<u-icon-button lib="internal" name="chevron-right" aria-label=${Locale.getValue('nextMonth')} ${delegate('click', this.handleNextMonth)}></u-icon-button>`
             : html`<span class="nav-spacer"></span>`}
         </div>
         <div class="calendar-weekdays" part="calendar-weekdays" role="row">
@@ -216,7 +217,7 @@ export class UCalendar extends UElement {
         ?data-range-start=${!!range && isSameDay(date, range[0])}
         ?data-range-end=${!!range && isSameDay(date, range[1])}
         ?data-preview=${inRange && !!this.anchor}
-        @click=${() => this.activate(date)}
+        ${delegate('click', () => this.activate(date))}
         @keydown=${(e: KeyboardEvent) => this.handleDayKeydown(e, date)}
         @focus=${() => { this.focusedDate = date; }}
         @pointerenter=${() => { if (this.anchor) this.hoverDate = date; }}

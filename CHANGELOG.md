@@ -1,5 +1,34 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`delegate(type, handler)` and `listenInShadow(root, type, selector, handler)`** — event handlers for the parts of a
+  shadow tree, heard on the shadow root instead of on the part. A `click`, `mousedown` or `mouseup` listener on an
+  element makes screen readers announce it (and everything inside it) as «clickable» unless its role is button, link,
+  menuitem, tab, option, radio, checkbox or switch; a listener on the shadow root is not announced. `delegate` is a Lit
+  element directive used in place of `@click`: handlers run innermost first and `stopPropagation()` stops the ones
+  further out; the element arrives as the second argument (`currentTarget` is the shadow root).
+
+### Fixed
+
+- **Screen readers no longer announce «clickable» on our buttons, field labels and fields.** Measured with NVDA in
+  browse mode, every `u-button` read as «clickable, button», and `u-field` labels, the `u-date-picker` /
+  `u-date-range-picker` field and its label, the `u-select` field, calendar days, menu and tree item headers, rating
+  symbols and the clear, password, stepper, remove, close and page buttons inside other components were announced the
+  same way — each carried a click listener on an element. They are now heard on the shadow root.
+- **`u-popover` hears a click on its anchor on the anchor's root** (the document or the shadow root it lives in) rather
+  than on the anchor element, so the anchor is not announced as «clickable».
+
+### Changed
+
+- **`u-button` sets `role="none"` on its host** unless you set a role. The host only wraps the inner `<button>`; marking
+  it presentational keeps your own `click` listener on a `u-button` from being announced as «clickable». A host with
+  `aria-label` (or another global ARIA attribute) stays exposed — browsers ignore `role="none"` then. `u-button` now
+  hears clicks on its shadow root; `click()` on the host keeps the same rules (does nothing while disabled or loading,
+  submits or resets its form). A click event you dispatch on the host yourself no longer submits — call `click()`.
+
 ## [2.38.1] - 2026-10-31
 
 ### Fixed

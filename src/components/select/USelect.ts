@@ -23,6 +23,7 @@ import { styles } from "./USelect.styles.js";
 
 
 import { SlotPresence } from "../../utilities/slotPresence.js";
+import { delegate } from "../../utilities/listenInShadow.js";
 /**
  * 드롭다운 목록에서 값을 선택하는 폼 컨트롤 컴포넌트입니다.
  * 단일 선택 및 다중 선택, 검색 기능을 지원합니다.
@@ -233,7 +234,7 @@ export class USelect extends UFormControlElement<string | string[]> {
           aria-haspopup=${ifDefined(this.searchable ? undefined : 'listbox')}
           aria-expanded=${ifDefined(this.searchable ? undefined : String(this.open))}
           aria-controls=${ifDefined(this.searchable ? undefined : this.listboxId)}
-          @click=${this.handleContainerClick}
+          ${delegate('click', this.handleContainerClick)}
           @keydown=${this.handleTriggerKeydown}>
           <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
           <div class="value-area">
@@ -269,7 +270,7 @@ export class USelect extends UFormControlElement<string | string[]> {
             aria-label=${Locale.getValue('clear')}
             lib="internal"
             name="x"
-            @click=${this.handleClearClick}
+            ${delegate('click', this.handleClearClick)}
             @keydown=${this.handleClearKeydown}
           ></u-icon>
           <u-icon class="suffix-item"

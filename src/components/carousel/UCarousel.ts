@@ -11,6 +11,7 @@ import { HostAria } from "../../utilities/hostAria.js";
 import { UNATTENDED_IDLE_MS } from "../../utilities/unattended.js";
 import { styles } from "./UCarousel.styles.js";
 
+import { delegate } from "../../utilities/listenInShadow.js";
 /**
  * 여러 슬라이드를 전환하며 표시하는 캐러셀 컴포넌트입니다.
  *
@@ -222,7 +223,7 @@ export class UCarousel extends UElement {
         appearance="plain"
         rounded
         aria-label=${Locale.getValue('previousSlide')}
-        @click=${this.prev}>
+        ${delegate('click', this.prev)}>
         <u-icon lib="internal" name="chevron-left"></u-icon>
       </u-button>
       <u-button part="next-button" class="nav-button next"
@@ -230,7 +231,7 @@ export class UCarousel extends UElement {
         appearance="plain"
         rounded
         aria-label=${Locale.getValue('nextSlide')}
-        @click=${this.next}>
+        ${delegate('click', this.next)}>
         <u-icon lib="internal" name="chevron-right"></u-icon>
       </u-button>
 

@@ -9,6 +9,7 @@ import { styles } from "./UField.styles.js";
 import "../icon/UIcon.js";
 import "../tooltip/UTooltip.js";
 
+import { delegate } from "../../utilities/listenInShadow.js";
 /** 네이티브로 «폼 컨트롤이거나 포커스를 받도록 저작된» 태그 — 가시성과 무관한 구조 사실이다. */
 const NATIVE_CONTROL_TAGS = new Set(['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON']);
 /**
@@ -136,7 +137,7 @@ export class UField extends UElement {
   render() {
     return html`
       <div class="header" part="header" ?hidden=${!this.label}>
-        <label class="label" part="label" @click=${this.handleLabelClick}>
+        <label class="label" part="label" ${delegate('click', this.handleLabelClick)}>
           <span class="required" part="required" ?hidden=${!this.required}>*</span>
           ${this.label}
         </label>
@@ -164,7 +165,7 @@ export class UField extends UElement {
     return html`
       <span class="hint" part="hint" aria-hidden="true"
         @pointerdown=${this.handleHintPointerDown}
-        @click=${this.handleHintClick}>
+        ${delegate('click', this.handleHintClick)}>
         <u-icon lib="internal" name="info-circle-fill"></u-icon>
         <u-tooltip part="hint-tooltip" placement="top-start" shift>${this.description}</u-tooltip>
       </span>

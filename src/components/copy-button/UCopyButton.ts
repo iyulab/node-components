@@ -10,6 +10,7 @@ import { type ButtonAppearance } from '../button/UButton.js';
 import { styles } from './UCopyButton.styles.js';
 import { Locale } from '../../utilities/Locale.js';
 
+import { delegate } from "../../utilities/listenInShadow.js";
 /**
  * 클릭 시 클립보드에 텍스트를 복사하는 버튼입니다. 복사 상태를 표시하기 위해 아이콘이 변경됩니다.
  *
@@ -65,7 +66,7 @@ export class UCopyButton extends UElement {
           ?disabled=${this.disabled}
           .appearance=${this.appearance}
           .rounded=${this.rounded}
-          @click=${this.handleButtonClick}
+          ${delegate('click', this.handleButtonClick)}
         >
           <u-icon slot="prefix" part="icon" lib="internal" name=${iconName}></u-icon>
           ${this.label}
@@ -84,7 +85,7 @@ export class UCopyButton extends UElement {
         lib="internal"
         name=${iconName}
         aria-label=${this.copied ? Locale.getValue('copied') : Locale.getValue('copy')}
-        @click=${this.handleButtonClick}
+        ${delegate('click', this.handleButtonClick)}
       >
         <slot></slot>
       </u-icon-button>

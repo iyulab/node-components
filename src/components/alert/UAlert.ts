@@ -11,6 +11,7 @@ import { Locale } from '../../utilities/Locale.js';
 import { devWarnOnce } from '../../utilities/devWarning.js';
 import { HostAria } from '../../utilities/hostAria.js';
 
+import { delegate } from "../../utilities/listenInShadow.js";
 /** 유효한 `u-alert` 상태 — 런타임 검증과 타입이 **같은 목록**을 보게 둔다. */
 export const ALERT_STATUSES = ["error", "warning", "success", "info", "notice"] as const;
 export type AlertStatus = (typeof ALERT_STATUSES)[number];
@@ -123,7 +124,7 @@ export class UAlert extends UElement {
             appearance="plain"
             ?hidden=${!this.closable}
             aria-label=${Locale.getValue('close')}
-            @click=${this.hide}>
+            ${delegate('click', this.hide)}>
             <u-icon lib="internal" name="x"></u-icon>
           </u-button>
         </div>

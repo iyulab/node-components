@@ -19,6 +19,7 @@ import { styles } from "./UInput.styles.js";
 import { isImeComposing } from '../../utilities/keyboard.js';
 
 import { SlotPresence } from "../../utilities/slotPresence.js";
+import { delegate } from "../../utilities/listenInShadow.js";
 export type InputType = 'text' | 'password' | 'email' | 'tel' | 'url' | 'search' | 'number' | 'date' | 'time' | 'datetime-local' | 'month' | 'week';
 export type InputModeOption = 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
 export type EnterKeyHint = 'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send';
@@ -233,7 +234,7 @@ export class UInput extends UFormControlElement<string> {
             aria-label=${Locale.getValue(this.showPassword ? 'hidePassword' : 'showPassword')}
             lib="internal"
             name=${this.showPassword ? 'eye-off' : 'eye'}
-            @click=${this.handlePasswordTogglerClick}
+            ${delegate('click', this.handlePasswordTogglerClick)}
             @keydown=${this.handleSuffixIconKeydown(this.handlePasswordTogglerClick)}
           ></u-icon>
           <u-icon class="suffix-item"
@@ -243,7 +244,7 @@ export class UInput extends UFormControlElement<string> {
             aria-label=${Locale.getValue('clear')}
             lib="internal"
             name="x"
-            @click=${this.handleClearButtonClick}
+            ${delegate('click', this.handleClearButtonClick)}
             @keydown=${this.handleSuffixIconKeydown(this.handleClearButtonClick)}
           ></u-icon>
           <u-icon class="suffix-item stepper-btn"
@@ -254,7 +255,7 @@ export class UInput extends UFormControlElement<string> {
             aria-label=${Locale.getValue('decrement')}
             lib="internal"
             name="minus"
-            @click=${this.handleStepperClick(-1)}
+            ${delegate('click', this.handleStepperClick(-1))}
             @keydown=${this.handleSuffixIconKeydown(this.handleStepperClick(-1))}
           ></u-icon>
           <u-icon class="suffix-item stepper-btn"
@@ -265,7 +266,7 @@ export class UInput extends UFormControlElement<string> {
             aria-label=${Locale.getValue('increment')}
             lib="internal"
             name="plus"
-            @click=${this.handleStepperClick(1)}
+            ${delegate('click', this.handleStepperClick(1))}
             @keydown=${this.handleSuffixIconKeydown(this.handleStepperClick(1))}
           ></u-icon>
         </div>

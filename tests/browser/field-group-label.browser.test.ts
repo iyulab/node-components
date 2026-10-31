@@ -51,6 +51,7 @@ describe('u-field — 묶음 라벨', () => {
 
   it('NEGATIVE — 소비자가 단 aria-label 은 걷지 않는다', async () => {
     await mount('<u-field label="Size"><u-button aria-label="Small size">S</u-button><u-button>M</u-button></u-field>');
-    expect(await named('button')).toEqual(['Small size', 'M']);
+    // getFullAXTree 의 나열 순서는 읽기 순서가 아니다 — 표시용 호스트(role=none)가 접히면 순서가 바뀐다. 이름만 잰다.
+    expect((await named('button')).sort()).toEqual(['M', 'Small size']);
   });
 });

@@ -26,6 +26,7 @@ import { devWarnOnce } from "../../utilities/devWarning.js";
 import { resolvePresets, type DateRangePresetOption, type ResolvedPreset } from "./presets.js";
 import { styles } from "./UDateRangePicker.styles.js";
 
+import { delegate } from "../../utilities/listenInShadow.js";
 export type { DateRangePreset, DateRangePresetName, DateRangePresetOption } from "./presets.js";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -339,7 +340,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
         .descriptionDisplay=${this.descriptionDisplay}
         .validationMessage=${this.validationMessage}
       >
-        <div class="container" part="container" @click=${this.textEntry.handleContainerClick}
+        <div class="container" part="container" ${delegate('click', this.textEntry.handleContainerClick)}
           style=${`--_icons: ${this.suffixButtonCount()}${chars ? `; --date-range-picker-min-text: ${chars}` : ''}`}>
           <input class="text-input" part="input"
             style=${ifDefined(width ? `inline-size: ${width}` : undefined)}
@@ -367,7 +368,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
             aria-label=${Locale.getValue('clear')}
             lib="internal"
             name="x"
-            @click=${this.handleClearClick}
+            ${delegate('click', this.handleClearClick)}
             @keydown=${this.handleClearKeydown}
           ></u-icon>
           <u-icon class="suffix-item calendar-button"
@@ -377,7 +378,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
             ?hidden=${this.effectivelyDisabled || this.readonly}
             lib="internal"
             name="calendar"
-            @click=${this.textEntry.handleCalendarButtonClick}
+            ${delegate('click', this.textEntry.handleCalendarButtonClick)}
           ></u-icon>
         </div>
       </u-field>
@@ -408,7 +409,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
     return html`
       <div class="body">
         ${presets.length ? this.renderPresets(presets) : ''}
-        <div class="calendar" part="calendar" @mousedown=${this.textEntry.holdFocus}>
+        <div class="calendar" part="calendar" ${delegate('mousedown', this.textEntry.holdFocus)}>
           <u-calendar
             exportparts="calendar-month, calendar-header, calendar-title, calendar-weekdays, calendar-grid, calendar-week, day"
             selection="range"
@@ -425,12 +426,12 @@ export class UDateRangePicker extends UFormControlElement<string> {
           ${showClear || this.confirm ? html`
             <div class="calendar-footer" part="calendar-footer">
               ${showClear ? html`
-                <u-button appearance="plain" size="sm" @click=${this.handleFooterResetClick}>${Locale.getValue('clear')}</u-button>
+                <u-button appearance="plain" size="sm" ${delegate('click', this.handleFooterResetClick)}>${Locale.getValue('clear')}</u-button>
               ` : ''}
               ${this.confirm ? html`
                 <span class="confirm-actions">
-                  <u-button appearance="plain" size="sm" @click=${this.handleCancelClick}>${Locale.getValue('cancel')}</u-button>
-                  <u-button size="sm" @click=${this.handleApplyClick}>${Locale.getValue('apply')}</u-button>
+                  <u-button appearance="plain" size="sm" ${delegate('click', this.handleCancelClick)}>${Locale.getValue('cancel')}</u-button>
+                  <u-button size="sm" ${delegate('click', this.handleApplyClick)}>${Locale.getValue('apply')}</u-button>
                 </span>
               ` : ''}
             </div>

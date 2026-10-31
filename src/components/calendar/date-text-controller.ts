@@ -111,9 +111,9 @@ export class DateTextController implements ReactiveController {
    *  gaps — keeps focus where it is, inside the control. Without this the browser moves focus to the
    *  page: the control loses its place for the keyboard, and a host that ends an edit on `blur`
    *  (a table cell editor) ends it in the middle of choosing. Presses on controls are untouched. */
-  holdFocus = (e: MouseEvent): void => {
+  holdFocus = (e: MouseEvent, boundary: EventTarget | null = e.currentTarget): void => {
     for (const node of e.composedPath()) {
-      if (node === e.currentTarget) break;
+      if (node === boundary) break;
       if (node instanceof HTMLElement && (node.tabIndex >= 0 || node.matches('button, input, select, textarea'))) return;
     }
     e.preventDefault();

@@ -8,6 +8,7 @@ import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import { styles } from "./UFileInput.styles.js";
 
+import { delegate } from "../../utilities/listenInShadow.js";
 /**
  * 파일 선택 입력 컴포넌트입니다. 네이티브 `<input type="file">`를 감싸
  * 디자인시스템 톤의 트리거 버튼 + 선택 결과 표시로 렌더링합니다.
@@ -138,7 +139,7 @@ export class UFileInput extends UFormControlElement<File[] | null> {
             aria-label=${Locale.getValue('clear')}
             lib="internal"
             name="x"
-            @click=${this.handleClearButtonClick}
+            ${delegate('click', this.handleClearButtonClick)}
             @keydown=${this.handleClearButtonKeydown}
           ></u-icon>
 

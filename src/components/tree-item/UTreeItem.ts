@@ -13,6 +13,7 @@ import { type CollapseEventDetail } from "../../events/CollapseEvent.js";
 import { isFromNestedControl } from "../../utilities/nestedControl.js";
 
 import { SlotPresence } from "../../utilities/slotPresence.js";
+import { delegate } from "../../utilities/listenInShadow.js";
 /** 이 항목이 속한 트리 — 탭 정지(트리 전체에 하나)는 트리가 정한다. */
 interface TabStopOwner { syncTabStop(preferred?: UTreeItem): void }
 
@@ -140,11 +141,11 @@ export class UTreeItem extends UElement {
     return html`
       <div class="header" part="header"
         ?selected=${this.selected}
-        @click=${this.handleHeaderClick}
+        ${delegate('click', this.handleHeaderClick)}
       >
         <span class="prefix-toggler"
           ?hidden=${this.leaf}
-          @click=${this.handleToggleClick}
+          ${delegate('click', this.handleToggleClick)}
         >
           ${this.loading
             ? html`<u-spinner></u-spinner>`
@@ -157,7 +158,7 @@ export class UTreeItem extends UElement {
           ?hidden=${!this.checkable}  
           ?checked=${this.checked}
           ?indeterminate=${this.indeterminate}
-          @click=${this.handleCheckboxClick}
+          ${delegate('click', this.handleCheckboxClick)}
         >
           <u-icon lib="internal"
             name=${this.indeterminate ? 'minus' : 'check'}

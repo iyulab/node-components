@@ -7,6 +7,7 @@ import { UOverlayElement } from '../UOverlayElement.js';
 import { styles } from './UDialog.styles.js';
 import { Locale } from '../../utilities/Locale.js';
 
+import { delegate } from "../../utilities/listenInShadow.js";
 export type DialogPlacement =
   | 'top-start' | 'top' | 'top-end'
   | 'start' | 'center' | 'end'
@@ -60,7 +61,7 @@ export class UDialog extends UOverlayElement {
               appearance="plain"
               ?hidden=${!this.closable}
               aria-label=${Locale.getValue('close')}
-              @click=${() => this.requestClose('button')}>
+              ${delegate('click', () => this.requestClose('button'))}>
               <u-icon lib="internal" name="x"></u-icon>
             </u-button>
           </div>

@@ -153,6 +153,7 @@ set on the host yourself always wins and is never overwritten.
 - [`clipboard`](./references/utilities/clipboard.md) — `copyFromKey` / `pasteFromKey` / `isTextEntry`, Ctrl/Cmd + C · X · V for a grid or list selection in every browser (Safari fires no copy event without a text selection)
 - [`keyboard`](./references/utilities/keyboard.md) — `isImeComposing` for Enter handlers that must not fire mid-composition (Korean/Japanese/Chinese input) · `CompositionTracker` / `replayInput` for inputs that filter as you type
 - [`tsv`](./references/utilities/tsv.md) — `encodeTsv` / `decodeTsv`, the spreadsheet clipboard format with RFC 4180 quoting
+- [`listen-in-shadow`](./references/utilities/listen-in-shadow.md) — `delegate` / `listenInShadow`, handlers for shadow-tree parts heard on the shadow root, so screen readers do not announce those parts as «clickable»
 - [`OverlayManager`](./references/utilities/overlay-manager.md) — Internal overlay stack and z-index manager
 
 ---

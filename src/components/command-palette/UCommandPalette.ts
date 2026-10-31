@@ -9,6 +9,7 @@ import { styles } from './UCommandPalette.styles.js';
 import { Locale } from '../../utilities/Locale.js';
 import { isImeComposing } from '../../utilities/keyboard.js';
 
+import { delegate } from "../../utilities/listenInShadow.js";
 /** 팔레트의 항목 하나. */
 export interface CommandItem {
   /** 출처 안에서 고유한 값. */
@@ -224,7 +225,7 @@ export class UCommandPalette extends UOverlayElement {
               aria-describedby=${ifDefined(descId)}
               ?data-active=${isActive}
               @pointermove=${() => { if (this.activeKey !== row.key) this.activeKey = row.key; }}
-              @click=${() => this.choose(row)}>
+              ${delegate('click', () => this.choose(row))}>
               ${item.icon ? html`<u-icon class="option-icon" lib=${ifDefined(item.iconLib)} name=${item.icon} aria-hidden="true"></u-icon>` : nothing}
               <span class="option-label">${item.label}</span>
               ${item.description ? html`<span class="option-description" id=${ifDefined(descId)}>${item.description}</span>` : nothing}

@@ -12,6 +12,7 @@ import { isFromNestedControl } from "../../utilities/nestedControl.js";
 import { HostAria } from "../../utilities/hostAria.js";
 
 import { SlotPresence } from "../../utilities/slotPresence.js";
+import { delegate } from "../../utilities/listenInShadow.js";
 export type MenuItemIndicator = 'highlight' | 'check';
 export type MenuItemAlign = 'left' | 'center' | 'right';
 
@@ -110,7 +111,7 @@ export class UMenuItem extends UElement {
   render() {
     return html`
       <div class="header" part="header"
-        @click=${this.handleHeaderClick}
+        ${delegate('click', this.handleHeaderClick)}
       >
         <u-icon class="prefix-checker"
           ?hidden=${this.indicator !== 'check' || !this.selected}

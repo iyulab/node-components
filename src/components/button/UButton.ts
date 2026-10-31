@@ -9,6 +9,7 @@ import { FORWARDED_ARIA, readForwardedAria } from "./forwarded-aria.js";
 
 
 import { SlotPresence } from "../../utilities/slotPresence.js";
+import { HostAria } from "../../utilities/hostAria.js";
 /**
  * 외형 정도(chrome) — 컴포넌트 공통 어휘. `solid` 꽉 찬 면 · `soft` 옅은 틴트 면 · `outlined` 테두리 ·
  * `plain` 외형 없음 · `link` 링크처럼(버튼류만).
@@ -158,12 +159,26 @@ export class UButton extends UElement {
     if (!this.internals && 'attachInternals' in this) {
       this.internals = this.attachInternals();
     }
-    this.addEventListener('click', this.handleClick);
+    // 클릭은 섀도 루트에서 듣는다 — 호스트(요소)의 click 리스너는 안쪽 버튼까지 «클릭 가능» 으로 읽히게 한다.
+    // 안쪽 버튼 · 슬롯 내용에서 시작한 클릭은 모두 섀도 루트를 지난다. 호스트에서 시작하는 `click()` 은 아래 재정의.
+    this.renderRoot.addEventListener('click', this.handleClick as EventListener);
+    // 감싸기만 하는 호스트 — 소비자가 호스트에 건 click 리스너도 «클릭 가능» 을 낳으므로 호스트를 표시용으로 둔다.
+    // 작성자의 role 이 이긴다. ⚠호스트에 aria-label 같은 전역 ARIA 가 있으면 브라우저가 none 을 무시한다.
+    this.aria.set('role', 'none');
   }
 
   disconnectedCallback(): void {
-    this.removeEventListener('click', this.handleClick);
+    this.renderRoot.removeEventListener('click', this.handleClick as EventListener);
     super.disconnectedCallback();
+  }
+
+  private readonly aria = new HostAria(this);
+
+  /** 호스트에서 시작하는 클릭(`button.click()`)은 섀도 루트를 지나지 않는다 — 같은 규칙(비활성 · 제출)을 여기서. */
+  override click(): void {
+    if (this.effectivelyDisabled || this.loading) return;
+    super.click();
+    this.submitOrReset();
   }
 
   /**
@@ -285,6 +300,10 @@ export class UButton extends UElement {
       return;
     }
 
+    this.submitOrReset();
+  }
+
+  private submitOrReset() {
     if (this.type === 'submit') {
       this.form?.requestSubmit();
     } else if (this.type === 'reset') {

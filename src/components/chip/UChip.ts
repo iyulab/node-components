@@ -12,6 +12,7 @@ import { type PickEventDetail } from "../../events/PickEvent.js";
 import { type RemoveEventDetail } from "../../events/RemoveEvent.js";
 import { Locale } from '../../utilities/Locale.js';
 
+import { delegate } from "../../utilities/listenInShadow.js";
 /**
  * 태그 상태 표시 또는 선택 UI와 인터랙션(선택, 삭제)을 지원하는 칩 컴포넌트입니다.
  *
@@ -53,7 +54,7 @@ export class UChip extends UElement {
         .appearance=${this.appearance}
         .color=${this.color}
         .rounded=${this.rounded}
-        @click=${this.handleTagClick}
+        ${delegate('click', this.handleTagClick)}
       >
         <u-icon class="check-icon" part="check" slot="prefix"
           ?hidden=${!this.selectable || !this.selected}  
@@ -70,7 +71,7 @@ export class UChip extends UElement {
           rounded
           appearance="plain"
           aria-label=${Locale.getValue('remove')}
-          @click=${this.handleRemoveClick}>
+          ${delegate('click', this.handleRemoveClick)}>
           <u-icon lib="internal" name="x"></u-icon>
         </u-button>
       </u-tag>

@@ -78,6 +78,7 @@ export * from './utilities/dateValue.js';
 export * from './utilities/devWarning.js';
 export * from './utilities/Dialog.js';
 export * from './utilities/elements.js';
+export * from './utilities/listenInShadow.js';
 export * from './utilities/format.js';
 export * from './utilities/numberFormat.js';
 export * from './utilities/icons.js';

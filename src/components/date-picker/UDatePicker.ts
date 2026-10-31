@@ -20,6 +20,7 @@ import { UPopover } from "../popover/UPopover.js";
 import { styles as pickerStyles } from "../calendar/picker.styles.js";
 import { styles } from "./UDatePicker.styles.js";
 
+import { delegate } from "../../utilities/listenInShadow.js";
 /** Builds the `value` for the given mode — `datetime` always emits seconds + local offset so
  *  the result is unconditionally a valid, unambiguous ISO-8601 `DateTimeOffset` regardless of
  *  how coarse the UI input was (this is the guarantee the datetime mode request asked for). */
@@ -243,7 +244,7 @@ export class UDatePicker extends UFormControlElement<string> {
         .descriptionDisplay=${this.descriptionDisplay}
         .validationMessage=${this.validationMessage}
       >
-        <div class="container" part="container" @click=${this.textEntry.handleContainerClick}
+        <div class="container" part="container" ${delegate('click', this.textEntry.handleContainerClick)}
           style=${`--_icons: ${this.suffixButtonCount()}${chars ? `; --date-picker-min-text: ${chars}` : ''}`}>
           <input class="text-input" part="input"
             style=${ifDefined(chars ? `inline-size: ${chars}` : undefined)}
@@ -272,7 +273,7 @@ export class UDatePicker extends UFormControlElement<string> {
             aria-label=${Locale.getValue('clear')}
             lib="internal"
             name="x"
-            @click=${this.handleClearClick}
+            ${delegate('click', this.handleClearClick)}
             @keydown=${this.handleClearKeydown}
           ></u-icon>
           <u-icon class="suffix-item calendar-button"
@@ -282,7 +283,7 @@ export class UDatePicker extends UFormControlElement<string> {
             ?hidden=${this.effectivelyDisabled || this.readonly}
             lib="internal"
             name="calendar"
-            @click=${this.textEntry.handleCalendarButtonClick}
+            ${delegate('click', this.textEntry.handleCalendarButtonClick)}
           ></u-icon>
         </div>
       </u-field>
@@ -306,7 +307,7 @@ export class UDatePicker extends UFormControlElement<string> {
 
   private renderCalendar() {
     return html`
-      <div class="calendar" part="calendar" @mousedown=${this.textEntry.holdFocus}>
+      <div class="calendar" part="calendar" ${delegate('mousedown', this.textEntry.holdFocus)}>
         <u-calendar
           exportparts="calendar-header, calendar-title, calendar-weekdays, calendar-grid, calendar-week, day"
           .value=${this.working ? toISODate(splitValue(this.working).date) : undefined}
@@ -341,14 +342,14 @@ export class UDatePicker extends UFormControlElement<string> {
     const todayDisabled = this.unavailable(new Date());
     return html`
       <div class="calendar-footer" part="calendar-footer">
-        <u-button appearance="plain" size="sm" ?disabled=${todayDisabled} @click=${this.handleTodayClick}>${Locale.getValue('today')}</u-button>
+        <u-button appearance="plain" size="sm" ?disabled=${todayDisabled} ${delegate('click', this.handleTodayClick)}>${Locale.getValue('today')}</u-button>
         ${this.clearable && this.working ? html`
-          <u-button appearance="plain" size="sm" @click=${this.handleFooterResetClick}>${Locale.getValue('clear')}</u-button>
+          <u-button appearance="plain" size="sm" ${delegate('click', this.handleFooterResetClick)}>${Locale.getValue('clear')}</u-button>
         ` : ''}
         ${this.confirm ? html`
           <span class="confirm-actions">
-            <u-button appearance="plain" size="sm" @click=${this.handleCancelClick}>${Locale.getValue('cancel')}</u-button>
-            <u-button size="sm" @click=${this.handleApplyClick}>${Locale.getValue('apply')}</u-button>
+            <u-button appearance="plain" size="sm" ${delegate('click', this.handleCancelClick)}>${Locale.getValue('cancel')}</u-button>
+            <u-button size="sm" ${delegate('click', this.handleApplyClick)}>${Locale.getValue('apply')}</u-button>
           </span>
         ` : ''}
       </div>

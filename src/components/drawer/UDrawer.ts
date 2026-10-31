@@ -7,6 +7,7 @@ import { UOverlayElement } from '../UOverlayElement.js';
 import { styles } from './UDrawer.styles.js';
 import { Locale } from '../../utilities/Locale.js';
 
+import { delegate } from "../../utilities/listenInShadow.js";
 export type DrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
 
 /**
@@ -48,7 +49,7 @@ export class UDrawer extends UOverlayElement {
             appearance="plain"
             ?hidden=${!this.closable}
             aria-label=${Locale.getValue('close')}
-            @click=${() => this.requestClose('button')}>
+            ${delegate('click', () => this.requestClose('button'))}>
             <u-icon lib="internal" name="x"></u-icon>
           </u-button>
         </div>

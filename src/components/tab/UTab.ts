@@ -11,6 +11,7 @@ import { Locale } from '../../utilities/Locale.js';
 import { formatNumber } from '../../utilities/format.js';
 
 import { SlotPresence } from "../../utilities/slotPresence.js";
+import { delegate } from "../../utilities/listenInShadow.js";
 /**
  * `u-tab` 개수의 모양 — `badge` 는 알약 면(눈을 끈다), `plain` 은 면 없는 보조 숫자(정보), `figure` 는 레이블 아래의 큰 숫자
  * (칸형 탭 띠 — 공정마다 쌓인 일처럼 숫자가 탭을 고르는 이유일 때).
@@ -130,7 +131,7 @@ export class UTab extends UElement {
         ?hidden=${!this.removable}
         appearance="plain"
         aria-label=${Locale.getValue('closeTab')}
-        @click=${this.handleRemoveClick}
+        ${delegate('click', this.handleRemoveClick)}
       >
         <u-icon lib="internal" name="x"></u-icon>
       </u-button>
