@@ -71,13 +71,18 @@ class DelegateDirective extends AsyncDirective {
     if (part.type !== PartType.ELEMENT) throw new Error('delegate() belongs in an element position');
   }
 
-  render(_type: string, _handler: Handler) {
+  render(_type: string, _handler: Handler | null | undefined) {
     return nothing;
   }
 
-  override update(part: ElementPart, [type, handler]: [string, Handler]) {
+  override update(part: ElementPart, [type, handler]: [string, Handler | null | undefined]) {
     const element = part.element;
-    if (this.element && this.type && (this.element !== element || this.type !== type)) this.forget();
+    if (this.element && this.type && (this.element !== element || this.type !== type || !handler)) this.forget();
+    if (!handler) {
+      // Like `@click=${undefined}`: no handler, no listening.
+      this.element = undefined;
+      return noChange;
+    }
     this.element = element;
     this.type = type;
     // On first render the template is filled while still a document fragment — the element's own root is
@@ -107,9 +112,10 @@ class DelegateDirective extends AsyncDirective {
  * An event handler for an element in a shadow tree, heard on that tree's root instead of on the element:
  * `<div class="container" ${delegate('click', this.open)}>` in place of `@click=${this.open}`. Handlers run in
  * bubbling order and `stopPropagation()` stops the ones further out, as with element listeners. The handler
- * gets the element as its second argument and the component as `this`.
+ * gets the element as its second argument and the component as `this`. A `null` or `undefined` handler listens to
+ * nothing, as with `@click=${undefined}`.
  */
 export const delegate = directive(DelegateDirective) as unknown as <E extends Event = Event>(
   type: string,
-  handler: (event: E, element: HTMLElement) => void,
+  handler: ((event: E, element: HTMLElement) => void) | null | undefined,
 ) => ReturnType<ReturnType<typeof directive>>;

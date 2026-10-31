@@ -53,6 +53,11 @@ class MyField extends LitElement {
 - Handlers on nested elements run innermost first, like element listeners, and `stopPropagation()` in one stops
   the ones further out.
 - `event.currentTarget` is the shadow root, not the element — use the second argument.
+- A `null` or `undefined` handler listens to nothing: `${delegate('click', sortable ? this.sort : undefined)}`.
+- Delegated handlers run when the event reaches the shadow root. An element listener on an ancestor inside the same
+  tree (a native `<button>` with `@click`) runs before them, so a delegated handler inside it cannot
+  `stopPropagation()` that listener. Keep such an inner handler on its element — the children of a button are
+  presentational, so it is not announced.
 
 ## `listenInShadow(root, type, selector, handler)` — imperative
 

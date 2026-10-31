@@ -9,7 +9,8 @@
   element makes screen readers announce it (and everything inside it) as «clickable» unless its role is button, link,
   menuitem, tab, option, radio, checkbox or switch; a listener on the shadow root is not announced. `delegate` is a Lit
   element directive used in place of `@click`: handlers run innermost first and `stopPropagation()` stops the ones
-  further out; the element arrives as the second argument (`currentTarget` is the shadow root).
+  further out; the element arrives as the second argument (`currentTarget` is the shadow root). A `null` or
+  `undefined` handler listens to nothing, like `@click=${undefined}`.
 
 ### Fixed
 
