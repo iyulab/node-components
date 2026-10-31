@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.39.1] - 2026-10-31
+
+### Fixed
+
+- **`u-button` no longer puts `role="none"` on a host that carries `aria-*`.** 2.39.0 made every host presentational;
+  on a host with `aria-pressed`, `aria-expanded` or `aria-haspopup` that is invalid ARIA (those states are not allowed
+  on `role="none"`, and accessibility checkers report it as critical), and with a global attribute such as
+  `aria-label` browsers ignore `role="none"` anyway. The host is presentational only while it has no `aria-*`
+  attribute, and the role follows when one is added or removed. Your own role still wins.
+
 ## [2.39.0] - 2026-10-31
 
 ### Added
