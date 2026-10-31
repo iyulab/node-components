@@ -144,6 +144,10 @@ export const styles = css`
     align-items: flex-start;
     gap: 0.5em;
     cursor: inherit;
+    /* 눌리는 것은 이 label 이지 호스트가 아니다 — 호스트 하한만 키우면 위아래 띠가 눌리지 않는다(터치 밀도 44px 에서
+       label 은 한 줄 19px 이었다). 한 줄 내용(상자 · 라벨 모두 1.2em)을 하한까지 위아래로 채워 «보이는 줄 = 눌리는 줄».
+       여러 줄 라벨은 같은 여백으로 자란다. */
+    padding-block: max(0px, calc((max(24px, var(--u-target-size, 0px)) - 1.2em) / 2));
   }
 
   /* 네이티브 체크박스 */

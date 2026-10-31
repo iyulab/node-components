@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **`u-checkbox` and `u-switch` take a press on the whole row they stand in.** The press goes to the inner label, which
+  was one line high — with a touch target (`--u-target-size: 44px`) the host stood 44px tall but its top and bottom
+  bands did nothing. The label now fills the target height (the checkbox pads its single line, the switch has a minimum
+  height); at the default 24px the row looks as before.
+
 ## [2.38.0] - 2026-10-31
 
 ### Added

@@ -56,6 +56,8 @@ export const styles = css`
     align-items: center;
     gap: 0.6em;
     cursor: inherit;
+    /* 눌리는 것은 이 label 이다 — 호스트와 같은 하한을 여기에도(UCheckbox 와 같은 처방). */
+    min-block-size: max(24px, var(--u-target-size, 0px));
   }
 
   /* === 네이티브 input === */
