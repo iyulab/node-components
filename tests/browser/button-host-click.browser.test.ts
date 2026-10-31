@@ -23,6 +23,18 @@ describe('u-button — clicks heard off the host', () => {
     expect(document.getElementById('b')!.getAttribute('role')).toBe('tab');
   });
 
+  it('a host with aria-* is not made presentational — states are not allowed on role=none', async () => {
+    await mount('<u-button id="p" aria-pressed="true">B</u-button><u-button id="l" aria-label="Close">x</u-button><u-button id="q">Q</u-button>');
+    expect(document.getElementById('p')!.hasAttribute('role')).toBe(false);
+    expect(document.getElementById('l')!.hasAttribute('role')).toBe(false);
+    const q = document.getElementById('q')!;
+    expect(q.getAttribute('role')).toBe('none');
+    q.setAttribute('aria-expanded', 'false');
+    expect(q.hasAttribute('role')).toBe(false);
+    q.removeAttribute('aria-expanded');
+    expect(q.getAttribute('role')).toBe('none');
+  });
+
   it('a real press on a submit button submits its form', async () => {
     await mount('<form><u-button type="submit">Send</u-button></form>');
     let submits = 0;

@@ -162,9 +162,7 @@ export class UButton extends UElement {
     // 클릭은 섀도 루트에서 듣는다 — 호스트(요소)의 click 리스너는 안쪽 버튼까지 «클릭 가능» 으로 읽히게 한다.
     // 안쪽 버튼 · 슬롯 내용에서 시작한 클릭은 모두 섀도 루트를 지난다. 호스트에서 시작하는 `click()` 은 아래 재정의.
     this.renderRoot.addEventListener('click', this.handleClick as EventListener);
-    // 감싸기만 하는 호스트 — 소비자가 호스트에 건 click 리스너도 «클릭 가능» 을 낳으므로 호스트를 표시용으로 둔다.
-    // 작성자의 role 이 이긴다. ⚠호스트에 aria-label 같은 전역 ARIA 가 있으면 브라우저가 none 을 무시한다.
-    this.aria.set('role', 'none');
+    this.syncHostRole();
   }
 
   disconnectedCallback(): void {
@@ -173,6 +171,18 @@ export class UButton extends UElement {
   }
 
   private readonly aria = new HostAria(this);
+
+  /**
+   * 감싸기만 하는 호스트는 표시용(`role="none"`)으로 둔다 — 소비자가 호스트에 건 click 리스너도 스크린리더가
+   * «클릭 가능» 으로 읽게 하기 때문이다. 단 호스트에 `aria-*` 가 하나라도 있으면 두지 않는다: `aria-pressed` ·
+   * `aria-expanded` 같은 상태는 `none` 에 허용되지 않고(검사기가 치명 위반으로 본다), `aria-label` 같은 전역
+   * 속성이 있으면 브라우저가 `none` 을 어차피 무시한다. 작성자의 role 이 이긴다.
+   */
+  private syncHostRole() {
+    if (!this.isConnected) return;
+    const hasAria = this.getAttributeNames().some((n) => n.startsWith('aria-'));
+    this.aria.set('role', hasAria ? null : 'none');
+  }
 
   /** 호스트에서 시작하는 클릭(`button.click()`)은 섀도 루트를 지나지 않는다 — 같은 규칙(비활성 · 제출)을 여기서. */
   override click(): void {
@@ -198,7 +208,10 @@ export class UButton extends UElement {
 
   override attributeChangedCallback(name: string, old: string | null, value: string | null): void {
     super.attributeChangedCallback(name, old, value);
-    if ((FORWARDED_ARIA as readonly string[]).includes(name)) this.requestUpdate();
+    if ((FORWARDED_ARIA as readonly string[]).includes(name)) {
+      this.syncHostRole();
+      this.requestUpdate();
+    }
   }
 
   protected override updated(changed: PropertyValues): void {
