@@ -44,7 +44,7 @@ Options of different kinds can be grouped under headings with [`u-option-group`]
 | `chars` | `number` | — | ✓ | Characters the field holds. An unsized field draws at N characters + its clear button and arrow + padding, so it no longer widens and narrows with the chosen option (a longer one ends in an ellipsis); a sized one (`--u-select-width`, `block`) uses it as the text floor, so a narrower box overflows. Same axis as `u-input`'s `chars`. N characters are measured as drawn — tabular figures and letter spacing count, which CSS `ch` leaves out |
 | `multiple` | `boolean` | `false` | ✓ | Allow multiple selections |
 | `searchable` | `boolean` | `false` | ✓ | Filter options by text |
-| `filter` | `'local'\|'none'` | `'local'` | ✓ | Who filters by the search text. `local` shows options whose text or value contains it; `none` hides nothing — for remote search, where the `search` event drives a server query and you replace the options with its results. When the text matches nothing (and not `loading`), the popup says *No matches* |
+| `filter` | `'local'\|'none'` | `'local'` | ✓ | Who filters by the search text. `local` shows options whose text or value contains it; `none` hides nothing — for remote search, where the `query-change` event drives a server query and you replace the options with its results. When the text matches nothing (and not `loading`), the popup says *No matches* |
 | `clearable` | `boolean` | `false` | ✓ | Show clear button |
 | `loading` | `boolean` | `false` | ✓ | Loading state |
 | `placeholder` | `string` | — | — | Placeholder text |
@@ -65,7 +65,7 @@ Options of different kinds can be grouped under headings with [`u-option-group`]
 | Event | Description |
 |-------|-------------|
 | `change` | Fires when selection changes |
-| `search` | Fires when the search text changes, when `searchable` (`detail: { query: string; composing: boolean }`). While an IME composition is in progress (Korean, Japanese, Chinese) `composing` is `true` and `query` ends in a partial syllable; when it ends the event fires again with `false` — a server search can skip composing queries. While composing, the built-in filter uses only the committed part, so it never hides an option the finished text would match. With `filter="none"` the select hides nothing, so the options you set from the server are shown as they are — otherwise the built-in local filter runs too |
+| `query-change` | Fires when the text that filters the options changes, when `searchable` (`detail: { query: string }`). While an IME composition is in progress (Korean, Japanese, Chinese) it does not fire; when the composition ends it fires once with the finished text — a server search never sees a half-composed syllable. (Before 3.0 this was `search` with `detail.composing`; `search` now means only «a search was committed», on `u-input type="search"`.) While composing, the built-in filter uses only the committed part, so it never hides an option the finished text would match. With `filter="none"` the select hides nothing, so the options you set from the server are shown as they are — otherwise the built-in local filter runs too |
 
 ## Methods
 

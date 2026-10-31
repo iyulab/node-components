@@ -27,18 +27,18 @@ function typeSearch(select: USelect, value: string) {
   input.dispatchEvent(new InputEvent('input', { bubbles: true }));
 }
 
-describe('USelect search 이벤트 (원격/서버 검색 지원)', () => {
+describe('USelect query-change 이벤트 (원격/서버 검색 지원)', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
   });
 
-  it('searchable일 때 입력마다 { detail: { query } }로 search 이벤트를 발행한다', async () => {
+  it('searchable일 때 입력마다 { detail: { query } }로 query-change 이벤트를 발행한다', async () => {
     const select = createSelect(['a', 'b'], { searchable: '' });
     document.body.appendChild(select);
     await settle(select);
 
     const seen: string[] = [];
-    select.addEventListener('search', (e) => seen.push((e as CustomEvent<{ query: string }>).detail.query));
+    select.addEventListener('query-change', (e) => seen.push((e as CustomEvent<{ query: string }>).detail.query));
 
     typeSearch(select, 'Foo');
     await settle(select);
@@ -46,13 +46,13 @@ describe('USelect search 이벤트 (원격/서버 검색 지원)', () => {
     expect(seen).toEqual(['foo']);
   });
 
-  it('search 이벤트는 기존 로컬 필터링(hidden 토글)과 독립적으로 함께 발화한다', async () => {
+  it('query-change 이벤트는 기존 로컬 필터링(hidden 토글)과 독립적으로 함께 발화한다', async () => {
     const select = createSelect(['apple', 'banana'], { searchable: '' });
     document.body.appendChild(select);
     await settle(select);
 
     let received: string | undefined;
-    select.addEventListener('search', (e) => { received = (e as CustomEvent<{ query: string }>).detail.query; });
+    select.addEventListener('query-change', (e) => { received = (e as CustomEvent<{ query: string }>).detail.query; });
 
     typeSearch(select, 'app');
     await settle(select);
@@ -64,7 +64,7 @@ describe('USelect search 이벤트 (원격/서버 검색 지원)', () => {
     expect(bananaOption.hidden).toBe(true);
   });
 
-  it('검색어를 지우면 query가 빈 문자열인 search 이벤트가 발행된다', async () => {
+  it('검색어를 지우면 query가 빈 문자열인 query-change 이벤트가 발행된다', async () => {
     const select = createSelect(['a', 'b'], { searchable: '' });
     document.body.appendChild(select);
     await settle(select);
@@ -73,14 +73,14 @@ describe('USelect search 이벤트 (원격/서버 검색 지원)', () => {
     await settle(select);
 
     const seen: string[] = [];
-    select.addEventListener('search', (e) => seen.push((e as CustomEvent<{ query: string }>).detail.query));
+    select.addEventListener('query-change', (e) => seen.push((e as CustomEvent<{ query: string }>).detail.query));
     typeSearch(select, '');
     await settle(select);
 
     expect(seen).toEqual(['']);
   });
 
-  it('searchable이 아니어도(기본값) 검색 입력이 렌더되지 않아 search를 발행할 경로가 없다', async () => {
+  it('searchable이 아니어도(기본값) 검색 입력이 렌더되지 않아 query-change를 발행할 경로가 없다', async () => {
     const select = createSelect(['a', 'b']);
     document.body.appendChild(select);
     await settle(select);

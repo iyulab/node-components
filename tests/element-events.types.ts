@@ -2,16 +2,16 @@
  * Element event typing — **compiling is the test** (main `tsconfig` includes `tests/**`, so `npm run typecheck`
  * runs it; nothing executes).
  *
- * Custom events with a generic name (`search`, a non-bubbling `change`) are typed per element, not on the
+ * Custom events with a generic name (`query-change`, a non-bubbling `change`) are typed per element, not on the
  * global event map: `change` is already the native `Event` there, and other libraries use the same names.
- * Before, `select.addEventListener('search', (e) => e.detail.query)` failed to compile.
+ * Before, `select.addEventListener('query-change', (e) => e.detail.query)` failed to compile.
  */
 import '../src/components/select/USelect.js';
 import '../src/components/tab-panel/UTabPanel.js';
 
 export function typedElementEvents(): void {
   const select = document.createElement('u-select');
-  select.addEventListener('search', (e) => {
+  select.addEventListener('query-change', (e) => {
     const query: string = e.detail.query;
     void query;
   });

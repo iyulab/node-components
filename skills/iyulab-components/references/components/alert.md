@@ -18,21 +18,22 @@ Closable message banner with status icons, auto-dismiss timer, and open/hide tra
   <u-button slot="footer" appearance="solid">Retry</u-button>
 </u-alert>
 
-<!-- In the page flow (a callout, an error summary): fills its place, no floating shadow -->
-<u-alert inline open status="info" title="Totals follow the filters above">
+<!-- The default is the page flow (a callout, an error summary): fills its place, no floating shadow -->
+<u-alert open status="info" title="Totals follow the filters above">
   Clear a filter chip to widen them.
 </u-alert>
 
 <!-- A static note is not a live region: set the role, and swap the icon -->
-<u-alert inline open status="notice" role="note" title="Note">
+<u-alert open status="notice" role="note" title="Note">
   <u-icon slot="icon" lib="bootstrap" name="pencil"></u-icon>
   Customer asked for the same cover as last year.
 </u-alert>
 ```
 
-Without `inline` the alert has the floating look a toast uses (content width, large shadow, scale transition) and
-keeps its place while closed. `inline` is for an alert that sits in the page: it fills its container, drops the
-shadow and the transition, and takes no space while closed. The role follows `status` (`error`/`warning` →
+By default the alert sits in the page flow: it fills its container, has no shadow or transition, and takes no space
+while closed. Add `floating` for the look a toast uses (content width, large shadow, scale transition; it keeps its
+place while closed) — `Toast` does this for you. (Before 3.0 the default was the floating look and the page-flow
+form was `inline`; `inline` no longer exists — delete it.) The role follows `status` (`error`/`warning` →
 `alert`, otherwise `status`) unless you set one — a role you set is kept.
 
 ---
@@ -55,7 +56,7 @@ shadow and the transition, and takes no space while closed. The role follows `st
 | `status` | `'error'\|'warning'\|'success'\|'info'\|'notice'` | — | ✓ | Status type; controls icon, color and role (`error`/`warning` are `role="alert"`). An outcome word, not a palette word — buttons and badges say `color="danger"`, an alert says `status="error"`; an unknown value renders as a neutral notice and warns in development, naming the likely word |
 | `title` | `string` | `''` | — | Title label. Left empty, the status name in the current locale is shown (`Locale.set('ko')` → 「오류」), not the raw status value |
 | `duration` | `number` | `0` | — | Auto-dismiss delay in ms; `0` disables |
-| `inline` | `boolean` | `false` | ✓ | In the page flow: fills its container, no floating shadow or scale transition, no space while closed |
+| `floating` | `boolean` | `false` | ✓ | The floating (toast) look: content width, large shadow, scale transition, keeps its place while closed. Default (absent): in the page flow |
 
 ## Events
 

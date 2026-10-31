@@ -57,9 +57,11 @@ import { delegate } from "../../utilities/listenInShadow.js";
  * 
  * @event change - 사용자 상호작용(옵션 클릭·칩 제거·지우기)으로 선택 값이 변경될 때 발생.
  *   네이티브 select와 동일하게 프로그램적 value 세팅·옵션 등록으로는 발화하지 않는다.
- * @event search - `searchable`일 때 검색어가 바뀔 때마다 발생(`detail: { query: string; composing: boolean }` — IME 조합 중이면 `composing: true`, 조합이 끝나면 `false` 로 한 번 더).
+ * @event query-change - `searchable`일 때 검색어(선택지를 거르는 글자)가 바뀌면 발생(`detail: { query: string }`).
+ *   IME 조합 중에는 내지 않고 조합이 끝날 때 확정된 글자로 한 번 낸다 — 조합 중인 음절(`ㅅ` · `성` → `서울`)로 서버를 치지 않는다.
  *   로컬 필터링(이미 렌더된 `u-option`의 `hidden` 토글)과 별개로 발행되므로, 서버/원격 검색이
  *   필요한 소비자는 이 이벤트를 구독해 자체적으로 옵션을 갱신할 수 있다.
+ *   `search` 가 아니다 — `search` 는 «검색을 확정했다» 한 뜻만 가진다(`u-input type="search"`).
  */
 @customElement('u-select')
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
@@ -96,7 +98,7 @@ export class USelect extends UFormControlElement<string | string[]> {
   @property({ type: Boolean, reflect: true }) searchable: boolean = false;
   /**
    * 검색어로 옵션을 거르는 주체. `local`(기본) — 옵션 글자·값에 검색어가 들어 있는 것만 보인다. `none` — 거르지 않는다:
-   * 옵션 집합의 주인이 소비자일 때(`search` 이벤트로 서버를 검색해 옵션을 바꾸는 원격 검색) 쓴다. 서버가 낱말 AND · 다른 칸으로
+   * 옵션 집합의 주인이 소비자일 때(`query-change` 이벤트로 서버를 검색해 옵션을 바꾸는 원격 검색) 쓴다. 서버가 낱말 AND · 다른 칸으로
    * 찾은 옵션을 라이브러리가 다시 걸러 숨기던 충돌이 사라진다.
    */
   @property({ type: String, reflect: true }) filter: 'local' | 'none' = 'local';
@@ -447,7 +449,7 @@ export class USelect extends UFormControlElement<string | string[]> {
       this.focus();
     }
     // 닫히면 친 글자를 걷고 고른 값의 글자로 되돌린다 — 다음에 열 때 전체 목록에서 시작한다. 원격 검색 소비자도
-    // 빈 검색어의 `search` 로 옵션을 되돌린다.
+    // 빈 검색어의 `query-change` 로 옵션을 되돌린다.
     const input = this.searchInputEl;
     if (this.searchable && input && this.isEdited(input)) this.revertSearchInput(input);
   };
@@ -475,7 +477,7 @@ export class USelect extends UFormControlElement<string | string[]> {
     if (input.value !== text) input.value = text;
   }
 
-  /** 친 글자를 걷고 고른 값의 글자로 — 빈 검색어의 `search` 가 함께 나간다. */
+  /** 친 글자를 걷고 고른 값의 글자로 — 빈 검색어의 `query-change` 가 함께 나간다. */
   private revertSearchInput(input: HTMLInputElement) {
     input.value = this.inputText;
     this.updateSearch(input);
@@ -634,8 +636,8 @@ export class USelect extends UFormControlElement<string | string[]> {
    */
   private readonly composition = new CompositionTracker((input) => this.updateSearch(input as HTMLInputElement));
 
-  /** 마지막으로 낸 `search` — 조합 끝의 `search` 와 그 뒤 브라우저가 내는 `input`(Firefox)이 같은 질의를 두 번 내지 않게. */
-  private lastSearch?: { query: string; composing: boolean };
+  /** 마지막으로 낸 `query-change` 의 질의 — 조합 끝의 이벤트와 그 뒤 브라우저가 내는 `input`(Firefox)이 같은 질의를 두 번 내지 않게. */
+  private lastQuery?: string;
 
   private handleSearchInput = (e: InputEvent) => {
     this.updateSearch(e.target as HTMLInputElement);
@@ -650,10 +652,12 @@ export class USelect extends UFormControlElement<string | string[]> {
     this.queryComposing = composing;
     this.applyFilter();
 
-    const detail = { query: this.typing ? input.value.toLowerCase().trim() : '', composing: this.composition.composing };
-    if (this.lastSearch && this.lastSearch.query === detail.query && this.lastSearch.composing === detail.composing) return;
-    this.lastSearch = detail;
-    this.fire<USelectSearchDetail>('search', { detail, cancelable: false });
+    // 조합 중인 글자는 확정된 질의가 아니다 — 조합 끝(`compositionend` 의 재생)에서 한 번 낸다.
+    if (this.composition.composing) return;
+    const detail = { query: this.typing ? input.value.toLowerCase().trim() : '' };
+    if (this.lastQuery === detail.query) return;
+    this.lastQuery = detail.query;
+    this.fire<USelectQueryChangeDetail>('query-change', { detail, cancelable: false });
   }
 
   /**
@@ -773,22 +777,20 @@ export class USelect extends UFormControlElement<string | string[]> {
   };
 }
 
-/** Detail of `<u-select>`'s `search` event. */
-export interface USelectSearchDetail {
-  /** The search box text, trimmed and lower-cased — including a syllable still being composed. */
-  query: string;
+/** Detail of `<u-select>`'s `query-change` event. */
+export interface USelectQueryChangeDetail {
   /**
-   * `true` while an IME composition (Korean, Japanese, Chinese) is in progress, so `query` ends in a partial
-   * syllable (`ㅅ`, `성` on the way to `서울`). When the composition ends the event fires again with `false`. A consumer
-   * that searches a server can skip composing queries.
+   * The search box text, trimmed and lower-cased. Never a half-composed syllable: while an IME composition (Korean,
+   * Japanese, Chinese) is in progress the event is not fired, and it fires once with the finished text when the
+   * composition ends.
    */
-  composing: boolean;
+  query: string;
 }
 
 /** Custom events `<u-select>` dispatches (its `change`/`input` are the native form-control events). */
 export interface USelectEventMap {
-  /** The search box changed (`searchable`). */
-  'search': CustomEvent<USelectSearchDetail>;
+  /** The query that filters the options changed (`searchable`) — not a «search committed»; that is `search` on `u-input type="search"`. */
+  'query-change': CustomEvent<USelectQueryChangeDetail>;
 }
 
 /** Typed listeners for {@link USelectEventMap} — element-scoped, the DOM's own pattern (`HTMLMediaElementEventMap`). */

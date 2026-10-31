@@ -2,8 +2,8 @@
  * 조합 입력 계약 — 한국어 IME 로 «서울» 을 치는 동안 컴포넌트가 무엇을 보이고 무엇을 내는가. 실제 조합(`ime.ts`)으로 잰다.
  *
  * - `u-select searchable`: 조합 중인 음절은 «진행 중» 이다. 거르기는 확정된 부분으로만 해서(최종 글자가 맞출 옵션을 숨기지
- *   않는다) «일치 없음» 은 확정된 부분이 이미 아무것도 맞추지 않을 때만 알린다. `search` 는 조합 단계마다 나가되
- *   `detail.composing` 을 싣고, 조합이 끝나면 `composing: false` 로 한 번 더 나간다.
+ *   않는다) «일치 없음» 은 확정된 부분이 이미 아무것도 맞추지 않을 때만 알린다. `query-change` 는 조합 중에는 나가지 않고
+ *   조합이 끝날 때 확정된 글자로 한 번 나간다(3.0 — 종전의 `search` + `detail.composing`).
  * - `u-input`: 조합 중에도 `value` 가 상자 글자를 따르고, 조상은 `input`(`isComposing`)을 호스트에서 받는다.
  */
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -44,12 +44,12 @@ async function openSearchableSelect() {
   search.focus();
   const visible = () => [...select.querySelectorAll('u-option')].filter((o) => !o.hidden).map((o) => o.textContent);
   const status = () => select.shadowRoot!.querySelector('.no-matches')!.textContent!.trim();
-  const searches: { query: string; composing: boolean }[] = [];
-  wrap.addEventListener('search', (e) => searches.push({ ...(e as CustomEvent).detail }));
+  const searches: { query: string }[] = [];
+  wrap.addEventListener('query-change', (e) => searches.push({ ...(e as CustomEvent).detail }));
   return { select, visible, status, searches };
 }
 
-describe('u-select searchable — 조합 중 거르기와 search', () => {
+describe('u-select searchable — 조합 중 거르기와 query-change', () => {
   it('«서울» 을 치는 동안 서울을 숨기지 않고 «일치 없음» 을 알리지 않는다', async () => {
     const { select, visible, status } = await openSearchableSelect();
     const seen: { visible: (string | null)[]; status: string }[] = [];
@@ -88,7 +88,7 @@ describe('u-select searchable — 조합 중 거르기와 search', () => {
     expect(visible()).toEqual(['성남']);
   });
 
-  it('search 는 조합 단계마다 composing:true, 조합이 끝날 때 composing:false 로 나간다', async () => {
+  it('query-change 는 조합 중에는 나가지 않고 조합이 끝날 때 확정된 글자로 한 번 나간다', async () => {
     const { select, searches } = await openSearchableSelect();
     await compose(['ㅅ', '서', '성']);
     await commit('서');
@@ -96,9 +96,8 @@ describe('u-select searchable — 조합 중 거르기와 search', () => {
     await commit('울');
     await settle(select);
 
-    expect(searches.every((s) => typeof s.composing === 'boolean')).toBe(true);
-    expect(searches.filter((s) => !s.composing).map((s) => s.query)).toEqual(['서', '서울']);
-    expect(searches.at(-1)).toEqual({ query: '서울', composing: false });
+    // 조합 중인 음절(ㅅ · 성 · 우)은 한 번도 나가지 않는다 — 확정된 글자만.
+    expect(searches).toEqual([{ query: '서' }, { query: '서울' }]);
   });
 
   it('NEGATIVE: 확정된 부분이 아무것도 맞추지 않으면 조합 중에도 «일치 없음» 이다', async () => {
@@ -122,11 +121,11 @@ describe('u-select searchable — 조합 중 거르기와 search', () => {
     expect(visible()).toEqual(['부산']);
   });
 
-  it('조합 없는 타이핑은 search 를 composing:false 로 낸다', async () => {
+  it('조합 없는 타이핑은 글자마다 query-change 를 낸다', async () => {
     const { select, searches } = await openSearchableSelect();
     await userEvent.keyboard('bu');
     await settle(select);
-    expect(searches).toEqual([{ query: 'b', composing: false }, { query: 'bu', composing: false }]);
+    expect(searches).toEqual([{ query: 'b' }, { query: 'bu' }]);
   });
 });
 

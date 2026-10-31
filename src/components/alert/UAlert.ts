@@ -80,10 +80,10 @@ export class UAlert extends UElement {
   /** 자동 닫힘 타이머 (밀리초 단위, 0이하면 비활성화) */
   @property({ type: Number }) duration: number = 0;
   /**
-   * 페이지 흐름 안의 알림 — 그 자리의 폭을 채우고, 그림자와 확대 전환이 없고, 닫히면 자리를 비운다.
-   * 기본(속성 없음)은 떠 있는 알림(토스트)의 모양이다.
+   * 떠 있는 알림(토스트)의 모양 — 내용 폭, 큰 그림자, 확대 전환이고 닫혀도 자리를 지킨다. `Toast` 가 붙인다.
+   * 기본(속성 없음)은 페이지 흐름 안의 알림이다: 그 자리의 폭을 채우고, 그림자와 확대 전환이 없고, 닫히면 자리를 비운다.
    */
-  @property({ type: Boolean, reflect: true }) inline: boolean = false;
+  @property({ type: Boolean, reflect: true }) floating: boolean = false;
 
   /** 역할·`aria-atomic` — 작성자가 단 값(정적 메모의 `role="note"` 등)은 덮지 않는다. */
   private readonly aria = new HostAria(this);

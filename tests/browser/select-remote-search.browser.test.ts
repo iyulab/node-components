@@ -36,7 +36,7 @@ describe('u-select 원격 검색', () => {
   it('🔴filter="none" — 검색어가 옵션을 숨기지 않고, 서버 결과로 남은 재사용 옵션이 보인다', async () => {
     const el = await mount('filter="none"', [['x', 'AR1973 청주제조창 예비공장'], ['y', 'BR1971 남한강교']]);
     const queries: string[] = [];
-    el.addEventListener('search', (e) => queries.push((e as CustomEvent<{ query: string }>).detail.query));
+    el.addEventListener('query-change', (e) => queries.push((e as CustomEvent<{ query: string }>).detail.query));
     await type(el, '청주 공장');
     expect(hidden(el)).toEqual([false, false]);
     el.querySelector('u-option[value="y"]')!.remove(); // 서버가 x 하나를 돌려줬다 — x 는 재사용

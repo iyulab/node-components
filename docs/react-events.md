@@ -164,7 +164,7 @@ import { UDialog } from '@iyulab/components/react';
 | React prop | 이벤트 | detail | 설명 |
 |---|---|---|---|
 | `onChange` | `change` | `unknown` | 사용자 상호작용(옵션 클릭·칩 제거·지우기)으로 선택 값이 변경될 때 발생. 네이티브 select와 동일하게 프로그램적 value 세팅·옵션 등록으로는 발화하지 않는다. |
-| `onSearch` | `search` | `USelectSearchDetail` | `searchable`일 때 검색어가 바뀔 때마다 발생(`detail: { query: string; composing: boolean }` — IME 조합 중이면 `composing: true`, 조합이 끝나면 `false` 로 한 번 더). 로컬 필터링(이미 렌더된 `u-option`의 `hidden` 토글)과 별개로 발행되므로, 서버/원격 검색이 필요한 소비자는 이 이벤트를 구독해 자체적으로 옵션을 갱신할 수 있다. |
+| `onQueryChange` | `query-change` | `USelectQueryChangeDetail` | `searchable`일 때 검색어(선택지를 거르는 글자)가 바뀌면 발생(`detail: { query: string }`). IME 조합 중에는 내지 않고 조합이 끝날 때 확정된 글자로 한 번 낸다 — 조합 중인 음절(`ㅅ` · `성` → `서울`)로 서버를 치지 않는다. 로컬 필터링(이미 렌더된 `u-option`의 `hidden` 토글)과 별개로 발행되므로, 서버/원격 검색이 필요한 소비자는 이 이벤트를 구독해 자체적으로 옵션을 갱신할 수 있다. `search` 가 아니다 — `search` 는 «검색을 확정했다» 한 뜻만 가진다(`u-input type="search"`). |
 
 ## `<u-slider>`
 

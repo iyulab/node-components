@@ -51,7 +51,7 @@ A native `change` from an inner `<input>` does not cross the shadow root on its 
 | `hide` | `unknown` | ✓ | `u-alert`, `u-dialog`, `u-drawer`, `u-popover`, `u-tooltip` |
 | `change` | `unknown` | ✗ | `u-checkbox`, `u-radio`, `u-select`, `u-slider`, `u-switch`, `u-rating`, `u-menu`, `u-tree`, `u-form` |
 | `input` | `unknown` | ✗ | `u-input`, `u-textarea` |
-| `search` | `{ query: string; composing: boolean }` | ✗ | `u-select` (when `searchable`) — `composing` is `true` during an IME composition |
+| `query-change` | `{ query: string }` | ✗ | `u-select` (when `searchable`) — the text that filters the options changed. Not fired during an IME composition: it fires once with the finished text when the composition ends |
 | `pick` | `PickEventDetail` | ✗ | `u-chip`, `u-menu-item`, `u-tree-item` |
 | `check` | `unknown` | ✗ | `u-tree-item` |
 | `remove` | `unknown` | ✓ | `u-chip`, `u-tab` |

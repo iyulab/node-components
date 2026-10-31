@@ -53,7 +53,7 @@ export const CopyIsClipboardEvent = (): React.JSX.Element => (
 
 /** 커스텀 이름의 detail 타입은 그대로 — `u-select` 의 `search` 는 `CustomEvent<{ query }>` */
 export const CustomEventKeepsDetail = (): React.JSX.Element => (
-  <USelect label="자원 구분" searchable onSearch={(e) => void e.detail.query} />
+  <USelect label="자원 구분" searchable onQueryChange={(e) => void e.detail.query} />
 );
 
 /** 컴포넌트 고유 prop 이 광역 `Omit` 에 쓸려나가지 않았는지 */

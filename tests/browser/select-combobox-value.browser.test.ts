@@ -57,7 +57,7 @@ describe('u-select searchable — the closed combobox carries the chosen value',
   it('typing replaces the chosen text and searches only what was typed; Escape puts the chosen text back', async () => {
     const select = await mount({ label: '보전 중요도', value: 'high' }, LEVELS);
     const queries: string[] = [];
-    select.addEventListener('search', (e) => queries.push((e as CustomEvent<{ query: string }>).detail.query));
+    select.addEventListener('query-change', (e) => queries.push((e as CustomEvent<{ query: string }>).detail.query));
     field(select).focus();
     await userEvent.keyboard('긴');
     await settle();

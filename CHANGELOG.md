@@ -1,5 +1,29 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed (BREAKING — 3.0)
+
+- **`u-select` announces its filter text as `query-change`, not `search`.** `search` now means one thing across the
+  library — «a search was committed» (`u-input type="search"`: Enter, the clear button, Escape). `u-select searchable`
+  used to bubble the same name on every keystroke, so anything outside that listened for `search` (a list page, a
+  table toolbar) read an option query as a list search. The event is now `query-change` with `detail: { query }`,
+  and the type is `USelectQueryChangeDetail` (was `USelectSearchDetail`). React: `onQueryChange` (was `onSearch`).
+  **Migrate:** `select.addEventListener('search', …)` → `'query-change'`; on a remote-search select, listen for
+  `query-change`. A listener on an element that wraps a `u-select` and hears `search` no longer receives the select's
+  query — that is the point; remove any guard that filtered it out.
+- **`query-change` is not fired while an IME composition is in progress.** The old `search` fired on every
+  composition step with `detail.composing: true` and once more with `false` when it ended. Now the event fires once,
+  with the finished text, when the composition ends; `detail.composing` is gone (it would always be `false`). A
+  server search no longer has to skip half-composed syllables (`ㅅ`, `성` on the way to `서울`). The built-in
+  filter is unchanged — it still narrows on the committed part while you compose.
+- **`u-alert` sits in the page flow by default; `floating` is the toast look.** Before, the default was the floating
+  look (content width, large shadow, scale transition, keeps its place while closed) and the page-flow form was
+  `inline`. Now the default fills its container, has no shadow or transition and takes no space while closed, and
+  `floating` gives the toast look. `Toast` sets `floating` itself. **Migrate:** delete `inline` (the attribute no longer
+  does anything); add `floating` where you relied on the old default look. An alert you opened in a flow without
+  `inline` now fills the width and loses its shadow — that is the new default.
+
 ## [2.39.1] - 2026-10-31
 
 ### Fixed

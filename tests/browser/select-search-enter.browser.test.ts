@@ -137,7 +137,7 @@ describe('u-select searchable — Enter picks the first match', () => {
 
   it('options replaced by a remote search get a candidate as they arrive', async () => {
     const select = await mount([], { filter: 'none' });
-    select.addEventListener('search', (e) => {
+    select.addEventListener('query-change', (e) => {
       const q = (e as CustomEvent<{ query: string }>).detail.query;
       setTimeout(() => {
         select.replaceChildren(...['north', 'south'].filter(v => v.includes(q)).map(v => {

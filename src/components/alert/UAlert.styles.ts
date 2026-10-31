@@ -40,15 +40,27 @@ export const styles = css`
     --alert-background-color: var(--u-neutral-200, #EEEEEE);
   }
 
+  /* 기본은 페이지 흐름 안의 알림 — 자리의 폭을 채우고, 그림자 · 확대 전환이 없고, 닫히면 자리를 비운다. */
   :host {
     display: block;
+    max-height: none;
+    border-radius: var(--u-radius-xl, 8px);
+  }
+  :host(:not([open])) {
+    display: none;
+  }
+  :host .content {
+    overflow-y: visible;
+  }
+
+  /* 떠 있는 알림(토스트) — 내용 폭, 큰 그림자, 확대 전환. 닫혀도 자리를 지키며 비가시로 남는다. */
+  :host([floating]) {
     width: fit-content;
     min-width: 200px;
     max-width: 100%;
     max-height: 50vh;
-    border-radius: var(--u-radius-xl, 8px);
     box-shadow: var(--u-shadow-lg, 0 4px 12px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.06));
-    
+
     opacity: 0;
     transform: scale(0.8);
     visibility: hidden;
@@ -58,28 +70,18 @@ export const styles = css`
       opacity var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
       transform var(--u-duration-normal, 220ms) ease-out;
   }
-  :host([open]) {
+  :host([floating]:not([open])) {
+    display: block;
+  }
+  :host([floating][open]) {
     opacity: 1;
     transform: scale(1);
     visibility: visible;
     pointer-events: auto;
     transition-delay: 0s;
   }
-
-  /* 흐름 안의 알림 — 자리의 폭을 채우고, 떠 있는 모양(그림자 · 확대)을 걷고, 닫히면 자리를 비운다. */
-  :host([inline]) {
-    width: auto;
-    min-width: 0;
-    max-height: none;
-    box-shadow: none;
-    transform: none;
-    transition: none;
-  }
-  :host([inline]:not([open])) {
-    display: none;
-  }
-  :host([inline]) .content {
-    overflow-y: visible;
+  :host([floating]) .content {
+    overflow-y: auto;
   }
 
   /* === Appearance === */
