@@ -49,20 +49,7 @@ export const styles = css`
     box-shadow: 0 0 0 1px var(--u-input-border-color-invalid, #C62828);
   }
 
-  .text-content {
-    flex: 1 0 auto;
-    min-width: 0;
-    font-size: 1em;
-    line-height: 1.5;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .text-content.placeholder {
-    color: var(--u-txt-color-weak, #616161);
-  }
-
-  /* 직접 입력 글자 칸(mode="date") — 줄 높이는 .text-content·입력과 같은 1.5. «font: inherit» 만 두면
+  /* 직접 입력 글자 칸(mode="date") — 줄 높이는 다른 입력과 같은 1.5. «font: inherit» 만 두면
      줄 높이가 normal 로 와서 같은 단의 다른 필드보다 낮게 그려진다. */
   .text-input {
     flex: 1 1 auto;
