@@ -108,18 +108,14 @@ export const styles = css`
   .option-label {
     flex: 0 1 auto;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
   }
   .option-description {
     flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     font-size: var(--u-text-label-size, 13px);
     color: var(--u-txt-color-weak, #616161);
+    overflow-wrap: anywhere;
   }
 
   .status:empty {

@@ -382,16 +382,15 @@ export const styles = css`
   }
 
   .content {
-    /* 줄어들 수 있어야 말줄임이 선다 — 1 0 auto 는 폭이 모자라도 줄지 않아 글자가 잘리기만 했다. */
+    /* 네이티브 <button> 처럼 낱말 사이에서 줄을 바꾼다 — 가장 긴 낱말 아래로는 줄지 않고(min-width: auto),
+       폭이 모자라면 말줄임 대신 두 줄이 된다. 잘린 글자는 볼 길이 없었다(WCAG 1.4.12 · 1.4.4). */
     flex: 1 1 auto;
-    min-width: 0;
     line-height: 1.5;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    text-align: center;
+    overflow-wrap: break-word;
   }
 
   /* === Mask (로딩 오버레이) === */

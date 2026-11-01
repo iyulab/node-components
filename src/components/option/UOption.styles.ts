@@ -93,9 +93,8 @@ export const styles = css`
 
   .content {
     line-height: 1.5;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   /* 라디오 마커 (원형) */

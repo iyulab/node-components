@@ -38,6 +38,16 @@ It cannot report these, so search your sources for them:
   `rg -nP '<u-alert(?![^>]*\bfloating\b)'`, then add `floating` where the toast look was meant. A leftover `inline`
   attribute is harmless (the new default is the old `inline`).
 
+### Fixed
+
+- **Labels that do not fit wrap instead of ending in «…».** `u-button`, `u-tag`, `u-option`, `u-menu-item`,
+  `u-tree-item`, the `u-command-palette` item name and description, the `u-file-input` file name, the `u-steps`
+  compact summary and the `u-carousel` page labels were one line with an ellipsis and no tooltip or title, so in a
+  narrow place — a long translated label, 200% text, user text-spacing — the tail was cut and could not be read
+  anywhere. A label that fits is unchanged; one that does not fit now wraps. `u-button` and `u-tag` break only between
+  words, like a native `<button>`, so they do not shrink below their longest word. The `u-select` field keeps its single
+  line: the open list now shows a long option in full (it wraps inside the list).
+
 ### Documentation
 
 - `u-input`: a sign-in form example with `autocomplete="username"` / `"current-password"`, and a note that the browser's

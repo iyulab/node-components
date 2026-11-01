@@ -52,10 +52,8 @@ export const styles = css`
   .status {
     flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     font-size: 0.9em;
+    overflow-wrap: anywhere;
   }
   .status[data-empty] {
     color: var(--u-txt-color-weak, #616161);

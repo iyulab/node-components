@@ -217,10 +217,8 @@ export const styles = css`
   }
   .summary {
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     color: var(--u-txt-color-weak, #616161);
+    overflow-wrap: anywhere;
   }
 
   .sr-only {

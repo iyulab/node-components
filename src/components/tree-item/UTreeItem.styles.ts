@@ -65,9 +65,7 @@ export const styles = css`
     flex: 1;
     min-width: 0;
     line-height: 1.5;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
   }
 
   /* ── toggler ──

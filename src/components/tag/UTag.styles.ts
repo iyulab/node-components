@@ -236,10 +236,10 @@ export const styles = css`
   /* === Content === */
   .content {
     display: inline-block;
-    min-width: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    /* 호스트의 nowrap 을 여기서 푼다 — 맞으면 한 줄, 폭이 모자라면 말줄임 대신 낱말 사이에서 줄을 바꾼다(가장 긴 낱말
+       아래로는 줄지 않는다). 잘린 글자는 볼 길이 없었다(WCAG 1.4.12 · 1.4.4). */
+    white-space: normal;
+    overflow-wrap: break-word;
   }
 
   /* 앞머리 점 — 글자색을 따른다(역할·장식 축 어느 쪽이든 글자와 같은 색). */

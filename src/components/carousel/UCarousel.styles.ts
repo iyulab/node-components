@@ -173,9 +173,8 @@ export const styles = css`
     color: var(--u-txt-color, #212121);
   }
   .tab-label {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
   .tab-track {
     display: block;

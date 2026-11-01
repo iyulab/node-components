@@ -130,9 +130,8 @@ export const styles = css`
     flex: 1 1 auto;
     line-height: 1.5;
     display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   /* inline submenu */

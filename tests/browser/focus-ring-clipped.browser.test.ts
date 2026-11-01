@@ -82,7 +82,7 @@ describe('u-button keyboard focus ring', () => {
     });
   }
 
-  it('a long label is still cut to the host width with an ellipsis', async () => {
+  it('a long label stays inside the host width and wraps (no ellipsis — the tail used to be unreadable)', async () => {
     stage.innerHTML = '<u-button appearance="solid" style="width:90px">A very long label that cannot fit</u-button>';
     const host = stage.querySelector('u-button') as HTMLElement & { updateComplete: Promise<unknown> };
     await host.updateComplete;
@@ -91,8 +91,9 @@ describe('u-button keyboard focus ring', () => {
     const h = host.getBoundingClientRect();
     const b = inner.getBoundingClientRect();
     expect(b.right).toBeLessThanOrEqual(h.right + 0.5);
-    expect(content.scrollWidth).toBeGreaterThan(content.clientWidth);
-    expect(getComputedStyle(content).textOverflow).toBe('ellipsis');
+    expect(content.scrollWidth).toBeLessThanOrEqual(content.clientWidth + 1);
+    expect(getComputedStyle(content).textOverflow).not.toBe('ellipsis');
+    expect(content.getBoundingClientRect().height).toBeGreaterThan(parseFloat(getComputedStyle(content).lineHeight) * 1.5);
   });
 });
 

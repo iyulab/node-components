@@ -157,7 +157,7 @@ export const styles = css`
     min-block-size: 1.5em;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis; /* ellipsis-ok: opening the list shows the full text (options wrap) */
   }
   .text-content.placeholder {
     color: var(--u-txt-color-weak, #616161);
