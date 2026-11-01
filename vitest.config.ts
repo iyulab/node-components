@@ -9,6 +9,14 @@ import { playwright } from '@vitest/browser-playwright';
 // - unit: 순수 로직(Node 환경) — 기존 tests/**/*.test.ts
 // - browser: 실제 커스텀 엘리먼트 레이아웃/CSS 검증이 필요한 테스트
 //   (jsdom은 overflow clipping, floating-ui의 실제 position 계산을 재현하지 못함)
+/** WebKit 표본의 대상 — 포커스 위임 · 키보드 · 초점 고리 · 스크롤 축. */
+const WEBKIT_AXIS = [
+  'copy-button-label', 'focus-delegation', 'button-focus-delegation', 'control-wrapper-focus-delegation', 'field-plain-focus',
+  'focus-ring-clipped', 'overlay-initial-focus', 'popover-autofocus-descendant', 'group-tab-stop', 'chip-tab-remove-keyboard',
+  'chip-selectable-keyboard', 'date-picker-focus-hold', 'date-picker-keyboard', 'popover-scroll-dismiss', 'radio-select-keyboard',
+  'select-change-semantics', 'auto-scroll',
+];
+
 export default defineConfig({
   test: {
     projects: [
@@ -76,6 +84,23 @@ export default defineConfig({
           //   원리적으로 재현하지 못하는 «검사가 여기서는 안 도는» 형태가 하나 더 생긴다.
           //   ★형제 패키지에는 아직 걸지 않았다: 브라우저 파일 수가 2~14 로 훨씬 적고
           //   실패가 관측된 바 없다. 늘어나면 같은 자를 대면 된다.
+          fileParallelism: false,
+        },
+      },
+      {
+        // WebKit 표본 — 엔진 차이가 알려진 축(포커스 · 키보드 · 스크롤)만. 편집 루프(`npm test`)가 아니라 게시 전 전체 검증에서
+        // `npm run test:webkit` 으로 돈다. 대상 밖: 조합(IME) 시험은 CDP 로 조합을 만든다(Chromium 전용) · 붙여넣기는 headless WebKit 의
+        // paste 이벤트가 빈 글자를 실어 실제 Safari 와 갈리는지 판정하지 못했다.
+        test: {
+          name: 'webkit',
+          include: WEBKIT_AXIS.map((name) => `tests/browser/${name}.browser.test.ts`),
+          browser: {
+            enabled: true,
+            provider: playwright(),
+            instances: [{ browser: 'webkit', headless: true }],
+          },
+          api: { host: '127.0.0.1', port: 41512 },
+          isolate: true,
           fileParallelism: false,
         },
       },

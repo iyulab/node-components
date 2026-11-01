@@ -127,10 +127,12 @@ describe('u-auto-scroll', () => {
       (document.getElementById('away') as HTMLElement).focus();
       await userEvent.tab();
       expect(document.activeElement).toBe(el);
+      // 초점이 닿은 자리에서 멈춘다 — 키 입력이 느린 엔진(WebKit)에서는 초점 전에 이미 조금 움직였을 수 있다.
+      const at = el.scrollTop;
       await wait(200);
-      expect(el.scrollTop).toBe(0);
+      expect(el.scrollTop).toBe(at);
       await wait(500);
-      expect(el.scrollTop).toBeGreaterThan(0);
+      expect(el.scrollTop).toBeGreaterThan(at);
     });
   });
 });

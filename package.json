@@ -49,8 +49,9 @@
   "scripts": {
     "preversion": "node -e \"if(require('fs').existsSync('../../scripts/preversion-check.mjs'))require('child_process').execFileSync('node',['../../scripts/preversion-check.mjs'],{stdio:'inherit'})\"",
     "start": "vite --force",
-    "test": "vitest run",
+    "test": "vitest run --project=unit --project=browser",
     "test:browser": "vitest run --project=browser",
+    "test:webkit": "vitest run --project=webkit",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "build": "npm run typecheck && eslint && npm run typecheck:plugins && vite build && npm run build:plugins && npm run test:react-types",
