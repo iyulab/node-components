@@ -164,6 +164,7 @@ export class UPopover extends UFloatingElement {
         break;
       case 'contextmenu':
         document.addEventListener('contextmenu', this.handleDocumentContextMenu);
+        document.addEventListener('keydown', this.handleContextMenuKey);
         break;
       case 'hover':
         for (const anchor of anchors) {
@@ -215,6 +216,7 @@ export class UPopover extends UFloatingElement {
       anchor.removeEventListener('focusout', this.handleAnchorFocusOut);
     }
     document.removeEventListener('contextmenu', this.handleDocumentContextMenu);
+    document.removeEventListener('keydown', this.handleContextMenuKey);
     this.removeEventListener('pointerenter', this.handlePopoverPointerEnter);
     this.removeEventListener('pointerleave', this.handlePopoverPointerLeave);
     this.removeEventListener('focusin', this.handlePopoverFocusIn);
@@ -249,6 +251,12 @@ export class UPopover extends UFloatingElement {
   };
 
   private handleDocumentContextMenu = async (e: PointerEvent) => {
+    // 메뉴 키로 이미 열었다 — Chromium 은 그 키를 놓을 때 자기 `contextmenu` 를 한 번 더 낸다(키 누름의 기본 동작을 막아도).
+    if (e.isTrusted && performance.now() < this.keyMenuUntil) {
+      this.keyMenuUntil = 0;
+      e.preventDefault();
+      return;
+    }
     if (this.open) {
       await this.hide();
     }
@@ -260,6 +268,29 @@ export class UPopover extends UFloatingElement {
 
     const virtualEl = this.createVirtualTarget(e);
     this.show(virtualEl);
+  };
+
+  /**
+   * 메뉴 키 · Shift+F10 — 우클릭의 키보드 등가(WAI-ARIA). Chromium · Firefox 는 이 키를 스스로 `contextmenu` 로 바꾸지만 Safari 는
+   * 그러지 않아, 키보드로는 이 팝오버를 열 길이 없었다. 앵커 안의 키면 받아서 같은 이벤트를 키를 받은 요소 자리에 낸다.
+   */
+  /** 메뉴 키로 연 뒤 브라우저가 뒤따라 낼 `contextmenu` 를 삼킬 기한. */
+  private keyMenuUntil = 0;
+
+  private handleContextMenuKey = (e: KeyboardEvent) => {
+    const isMenuKey = e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey);
+    if (!isMenuKey || e.defaultPrevented) return;
+    const path = e.composedPath();
+    if (!this.anchors?.some(a => path.includes(a))) return;
+    const target = path[0];
+    if (!(target instanceof Element)) return;
+    e.preventDefault();
+    if (e.key === 'ContextMenu') this.keyMenuUntil = performance.now() + 1000;
+    const box = target.getBoundingClientRect();
+    target.dispatchEvent(new MouseEvent('contextmenu', {
+      bubbles: true, composed: true, cancelable: true,
+      clientX: box.left + Math.min(8, box.width / 2), clientY: box.top + box.height / 2,
+    }));
   };
 
   private handleAnchorPointerEnter = (e: PointerEvent) => {

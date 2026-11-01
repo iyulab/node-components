@@ -14,7 +14,7 @@ const WEBKIT_AXIS = [
   'copy-button-label', 'focus-delegation', 'button-focus-delegation', 'control-wrapper-focus-delegation', 'field-plain-focus',
   'focus-ring-clipped', 'overlay-initial-focus', 'popover-autofocus-descendant', 'group-tab-stop', 'chip-tab-remove-keyboard',
   'chip-selectable-keyboard', 'date-picker-focus-hold', 'date-picker-keyboard', 'popover-scroll-dismiss', 'radio-select-keyboard',
-  'select-change-semantics', 'auto-scroll',
+  'select-change-semantics', 'auto-scroll', 'popover-contextmenu-key',
 ];
 
 export default defineConfig({

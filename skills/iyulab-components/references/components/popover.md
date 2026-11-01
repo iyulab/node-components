@@ -74,6 +74,9 @@ document.addEventListener('keydown', (e) => {
 });
 ```
 
+`trigger="contextmenu"` also opens from the keyboard: the menu key or Shift+F10 on the anchor opens it at the focused
+element, in every browser (Safari fires no `contextmenu` for those keys, so the popover takes them).
+
 `scroll` and `resize` are viewport-geometry changes and **only close the popover when it is
 anchored to a coordinate** — i.e. the virtual anchor created by `trigger="contextmenu"`, whose
 `clientX`/`clientY` stop matching whatever they pointed at once the page reflows.

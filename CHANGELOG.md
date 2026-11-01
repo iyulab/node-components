@@ -40,6 +40,10 @@ It cannot report these, so search your sources for them:
 
 ### Fixed
 
+- **`u-popover trigger="contextmenu"` opens from the keyboard in Safari.** The menu key and Shift+F10 on the anchor
+  open it at the focused element. Chromium and Firefox turn those keys into a `contextmenu` event themselves; Safari does
+  not, so a popover opened by right-click had no keyboard way to it there. The popover now takes the key (and ignores the
+  `contextmenu` Chromium still fires when the menu key is released, so it opens once).
 - **Labels that do not fit wrap instead of ending in «…».** `u-button`, `u-tag`, `u-option`, `u-menu-item`,
   `u-tree-item`, the `u-command-palette` item name and description, the `u-file-input` file name, the `u-steps`
   compact summary and the `u-carousel` page labels were one line with an ellipsis and no tooltip or title, so in a
