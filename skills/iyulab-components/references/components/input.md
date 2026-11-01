@@ -105,11 +105,16 @@ Call `preventDefault()` on the `keydown` to cancel it. Do not also submit on Ent
 
 ```html
 <form @submit=${onSubmit}>
-  <u-input name="user" required></u-input>
-  <u-input name="password" type="password" required></u-input>
+  <u-input name="user" autocomplete="username" required></u-input>
+  <u-input name="password" type="password" autocomplete="current-password" required></u-input>
   <u-button type="submit">Sign in</u-button>
 </form>
 ```
+
+The browser's password manager sees these fields like native ones: inside a `<form>`, with a
+`name` and `autocomplete="username"` / `"current-password"` (`"new-password"` on a sign-up or
+change-password form), it offers to save the credentials on submit and fills both fields on the
+next visit (verified in Chrome).
 
 ## Methods
 

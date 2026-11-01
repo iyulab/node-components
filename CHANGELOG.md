@@ -24,6 +24,25 @@
   does anything); add `floating` where you relied on the old default look. An alert you opened in a flow without
   `inline` now fills the width and loses its shadow — that is the new default.
 
+#### Finding what to migrate
+
+TypeScript reports these when you upgrade: importing `USelectSearchDetail`, `onSearch` on the React `USelect`,
+reading `detail.composing`, and setting the `inline` property (`alert.inline = …`, `inline` on the React `UAlert`).
+
+It cannot report these, so search your sources for them:
+
+- a `search` listener on a `u-select` (or on an element around one) — the string overload accepts any event name, and a
+  listener cast to `EventListener` hides the detail type: `rg -n "addEventListener\(['\"]search"` and
+  `rg -n "@search="`;
+- a `u-alert` in markup that relied on the old floating look — markup attributes have no types:
+  `rg -nP '<u-alert(?![^>]*\bfloating\b)'`, then add `floating` where the toast look was meant. A leftover `inline`
+  attribute is harmless (the new default is the old `inline`).
+
+### Documentation
+
+- `u-input`: a sign-in form example with `autocomplete="username"` / `"current-password"`, and a note that the browser's
+  password manager saves and fills `u-input` fields inside a `<form>` like native ones.
+
 ## [2.39.1] - 2026-10-31
 
 ### Fixed
