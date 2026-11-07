@@ -59,6 +59,10 @@ It cannot report these, so search your sources for them:
 
 ### Documentation
 
+- The component skill's usage reference now teaches `--u-target-size` (a floor for everything that is pressed, with the
+  `@media (pointer: coarse)` snippet) — it was only in `docs/theming.md`, so a consumer reading the skill wrote
+  `::part()` rules per component instead.
+
 - `u-input`: a sign-in form example with `autocomplete="username"` / `"current-password"`, and a note that the browser's
   password manager saves and fills `u-input` fields inside a `<form>` like native ones.
 

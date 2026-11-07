@@ -156,6 +156,22 @@ To rebrand typography, override the tokens rather than the screens:
 :root { --u-text-title-size: 22px; --u-text-title-weight: 800; }
 ```
 
+### Touch targets — `--u-target-size`
+
+By default controls keep their normal size (24×24 CSS px or larger, WCAG 2.2 SC 2.5.8) — 36px high for a
+button. For touch, set a floor for everything that is pressed once, instead of writing `::part()` rules per component:
+
+```css
+@media (pointer: coarse) {
+  :root { --u-target-size: 44px; }
+}
+```
+
+Buttons, text fields, selects, date pickers, tabs and menu rows grow to it; small controls (checkbox, switch,
+rating stars, slider thumb, a field's clear/reveal icons) keep their look and grow only the area that takes the
+press. It is a floor — anything already larger stays. Unset (the default) changes nothing. Details:
+`docs/theming.md` «Target size».
+
 ---
 
 ## Icon Setup
