@@ -216,9 +216,17 @@ export const styles = css`
   :host([multiple]) .container.typing slot[name="display"] {
     visibility: visible;
   }
-  /* 다중 선택에서 글자를 치는 동안 «선택하세요» 는 친 글자와 겹친다 — 자리표시만 가린다. */
+  /* 값이 없는 다중 선택(검색 가능)은 자리표시가 서 있는 동안 입력이 그 위에 겹친다 — 단일 선택과 같은 모양. 둘이 한 줄의 폭을
+     나누면(flex: 1 끼리) 폭이 남아도 자리표시가 반만 보이고 «…» 로 잘렸다. 칩이 생기면 종전대로 칩 뒤에 이어 선다. */
+  :host([multiple]) .container.no-chips input.search {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+  }
+  /* 다중 선택에서 글자를 치는 동안 «선택하세요» 는 친 글자와 겹친다 — 자리표시만 가린다. 자리를 지킨 채 가린다(visibility):
+     입력이 그 위에 겹쳐 서므로 자리표시가 빠지면 값 영역이 접힌다. */
   :host([multiple]) .container.typing .placeholder {
-    display: none;
+    visibility: hidden;
   }
 
   .chips-content {

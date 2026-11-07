@@ -40,6 +40,11 @@ It cannot report these, so search your sources for them:
 
 ### Fixed
 
+- **`u-select multiple searchable` shows its whole placeholder.** With no chips the placeholder and the search input shared
+  the row's width half and half, so a placeholder that fit the control was cut to «…» at half its width. While no chip stands
+  the input now lies over the placeholder (as the single-value select already did) and the placeholder keeps the full width;
+  typing hides it in place, so the row does not collapse. With chips the layout is unchanged.
+
 - **`u-popover trigger="contextmenu"` opens from the keyboard in Safari.** The menu key and Shift+F10 on the anchor
   open it at the focused element. Chromium and Firefox turn those keys into a `contextmenu` event themselves; Safari does
   not, so a popover opened by right-click had no keyboard way to it there. The popover now takes the key (and ignores the

@@ -226,7 +226,7 @@ export class USelect extends UFormControlElement<string | string[]> {
         <!-- 검색 가능이면 콤보박스는 트리거 안의 입력이다(APG «editable combobox with list autocomplete») — 포커스가
              처음부터 편집 칸에 있어야 닫힌 채 친 글자(한글 조합의 첫 음절까지)가 검색어가 된다. 편집할 수 없는 칸에서는
              입력기가 조합을 시작하지 못한다. 검색 불가면 트리거 자신이 콤보박스다(APG «select-only»). -->
-        <div class="container ${this.typing ? 'typing' : ''}" part="container"
+        <div class="container ${this.typing ? 'typing' : ''} ${this.multiple && !this.valueAsArray.length ? 'no-chips' : ''}" part="container"
           tabindex=${ifDefined(this.searchable ? undefined : this.effectivelyDisabled ? "-1" : "0")}
           style=${`--_clear: ${this.clearable && this.hasValue && !this.effectivelyDisabled && !this.readonly ? 1 : 0}${chars ? `; --select-min-text: ${chars}; --_chars: ${chars}` : ''}`}
           role=${ifDefined(this.searchable ? undefined : 'combobox')}
