@@ -68,7 +68,10 @@ export class USplitPanel extends UElement {
     startPoint: 0,
     availableSize: 0,
     percentages: [] as number[],
+    /** 끌기 한 번 동안 «논리» 이동량(px) — 앞 패널이 커지는 쪽이 양수다. */
     ghostDelta: 0,
+    /** 포인터 좌표 → 논리 이동량 부호. RTL 가로 배치는 앞 패널이 오른쪽에 있어 오른쪽으로 끌면 줄어든다. */
+    sign: 1 as 1 | -1,
   };
 
   private get percentages(): number[] {
@@ -104,6 +107,11 @@ export class USplitPanel extends UElement {
     const read = (name: string, fallback: number) =>
       parseFloat(style.getPropertyValue(name).trim()) || fallback;
     return Math.max(read('--splitter-size', 4), read('--splitter-hit-size', 24));
+  }
+
+  /** 가로 배치가 오른쪽→왼쪽으로 흐르는가 — 앞 패널이 오른쪽에 선다. 세로 배치는 방향과 무관하다. */
+  private get rtl(): boolean {
+    return this.orientation === 'horizontal' && getComputedStyle(this).direction === 'rtl';
   }
 
   private get splitterCount(): number {
@@ -248,7 +256,7 @@ export class USplitPanel extends UElement {
     const pair = p[i] + p[i + 1];
     const horizontal = this.orientation === 'horizontal';
     // RTL 가로 배치에서는 앞 패널이 오른쪽에 있다 — «←» 는 여전히 «선을 왼쪽으로» 다(APG).
-    const rtl = horizontal && getComputedStyle(this).direction === 'rtl';
+    const rtl = this.rtl;
     const shrink = horizontal ? (rtl ? 'ArrowRight' : 'ArrowLeft') : 'ArrowUp';
     const grow = horizontal ? (rtl ? 'ArrowLeft' : 'ArrowRight') : 'ArrowDown';
 
@@ -333,6 +341,7 @@ export class USplitPanel extends UElement {
       availableSize: containerSize - this.splitterSize * this.splitterCount,
       percentages: this.percentages,
       ghostDelta: 0,
+      sign: this.rtl ? -1 : 1,
     };
 
     if (this.lazy && this.ghost) {
@@ -361,7 +370,8 @@ export class USplitPanel extends UElement {
     e.preventDefault();
 
     const current = this.orientation === 'horizontal' ? e.clientX : e.clientY;
-    const deltaPixel = current - this.dragState.startPoint;
+    // 포인터는 화면 좌표로 움직이고 앞 패널은 문서 방향의 «앞» 에 있다 — 부호가 둘을 잇는다.
+    const deltaPixel = (current - this.dragState.startPoint) * this.dragState.sign;
     const deltaPercent = (deltaPixel / this.dragState.availableSize) * 100;
     const aIdx = this.dragState.index;
     const bIdx = aIdx + 1;
@@ -371,7 +381,8 @@ export class USplitPanel extends UElement {
       const minDelta = -(this.dragState.percentages[aIdx] / 100) * this.dragState.availableSize;
       this.dragState.ghostDelta = Math.max(minDelta, Math.min(maxDelta, deltaPixel));
       const axis = this.orientation === 'horizontal' ? 'X' : 'Y';
-      this.ghost.style.transform = `translate${axis}(${this.dragState.ghostDelta}px)`;
+      // 막대는 화면 좌표로 움직인다 — 논리 이동량을 부호로 되돌려 포인터를 따라가게 한다.
+      this.ghost.style.transform = `translate${axis}(${this.dragState.ghostDelta * this.dragState.sign}px)`;
     } else {
       const [aPercent, bPercent] = this.clampPair(
         this.dragState.percentages[aIdx] + deltaPercent,

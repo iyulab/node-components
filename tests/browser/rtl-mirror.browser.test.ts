@@ -272,3 +272,65 @@ describe('RTL — 접두/접미 상자의 거울', () => {
     expectMirror('u-input', ltr, rtl);
   });
 });
+
+/**
+ * `u-split-panel` — 스크립트가 **포인터 좌표**로 크기를 정하는 요소. 거울은 «핸들이 포인터를 따라간다» 다.
+ *
+ * 앞 패널은 RTL 에서 오른쪽에 있다 — 포인터를 오른쪽으로 끌면 앞 패널은 **줄어야** 한다. 좌표 차이를 그대로 앞 패널의
+ * 몫에 더하면(물리 방향 가정) RTL 에서 핸들이 포인터와 반대로 달아난다. 오라클은 방향 없이 «핸들이 끈 만큼 움직였는가» 다.
+ * 포인터 캡처는 실제 활성 포인터를 요구하므로 합성 이벤트로 계산만 잰다(`split-panel-handle` 시험과 같다).
+ */
+describe('RTL — u-split-panel 은 핸들이 포인터를 따라간다', () => {
+  const SPLIT = (lazy: boolean) =>
+    `<div style="width:300px;height:120px"><u-split-panel id="h" ${lazy ? 'lazy' : ''} style="width:300px;height:120px"><div>A</div><div>B</div></u-split-panel></div>`;
+  const handleOf = (host: HTMLElement) => host.shadowRoot!.querySelector<HTMLElement>('[part~="splitter"]')!;
+
+  /** 끌기를 시작해 `dx` 만큼 옮긴 상태로 `up()` 을 돌려준다. */
+  function drag(host: HTMLElement, dx: number): () => void {
+    const h = handleOf(host);
+    h.setPointerCapture = () => {};
+    h.releasePointerCapture = () => {};
+    const b = h.getBoundingClientRect();
+    const x = b.left + b.width / 2; const y = b.top + b.height / 2;
+    const init = { bubbles: true, composed: true, pointerId: 1, button: 0, clientY: y };
+    h.dispatchEvent(new PointerEvent('pointerdown', { ...init, clientX: x }));
+    h.dispatchEvent(new PointerEvent('pointermove', { ...init, clientX: x + dx }));
+    return () => h.dispatchEvent(new PointerEvent('pointerup', { ...init, clientX: x + dx }));
+  }
+
+  it.each([['ltr', false], ['rtl', false], ['ltr', true], ['rtl', true]] as const)(
+    '%s · lazy=%s: 포인터를 오른쪽/왼쪽으로 40px 끌면 핸들이 같은 쪽으로 40px 간다',
+    async (dir, lazy) => {
+      for (const dx of [40, -40]) {
+        const host = await render(dir, SPLIT(lazy));
+        const before = box(handleOf(host)).left;
+        const up = drag(host, dx);
+        if (lazy) {
+          const ghost = host.shadowRoot!.querySelector<HTMLElement>('.splitter-ghost')!;
+          const g = box(ghost).left;
+          // 미리보기 막대는 처음에는 핸들 자리에 서 있다가 포인터를 따라 움직인다.
+          const gBefore = before + (box(handleOf(host)).right - box(handleOf(host)).left) / 2 - ghost.getBoundingClientRect().width / 2;
+          expect(Math.abs(g - gBefore - dx), `${dir} lazy 막대 이동 ${g - gBefore} · 포인터 ${dx}`).toBeLessThanOrEqual(1);
+        }
+        up();
+        await new Promise((r) => setTimeout(r, 50));
+        const moved = box(handleOf(host)).left - before;
+        expect(Math.abs(moved - dx), `${dir} lazy=${lazy}: 포인터 ${dx} · 핸들 ${moved}`).toBeLessThanOrEqual(1);
+      }
+    });
+
+  it.each(['ltr', 'rtl'] as const)('%s: 끝까지 끌어도 핸들은 호스트 밖으로 나가지 않는다(앞 패널 0 · 뒤 패널 0)', async (dir) => {
+    for (const dx of [1000, -1000]) {
+      const host = await render(dir, SPLIT(false));
+      const H = box(host);
+      drag(host, dx)();
+      await new Promise((r) => setTimeout(r, 50));
+      const h = box(handleOf(host));
+      expect(h.left, `${dir} dx=${dx}`).toBeGreaterThanOrEqual(H.left - 0.5);
+      expect(h.right, `${dir} dx=${dx}`).toBeLessThanOrEqual(H.right + 0.5);
+      // 반대쪽 끝에 닿는다 — 포인터 방향으로 끝까지 간다.
+      if (dx > 0) expect(Math.abs(h.right - H.right), `${dir} → 끝`).toBeLessThanOrEqual(1);
+      else expect(Math.abs(h.left - H.left), `${dir} ← 끝`).toBeLessThanOrEqual(1);
+    }
+  });
+});

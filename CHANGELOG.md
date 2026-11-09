@@ -52,12 +52,13 @@ It cannot report these, so search your sources for them:
   `u-breadcrumb-item`, `u-divider`, `u-field`, `u-input`, `u-menu-item`, `u-option`, `u-select`, `u-tab`, `u-textarea`, `u-tree-item`, and the
   date picker's field) became `margin-inline-start/end` and so on, so the prefix and suffix slots, indentation and the counter side swap in a
   right-to-left document. **Left-to-right rendering is unchanged.** What names a physical side on purpose stays physical: `u-drawer
-  placement`, `u-tab-panel placement`, the device safe-area insets and the splitter's drag geometry. Not yet mirrored: elements positioned
-  with script coordinates that were not reworked (`u-split-panel`) and, outside this package, the virtualized
+  placement`, `u-tab-panel placement` and the device safe-area insets. Not yet mirrored, outside this package: the virtualized
   grid and the timeline. `u-switch` (the thumb and its travel), the indeterminate bar of `u-progress-bar`, `u-carousel` (the first slide at the start
   side, the track and the previous/next buttons and their chevrons, and a drag toward the start side goes on), `u-slider` and `u-rating` mirror too:
   the value grows from the start side, a pointer position and the arrow keys follow it (in a right-to-left page the left arrow raises
-  the value, as in a native range input), and a half-filled star is filled from its start edge. A consumer rule that overrode
+  the value, as in a native range input), and a half-filled star is filled from its start edge. `u-split-panel` follows the pointer in a right-to-left page too: the first pane
+  sits at the right, so dragging right shrinks it and the handle (and the `lazy` preview bar) stays under the pointer — before, the handle ran
+  away from it (a drag of 40px moved it 40px the other way). A consumer rule that overrode
   one of these with a physical property (`::part(prefix) { margin-right: 0 }`) still applies in left-to-right text; write the logical
   property to cover both directions.
 - **`u-menu-item` states its text alignment in logical terms.** The reflected `align` attribute is also HTML's legacy alignment attribute,

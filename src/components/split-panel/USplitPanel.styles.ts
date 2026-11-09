@@ -70,7 +70,7 @@ export const styles = css`
   }
   :host([orientation="horizontal"]) .splitter::before {
     inset-block: 0;
-    left: calc(50% - var(--splitter-size) / 2);
+    inset-inline-start: calc(50% - var(--splitter-size) / 2);
     width: var(--splitter-size);
   }
   :host([orientation="vertical"]) .splitter {
@@ -95,7 +95,10 @@ export const styles = css`
   .splitter-ghost[active] {
     display: block;
   }
-  /* The ghost is placed at the box's leading edge; the margin centres it on the line. */
+  /* The ghost is placed at the box's leading edge; the margin centres it on the line.
+     The script writes its left offset from the handle's measured screen rect, so the centring
+     margin stays on the same physical side (a logical margin would mirror it off the line).
+     physical-ok: positioned from a measured screen coordinate */
   :host([orientation="horizontal"]) .splitter-ghost {
     top: 0;
     width: var(--splitter-size);

@@ -89,7 +89,7 @@ share of the two panels it sits between — `100` with two panels), and it is na
 | `Home` / `End` | Give the panel before the handle its smallest / largest size |
 | `Enter` | Collapse the panel before the handle; press again to restore its previous size |
 
-In a right-to-left layout `←` still moves the handle left. A keyboard change fires `shift-start`,
+In a right-to-left layout the first pane is on the right: `←` still moves the handle left (so it grows that pane) and a pointer drag follows the pointer. A keyboard change fires `shift-start`,
 `shift` and `shift-end` in turn, so listening to `shift-end` alone covers both pointer and keyboard.
 
 ## CSS Custom Properties
