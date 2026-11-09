@@ -68,8 +68,8 @@ export const styles = css`
     border: none;
     border-radius: var(--u-radius-none, 0);
     background-color: transparent;
-    padding-left: 0;
-    padding-right: 0;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
     border-bottom: 1px solid var(--u-input-border-color, #E0E0E0);
   }
   :host([appearance="underlined"][readonly]) .container,
@@ -165,7 +165,7 @@ export const styles = css`
   /* ===== 카운터 ===== */
   .counter {
     margin-top: 0.25em;
-    text-align: right;
+    text-align: end;
     color: var(--u-txt-color-weak, #616161);
     font-size: 0.75em;
     line-height: 1.2;

@@ -60,10 +60,10 @@ export const styles = css`
     display: none;
   }
   .affix-prefix {
-    margin-right: 0.2em;
+    margin-inline-end: 0.2em;
   }
   .affix-suffix {
-    margin-left: 0.2em;
+    margin-inline-start: 0.2em;
   }
 
   /* 링크 탭 — 탭처럼 보이고(글자 상속 · 밑줄 없음) 포커스 링은 안쪽에 그린다: 담는 띠가 가로로 스크롤하며 넘침을 자른다. */
@@ -82,7 +82,7 @@ export const styles = css`
   /* 조용한 개수 — 레이블보다 작고 약한 표 숫자. 알약 면은 띠 위에서 개수를 레이블과 가른다. */
   .count {
     flex-shrink: 0;
-    margin-left: 0.45em;
+    margin-inline-start: 0.45em;
     min-width: 1.8em;
     padding: 0 0.5em;
     box-sizing: border-box;
@@ -97,7 +97,7 @@ export const styles = css`
   }
   /* 보조 숫자 — 면 없이 레이블보다 작고 약한 글자. 탭이 많은 상세 화면에서 숫자가 레이블보다 먼저 읽히지 않게. */
   .count.plain {
-    margin-left: 0.35em;
+    margin-inline-start: 0.35em;
     min-width: 0;
     padding: 0;
     background-color: transparent;
@@ -121,7 +121,7 @@ export const styles = css`
 
   .remove-btn {
     flex-shrink: 0;
-    margin-left: 0.2em;
+    margin-inline-start: 0.2em;
     font-size: 0.75em;
     color: inherit;
     opacity: 0.5;

@@ -23,7 +23,7 @@ export const styles = css`
     flex-direction: row;
     align-items: center;
     padding: 0.25em 0.5em;
-    padding-left: calc(var(--menu-indent-size) * var(--menu-item-depth) + 0.5em);
+    padding-inline-start: calc(var(--menu-indent-size) * var(--menu-item-depth) + 0.5em);
     /* 호스트 하한(--u-target-size, 미설정 = 0). */
     box-sizing: border-box;
     min-height: var(--u-target-size, 0px);
@@ -44,6 +44,9 @@ export const styles = css`
     justify-content: flex-end; 
   }
 
+  :host([align="center"]) .content { text-align: center; }
+  :host([align="right"]) .content { text-align: end; }
+
   /* hover & focus */
   :host(:not([disabled])) .header:hover,
   :host(:not([disabled]):focus-visible) .header {
@@ -62,7 +65,7 @@ export const styles = css`
   }
 
   .prefix-checker {
-    margin-right: 0.25em;
+    margin-inline-end: 0.25em;
     font-size: 1em;
   }
 
@@ -70,7 +73,7 @@ export const styles = css`
     flex-shrink: 0;
     position: relative;
     display: inline-block;
-    margin-left: 0.25em;
+    margin-inline-start: 0.25em;
     width: 1em;
     height: 1em;
   }
@@ -107,7 +110,7 @@ export const styles = css`
 
   .suffix-chevron {
     font-size: 1em;
-    margin-left: 0.25em;
+    margin-inline-start: 0.25em;
   }
 
   /* 접두 · 접미 옆 간격은 섀도 안 상자가 갖는다 — ::slotted 의 여백은 문서의 전역 리셋(Tailwind preflight 류)에 진다. */
@@ -120,14 +123,17 @@ export const styles = css`
     display: none;
   }
   .affix-prefix {
-    margin-right: 0.25em;
+    margin-inline-end: 0.25em;
   }
   .affix-suffix {
-    margin-left: 0.25em;
+    margin-inline-start: 0.25em;
   }
 
   .content {
     flex: 1 1 auto;
+    /* The reflected align attribute is also HTML's legacy alignment attribute: the browser turns align=left on the host
+       into a physical text-align: left that the text inherits. Say it here, in logical terms, so RTL mirrors. */
+    text-align: start;
     line-height: 1.5;
     display: inline-block;
     min-width: 0;

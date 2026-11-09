@@ -23,7 +23,7 @@ export const styles = css`
     flex-direction: row;
     align-items: center;
     padding: 4px 8px;
-    padding-left: calc(
+    padding-inline-start: calc(
       var(--tree-indent-size) * var(--tree-item-depth)
       + var(--tree-indent-guide-offset)
     );
@@ -54,10 +54,10 @@ export const styles = css`
     display: none;
   }
   .affix-prefix {
-    margin-right: 0.2em;
+    margin-inline-end: 0.2em;
   }
   .affix-suffix {
-    margin-left: 0.2em;
+    margin-inline-start: 0.2em;
   }
 
   /* ── content ── */
@@ -109,7 +109,7 @@ export const styles = css`
      padding), and the padding keeps the glyph centred on its visible square. */
   :host([checkable]) .prefix-toggler {
     margin: -3px 4px -3px -6px;
-    padding-left: 6px;
+    padding-inline-start: 6px;
   }
   :host([checkable]) .prefix-toggler::before {
     inset: 3px 0 3px 6px;
@@ -169,10 +169,10 @@ export const styles = css`
     position: absolute;
     top: 0;
     bottom: 0;
-    left: calc(
+    inset-inline-start: calc(
       var(--tree-indent-size) * (var(--tree-item-depth) + 1)
     );
-    border-left: var(--tree-indent-guide-width)
+    border-inline-start: var(--tree-indent-guide-width)
                  var(--tree-indent-guide-style)
                  var(--tree-indent-guide-color);
     pointer-events: none;

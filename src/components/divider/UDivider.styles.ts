@@ -82,7 +82,7 @@ export const styles = css`
     flex: 1;
     min-height: 8px;
     border-top: none;
-    border-left: var(--divider-size) solid var(--divider-color);
+    border-inline-start: var(--divider-size) solid var(--divider-color);
   }
 
   :host([vertical][line="dashed"]) .line {

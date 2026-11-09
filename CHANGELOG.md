@@ -45,6 +45,21 @@ It cannot report these, so search your sources for them:
   property would give but these attributes are not. `u-button`, `u-icon-button` and the form controls moved onto it from their
   own copies of the same override; behaviour is unchanged.
 
+### Changed
+
+- **Layout mirrors under `dir="rtl"`: margins, inner padding, borders and text alignment are logical properties.** `margin-left/right`,
+  `padding-left/right`, `border-left/right` and `text-align: left/right` in the published styles of 13 components (`u-badge`, `u-button`,
+  `u-breadcrumb-item`, `u-divider`, `u-field`, `u-input`, `u-menu-item`, `u-option`, `u-select`, `u-tab`, `u-textarea`, `u-tree-item`, and the
+  date picker's field) became `margin-inline-start/end` and so on, so the prefix and suffix slots, indentation and the counter side swap in a
+  right-to-left document. **Left-to-right rendering is unchanged.** What names a physical side on purpose stays physical: `u-drawer
+  placement`, `u-tab-panel placement`, the device safe-area insets and the splitter's drag geometry. Not yet mirrored: elements positioned
+  with `left`/`right` (a later change) and, outside this package, the virtualized grid and the timeline. A consumer rule that overrode
+  one of these with a physical property (`::part(prefix) { margin-right: 0 }`) still applies in left-to-right text; write the logical
+  property to cover both directions.
+- **`u-menu-item` states its text alignment in logical terms.** The reflected `align` attribute is also HTML's legacy alignment attribute,
+  which the browser turns into a physical `text-align` on the host (`align="left"` on a menu item left-aligned its text even in a
+  right-to-left page). `left` now means the start side and `right` the end side; `center` is unchanged.
+
 ### Fixed
 
 - **A host `aria-label` on a link-like component reaches its inner link, and follows a change.** The host's `aria-label` does not

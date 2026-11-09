@@ -147,7 +147,7 @@ export const styles = css`
   /* 상태 아이콘 — prefix 슬롯과 같은 간격을 쓴다. */
   .icon {
     flex-shrink: 0;
-    margin-right: 0.25em;
+    margin-inline-end: 0.25em;
   }
 
   /* === Slots === */
@@ -161,9 +161,9 @@ export const styles = css`
     display: none;
   }
   .affix-prefix {
-    margin-right: 0.25em;
+    margin-inline-end: 0.25em;
   }
   .affix-suffix {
-    margin-left: 0.25em;
+    margin-inline-start: 0.25em;
   }
 `;

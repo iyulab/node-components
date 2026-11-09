@@ -100,7 +100,7 @@ export const styles = css`
   /* 라디오 마커 (원형) */
   .radio-marker {
     flex-shrink: 0;
-    margin-right: 0.5em;
+    margin-inline-end: 0.5em;
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -144,7 +144,7 @@ export const styles = css`
   /* 체크 아이콘 */
   .check-marker {
     flex-shrink: 0;
-    margin-right: 0.5em;
+    margin-inline-end: 0.5em;
     color: var(--option-color-active);
   }
 
@@ -158,9 +158,9 @@ export const styles = css`
     display: none;
   }
   .affix-prefix {
-    margin-right: 0.25em;
+    margin-inline-end: 0.25em;
   }
   .affix-suffix {
-    margin-left: 0.25em;
+    margin-inline-start: 0.25em;
   }
 `;

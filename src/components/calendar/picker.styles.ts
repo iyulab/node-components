@@ -17,7 +17,7 @@ export const styles = css`
        호스트 하한(--u-target-size)이 있으면 그 값. 아래 접미 버튼 규칙과 하한 계산이 함께 읽는다. */
     --_target-pad: max(0.25em, calc(12px - 0.5em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
     /* 맨 뒤 접미 버튼이 오른쪽으로 넓힐 자리 — 호스트 하한이 있을 때만 종전 여백보다 커진다. */
-    padding-right: max(var(--u-field-padding-inline, 0.6em), var(--_target-pad));
+    padding-inline-end: max(var(--u-field-padding-inline, 0.6em), var(--_target-pad));
     /* 글자 영역의 하한 — 접미 버튼이 한 줄을 나눌 때 주어진 폭이 좁으면 입력이 0 까지 접혀 값도 커서도 «보이지 않는» 채
        정상처럼 그려졌다. 하한 아래로는 칸이 호스트 밖으로 넘친다 — 보이는 실패다. 버튼 수(--_icons)는 렌더가 정한다.
        버튼 하나의 몫 = 글리프 1em + 받는 여백 + 앞 간격(0.4em 또는 받는 여백 중 큰 쪽). 글자 하한은 피커마다 바꾼다. */

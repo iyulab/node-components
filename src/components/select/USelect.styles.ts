@@ -99,8 +99,8 @@ export const styles = css`
     border: none;
     border-radius: var(--u-radius-none, 0);
     background-color: transparent;
-    padding-left: 0;
-    padding-right: 0;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
     border-bottom: 1px solid var(--u-input-border-color, #E0E0E0);
   }
   :host([appearance="underlined"][readonly]) .container,
@@ -247,17 +247,17 @@ export const styles = css`
     display: none;
   }
   .affix-prefix {
-    margin-right: 0.25em;
+    margin-inline-end: 0.25em;
   }
   .affix-suffix {
-    margin-left: 0.25em;
+    margin-inline-start: 0.25em;
   }
 
   .suffix-item {
     /* 표시 영역(.value-area — 검색 입력을 겹쳐 세우려고 위치를 잡는다)보다 뒤에 칠한다: 지우기의 받는 상자는 음수 여백으로
        표시 영역 쪽으로 넓어지는데, 위치 잡은 표시 영역이 그 위를 덮으면 그 자리를 누른 것이 지우기에 닿지 않는다. */
     position: relative;
-    margin-left: 0.25em;
+    margin-inline-start: 0.25em;
     font-size: 1em;
     color: var(--u-icon-color, #616161);
     transition: color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));

@@ -70,7 +70,7 @@ export const styles = css`
 
   .required {
     color: var(--u-danger-color-strong, #C62828);
-    margin-right: 0.2em;
+    margin-inline-end: 0.2em;
   }
   
   .footer {

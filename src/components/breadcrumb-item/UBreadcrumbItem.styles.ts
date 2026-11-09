@@ -44,9 +44,9 @@ export const styles = css`
     display: none;
   }
   .affix-prefix {
-    margin-right: 0.2em;
+    margin-inline-end: 0.2em;
   }
   .affix-suffix {
-    margin-left: 0.2em;
+    margin-inline-start: 0.2em;
   }
 `;

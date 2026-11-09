@@ -26,7 +26,7 @@ export const styles = css`
     box-sizing: border-box;
     min-height: var(--u-target-size, 0px);
     /* 맨 뒤 접미 아이콘이 오른쪽으로 넓힐 자리 — 호스트 하한이 있을 때만 종전 여백보다 커진다. */
-    padding-right: max(var(--u-field-padding-inline, 0.6em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
+    padding-inline-end: max(var(--u-field-padding-inline, 0.6em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
     border: 1px solid var(--u-input-border-color, #E0E0E0);
     border-radius: var(--u-field-radius, 0.25em);
     background-color: var(--u-input-bg-color, #FFFFFF);
@@ -90,8 +90,8 @@ export const styles = css`
 
   /* ===== Appearance: underlined ===== */
   :host([appearance="underlined"]) .container {
-    padding-left: 0;
-    padding-right: 0;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
     border: none;
     border-radius: var(--u-radius-none, 0);
     border-bottom: 1px solid var(--u-input-border-color, #E0E0E0);
@@ -183,16 +183,16 @@ export const styles = css`
     display: none;
   }
   .affix-prefix {
-    margin-right: 0.25em;
+    margin-inline-end: 0.25em;
   }
   .affix-suffix {
-    margin-left: 0.25em;
+    margin-inline-start: 0.25em;
   }
 
   /* 아이콘 영역 (clear, password toggle 등). ⚠포인터를 받는 아이콘(role=button)의 간격은 이 값이 아니라 아래
      [role="button"] 규칙이 정한다 — 그 규칙의 margin 단축 선언이 이 margin-left 를 덮는다. */
   .suffix-item {
-    margin-left: 0.25em;
+    margin-inline-start: 0.25em;
     color: var(--u-icon-color, #616161);
     font-size: 1em;
     transition: color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
@@ -229,7 +229,7 @@ export const styles = css`
   /* 좌우 여백이 0 인 변형(underlined · plain)은 맨 뒤 아이콘이 오른쪽으로 넓힐 자리가 없다 — 컨테이너에 그만큼만 준다. */
   :host([appearance="underlined"]) .container,
   :host([appearance="plain"]) .container {
-    padding-right: max(0.25em, calc(12px - 0.5em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
+    padding-inline-end: max(0.25em, calc(12px - 0.5em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
   }
 
   u-popover {

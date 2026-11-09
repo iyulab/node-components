@@ -375,10 +375,10 @@ export const styles = css`
     display: none;
   }
   .affix-prefix {
-    margin-right: 0.5em;
+    margin-inline-end: 0.5em;
   }
   .affix-suffix {
-    margin-left: 0.5em;
+    margin-inline-start: 0.5em;
   }
 
   .content {
