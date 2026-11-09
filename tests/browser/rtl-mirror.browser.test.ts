@@ -374,3 +374,25 @@ describe('RTL — u-split-panel 은 핸들이 포인터를 따라간다', () => 
     }
   });
 });
+
+/**
+ * `u-divider` 세로선의 두께는 시작 쪽 테두리(`border-inline-start`)에 있다 — 점선·파선 같은 **스타일** 선언도 같은 쪽이어야 한다.
+ * 스타일을 `border-left-style` 로 적으면 RTL 에서 두께는 오른쪽에 · 스타일은 왼쪽(두께 0)에 붙어 «점선» 이 실선으로 그려진다.
+ * 오라클은 방향 없이 «두께가 있는 쪽 테두리의 스타일» 이다.
+ */
+describe('RTL — 세로 구분선의 점선·파선', () => {
+  it.each([['ltr', 'dashed'], ['rtl', 'dashed'], ['ltr', 'dotted'], ['rtl', 'dotted']] as const)(
+    '%s · %s: 두께가 있는 쪽 테두리가 그 스타일이다',
+    async (dir, kind) => {
+      const host = await render(dir, `<div style="height:120px"><u-divider id="h" vertical line="${kind}"></u-divider></div>`);
+      const line = host.shadowRoot!.querySelector<HTMLElement>('.line')!;
+      const cs = getComputedStyle(line);
+      const sides = [
+        ['left', cs.borderLeftWidth, cs.borderLeftStyle],
+        ['right', cs.borderRightWidth, cs.borderRightStyle],
+      ] as const;
+      const visible = sides.filter(([, w]) => parseFloat(w) > 0);
+      expect(visible.length, `${dir}: 두께가 있는 쪽 테두리는 하나`).toBe(1);
+      expect(visible[0][2], `${dir}: ${visible[0][0]} 테두리 스타일`).toBe(kind);
+    });
+});

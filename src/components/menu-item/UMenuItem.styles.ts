@@ -85,6 +85,7 @@ export const styles = css`
     background-color: currentColor;
     transition: transform var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
+  /* physical-ok: the chevron is centred with translate and is symmetric left to right */
   /* 기본: 위 방향 chevron (∧) */
   .suffix-toggler::before {
     width: 0.5em;

@@ -86,10 +86,10 @@ export const styles = css`
   }
 
   :host([vertical][line="dashed"]) .line {
-    border-left-style: dashed;
+    border-inline-start-style: dashed;
   }
   :host([vertical][line="dotted"]) .line {
-    border-left-style: dotted;
+    border-inline-start-style: dotted;
   }
 
   :host([vertical][align="start"]) .line:first-child {

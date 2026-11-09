@@ -97,8 +97,7 @@ export const styles = css`
   :host([appearance="line"][placement="top"]) ::slotted(u-tab[active])::after {
     height: 2px;
     bottom: 0;
-    left: 0;
-    right: 0;
+    inset-inline: 0;
   }
 
   :host([appearance="line"][placement="bottom"]) .header {
@@ -107,10 +106,10 @@ export const styles = css`
   :host([appearance="line"][placement="bottom"]) ::slotted(u-tab[active])::after {
     height: 2px;
     top: 0;
-    left: 0;
-    right: 0;
+    inset-inline: 0;
   }
 
+  /* physical-ok: placement names a screen side (left / right), not a reading direction */
   :host([appearance="line"][placement="left"]) .header {
     border-right: 1px solid var(--u-border-color, #E0E0E0);
   }

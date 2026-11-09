@@ -104,6 +104,7 @@ export const styles = css`
     position: absolute;
     z-index: 10;
     bottom: 16px;
+    /* physical-ok: centred with translateX(-50%) — symmetric, a logical inset would shift it by half its width in RTL */
     left: 50%;
     display: flex;
     flex-direction: row;

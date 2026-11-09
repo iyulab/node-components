@@ -50,8 +50,7 @@ export const styles = css`
   :host(:not([appearance="tiles"])) ::slotted(u-tab[active])::after {
     content: '';
     position: absolute;
-    left: 0;
-    right: 0;
+    inset-inline: 0;
     bottom: 0;
     height: 2px;
     background-color: var(--tab-nav-color);

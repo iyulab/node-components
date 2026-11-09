@@ -44,8 +44,7 @@ export const styles = css`
 
   .track {
     position: absolute;
-    left: 0;
-    right: 0;
+    inset-inline: 0;
     top: 50%;
     transform: translateY(-50%);
     height: var(--slider-track-height);

@@ -36,6 +36,7 @@ export const styles = css`
   :host([placement="right"]) .panel {
     padding-block: env(safe-area-inset-top, 0px) env(safe-area-inset-bottom, 0px);
   }
+  /* physical-ok: placement and the device safe-area insets name screen sides */
   :host([placement="left"]) .panel  { padding-left: env(safe-area-inset-left, 0px); }
   :host([placement="right"]) .panel { padding-right: env(safe-area-inset-right, 0px); }
   :host([placement="top"]) .panel,
@@ -47,6 +48,7 @@ export const styles = css`
   :host([placement="bottom"]) .panel { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
   /*
+   * physical-ok: placement names a screen side.
    * placement별 border. 토큰 폴백은 backdrop(--u-overlay-bg-color)과 동일 정책 —
    * 테마 토큰 미정의 소비자도 패널이 보이도록 CSS 시스템 컬러로 폴백한다.
    * Canvas/CanvasText는 OS/UA color-scheme 기준으로 라이트·다크를 자동 적응

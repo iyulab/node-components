@@ -12,6 +12,7 @@ export const styles = css`
   :host {
     position: absolute;
     z-index: var(--u-layer-floating, 1000);
+    /* physical-ok: the origin of the script-computed screen coordinates (floating-ui writes a translate from top-left) */
     top: 0;
     left: 0;
     width: max-content;

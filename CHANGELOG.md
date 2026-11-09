@@ -60,7 +60,8 @@ It cannot report these, so search your sources for them:
   sits at the right, so dragging right shrinks it and the handle (and the `lazy` preview bar) stays under the pointer — before, the handle ran
   away from it (a drag of 40px moved it 40px the other way). A consumer rule that overrode
   one of these with a physical property (`::part(prefix) { margin-right: 0 }`) still applies in left-to-right text; write the logical
-  property to cover both directions.
+  property to cover both directions. A vertical `u-divider` with `line="dashed"` or `"dotted"` now draws that style in a right-to-left
+  page too (its width sat on the start border but the style on the left one, so it came out solid).
 - **`u-menu-item` states its text alignment in logical terms.** The reflected `align` attribute is also HTML's legacy alignment attribute,
   which the browser turns into a physical `text-align` on the host (`align="left"` on a menu item left-aligned its text even in a
   right-to-left page). `left` now means the start side and `right` the end side; `center` is unchanged.

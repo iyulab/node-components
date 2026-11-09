@@ -123,6 +123,7 @@ export const styles = css`
     position: absolute;
     z-index: 1;
   }
+  /* physical-ok: anchor names a corner of the screen (top-right ...), not a reading direction */
   :host([anchor="top-right"]) {
     top: 0;
     right: 0;
