@@ -40,6 +40,26 @@ function warnIfTokensMissing(): void {
 export class UElement extends LitElement {
   static styles: CSSResultGroup = styles;
 
+  /**
+   * 호스트에 단 속성(대개 `aria-*`)을 **안쪽 요소로 옮겨 그리는** 컴포넌트가 «이 속성이 바뀌면 다시 그린다» 를 선언하는 자리.
+   *
+   * 호스트의 `aria-label` 은 섀도 경계를 넘지 않아, 안쪽의 `<a>`·`<button>`·`<input>` 에 `render()` 가 옮겨 줘야 접근성 이름이
+   * 생긴다. 그런데 Lit 은 선언된 프로퍼티의 속성만 관찰하므로 이 속성들은 `observedAttributes` 에 없고, 없는 속성은 연결 뒤에
+   * 바뀌어도 `attributeChangedCallback` 이 불리지 않는다 — 처음 그릴 때만 맞는 «조용한 결함» 이다(`u-button` · 폼 컨트롤 ·
+   * `u-card` 가 같은 모양으로 각자 고쳤다). 한 번 여기 선언하면 관찰과 다시 그리기가 함께 온다.
+   * 하위 클래스가 더하려면 부모 것을 펼쳐 적는다(`[...super.forwardedAttributes, 'x']`).
+   */
+  static forwardedAttributes: readonly string[] = [];
+
+  static override get observedAttributes(): string[] {
+    return [...super.observedAttributes, ...this.forwardedAttributes];
+  }
+
+  override attributeChangedCallback(name: string, old: string | null, value: string | null): void {
+    super.attributeChangedCallback(name, old, value);
+    if ((this.constructor as typeof UElement).forwardedAttributes.includes(name)) this.requestUpdate();
+  }
+
   /** 연결된 동안의 로케일 구독 해제 함수 · 떨어질 때 본 로케일 판(다시 붙을 때 그 사이 바뀌었는가를 묻는다). */
   private unsubscribeLocale?: () => void;
   private detachedLocaleRevision?: number;

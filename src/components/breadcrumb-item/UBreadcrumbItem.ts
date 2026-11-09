@@ -35,11 +35,16 @@ export class UBreadcrumbItem extends UElement {
   /** 링크 rel 속성 */
   @property({ type: String }) rel?: string;
 
+  /** 링크의 이름은 기본으로 글이다 — 달리 하려면 호스트의 `aria-label` 이 안쪽 `<a>` 에 실린다(`u-button`·`u-card` 와 같은 규약). */
+  static override forwardedAttributes: readonly string[] = ['aria-label'];
+
   render() {
     if (this.href) {
+      const ariaLabel = this.getAttribute('aria-label') ?? undefined;
       return html`
         <a part="link"
           href=${this.href}
+          aria-label=${ifDefined(ariaLabel)}
           aria-disabled=${ifDefined(this.disabled ? 'true' : undefined)}
           target=${ifDefined(this.target)}
           rel=${ifDefined(this.rel)}

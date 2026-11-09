@@ -61,14 +61,7 @@ export class UIconButton extends UElement {
    * 버튼이라 텍스트 콘텐츠로 이름이 생기지 않으므로 이 전달이 없으면 접근 가능한 이름이
    * 아예 비게 된다 — 내장 툴팁(`<u-tooltip>`)은 ARIA를 배선하지 않아 대체 경로가 안 된다.
    */
-  static override get observedAttributes(): string[] {
-    return [...super.observedAttributes, ...FORWARDED_ARIA];
-  }
-
-  override attributeChangedCallback(name: string, old: string | null, value: string | null): void {
-    super.attributeChangedCallback(name, old, value);
-    if ((FORWARDED_ARIA as readonly string[]).includes(name)) this.requestUpdate();
-  }
+  static override forwardedAttributes: readonly string[] = FORWARDED_ARIA;
 
   /** 기본 슬롯(툴팁)의 글자 — `aria-label` 이 없을 때 버튼의 이름. */
   @state() private slotText = '';

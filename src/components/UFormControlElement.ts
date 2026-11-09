@@ -191,14 +191,7 @@ export abstract class UFormControlElement<T> extends UElement {
    * 없는 속성은 `attributeChangedCallback` 자체가 호출되지 않아(커스텀 엘리먼트 표준 동작)
    * 초기 렌더만 되고 연결 후 변경이 반영되지 않는다. 명시적으로 추가해야 한다.
    */
-  static override get observedAttributes(): string[] {
-    return [...super.observedAttributes, 'aria-label', 'aria-description'];
-  }
-
-  override attributeChangedCallback(name: string, old: string | null, value: string | null): void {
-    super.attributeChangedCallback(name, old, value);
-    if (name === 'aria-label' || name === 'aria-description') this.requestUpdate();
-  }
+  static override forwardedAttributes: readonly string[] = ['aria-label', 'aria-description'];
 
   /**
    * 내부 네이티브 컨트롤에 실을 접근성 이름. 자기 `label` 이 우선이고, 없으면 호스트의

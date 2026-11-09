@@ -38,7 +38,20 @@ It cannot report these, so search your sources for them:
   `rg -nP '<u-alert(?![^>]*\bfloating\b)'`, then add `floating` where the toast look was meant. A leftover `inline`
   attribute is harmless (the new default is the old `inline`).
 
+### Added
+
+- **`UElement.forwardedAttributes`** — a component that copies a host attribute (usually `aria-*`) onto an inner element declares it
+  once: `static forwardedAttributes = ['aria-label']`. The attribute is then observed and a change re-renders, which a declared
+  property would give but these attributes are not. `u-button`, `u-icon-button` and the form controls moved onto it from their
+  own copies of the same override; behaviour is unchanged.
+
 ### Fixed
+
+- **A host `aria-label` on a link-like component reaches its inner link, and follows a change.** The host's `aria-label` does not
+  cross the shadow boundary, so a component has to copy it onto the `<a>`/`<button>` that takes focus — and because the attribute
+  is not a declared property, a change after the element is connected never re-rendered. `u-card href` took the name only
+  at the first render (a later `setAttribute('aria-label', …)` left the link with the old name or none), and `u-breadcrumb-item href`
+  never copied it, so its link was named by its text only. Both now carry the host's name and track it, as `u-button` does.
 
 - **`u-select multiple searchable` shows its whole placeholder.** With no chips the placeholder and the search input shared
   the row's width half and half, so a placeholder that fit the control was cut to «…» at half its width. While no chip stands

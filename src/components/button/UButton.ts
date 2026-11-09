@@ -202,16 +202,11 @@ export class UButton extends UElement {
    * (커스텀 엘리먼트 표준 동작). 초기 렌더는 되지만 연결 후 동적 변경은 반영되지
    * 않았다 — 목록에 명시적으로 추가해야 한다.
    */
-  static override get observedAttributes(): string[] {
-    return [...super.observedAttributes, ...FORWARDED_ARIA];
-  }
+  static override forwardedAttributes: readonly string[] = FORWARDED_ARIA;
 
   override attributeChangedCallback(name: string, old: string | null, value: string | null): void {
     super.attributeChangedCallback(name, old, value);
-    if ((FORWARDED_ARIA as readonly string[]).includes(name)) {
-      this.syncHostRole();
-      this.requestUpdate();
-    }
+    if ((FORWARDED_ARIA as readonly string[]).includes(name)) this.syncHostRole();
   }
 
   protected override updated(changed: PropertyValues): void {

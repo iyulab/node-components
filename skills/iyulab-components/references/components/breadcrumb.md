@@ -59,7 +59,7 @@ Hierarchical location indicator. Compose `u-breadcrumb-item` elements inside `u-
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `disabled` | `boolean` | `false` | ✓ | Disable the item |
-| `href` | `string` | — | — | Link URL; renders as `<a>` when set |
+| `href` | `string` | — | — | Link URL; renders as `<a>` when set (a host `aria-label` moves onto the link) |
 | `target` | `string` | — | — | Link `target` attribute |
 | `rel` | `string` | — | — | Link `rel` attribute |
 

@@ -58,6 +58,8 @@ export class UCard extends UElement {
   /** 다운로드 파일명 (`href` 와 함께) */
   @property({ type: String }) download?: string;
 
+  static override forwardedAttributes: readonly string[] = ['aria-label'];
+
   render() {
     if (this.href) {
       // 링크의 이름은 기본으로 카드의 글 전부다 — 짧게 하려면 호스트의 `aria-label` 을 링크로 옮긴다.
