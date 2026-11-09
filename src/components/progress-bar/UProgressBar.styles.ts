@@ -136,16 +136,16 @@ export const styles = css`
 
   @keyframes indeterminate-move {
     0% {
-      left: -35%;
-      right: 100%;
+      inset-inline-start: -35%;
+      inset-inline-end: 100%;
     }
     60% {
-      left: 100%;
-      right: -90%;
+      inset-inline-start: 100%;
+      inset-inline-end: -90%;
     }
     100% {
-      left: 100%;
-      right: -90%;
+      inset-inline-start: 100%;
+      inset-inline-end: -90%;
     }
   }
 

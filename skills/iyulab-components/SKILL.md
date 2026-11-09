@@ -43,7 +43,7 @@ import { UButton, UInput } from '@iyulab/components/react';
 
 > For detailed guidance on theming, icon setup, and advanced usage, see [./references/usage.md](./references/usage.md).
 
-> **Direction:** layout follows the document direction — under `dir="rtl"` the prefix/suffix slots, inner padding and borders mirror (logical CSS properties). Placement values that name a physical side (`u-drawer placement="left"`, `u-tab-panel placement`) stay physical. Elements positioned with `left`/`right` and the virtualized grid/timeline are not mirrored yet.
+> **Direction:** layout follows the document direction — under `dir="rtl"` the prefix/suffix slots, inner padding and borders mirror (logical CSS properties). Placement values that name a physical side (`u-drawer placement="left"`, `u-tab-panel placement`) stay physical. Not mirrored yet: elements that place themselves with script coordinates or read arrow keys (`u-slider`, `u-rating`, `u-carousel`, `u-split-panel`), the badge corner placements, and the virtualized grid/timeline.
 
 ---
 

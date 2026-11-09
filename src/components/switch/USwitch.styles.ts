@@ -108,7 +108,7 @@ export const styles = css`
   }
   .track-checked {
     opacity: 0;
-    left: var(--switch-thumb-offset);
+    inset-inline-start: var(--switch-thumb-offset);
     color: #fff;
   }
   :host([checked]) .track-checked {
@@ -116,18 +116,20 @@ export const styles = css`
   }
   .track-unchecked {
     opacity: 1;
-    right: var(--switch-thumb-offset);
+    inset-inline-end: var(--switch-thumb-offset);
     color: var(--u-txt-color-weak, #616161);
   }
   :host([checked]) .track-unchecked {
     opacity: 0;
   }
 
+  :host(:dir(rtl)) { --_dir: -1; }
+
   /* === 핸들 === */
   .thumb {
     position: absolute;
     z-index: 1;
-    left: var(--switch-thumb-offset);
+    inset-inline-start: var(--switch-thumb-offset);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -142,7 +144,8 @@ export const styles = css`
       background var(--switch-duration) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   :host([checked]) .thumb {
-    transform: translateX(var(--switch-move-width));
+    /* The thumb travels toward the end side: the offset flips sign in a right-to-left document. */
+    transform: translateX(calc(var(--switch-move-width) * var(--_dir, 1)));
     background: var(--switch-thumb-color-checked);
   }
 

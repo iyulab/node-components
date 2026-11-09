@@ -64,6 +64,50 @@ function expectMirror(label: string, ltr: Reading, rtl: Reading): void {
   expect(Math.abs(ltr.start - rtl.start), `${label}: 시작 가장자리에서 접두까지 LTR ${ltr.start} · RTL ${rtl.start}`).toBeLessThanOrEqual(0.75);
 }
 
+/** 스위치의 손잡이가 트랙의 시작 가장자리에서 떨어진 거리(전환 없음: `--switch-duration: 0s`). */
+async function thumbStart(dir: 'ltr' | 'rtl', checked: boolean): Promise<number> {
+  const host = await render(dir, `<u-switch id="h" style="--switch-duration: 0s" ${checked ? 'checked' : ''}></u-switch>`);
+  const thumb = host.shadowRoot!.querySelector('.thumb')!;
+  const T = box(thumb); const R = box(thumb.parentElement!);
+  return dir === 'ltr' ? T.left - R.left : R.right - T.right;
+}
+
+/** 불확정 진행 막대가 정해진 시각(400ms)에서 트랙의 시작 가장자리로부터 떨어진 거리를 잉다. */
+async function indeterminateStart(dir: 'ltr' | 'rtl'): Promise<number> {
+  const host = await render(dir, '<u-progress-bar id="h" indeterminate style="display:block;width:300px"></u-progress-bar>');
+  const bars = Array.from(host.shadowRoot!.querySelectorAll('*')).filter((e) => e.getAnimations().some((a) => (a as CSSAnimation).animationName === 'indeterminate-move'));
+  expect(bars.length, 'indeterminate-move 애니메이션을 가진 요소').toBeGreaterThan(0);
+  const bar = bars[0];
+  const anim = bar.getAnimations().find((a) => (a as CSSAnimation).animationName === 'indeterminate-move')!;
+  anim.pause();
+  anim.currentTime = 400;
+  await new Promise((r) => setTimeout(r, 50));
+  const B = box(bar); const R = box(bar.parentElement ?? host);
+  return dir === 'ltr' ? B.left - R.left : R.right - B.right;
+}
+
+describe('RTL — 위치로 서 있는 것의 거울', () => {
+  it.each([[false], [true]])('u-switch(checked=%s) 의 손잡이 위치는 두 방향에서 시작 가장자리 기준으로 같다', async (checked) => {
+    const ltr = await thumbStart('ltr', checked);
+    const rtl = await thumbStart('rtl', checked);
+    expect(Math.abs(ltr - rtl), `LTR ${ltr} · RTL ${rtl}`).toBeLessThanOrEqual(0.75);
+  });
+
+  it('u-switch 는 켜지면 끝 쪽으로 움직인다(두 방향 모두)', async () => {
+    for (const dir of ['ltr', 'rtl'] as const) {
+      const off = await thumbStart(dir, false);
+      const on = await thumbStart(dir, true);
+      expect(on, `${dir}: 꺼짐 ${off} → 켜짐 ${on}`).toBeGreaterThan(off + 4);
+    }
+  });
+
+  it('u-progress-bar 의 불확정 막대는 시작 가장자리에서 같은 거리를 두고 움직인다', async () => {
+    const ltr = await indeterminateStart('ltr');
+    const rtl = await indeterminateStart('rtl');
+    expect(Math.abs(ltr - rtl), `LTR ${ltr} · RTL ${rtl}`).toBeLessThanOrEqual(1);
+  });
+});
+
 describe('RTL — 접두/접미 상자의 거울', () => {
   it.each(AFFIX_BOXES)('%s %s 는 RTL 에서 좌우가 뒤집힌 같은 배치다', async (tag, attrs) => {
     const markup = `<${tag} id="h" ${attrs}><span slot="prefix" id="p">P</span><span id="m">Middle text</span><span slot="suffix" id="s">S</span></${tag}>`;

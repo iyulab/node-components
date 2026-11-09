@@ -263,8 +263,9 @@ Locale.register('nl', { valueMissing: '…' });       // 검증 메시지 overri
 
 컴포넌트의 배치는 **문서 방향을 따릅니다.** 게시 스타일은 논리 속성(`margin-inline-start` · `padding-inline-end` · `border-inline-start` · `text-align: start`)으로 서 있어,
 `dir="rtl"` 에서 접두 · 접미 위치와 안쪽 여백이 좌우로 뒤집히고 LTR 렌더는 그대로입니다. 방향이 **의미**인 것 — 서랍의 `placement="left"` · 탭 줄의 `placement` ·
-기기 안전 영역(`env(safe-area-inset-*)`) — 은 물리 방향 그대로입니다. **아직 거울이 아닌 것**: `left` / `right` 로 자리를 잡는 여러 요소는 단계적으로 옮기는 중이고, 가로 가상 스크롤 격자(`flex-table`)와
-타임라인(`dimension-timeline`)은 계산한 픽셀로 배치하므로 RTL 을 아직 약속하지 않습니다.
+기기 안전 영역(`env(safe-area-inset-*)`) — 은 물리 방향 그대로입니다. **아직 거울이 아닌 것**: 스크립트가 좌표로 자리를 잡거나 방향키를 해석하는 요소(`u-slider` · `u-rating` · `u-carousel` · `u-split-panel`) · 배지를 모서리에 얹는 자리(`u-badge placement`) · 스켈레톤의 빛이 지나가는 방향은
+물리 방향 그대로이고, 가로 가상 스크롤 격자(`flex-table`)와 타임라인(`dimension-timeline`)은 계산한 픽셀로 배치하므로 RTL 을 아직 약속하지 않습니다.
+`u-switch` 손잡이와 `u-progress-bar` 의 불확정 막대는 논리 위치로 거울입니다.
 
 ### 네임스페이스 — 상위 패키지·앱의 문자열 (1.23.0~)
 
