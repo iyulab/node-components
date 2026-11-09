@@ -206,6 +206,53 @@ describe('RTL — 별점은 시작 쪽에서 채워진다', () => {
   });
 });
 
+describe('RTL — 캐러셀은 첫 장이 시작 쪽에 서고 다음으로 가면 끝 쪽으로 밀린다', () => {
+  const CAROUSEL = `<style>u-carousel::part(slides) { transition: none !important; }</style>
+    <u-carousel id="h" navigation style="display:block;width:400px;height:120px">
+      <div id="s0" style="height:120px">A</div><div id="s1" style="height:120px">B</div><div id="s2" style="height:120px">C</div>
+    </u-carousel>`;
+  type Carousel = HTMLElement & { index: number; next(): void; updateComplete: Promise<unknown> };
+
+  it('현재 장은 두 방향 모두 호스트 폭을 채운다(처음 · 다음 후)', async () => {
+    for (const dir of ['ltr', 'rtl'] as const) {
+      const host = await render(dir, CAROUSEL) as Carousel;
+      const H = box(host);
+      expect(Math.abs(box(document.getElementById('s0')!).left - H.left), `${dir}: 첫 장`).toBeLessThanOrEqual(1);
+      host.next();
+      await settle();
+      const S1 = box(document.getElementById('s1')!);
+      expect(Math.abs(S1.left - H.left), `${dir}: 다음 장이 호스트를 채움 (${S1.left} vs ${H.left})`).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('이전 단추는 시작 쪽 가장자리에, 다음 단추는 끝 쪽 가장자리에 있다', async () => {
+    for (const dir of ['ltr', 'rtl'] as const) {
+      const host = await render(dir, CAROUSEL) as Carousel;
+      host.next();
+      await settle();
+      const H = box(host);
+      const prev = box(host.shadowRoot!.querySelector('.nav-button.prev')!);
+      const next = box(host.shadowRoot!.querySelector('.nav-button.next')!);
+      const prevStart = dir === 'ltr' ? prev.left - H.left : H.right - prev.right;
+      const nextEnd = dir === 'ltr' ? H.right - next.right : next.left - H.left;
+      expect(Math.abs(prevStart - 12), `${dir}: 이전 단추의 시작 간격 ${prevStart}`).toBeLessThanOrEqual(1.5);
+      expect(Math.abs(nextEnd - 12), `${dir}: 다음 단추의 끝 간격 ${nextEnd}`).toBeLessThanOrEqual(1.5);
+    }
+  });
+
+  it('방향 화살표(chevron)는 RTL 에서 뒤집힌다 — 이전 단추가 시작 쪽을 가리킨다', async () => {
+    const flips: boolean[] = [];
+    for (const dir of ['ltr', 'rtl'] as const) {
+      const host = await render(dir, CAROUSEL) as Carousel;
+      host.next();
+      await settle();
+      const icon = host.shadowRoot!.querySelector('.nav-button.prev u-icon') as HTMLElement;
+      flips.push(getComputedStyle(icon).transform.startsWith('matrix(-1'));
+    }
+    expect(flips).toEqual([false, true]);
+  });
+});
+
 describe('RTL — 접두/접미 상자의 거울', () => {
   it.each(AFFIX_BOXES)('%s %s 는 RTL 에서 좌우가 뒤집힌 같은 배치다', async (tag, attrs) => {
     const markup = `<${tag} id="h" ${attrs}><span slot="prefix" id="p">P</span><span id="m">Middle text</span><span slot="suffix" id="s">S</span></${tag}>`;

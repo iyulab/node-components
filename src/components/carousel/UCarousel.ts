@@ -198,11 +198,11 @@ export class UCarousel extends UElement {
   }
 
   render() {
-    const pct = -(this.index * (100 / this.perView)) + this.dragOffset;
+    // The track moves toward the start side as the index grows: the sign of the travel comes from the reading direction
+    // (`--_dir`: 1, or -1 in a right-to-left document); a finger's drag offset is already in screen terms and is not flipped.
+    const travel = -(this.index * (100 / this.perView));
     const gapPx = this.gap > 0 ? -(this.index * this.gap / this.perView) : 0;
-    const transform = gapPx
-      ? `translateX(calc(${pct}% + ${gapPx}px))`
-      : `translateX(${pct}%)`;
+    const transform = `translateX(calc((${travel}% + ${gapPx}px) * var(--_dir, 1) + ${this.dragOffset}%))`;
     const style = `transform: ${transform}${this.isDragging ? '; transition: none' : ''}`;
 
     return html`
@@ -390,6 +390,11 @@ export class UCarousel extends UElement {
     this.ownedSlideAttrs.delete(slide);
   }
 
+  /** The reading direction of the carousel. */
+  private get isRtl(): boolean {
+    return getComputedStyle(this).direction === 'rtl';
+  }
+
   private handleDragStart = (e: Event) => {
     e.preventDefault();
   }
@@ -424,7 +429,8 @@ export class UCarousel extends UElement {
     const absDrag = Math.abs(this.dragOffset);
     
     if (this.isDragging && (absDrag > 20 || (absDrag > 5 && elapsed < 300))) {
-      if (this.dragOffset < 0) this.next();
+      // Dragging toward the start side goes on: left in a left-to-right page, right in a right-to-left one.
+      if (this.dragOffset * (this.isRtl ? -1 : 1) < 0) this.next();
       else this.prev();
       this.addEventListener('click', this.handleClickCancel, { 
         capture: true, 

@@ -93,8 +93,11 @@ export const styles = css`
     background-color: var(--u-neutral-200, #EEEEEE);
   }
 
-  .nav-button.prev { left: 12px; }
-  .nav-button.next { right: 12px; }
+  .nav-button.prev { inset-inline-start: 12px; }
+  .nav-button.next { inset-inline-end: 12px; }
+  /* The chevrons point left and right; in a right-to-left page previous is on the right, so they swap. */
+  :host(:dir(rtl)) { --_dir: -1; }
+  :host(:dir(rtl)) .nav-button u-icon { transform: scaleX(-1); }
 
   /* ── Pagination ── */
   .indicator {
