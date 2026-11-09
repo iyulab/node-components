@@ -120,6 +120,7 @@ export const styles = css`
     bottom: 0;
   }
 
+  /* physical-ok: placement names a screen side (left / right), not a reading direction */
   :host([appearance="line"][placement="right"]) .header {
     border-left: 1px solid var(--u-border-color, #E0E0E0);
   }
