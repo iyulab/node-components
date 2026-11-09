@@ -251,6 +251,46 @@ describe('RTL — 캐러셀은 첫 장이 시작 쪽에 서고 다음으로 가�
     }
     expect(flips).toEqual([false, true]);
   });
+
+  /**
+   * 끌기는 «시작 쪽으로 끌면 다음 장» 이다(LTR 은 왼쪽 · RTL 은 오른쪽). 포인터 캡처는 실제 활성 포인터를 요구하므로
+   * 장이 받는 요소에서 막은 합성 이벤트로 계산만 잰다(`u-split-panel` 시험과 같은 기법). 끄는 중 첫 장의 화면 이동을 돌려준다.
+   */
+  async function dragBy(host: Carousel, dx: number): Promise<number> {
+    const wrapper = host.shadowRoot!.querySelector<HTMLElement>('.slides-wrapper')!;
+    wrapper.setPointerCapture = () => {};
+    wrapper.releasePointerCapture = () => {};
+    const b = wrapper.getBoundingClientRect();
+    const x = b.left + b.width / 2; const y = b.top + b.height / 2;
+    const init = { bubbles: true, composed: true, pointerId: 1, button: 0, clientY: y };
+    const first = document.getElementById('s0')!;
+    const before = box(first).left;
+    wrapper.dispatchEvent(new PointerEvent('pointerdown', { ...init, clientX: x }));
+    wrapper.dispatchEvent(new PointerEvent('pointermove', { ...init, clientX: x + dx / 2 }));
+    wrapper.dispatchEvent(new PointerEvent('pointermove', { ...init, clientX: x + dx }));
+    await host.updateComplete;
+    const during = box(first).left - before;
+    wrapper.dispatchEvent(new PointerEvent('pointerup', { ...init, clientX: x + dx }));
+    await settle();
+    return during;
+  }
+
+  it.each([['ltr', -150, 1], ['rtl', 150, 1], ['ltr', 150, 0], ['rtl', -150, 0]] as const)(
+    '%s: 포인터를 %spx 끌면 장 순번이 %s 이 된다(시작 쪽으로 끌면 다음 · 끝 쪽으로 끌면 이전)',
+    async (dir, dx, expected) => {
+      const host = await render(dir, CAROUSEL.replace("navigation", "navigation draggable")) as Carousel;
+      if (expected === 0) { host.next(); await settle(); }   // 이전으로 갈 장이 있어야 한다
+      await dragBy(host, dx);
+      expect(host.index, `${dir} 끌기 ${dx}px → 순번`).toBe(expected);
+    });
+
+  it.each([['ltr', -100], ['rtl', 100], ['ltr', 100], ['rtl', -100]] as const)(
+    '%s: 끄는 동안 첫 장은 포인터가 간 만큼(%spx) 화면에서 움직인다',
+    async (dir, dx) => {
+      const host = await render(dir, CAROUSEL.replace("navigation", "navigation draggable")) as Carousel;
+      const during = await dragBy(host, dx);
+      expect(Math.abs(during - dx), `${dir}: 끄는 중 첫 장 이동 ${during} · 포인터 ${dx}`).toBeLessThanOrEqual(1.5);
+    });
 });
 
 describe('RTL — 접두/접미 상자의 거울', () => {
