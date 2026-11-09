@@ -1,6 +1,6 @@
 {
   "name": "@iyulab/components",
-  "description": "web-components library based on lit-element made by iyulab",
+  "description": "Lit-based UI elements for business web apps: buttons, inputs, selects, date pickers, dialogs, design tokens, theming and a locale registry",
   "version": "2.39.1",
   "keywords": [
     "iyulab",
