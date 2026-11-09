@@ -229,14 +229,15 @@ export class URadio extends UFormControlElement<string> {
         e.preventDefault();
         currentOption.click();
         break;
+      // 가로 이동 키는 화면 방향이다 — RTL 에서는 왼쪽 키가 다음(네이티브 라디오와 같다).
       case 'ArrowDown':
-      case 'ArrowRight': {
+      case (this.isRtl ? 'ArrowLeft' : 'ArrowRight'): {
         e.preventDefault();
         this.moveTo(options[(currentIndex + 1) % options.length]);
         break;
       }
       case 'ArrowUp':
-      case 'ArrowLeft': {
+      case (this.isRtl ? 'ArrowRight' : 'ArrowLeft'): {
         e.preventDefault();
         this.moveTo(options[(currentIndex - 1 + options.length) % options.length]);
         break;

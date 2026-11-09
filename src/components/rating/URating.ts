@@ -279,11 +279,6 @@ export class URating extends UFormControlElement<number> {
     }
   }
 
-  /** The reading direction of the rating (the stars run from the start side). */
-  private get isRtl(): boolean {
-    return getComputedStyle(this).direction === 'rtl';
-  }
-
   private calibrate(e: PointerEvent, score: number, symbol = e.currentTarget as HTMLElement): number {
     const rect = symbol.getBoundingClientRect();
     // The star fills from its start side: from the right edge in a right-to-left document.

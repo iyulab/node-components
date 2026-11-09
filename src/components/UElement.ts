@@ -111,6 +111,15 @@ export class UElement extends LitElement {
   }
 
   /**
+   * 이 요소의 읽는 방향이 오른쪽→왼쪽인가. 화면 좌표(포인터 · 좌우 화살표 키)를 «시작/끝» 으로 바꿔야 하는 컴포넌트가 읽는다 —
+   * 레이아웃은 CSS 논리 속성이 따라가지만 스크립트가 읽는 좌표와 키는 스스로 방향을 알아야 한다. 매번 계산값을 읽으므로(`dir` 이
+   * 바뀌어도 맞다) 렌더 경로가 아니라 이벤트 처리에서 부른다.
+   */
+  protected get isRtl(): boolean {
+    return getComputedStyle(this).direction === 'rtl';
+  }
+
+  /**
    * 커스텀 이벤트를 생성하여 발행합니다.
    * 기본적으로 bubbles, composed, cancelable이 활성화됩니다.
    *

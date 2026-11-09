@@ -62,6 +62,10 @@ It cannot report these, so search your sources for them:
   one of these with a physical property (`::part(prefix) { margin-right: 0 }`) still applies in left-to-right text; write the logical
   property to cover both directions. A vertical `u-divider` with `line="dashed"` or `"dotted"` now draws that style in a right-to-left
   page too (its width sat on the start border but the style on the left one, so it came out solid).
+  The horizontal arrow keys follow the screen in a right-to-left page, as in a native radio group: in `u-tab-panel` (horizontal tabs),
+  `u-radio` and `u-calendar` the left arrow now goes to the next tab, option or day (the right arrow to the previous one), and in
+  `u-tree` and `u-menu` the arrow toward the end side (the left one) opens a branch while the one toward the start side closes it
+  or goes to the parent. A sub-menu of `u-menu-item` opens toward the end side. Vertical keys and left-to-right pages are unchanged.
 - **`u-menu-item` states its text alignment in logical terms.** The reflected `align` attribute is also HTML's legacy alignment attribute,
   which the browser turns into a physical `text-align` on the host (`align="left"` on a menu item left-aligned its text even in a
   right-to-left page). `left` now means the start side and `right` the end side; `center` is unchanged.

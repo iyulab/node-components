@@ -179,10 +179,11 @@ export class UTabPanel extends UElement {
     // TS 의 확정 대입 분석이 그것을 증명하고, 새 case 가 대입을 빠뜨리면 컴파일이 막는다.
     let targetIndex: number;
     switch (e.key) {
-      case (this.isVertical ? 'ArrowDown' : 'ArrowRight'):
+      // 가로 탭은 화면 방향을 따른다 — RTL 은 시작이 오른쪽이라 왼쪽 키가 «다음» 이다(네이티브 라디오 · APG).
+      case (this.isVertical ? 'ArrowDown' : this.isRtl ? 'ArrowLeft' : 'ArrowRight'):
         targetIndex = (currentIndex + 1) % enabledTabs.length;
         break;
-      case (this.isVertical ? 'ArrowUp' : 'ArrowLeft'):
+      case (this.isVertical ? 'ArrowUp' : this.isRtl ? 'ArrowRight' : 'ArrowLeft'):
         targetIndex = (currentIndex - 1 + enabledTabs.length) % enabledTabs.length;
         break;
       case 'Home':

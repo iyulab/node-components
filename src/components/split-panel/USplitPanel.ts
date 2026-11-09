@@ -111,7 +111,7 @@ export class USplitPanel extends UElement {
 
   /** 가로 배치가 오른쪽→왼쪽으로 흐르는가 — 앞 패널이 오른쪽에 선다. 세로 배치는 방향과 무관하다. */
   private get rtl(): boolean {
-    return this.orientation === 'horizontal' && getComputedStyle(this).direction === 'rtl';
+    return this.orientation === 'horizontal' && this.isRtl;
   }
 
   private get splitterCount(): number {

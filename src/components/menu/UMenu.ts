@@ -188,7 +188,8 @@ export class UMenu extends UElement {
         if (header) (header as HTMLElement).click();
         break;
       }
-      case 'ArrowRight':
+      // 하위 메뉴 펼침은 «끝 쪽» 화살표 — RTL 에서는 왼쪽(`u-tree` 와 같다).
+      case (this.isRtl ? 'ArrowLeft' : 'ArrowRight'):
         e.preventDefault();
         if (!focused.leaf) {
           if (!focused.expanded) {
@@ -199,7 +200,7 @@ export class UMenu extends UElement {
           }
         }
         break;
-      case 'ArrowLeft':
+      case (this.isRtl ? 'ArrowRight' : 'ArrowLeft'):
         e.preventDefault();
         if (!focused.leaf && focused.expanded) {
           focused.expanded = false;

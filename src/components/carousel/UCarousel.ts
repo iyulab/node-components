@@ -390,11 +390,6 @@ export class UCarousel extends UElement {
     this.ownedSlideAttrs.delete(slide);
   }
 
-  /** The reading direction of the carousel. */
-  private get isRtl(): boolean {
-    return getComputedStyle(this).direction === 'rtl';
-  }
-
   private handleDragStart = (e: Event) => {
     e.preventDefault();
   }

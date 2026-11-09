@@ -264,8 +264,10 @@ export class UCalendar extends UElement {
   }
 
   private handleDayKeydown = (e: KeyboardEvent, date: Date) => {
+    // 격자는 읽는 방향으로 흐른다 — RTL 은 «다음 날» 이 화면의 왼쪽이다.
+    const forward = this.isRtl ? -1 : 1;
     const deltas: Record<string, number> = {
-      ArrowRight: 1, ArrowLeft: -1, ArrowDown: 7, ArrowUp: -7,
+      ArrowRight: forward, ArrowLeft: -forward, ArrowDown: 7, ArrowUp: -7,
       Home: -date.getDay(), End: 6 - date.getDay(),
     };
     if (e.key in deltas) {

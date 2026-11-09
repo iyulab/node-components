@@ -352,7 +352,8 @@ export class UTree extends UElement {
         prev.focus();
         break;
       }
-      case 'ArrowRight':
+      // 펼침은 «끝 쪽» 화살표 · 접기/부모는 «시작 쪽» — RTL 에서는 좌우가 뒤집힌다.
+      case (this.isRtl ? 'ArrowLeft' : 'ArrowRight'):
         e.preventDefault();
         if (!focused.leaf) {
           if (!focused.expanded) {
@@ -363,7 +364,7 @@ export class UTree extends UElement {
           }
         }
         break;
-      case 'ArrowLeft':
+      case (this.isRtl ? 'ArrowRight' : 'ArrowLeft'):
         e.preventDefault();
         if (focused.expanded && !focused.leaf) focused.collapse();
         else if (focused.parentItem) focused.parentItem.focus();

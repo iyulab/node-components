@@ -154,7 +154,7 @@ export class UMenuItem extends UElement {
             ?open=${live(this.expanded)}
             for=".header"
             trigger="hover"
-            placement="right-start"
+            placement=${this.isRtl ? "left-start" : "right-start"}
             offset="4"
             strategy="fixed"
           >

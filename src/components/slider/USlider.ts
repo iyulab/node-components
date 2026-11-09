@@ -297,11 +297,6 @@ export class USlider extends UFormControlElement<number | number[]> {
     return this.formatter ? this.formatter(val) : `${val}`;
   }
 
-  /** The reading direction of the slider (the value grows from the start side). */
-  private get isRtl(): boolean {
-    return getComputedStyle(this).direction === 'rtl';
-  }
-
   private valToPercent(val: number): number {
     const range = this.max - this.min;
     return range === 0 ? 0 : ((val - this.min) / range) * 100;
