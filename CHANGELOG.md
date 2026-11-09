@@ -53,8 +53,10 @@ It cannot report these, so search your sources for them:
   date picker's field) became `margin-inline-start/end` and so on, so the prefix and suffix slots, indentation and the counter side swap in a
   right-to-left document. **Left-to-right rendering is unchanged.** What names a physical side on purpose stays physical: `u-drawer
   placement`, `u-tab-panel placement`, the device safe-area insets and the splitter's drag geometry. Not yet mirrored: elements positioned
-  with script coordinates or arrow keys (`u-slider`, `u-rating`, `u-carousel`, `u-split-panel`) and, outside this package, the virtualized
-  grid and the timeline. `u-switch` (the thumb and its travel) and the indeterminate bar of `u-progress-bar` mirror too. A consumer rule that overrode
+  with script coordinates or arrow keys that were not reworked (`u-carousel`, `u-split-panel`) and, outside this package, the virtualized
+  grid and the timeline. `u-switch` (the thumb and its travel), the indeterminate bar of `u-progress-bar`, `u-slider` and `u-rating` mirror too:
+  the value grows from the start side, a pointer position and the arrow keys follow it (in a right-to-left page the left arrow raises
+  the value, as in a native range input), and a half-filled star is filled from its start edge. A consumer rule that overrode
   one of these with a physical property (`::part(prefix) { margin-right: 0 }`) still applies in left-to-right text; write the logical
   property to cover both directions.
 - **`u-menu-item` states its text alignment in logical terms.** The reflected `align` attribute is also HTML's legacy alignment attribute,

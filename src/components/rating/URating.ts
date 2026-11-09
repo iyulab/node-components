@@ -244,11 +244,16 @@ export class URating extends UFormControlElement<number> {
       this.updateComplete.then(() => symbols[index].focus());
     };
     switch (e.key) {
+      // The next star is on the right in a left-to-right row and on the left in a right-to-left one.
       case 'ArrowRight':
+        moveTo(this.isRtl ? Math.max(0, currentIndex - 1) : Math.min(symbols.length - 1, currentIndex + 1));
+        break;
+      case 'ArrowLeft':
+        moveTo(this.isRtl ? Math.min(symbols.length - 1, currentIndex + 1) : Math.max(0, currentIndex - 1));
+        break;
       case 'ArrowUp':
         moveTo(Math.min(symbols.length - 1, currentIndex + 1));
         break;
-      case 'ArrowLeft':
       case 'ArrowDown':
         moveTo(Math.max(0, currentIndex - 1));
         break;
@@ -274,9 +279,16 @@ export class URating extends UFormControlElement<number> {
     }
   }
 
+  /** The reading direction of the rating (the stars run from the start side). */
+  private get isRtl(): boolean {
+    return getComputedStyle(this).direction === 'rtl';
+  }
+
   private calibrate(e: PointerEvent, score: number, symbol = e.currentTarget as HTMLElement): number {
     const rect = symbol.getBoundingClientRect();
-    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    // The star fills from its start side: from the right edge in a right-to-left document.
+    const x = this.isRtl ? rect.right - e.clientX : e.clientX - rect.left;
+    const ratio = Math.max(0, Math.min(1, x / rect.width));
     const raw = (score - 1) + ratio;
     const p = Math.max(0.01, Math.min(1, this.precision));
     return Math.max(p, Math.min(this.max, Math.round(raw / p) * p));

@@ -1,4 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import '../../src/index.js';
 
 /**
@@ -105,6 +106,103 @@ describe('RTL — 위치로 서 있는 것의 거울', () => {
     const ltr = await indeterminateStart('ltr');
     const rtl = await indeterminateStart('rtl');
     expect(Math.abs(ltr - rtl), `LTR ${ltr} · RTL ${rtl}`).toBeLessThanOrEqual(1);
+  });
+});
+
+describe('RTL — 슬라이더는 값이 시작 쪽에서 자란다', () => {
+  const SLIDER = '<u-slider id="h" min="0" max="100" step="1" value="25" style="display:block;width:400px"></u-slider>';
+  const parts = (host: HTMLElement) => ({
+    track: host.shadowRoot!.querySelector('.track')!,
+    thumb: host.shadowRoot!.querySelector('.thumb[data-thumb="min"]') as HTMLElement,
+    container: host.shadowRoot!.querySelector('.container')!,
+  });
+  const value = (host: HTMLElement) => Number((host as HTMLElement & { value: unknown }).value);
+
+  it('손잡이 중심은 두 방향에서 트랙의 시작 가장자리로부터 같은 거리다(값 25 → 폭의 25%)', async () => {
+    const out: number[] = [];
+    for (const dir of ['ltr', 'rtl'] as const) {
+      const host = await render(dir, SLIDER);
+      const { track, thumb } = parts(host);
+      const T = box(track); const B = box(thumb);
+      const center = (B.left + B.right) / 2;
+      out.push(dir === 'ltr' ? center - T.left : T.right - center);
+    }
+    expect(Math.abs(out[0] - out[1]), `LTR ${out[0]} · RTL ${out[1]}`).toBeLessThanOrEqual(1);
+    expect(out[0]).toBeGreaterThan(50);
+    expect(out[0]).toBeLessThan(150);
+  });
+
+  it('시작 가장자리에서 75% 지점을 눌러도 값 75 가 된다(두 방향)', async () => {
+    for (const dir of ['ltr', 'rtl'] as const) {
+      const host = await render(dir, SLIDER);
+      const { track, container } = parts(host);
+      const T = track.getBoundingClientRect();
+      const x = dir === 'ltr' ? T.left + T.width * 0.75 : T.right - T.width * 0.75;
+      container.dispatchEvent(new PointerEvent('pointerdown', { clientX: x, clientY: T.top + 2, bubbles: true, composed: true, pointerId: 1 }));
+      document.dispatchEvent(new PointerEvent('pointerup', { clientX: x, clientY: T.top + 2, bubbles: true, pointerId: 1 }));
+      await settle();
+      expect(value(host), `${dir}`).toBe(75);
+    }
+  });
+
+  it('방향키: LTR 은 오른쪽 키가 값을 올리고 RTL 은 왼쪽 키가 올린다(네이티브 range 와 같다)', async () => {
+    for (const dir of ['ltr', 'rtl'] as const) {
+      const host = await render(dir, SLIDER);
+      const { thumb } = parts(host);
+      thumb.focus();
+      await userEvent.keyboard(dir === 'ltr' ? '{ArrowRight}' : '{ArrowLeft}');
+      await settle();
+      expect(value(host), `${dir}: 증가 키`).toBe(26);
+      await userEvent.keyboard(dir === 'ltr' ? '{ArrowLeft}' : '{ArrowRight}');
+      await settle();
+      expect(value(host), `${dir}: 감소 키`).toBe(25);
+    }
+  });
+});
+
+describe('RTL — 별점은 시작 쪽에서 채워진다', () => {
+  const RATING = '<u-rating id="h" max="5" precision="0.5" value="3.5"></u-rating>';
+  const symbols = (host: HTMLElement) => Array.from(host.shadowRoot!.querySelectorAll<HTMLElement>('.symbol'));
+  const value = (host: HTMLElement) => Number((host as HTMLElement & { value: unknown }).value);
+
+  it('반채움 별의 채운 부분은 두 방향 모두 별의 시작 가장자리에서 시작한다', async () => {
+    const reads: Array<{ gap: number; width: number }> = [];
+    for (const dir of ['ltr', 'rtl'] as const) {
+      const host = await render(dir, RATING);
+      const sym = symbols(host)[3];
+      const fg = sym.querySelector('.symbol-fg')!;
+      const S = box(sym); const F = box(fg);
+      reads.push({ gap: dir === 'ltr' ? F.left - S.left : S.right - F.right, width: F.right - F.left });
+    }
+    expect(Math.abs(reads[0].gap - reads[1].gap), `시작 가장자리 간격 LTR ${reads[0].gap} · RTL ${reads[1].gap}`).toBeLessThanOrEqual(1);
+    expect(Math.abs(reads[0].width - reads[1].width)).toBeLessThanOrEqual(1);
+    expect(reads[0].width).toBeGreaterThan(2);
+  });
+
+  it('별의 시작 쪽 90% 지점을 눌러도 같은 값(3)이 된다(두 방향 — 70% 는 반대 쪽과 같은 값으로 반올림되어 구별이 안 된다)', async () => {
+    for (const dir of ['ltr', 'rtl'] as const) {
+      const host = await render(dir, '<u-rating id="h" max="5" precision="0.5"></u-rating>');
+      const sym = symbols(host)[2];
+      const R = sym.getBoundingClientRect();
+      const x = dir === 'ltr' ? R.left + R.width * 0.9 : R.right - R.width * 0.9;
+      sym.dispatchEvent(new MouseEvent('click', { clientX: x, clientY: R.top + R.height / 2, bubbles: true, composed: true }));
+      await settle();
+      expect(value(host), dir).toBe(3);
+    }
+  });
+
+  it('방향키: LTR 은 오른쪽 키가 다음 별이고 RTL 은 왼쪽 키가 다음 별이다', async () => {
+    for (const dir of ['ltr', 'rtl'] as const) {
+      const host = await render(dir, '<u-rating id="h" max="5" value="2"></u-rating>');
+      const tab = symbols(host).find((e) => e.getAttribute('tabindex') === '0')!;
+      tab.focus();
+      await userEvent.keyboard(dir === 'ltr' ? '{ArrowRight}' : '{ArrowLeft}');
+      await settle();
+      expect(value(host), `${dir}: 다음`).toBe(3);
+      await userEvent.keyboard(dir === 'ltr' ? '{ArrowLeft}' : '{ArrowRight}');
+      await settle();
+      expect(value(host), `${dir}: 이전`).toBe(2);
+    }
   });
 });
 

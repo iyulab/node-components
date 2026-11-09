@@ -163,14 +163,14 @@ export class USlider extends UFormControlElement<number | number[]> {
         >
           <div class="track" part="track">
             <div class="fill" part="fill"
-              style="left: ${this.fillStart}%; width: ${this.fillEnd - this.fillStart}%">
+              style="inset-inline-start: ${this.fillStart}%; width: ${this.fillEnd - this.fillStart}%">
             </div>
           </div>
 
           <div class="marks" ?hidden=${!this.hasMarks}>
             ${this.marks?.map(m => html`
                 <span class="mark" part="mark" 
-                  style="left: ${this.valToPercent(m.value)}%"
+                  style="inset-inline-start: ${this.valToPercent(m.value)}%"
                 ></span>`
               )}
           </div>
@@ -182,7 +182,7 @@ export class USlider extends UFormControlElement<number | number[]> {
         <div class="mark-labels" ?hidden=${!this.hasMarks}>
           ${this.marks?.map(m => html`
               <span class="mark-label" part="mark-label"
-                style="left: ${this.valToPercent(m.value)}%">
+                style="inset-inline-start: ${this.valToPercent(m.value)}%">
                 ${m.label}
               </span>`
             )}
@@ -266,7 +266,7 @@ export class USlider extends UFormControlElement<number | number[]> {
         aria-orientation="horizontal"
         aria-disabled=${this.effectivelyDisabled ? 'true' : 'false'}
         ?hidden=${isEnd && !this.range}
-        style="left: ${pct}%"
+        style="inset-inline-start: ${pct}%"
         tabindex=${this.effectivelyDisabled || (isEnd && !this.range) ? -1 : 0}
         data-thumb=${thumb}
         @keydown=${this.handleThumbKeyDown}
@@ -297,6 +297,11 @@ export class USlider extends UFormControlElement<number | number[]> {
     return this.formatter ? this.formatter(val) : `${val}`;
   }
 
+  /** The reading direction of the slider (the value grows from the start side). */
+  private get isRtl(): boolean {
+    return getComputedStyle(this).direction === 'rtl';
+  }
+
   private valToPercent(val: number): number {
     const range = this.max - this.min;
     return range === 0 ? 0 : ((val - this.min) / range) * 100;
@@ -322,7 +327,9 @@ export class USlider extends UFormControlElement<number | number[]> {
     const getPointerValue = (ev: PointerEvent) => {
       if (!this.trackEl) return 0;
       const rect = this.trackEl.getBoundingClientRect();
-      const pct = (Math.max(0, Math.min(rect.width, ev.clientX - rect.left)) / rect.width) * 100;
+      // The value grows from the start side: from the right edge in a right-to-left document.
+      const x = this.isRtl ? rect.right - ev.clientX : ev.clientX - rect.left;
+      const pct = (Math.max(0, Math.min(rect.width, x)) / rect.width) * 100;
       return this.percentToVal(pct);
     }
 
@@ -371,10 +378,17 @@ export class USlider extends UFormControlElement<number | number[]> {
 
     let delta: number;
     switch (e.key) {
-      case 'ArrowRight': case 'ArrowUp':
+      // Like a native range input: in a right-to-left document the left arrow raises the value.
+      case 'ArrowRight':
+        delta = this.isRtl ? -this.step : this.step;
+        break;
+      case 'ArrowLeft':
+        delta = this.isRtl ? this.step : -this.step;
+        break;
+      case 'ArrowUp':
         delta = this.step;
         break;
-      case 'ArrowLeft':  case 'ArrowDown':
+      case 'ArrowDown':
         delta = -this.step;
         break;
       case 'PageUp':

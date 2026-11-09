@@ -52,7 +52,7 @@ export const styles = css`
   .symbol-fg {
     position: absolute;
     top: 0;
-    left: 0;
+    inset-inline-start: 0;
     height: 100%;
     display: flex;
     align-items: center;

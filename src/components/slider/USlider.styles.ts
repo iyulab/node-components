@@ -62,11 +62,14 @@ export const styles = css`
     background: var(--slider-fill-color);
   }
 
+  /* Positions are logical (inset-inline-start), so the centring offset flips sign in a right-to-left document. */
+  :host(:dir(rtl)) { --_dir: -1; }
+
   .thumb {
     position: absolute;
     z-index: 1;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(calc(-50% * var(--_dir, 1)), -50%);
     outline: none;
     /* 🔴히트·포커스 영역만 24px 하한으로 넓힌다 — 보이는 원은 .thumb-content 가 그대로 그린다
        (WCAG 2.2 SC 2.5.8). 박스가 커져도 중심은 그대로다: 콘텐츠를 가운데 놓으므로
@@ -125,7 +128,7 @@ export const styles = css`
   .mark {
     position: absolute;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(calc(-50% * var(--_dir, 1)), -50%);
     width: var(--slider-mark-size);
     height: var(--slider-mark-size);
     border: 2px solid var(--slider-mark-border-color);
@@ -140,7 +143,7 @@ export const styles = css`
 
   .mark-label {
     position: absolute;
-    transform: translateX(-50%);
+    transform: translateX(calc(-50% * var(--_dir, 1)));
     font-size: 0.75em;
     color: var(--u-txt-color-weak, #616161);
     white-space: nowrap;
