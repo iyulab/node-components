@@ -264,7 +264,7 @@ Locale.register('nl', { valueMissing: '…' });       // 검증 메시지 overri
 컴포넌트의 배치는 **문서 방향을 따릅니다.** 게시 스타일은 논리 속성(`margin-inline-start` · `padding-inline-end` · `border-inline-start` · `text-align: start`)으로 서 있어,
 `dir="rtl"` 에서 접두 · 접미 위치와 안쪽 여백이 좌우로 뒤집히고 LTR 렌더는 그대로입니다. 방향이 **의미**인 것 — 서랍의 `placement="left"` · 탭 줄의 `placement` ·
 기기 안전 영역(`env(safe-area-inset-*)`) — 은 물리 방향 그대로입니다. **물리 방향 그대로인 것**: 배지를 모서리에 얹는 자리(`u-badge anchor`) · 스켈레톤의 빛이 지나가는 방향은
-물리 방향 그대로입니다. 가로 가상 스크롤 격자 `flex-table` 과 스프레드시트 `u-simple-sheet`(`@iyulab/data-components`)는 RTL 에서 거울입니다(열은 시작부터 · 고정 열 · 방향키 · 열 너비 끌기가 화면을 따른다). 타임라인(`dimension-timeline`)은 계산한 픽셀로 배치하므로 RTL 을 아직 약속하지 않습니다.
+물리 방향 그대로입니다. 가로 가상 스크롤 격자 `flex-table` 과 스프레드시트 `u-simple-sheet`(`@iyulab/data-components`)는 RTL 에서 거울입니다(열은 시작부터 · 고정 열 · 방향키 · 열 너비 끌기가 화면을 따른다). 타임라인(`dimension-timeline`)은 크롬(차원 선택 열 · 모서리 머리)이 읽는 방향을 따르고 **시간은 어느 방향의 페이지에서도 왼쪽에서 오른쪽으로 흐릅니다**(시간축 · 캔버스 · 스크롤바 · 줌 단추는 한 플롯 영역).
 `u-switch` 손잡이와 `u-progress-bar` 의 불확정 막대는 논리 위치로 거울이고, `u-carousel` 의 트랙과 끌기 · `u-split-panel` 의 끌기는 포인터를 따르며, 탭 · 라디오 · 트리 · 메뉴 · 달력의 가로 방향키는 화면을 따르고(RTL 에서 왼쪽 키가 다음), `u-slider` · `u-rating` 은 값이 시작 쪽에서 자라며 포인터와 방향키도 그를 따릅니다
 (RTL 에서 왼쪽 키가 값을 올립니다 — 네이티브 `range` 와 같습니다).
 
