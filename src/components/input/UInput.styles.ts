@@ -223,7 +223,8 @@ export const styles = css`
     /* 호스트 하한(--u-target-size)이 있으면 상자가 그 값이 되도록 — 미설정이면 0 이라 종전 24px 그대로. */
     --_target-pad: max(0.25em, calc(12px - 0.5em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
     box-sizing: content-box;
-    margin: calc(-1 * var(--_target-pad)) calc(-1 * var(--_target-pad)) calc(-1 * var(--_target-pad)) var(--_target-pad);
+    margin-block: calc(-1 * var(--_target-pad));
+    margin-inline: var(--_target-pad) calc(-1 * var(--_target-pad));
     padding: var(--_target-pad);
   }
   /* 좌우 여백이 0 인 변형(underlined · plain)은 맨 뒤 아이콘이 오른쪽으로 넓힐 자리가 없다 — 컨테이너에 그만큼만 준다. */

@@ -78,7 +78,8 @@ export const styles = css`
     position: relative;
     box-sizing: border-box;
     flex-shrink: 0;
-    margin: -3px 1px -3px -3px;
+    margin-block: -3px;
+    margin-inline: -3px 1px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -113,11 +114,13 @@ export const styles = css`
      overlap by 3px, so here the toggle takes its extra width entirely on the left (header
      padding), and the padding keeps the glyph centred on its visible square. */
   :host([checkable]) .prefix-toggler {
-    margin: -3px 4px -3px -6px;
+    margin-block: -3px;
+    margin-inline: -6px 4px;
     padding-inline-start: 6px;
   }
   :host([checkable]) .prefix-toggler::before {
-    inset: 3px 0 3px 6px;
+    inset-block: 3px;
+    inset-inline: 6px 0;
   }
 
   /* ── checkbox ──
@@ -127,7 +130,8 @@ export const styles = css`
     position: relative;
     box-sizing: border-box;
     flex-shrink: 0;
-    margin: -4px 0 -4px -4px;
+    margin-block: -4px;
+    margin-inline: -4px 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;

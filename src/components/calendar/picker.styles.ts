@@ -83,8 +83,8 @@ export const styles = css`
      이상이라 상자가 겹치지 않는다. gap 과 여백으로 나누면 둘이 따로 반올림돼(1/64px) 경계가 앞 버튼을 덮었다(실측). */
   .suffix-item[role="button"] {
     box-sizing: content-box;
-    margin: calc(-1 * var(--_target-pad)) calc(-1 * var(--_target-pad)) calc(-1 * var(--_target-pad))
-      max(0.4em, var(--_target-pad));
+    margin-block: calc(-1 * var(--_target-pad));
+    margin-inline: max(0.4em, var(--_target-pad)) calc(-1 * var(--_target-pad));
     padding: var(--_target-pad);
   }
 

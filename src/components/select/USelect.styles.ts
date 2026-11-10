@@ -280,7 +280,8 @@ export const styles = css`
     box-sizing: content-box;
     /* 오른쪽은 펼침 화살표와 종전처럼 0.25em 만 맞댄다 — 글자가 작아 늘어난 폭은 왼쪽(값 글자 쪽, 타깃 아님)으로 넓힌다.
        16px 에서는 P = 0.25em 이라 종전 배치와 같다. */
-    margin: calc(-1 * var(--_target-pad)) -0.25em calc(-1 * var(--_target-pad)) calc(0.25em - var(--_target-pad));
+    margin-block: calc(-1 * var(--_target-pad));
+    margin-inline: calc(0.25em - var(--_target-pad)) -0.25em;
     padding: var(--_target-pad);
   }
 

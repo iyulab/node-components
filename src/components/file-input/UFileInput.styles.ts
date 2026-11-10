@@ -70,7 +70,8 @@ export const styles = css`
     --_target-pad: max(0.25em, calc(12px - 0.5em), calc(var(--u-target-size, 0px) / 2 - 0.5em));
     box-sizing: content-box;
     padding: var(--_target-pad);
-    margin: calc(-1 * var(--_target-pad)) 0 calc(-1 * var(--_target-pad)) calc(-1 * var(--_target-pad));
+    margin-block: calc(-1 * var(--_target-pad));
+    margin-inline: calc(-1 * var(--_target-pad)) 0;
     transition: color var(--u-duration-normal, 220ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   .clear-btn:hover {

@@ -110,7 +110,8 @@ export const styles = css`
     min-width: 0;
     width: 1.5px;
     height: var(--u-space-sm, 8px);
-    margin: 2px 0 2px calc(var(--steps-marker-size, 18px) / 2 - 0.75px);
+    margin-block: 2px;
+    margin-inline: calc(var(--steps-marker-size, 18px) / 2 - 0.75px) 0;
   }
 
   /* 건너뜀 — 지나갔지만 한 일이 없다: 점선 고리, 이름은 물러선다 */
