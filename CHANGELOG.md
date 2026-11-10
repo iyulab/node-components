@@ -64,7 +64,9 @@ It cannot report these, so search your sources for them:
   page too (its width sat on the start border but the style on the left one, so it came out solid). The chevrons the components draw themselves mirror
   as well, so "previous" and "expand" point the way the page reads: the `u-breadcrumb` separator, the previous/next buttons of `u-pagination` and
   `u-calendar`, the closed marker of `u-expander` (it turns from pointing at the start side to pointing down), the submenu marker of `u-menu-item` and
-  the closed marker of `u-tree-item`. A chevron you pass in yourself (a `separator` or `expand-icon` slot) is left as you drew it.
+  the closed marker of `u-tree-item`. A chevron you pass in yourself (a `separator` or `expand-icon` slot) is left as you drew it. The outer
+  corners of a button-style `u-radio` group and the divider between its cells sit on the start and end sides too (the first cell is rounded on
+  the start side, the dividers are drawn on each cell's end side), so the group reads as one piece in a right-to-left page.
   The horizontal arrow keys follow the screen in a right-to-left page, as in a native radio group: in `u-tab-panel` (horizontal tabs),
   `u-radio` and `u-calendar` the left arrow now goes to the next tab, option or day (the right arrow to the previous one), and in
   `u-tree` and `u-menu` the arrow toward the end side (the left one) opens a branch while the one toward the start side closes it

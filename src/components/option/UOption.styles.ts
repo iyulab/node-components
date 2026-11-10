@@ -40,7 +40,10 @@ export const styles = css`
     /* 단추형 라디오의 칸 구분선 — 담는 쪽(u-radio)이 폭 · 색을 넘기고 여기서 그린다(꽂힌 옵션에 ::slotted 로 준 테두리는 문서의 전역
        리셋에 진다). */
     border-style: solid;
-    border-width: var(--_option-divider-width, 0);
+    border-width: 0;
+    /* 가로 묶음은 칸의 끝 쪽(RTL 에서는 왼쪽), 세로 묶음은 아래쪽에 선을 긋는다 — 담는 쪽이 어느 쪽인지만 고른다. */
+    border-inline-end-width: var(--_option-divider-inline-end, 0);
+    border-block-end-width: var(--_option-divider-block-end, 0);
     border-color: var(--_option-divider-color, transparent);
   }
   :host(:focus-visible) {

@@ -87,15 +87,20 @@ export const styles = css`
   }
 
   /* === Button - Horizontal 배치 === */
+  /* 묶음의 바깥 모서리는 «시작/끝» 에 선다 — 첫 칸은 시작 쪽, 마지막 칸은 끝 쪽이 둥글다(RTL 에서 거울). */
   :host([type="button"]:not([appearance="soft"])[orientation="horizontal"]) ::slotted(u-option:first-child) {
-    border-radius: 0.35em 0 0 0.35em;
+    border-radius: 0;
+    border-start-start-radius: 0.35em;
+    border-end-start-radius: 0.35em;
   }
   :host([type="button"]:not([appearance="soft"])[orientation="horizontal"]) ::slotted(u-option:last-child) {
-    border-radius: 0 0.35em 0.35em 0;
+    border-radius: 0;
+    border-start-end-radius: 0.35em;
+    border-end-end-radius: 0.35em;
   }
   /* 칸 구분선은 옵션이 자기 섀도 안(.base)에서 그린다 — 폭 · 색만 넘긴다(::slotted 에 둔 테두리는 문서의 전역 리셋에 진다). */
   :host([type="button"]:not([appearance="soft"])[orientation="horizontal"]) ::slotted(u-option:not(:last-child)) {
-    --_option-divider-width: 0 1px 0 0;
+    --_option-divider-inline-end: 1px;
     --_option-divider-color: var(--u-neutral-300, #E0E0E0);
   }
 
@@ -111,7 +116,7 @@ export const styles = css`
     border-radius: 0 0 0.35em 0.35em;
   }
   :host([type="button"]:not([appearance="soft"])[orientation="vertical"]) ::slotted(u-option:not(:last-child)) {
-    --_option-divider-width: 0 0 1px 0;
+    --_option-divider-block-end: 1px;
     --_option-divider-color: var(--u-neutral-300, #E0E0E0);
   }
 
