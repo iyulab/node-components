@@ -43,7 +43,7 @@ import { UButton, UInput } from '@iyulab/components/react';
 
 > For detailed guidance on theming, icon setup, and advanced usage, see [./references/usage.md](./references/usage.md).
 
-> **Direction:** layout follows the document direction — under `dir="rtl"` the prefix/suffix slots, inner padding and borders mirror (logical CSS properties). Placement values that name a physical side (`u-drawer placement="left"`, `u-tab-panel placement`) stay physical. Not mirrored yet: elements that place themselves with script coordinates or read arrow keys (`u-split-panel`), the badge corner placements, and the virtualized grid/timeline.
+> **Direction:** layout follows the document direction — under `dir="rtl"` the prefix/suffix slots, inner padding and borders mirror (logical CSS properties). Placement values that name a physical side (`u-drawer placement="left"`, `u-tab-panel placement`) stay physical. The chevrons a component draws itself mirror too (breadcrumb separator, previous/next in pagination and calendar, the closed marker of expander and tree item, the submenu marker) — a chevron you pass through a `separator` or `expand-icon` slot stays as you drew it. Script-positioned parts follow the pointer and the arrow keys in a right-to-left page (`u-split-panel`, `u-slider`, `u-rating`, `u-carousel`). The badge corner placements stay physical on purpose; the virtualized grid and spreadsheet are mirrored in `@iyulab/flex-table` and `@iyulab/data-components`, and the timeline keeps time left to right.
 
 ---
 

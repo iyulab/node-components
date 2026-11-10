@@ -61,7 +61,10 @@ It cannot report these, so search your sources for them:
   away from it (a drag of 40px moved it 40px the other way). A consumer rule that overrode
   one of these with a physical property (`::part(prefix) { margin-right: 0 }`) still applies in left-to-right text; write the logical
   property to cover both directions. A vertical `u-divider` with `line="dashed"` or `"dotted"` now draws that style in a right-to-left
-  page too (its width sat on the start border but the style on the left one, so it came out solid).
+  page too (its width sat on the start border but the style on the left one, so it came out solid). The chevrons the components draw themselves mirror
+  as well, so "previous" and "expand" point the way the page reads: the `u-breadcrumb` separator, the previous/next buttons of `u-pagination` and
+  `u-calendar`, the closed marker of `u-expander` (it turns from pointing at the start side to pointing down), the submenu marker of `u-menu-item` and
+  the closed marker of `u-tree-item`. A chevron you pass in yourself (a `separator` or `expand-icon` slot) is left as you drew it.
   The horizontal arrow keys follow the screen in a right-to-left page, as in a native radio group: in `u-tab-panel` (horizontal tabs),
   `u-radio` and `u-calendar` the left arrow now goes to the next tab, option or day (the right arrow to the previous one), and in
   `u-tree` and `u-menu` the arrow toward the end side (the left one) opens a branch while the one toward the start side closes it

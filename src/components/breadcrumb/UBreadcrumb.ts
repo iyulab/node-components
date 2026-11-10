@@ -78,6 +78,8 @@ export class UBreadcrumb extends UElement {
       const icon = document.createElement('u-icon');
       icon.setAttribute('lib', 'internal');
       icon.setAttribute('name', 'chevron-right');
+      // 기본 글리프만 RTL 에서 뒤집는다(스타일의 `.separator-icon`) — 소비자가 준 구분자('/' · 자기 아이콘)는 그대로 둔다.
+      icon.setAttribute('class', 'separator-icon');
       sep.appendChild(icon);
     }
 

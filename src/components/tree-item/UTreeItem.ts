@@ -151,7 +151,7 @@ export class UTreeItem extends UElement {
             ? html`<u-spinner></u-spinner>`
             : this.expanded
             ? this.collapseIcon || html`<u-icon lib="internal" name="chevron-down"></u-icon>`
-            : this.expandIcon || html`<u-icon lib="internal" name="chevron-right"></u-icon>`}
+            : this.expandIcon || html`<u-icon class="toggle-glyph" lib="internal" name="chevron-right"></u-icon>`}
         </span>
 
         <span class="prefix-checkbox"

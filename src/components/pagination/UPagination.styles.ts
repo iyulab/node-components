@@ -36,6 +36,12 @@ export const styles = css`
     min-width: 2.25em;
   }
 
+  /* 이전/다음 셰브론은 LTR 모양(왼쪽 · 오른쪽)이다 — RTL 에서는 «이전» 이 오른쪽에 놓이므로 글리프도 뒤집어
+     이전이 시작 쪽을, 다음이 끝 쪽을 가리키게 한다. */
+  :host(:dir(rtl)) .step u-icon {
+    transform: scaleX(-1);
+  }
+
   .gap {
     min-width: 1.5em;
     text-align: center;

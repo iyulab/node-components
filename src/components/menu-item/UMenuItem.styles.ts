@@ -113,6 +113,10 @@ export const styles = css`
     font-size: 1em;
     margin-inline-start: 0.25em;
   }
+  /* 하위 메뉴 표시(chevron-right)는 LTR 모양이다 — RTL 에서는 끝 쪽(왼쪽)을 가리켜야 한다. */
+  :host(:dir(rtl)) .suffix-chevron {
+    transform: scaleX(-1);
+  }
 
   /* 접두 · 접미 옆 간격은 섀도 안 상자가 갖는다 — ::slotted 의 여백은 문서의 전역 리셋(Tailwind preflight 류)에 진다. */
   .affix {

@@ -267,6 +267,8 @@ Locale.register('nl', { valueMissing: '…' });       // 검증 메시지 overri
 물리 방향 그대로입니다. 가로 가상 스크롤 격자 `flex-table` 과 스프레드시트 `u-simple-sheet`(`@iyulab/data-components`)는 RTL 에서 거울입니다(열은 시작부터 · 고정 열 · 방향키 · 열 너비 끌기가 화면을 따른다). 타임라인(`dimension-timeline`)은 크롬(차원 선택 열 · 모서리 머리)이 읽는 방향을 따르고 **시간은 어느 방향의 페이지에서도 왼쪽에서 오른쪽으로 흐릅니다**(시간축 · 캔버스 · 스크롤바 · 줌 단추는 한 플롯 영역).
 `u-switch` 손잡이와 `u-progress-bar` 의 불확정 막대는 논리 위치로 거울이고, `u-carousel` 의 트랙과 끌기 · `u-split-panel` 의 끌기는 포인터를 따르며, 탭 · 라디오 · 트리 · 메뉴 · 달력의 가로 방향키는 화면을 따르고(RTL 에서 왼쪽 키가 다음), `u-slider` · `u-rating` 은 값이 시작 쪽에서 자라며 포인터와 방향키도 그를 따릅니다
 (RTL 에서 왼쪽 키가 값을 올립니다 — 네이티브 `range` 와 같습니다).
+컴포넌트가 스스로 그리는 방향 글리프(셰브론)도 «이전» 과 «펼침» 이 읽는 방향을 가리키도록 뒤집힙니다 — `u-breadcrumb` 구분자 · `u-pagination` 과 `u-calendar` 의
+이전/다음 · `u-expander` 와 `u-tree-item` 의 닫힘 표시 · `u-menu-item` 의 하위 메뉴 표시. 구분자(`separator`)나 펼침 아이콘(`expand-icon`) 슬롯으로 직접 넣은 글리프는 그린 그대로 둡니다.
 
 ### 네임스페이스 — 상위 패키지·앱의 문자열 (1.23.0~)
 

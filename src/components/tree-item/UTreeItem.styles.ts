@@ -100,6 +100,11 @@ export const styles = css`
     font-size: 12px;
     pointer-events: none;
   }
+  /* 닫힘 표시(기본 chevron-right)는 LTR 모양이다 — RTL 에서는 끝 쪽(왼쪽)을 가리켜야 한다. 컴포넌트가 스스로 넣는
+     기본 글리프만 뒤집는다 — 소비자가 준 expandIcon 은 의미를 소비자가 정한다(toggle-glyph 클래스가 없다). */
+  :host(:dir(rtl)) .toggle-glyph {
+    transform: scaleX(-1);
+  }
   :host(:not([disabled])[trigger="icon"]) .prefix-toggler:hover::before,
   :host(:not([disabled])[trigger="icon"]:focus-visible) .prefix-toggler::before {
     background-color: var(--u-bg-color-hover, #F5F5F5);

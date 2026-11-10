@@ -28,6 +28,10 @@ export const styles = css`
     justify-content: space-between;
     padding: 0 4px 8px;
   }
+  /* 이전/다음 달 셰브론은 LTR 모양이다 — RTL 에서는 이전 달 단추가 오른쪽에 놓이므로 글리프도 뒤집는다. */
+  :host(:dir(rtl)) .calendar-header u-icon-button::part(icon) {
+    transform: scaleX(-1);
+  }
   /* Keeps the title centered when a month in a multi-month view shows only one of the two
      navigation buttons — the missing one leaves a same-sized gap instead of collapsing. */
   .nav-spacer {

@@ -53,6 +53,12 @@ export const styles = css`
   :host([open]) .icon {
     transform: rotate(90deg);
   }
+  /* chevron-right 는 LTR 모양이다 — RTL 에서 닫힘은 시작 쪽(왼쪽)을 가리킨다. scaleX(-1) 이 아니라 rotate(180deg):
+     열림(rotate(90deg))과 같은 변환 함수라 전환이 한 축으로 돌고(왼쪽 → 아래), 서로 다른 함수 사이의 행렬 보간이
+     뒤집힌 도형을 엉뚱한 쪽으로 돌리지 않는다. 열림(아래)은 좌우 대칭이라 그대로다. */
+  :host(:dir(rtl):not([open])) .icon {
+    transform: rotate(180deg);
+  }
 
   .label {
     flex: 1 1 auto;
