@@ -89,12 +89,14 @@ export const styles = css`
   /* === Button - Horizontal 배치 === */
   /* 묶음의 바깥 모서리는 «시작/끝» 에 선다 — 첫 칸은 시작 쪽, 마지막 칸은 끝 쪽이 둥글다(RTL 에서 거울). */
   :host([type="button"]:not([appearance="soft"])[orientation="horizontal"]) ::slotted(u-option:first-child) {
-    border-radius: 0;
     border-start-start-radius: 0.35em;
     border-end-start-radius: 0.35em;
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
   }
   :host([type="button"]:not([appearance="soft"])[orientation="horizontal"]) ::slotted(u-option:last-child) {
-    border-radius: 0;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
     border-start-end-radius: 0.35em;
     border-end-end-radius: 0.35em;
   }
