@@ -69,7 +69,8 @@ It cannot report these, so search your sources for them:
   the start side, the dividers are drawn on each cell's end side), so the group reads as one piece in a right-to-left page. The buttons at the
   end of a field (the clear button of `u-input`, `u-select` and `u-file-input`, the calendar button of the date pickers) and the vertical
   connector of a folded `u-steps` and the toggle of `u-tree-item` use start/end margins as well: the clear button of `u-input` sat 10px
-  further from the end of the field in a right-to-left page than in a left-to-right one.
+  further from the end of the field in a right-to-left page than in a left-to-right one. The fill and the buffer of a determinate
+  `u-progress-bar` grow from the start side too (a bar at 40% was filled from the left in a right-to-left page).
   The horizontal arrow keys follow the screen in a right-to-left page, as in a native radio group: in `u-tab-panel` (horizontal tabs),
   `u-radio` and `u-calendar` the left arrow now goes to the next tab, option or day (the right arrow to the previous one), and in
   `u-tree` and `u-menu` the arrow toward the end side (the left one) opens a branch while the one toward the start side closes it

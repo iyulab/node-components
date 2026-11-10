@@ -86,7 +86,7 @@ export const styles = css`
     inset: 0;
     border-radius: inherit;
     background-color: var(--progress-bar-color);
-    transform-origin: left center;
+    transform-origin: left center; /* physical-ok: the left half of the pair — the :dir(rtl) rule below sets the right origin */
     transform: scaleX(0);
     transition: transform var(--u-duration-slow, 320ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     will-change: transform;
@@ -98,10 +98,17 @@ export const styles = css`
     inset: 0;
     border-radius: inherit;
     background-color: var(--progress-bar-buffer-color);
-    transform-origin: left center;
+    transform-origin: left center; /* physical-ok: the left half of the pair — the :dir(rtl) rule below sets the right origin */
     transform: scaleX(0);
     transition: transform var(--u-duration-slow, 320ms) var(--u-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     will-change: transform;
+  }
+
+  /* 채움 · 버퍼는 scaleX 로 그려진다 — 변환의 기준점은 논리 값이 없어 «왼쪽» 이 그대로 남으면 RTL 에서도 왼쪽에서 자란다.
+     physical-ok: transform-origin has no logical keyword; this rule is the right-to-left half of the left-origin pair above */
+  :host(:dir(rtl)) .indicator,
+  :host(:dir(rtl)) .buffer {
+    transform-origin: right center;
   }
 
   /* === Segments === */
