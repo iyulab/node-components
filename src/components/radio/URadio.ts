@@ -104,7 +104,8 @@ export class URadio extends UFormControlElement<string> {
     this.commit(
       missing ? { valueMissing: true } : {},
       missing ? Locale.getValue('valueMissing') : '',
-      this,
+      // 앵커는 shadow-including 자손이어야 한다(명세) — 호스트 자신을 넘기면 구형 Chromium 이 NotFoundError 로 던진다.
+      this.renderRoot.querySelector('.container') as HTMLElement ?? undefined,
     );
   }
 

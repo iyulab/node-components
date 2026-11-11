@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **`u-radio` no longer passes its own host as the `setValidity` anchor.** `ElementInternals.setValidity(flags,
+  message, anchor)` requires the anchor to be a shadow-including descendant of the element; the host is not one. Older
+  Chromium (the 120 generation) threw `NotFoundError` on every selection, and because the exception interrupted
+  validation before the event was dispatched, `change` never fired while `value` had already changed. The anchor is
+  now the radiogroup container, like every other form control. Current browsers accept the host, so they were not
+  affected.
+
 ## [3.0.0] - 2026-11-11
 
 ### Changed (BREAKING — 3.0)
