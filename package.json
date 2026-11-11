@@ -1,7 +1,7 @@
 {
   "name": "@iyulab/components",
   "description": "Lit-based UI elements for business web apps: buttons, inputs, selects, date pickers, dialogs, design tokens, theming and a locale registry",
-  "version": "2.39.1",
+  "version": "3.0.0",
   "keywords": [
     "iyulab",
     "components",

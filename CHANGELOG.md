@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [3.0.0] - 2026-11-11
 
 ### Changed (BREAKING — 3.0)
 
