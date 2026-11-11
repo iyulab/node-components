@@ -15,7 +15,7 @@
 
 - The README now states the browser floor: browsers that support `:state()` without the `--` prefix (Chrome and
   Edge 125, Firefox 126, Safari 17.4). Below it, form controls throw on `states.add()` and styling that keys on
-  states does not apply.
+  states does not apply. The skill overview carries the same line.
 
 ## [3.0.0] - 2026-11-11
 
