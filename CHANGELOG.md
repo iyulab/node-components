@@ -11,6 +11,12 @@
   now the radiogroup container, like every other form control. Current browsers accept the host, so they were not
   affected.
 
+### Documentation
+
+- The README now states the browser floor: browsers that support `:state()` without the `--` prefix (Chrome and
+  Edge 125, Firefox 126, Safari 17.4). Below it, form controls throw on `states.add()` and styling that keys on
+  states does not apply.
+
 ## [3.0.0] - 2026-11-11
 
 ### Changed (BREAKING — 3.0)

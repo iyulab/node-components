@@ -10,6 +10,13 @@ Lit 기반 웹 컴포넌트 라이브러리.
 npm install @iyulab/components
 ```
 
+## Browser support
+
+지원 하한은 **`CustomStateSet` 의 `:state()` 를 `--` 접두 없이 지원하는 판**입니다 — Chrome · Edge 125, Firefox 126,
+Safari 17.4 이상. 폼 컨트롤은 `:state(field)` 같은 상태를 `ElementInternals.states` 에 싣고 시트가 그 선택자로 모양을
+정하므로, 그 아래 판(예: Chromium 120)에서는 `states.add('field')` 가 `--` 접두를 요구하며 던지고 스타일도 어긋납니다.
+호환 shim 은 두지 않습니다 — 하한을 올리거나, 하한 아래가 꼭 필요하면 알려 주세요.
+
 ## Quick Start
 
 아래 파일 하나가 그대로 돌아가는 첫 페이지입니다(Vite 기준 — `index.html` 이 `src/main.ts` 를 모듈로 싣는다).
