@@ -20,10 +20,10 @@ let lastCollator: Intl.Collator | undefined;
 function createCollator(tag: string): Intl.Collator {
   const options: Intl.CollatorOptions = { numeric: true, sensitivity: 'base' };
   try {
-    return new Intl.Collator(tag, options);
+    return new Intl.Collator(tag, options); // compare-ok: 이 파일이 정본이다 — 표의 글자 순서는 여기서 만든다
   } catch {
     // 잘못된 BCP 47 꼬리표(`ko_KR` 같은 밑줄 표기 등) — 던지지 않고 영어로 견준다. 정렬이 깨지는 것보다 낫다.
-    return new Intl.Collator('en', options);
+    return new Intl.Collator('en', options); // compare-ok: 정본 — 위 꼬리표 실패의 영어 폴백
   }
 }
 
