@@ -393,6 +393,14 @@ export const styles = css`
     overflow-wrap: break-word;
   }
 
+  /* The label isolation wrapper takes the content box's centring, so an icon-only button keeps its icon in the middle
+     (a bare inline wrapper would put the icon on a text baseline). */
+  .content > bdi {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   /* === Mask (로딩 오버레이) === */
   .mask {
     position: absolute;

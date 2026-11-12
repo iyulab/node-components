@@ -167,7 +167,7 @@ export class UTreeItem extends UElement {
 
         <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
         <div class="content" part="content">
-          <slot @slotchange=${this.handleSlotChange}></slot>
+          <bdi><slot @slotchange=${this.handleSlotChange}></slot></bdi>
         </div>
         <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
       </div>

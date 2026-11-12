@@ -163,7 +163,7 @@ export class USteps extends UElement {
               <li class="step" part="step step-${status}" data-status=${status}
                 aria-current=${ifDefined(status === 'current' ? 'step' : undefined)}>
                 <span class="marker" part="marker" aria-hidden="true">${status === 'complete' && !plain ? CHECK : nothing}</span>
-                <span class="title" part="title">${item.label}</span>
+                <span class="title" part="title"><bdi>${item.label}</bdi></span>
                 ${item.description ? html`<span class="description" part="description">${item.description}</span>` : nothing}
                 ${status === 'complete' || status === 'hold' || status === 'skipped'
                   ? html`<span class="sr-only">${Locale.getValue(STATUS_WORD[status])}</span>`

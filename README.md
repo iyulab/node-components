@@ -278,7 +278,7 @@ Locale.register('nl', { valueMissing: '…' });       // 검증 메시지 overri
 이전/다음 · `u-expander` 와 `u-tree-item` 의 닫힘 표시 · `u-menu-item` 의 하위 메뉴 표시. 구분자(`separator`)나 펼침 아이콘(`expand-icon`) 슬롯으로 직접 넣은 글리프는 그린 그대로 둡니다.
 
 앱이 넣은 **값**(원자적 데이터 — 이름 · 부품 번호 · 부호 붙은 수)은 페이지 방향에 끌려가지 않고 자기 글자의 방향으로 읽힙니다 — RTL 페이지의 `Blue Harbor Co.` 가 `.Blue Harbor Co` 로
-뒤집히지 않습니다. `u-tag` · `u-chip` · `u-option` · `u-breadcrumb-item` 의 내용과 `u-select` 닫힌 트리거의 값이 그렇고(섀도 안 `<bdi>` — 자리의 정렬은 그대로), 표 셀은
+뒤집히지 않습니다. `u-tag` · `u-chip` · `u-option` · `u-breadcrumb-item` · `u-button` · `u-menu-item` · `u-tree-item` · `u-checkbox` · `u-radio` 의 한 줄 라벨과 `u-steps` 의 단계 제목 · `u-select` 닫힌 트리거의 값이 그렇고(섀도 안 `<bdi>` — 자리의 정렬은 그대로), 표 셀은
 `flex-table` · `u-rich-table` · `u-simple-sheet` 가 같은 방식으로 합니다. **문장**(토스트 · 알림 본문 · 설명)은 페이지 방향을 따릅니다 — 문장 한가운데에 앱이 끼운 값은 앱이
 `<bdi>` 로 감싸세요(`` `저장됨: <bdi>${name}</bdi>` ``).
 

@@ -72,6 +72,29 @@ const CASES: Array<{ label: string; markup: string; node: () => Text }> = [
   },
 ];
 
+// The one-line label slots (a name the component shows as its text). A generic content box — u-card, u-panel, u-dialog, u-alert,
+// u-expander — holds sentences and arbitrary markup, so it follows the page; it is deliberately not in this list.
+const LABEL_SLOTS: Array<{ label: string; markup: string; node: () => Text }> = [
+  { label: 'u-button', markup: `<u-button>${VALUE}</u-button>`, node: () => textNode(host.querySelector('u-button')!) },
+  { label: 'u-menu-item', markup: `<u-menu><u-menu-item>${VALUE}</u-menu-item></u-menu>`, node: () => textNode(host.querySelector('u-menu-item')!) },
+  { label: 'u-tree-item', markup: `<u-tree><u-tree-item>${VALUE}</u-tree-item></u-tree>`, node: () => textNode(host.querySelector('u-tree-item')!) },
+  { label: 'u-checkbox', markup: `<u-checkbox>${VALUE}</u-checkbox>`, node: () => textNode(host.querySelector('u-checkbox')!) },
+  { label: 'u-radio', markup: `<u-radio>${VALUE}</u-radio>`, node: () => textNode(host.querySelector('u-radio')!) },
+];
+CASES.push(...LABEL_SLOTS);
+
+describe('components — u-steps title (data in the shadow tree, not a slot)', () => {
+  it('the title keeps its own direction in a right-to-left page', async () => {
+    await mount('rtl', '<u-steps current="0"></u-steps>');
+    const steps = host.querySelector('u-steps') as HTMLElement & { items: Array<{ label: string }>; updateComplete: Promise<unknown> };
+    steps.items = [{ label: VALUE }, { label: 'Next' }];
+    await steps.updateComplete;
+    await new Promise((r) => setTimeout(r, 60));
+    const e = edges(textNode(steps.shadowRoot!));
+    expect(e.last).toBeGreaterThan(e.first);
+  });
+});
+
 describe('components — a label keeps its own direction in a right-to-left page', () => {
   for (const c of CASES) {
     it(`${c.label}: the full stop stands after the last word`, async () => {

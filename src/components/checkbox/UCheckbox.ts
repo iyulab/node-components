@@ -108,7 +108,7 @@ export class UCheckbox extends UFormControlElement<string> {
           ></u-icon>
         </span>
         <span class="label" part="label">
-          <slot @slotchange=${this.handleLabelSlotChange}>${this.label}</slot>
+          <bdi><slot @slotchange=${this.handleLabelSlotChange}>${this.label}</slot></bdi>
           <span class="required" ?hidden=${!this.required}>*</span>
         </span>
       </label>
