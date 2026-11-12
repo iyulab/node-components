@@ -336,7 +336,7 @@ export class USelect extends UFormControlElement<string | string[]> {
           <span class="text-content placeholder">${this.placeholder ?? ''}</span>`;
       }
 
-      return html`<span class="text-content">${option.getContent()}</span>`;
+      return html`<span class="text-content"><bdi>${option.getContent()}</bdi></span>`;
     }
   }
 

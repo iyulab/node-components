@@ -38,6 +38,15 @@ export const styles = css`
     display: none !important;
   }
 
+  /* Value isolation — a label the app put in a slot (or a value a component draws) keeps its own direction.
+   * The UA default for bdi is isolate with direction auto, but auto reads the text of the element's own DOM children
+   * and a slot has none, so a slotted label falls back to the page direction (a trailing full stop jumps to the wrong
+   * end). Plaintext resolves the first strong character on the rendered text, slotted or not, and still isolates; being
+   * inline it changes the order inside the label only, never the box's alignment. */
+  bdi {
+    unicode-bidi: plaintext;
+  }
+
   /* Scrollbar Styles */
   :host([scrollable]) {
     scrollbar-width: thin;

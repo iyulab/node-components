@@ -51,14 +51,14 @@ export class UBreadcrumbItem extends UElement {
           @click=${this.handleAnchorClick}
         >
           <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
-          <slot></slot>
+          <bdi><slot></slot></bdi>
           <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
         </a>`;
     }
 
     return html`
       <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
-      <slot></slot>
+      <bdi><slot></slot></bdi>
       <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
     `;
   }

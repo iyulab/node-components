@@ -77,7 +77,7 @@ export class UTag extends UElement {
             : nothing}
         <slot name="prefix"></slot>
         <span class="content" part="content">
-          <slot></slot>
+          <bdi><slot></slot></bdi>
         </span>
         <slot name="suffix"></slot>
       </div>
