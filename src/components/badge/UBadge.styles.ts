@@ -145,6 +145,14 @@ export const styles = css`
     transform: translate(-50%, 50%);
   }
 
+  /* 라벨 슬롯의 값 격리 상자 — 슬롯의 아이콘과 글자는 호스트의 간격을 받는 형제 flex 아이템이었으므로,
+     감싼 상자가 그 간격과 가운데 정렬을 이어받아야 한다(맨 인라인 bdi 는 둘을 한 줄로 합쳐 간격을 지운다). */
+  .base > bdi {
+    display: inline-flex;
+    align-items: center;
+    gap: inherit;
+  }
+
   /* 상태 아이콘 — prefix 슬롯과 같은 간격을 쓴다. */
   .icon {
     flex-shrink: 0;

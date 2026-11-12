@@ -148,7 +148,7 @@ export class UTab extends UElement {
     const appearance = this.countAppearance ?? UTab.countAppearance;
     return html`
       <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
-      <slot></slot>
+      <bdi><slot></slot></bdi>
       ${this.count == null || Number.isNaN(this.count)
         ? nothing
         : html`<span class="count ${appearance === 'plain' || appearance === 'figure' ? appearance : 'badge'}"

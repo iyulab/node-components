@@ -6,7 +6,7 @@
 
 - **A label keeps its own direction in a right-to-left page.** The text an app puts in `u-tag`, `u-chip`, `u-option`,
   `u-breadcrumb-item`, the trigger of a `u-select`, `u-button`, `u-menu-item`, `u-tree-item`, `u-checkbox`,
-  `u-radio` and the title of a `u-steps` item took the page's direction as its paragraph direction, so a run
+  `u-radio`, `u-tab`, `u-badge` and the title of a `u-steps` item took the page's direction as its paragraph direction, so a run
   of Latin letters ended up with its trailing punctuation at the wrong end (`Blue Harbor Co.` read `.Blue Harbor Co`).
   Each label is now isolated and reads in its own order; where the component puts it (the start edge, the box's
   alignment) does not change, and a left-to-right page renders exactly as before. The mechanism is one rule in the shared

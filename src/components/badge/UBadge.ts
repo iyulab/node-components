@@ -56,7 +56,7 @@ export class UBadge extends UElement {
           ? html`<u-icon class="icon" part="icon" lib="internal" name=${iconName}></u-icon>`
           : nothing}
         <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
-        <slot></slot>
+        <bdi><slot></slot></bdi>
         <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
       </div>
     `;

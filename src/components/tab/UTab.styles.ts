@@ -50,6 +50,13 @@ export const styles = css`
     cursor: not-allowed;
   }
 
+  /* 라벨 슬롯의 값 격리 상자 — 슬롯의 아이콘과 글자는 상자의 형제 flex 아이템이었으므로 같은 가운데 정렬을 이어받는다
+     (맨 인라인 bdi 는 둘을 한 줄로 합쳐 아이콘을 글자 기준선에 앉힌다). */
+  .base > bdi {
+    display: inline-flex;
+    align-items: center;
+  }
+
   /* 접두 · 접미 옆 간격은 섀도 안 상자가 갖는다 — ::slotted 의 여백은 문서의 전역 리셋(Tailwind preflight 류)에 진다. */
   .affix {
     display: inline-flex;

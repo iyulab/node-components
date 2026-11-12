@@ -80,6 +80,8 @@ const LABEL_SLOTS: Array<{ label: string; markup: string; node: () => Text }> = 
   { label: 'u-tree-item', markup: `<u-tree><u-tree-item>${VALUE}</u-tree-item></u-tree>`, node: () => textNode(host.querySelector('u-tree-item')!) },
   { label: 'u-checkbox', markup: `<u-checkbox>${VALUE}</u-checkbox>`, node: () => textNode(host.querySelector('u-checkbox')!) },
   { label: 'u-radio', markup: `<u-radio>${VALUE}</u-radio>`, node: () => textNode(host.querySelector('u-radio')!) },
+  { label: 'u-tab', markup: `<u-tab>${VALUE}</u-tab>`, node: () => textNode(host.querySelector('u-tab')!) },
+  { label: 'u-badge', markup: `<u-badge>${VALUE}</u-badge>`, node: () => textNode(host.querySelector('u-badge')!) },
 ];
 CASES.push(...LABEL_SLOTS);
 
