@@ -102,6 +102,24 @@ function decimalSeparatorOf(locale: LocaleTag): string {
 /** Space-like characters and apostrophes that locales use to group digits (fr/ru NBSP, de-CH ’). */
 const GROUP_MARKS = /[\s\u00A0\u202F\u2009'\u2019]/;
 
+/** The direction marks a formatted number can carry (`formatNumber` in Arabic and Hebrew puts one before the minus sign). */
+const DIRECTION_MARKS = /[‎‏؜‪-‮⁦-⁩]/g;
+
+/**
+ * Text as a person on an Arabic or Persian keyboard writes it, brought to the digits and separators the reader below knows:
+ * Arabic-Indic (`٠`–`٩`) and Extended Arabic-Indic / Persian (`۰`–`۹`) digits become `0`–`9`, the Arabic decimal separator
+ * `٫` becomes `.` and the Arabic thousands separator `٬` the apostrophe group mark (kept as a mark, so a leading one is still an error). Direction marks are dropped. Text without any of
+ * these comes back unchanged.
+ */
+function readableDigits(text: string): string {
+  return text
+    .replace(DIRECTION_MARKS, '')
+    .replace(/[٠-٩]/g, (c) => String(c.charCodeAt(0) - 0x0660))
+    .replace(/[۰-۹]/g, (c) => String(c.charCodeAt(0) - 0x06f0))
+    .replace(/٫/g, '.')
+    .replace(/٬/g, "'");
+}
+
 /**
  * Reads a number the way a person types it, in any locale — the inverse of {@link formatNumber}.
  * Returns `null` for text that is not a number; never a partial number (`"1,5x"` is `null`, not 1.5).
@@ -124,7 +142,7 @@ const GROUP_MARKS = /[\s\u00A0\u202F\u2009'\u2019]/;
  * `locale` defaults to the active `Locale`.
  */
 export function parseNumber(text: string, locale?: LocaleTag): number | null {
-  const trimmed = text.trim();
+  const trimmed = readableDigits(text).trim();
   const signed = trimmed.match(/^([+\-\u2212]?)(.*)$/s)!;
   const negative = signed[1] === '-' || signed[1] === '\u2212';
   const scientific = signed[2].match(/^(.*?)[eE]([+-]?)(\d+)$/s);

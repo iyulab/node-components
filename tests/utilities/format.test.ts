@@ -170,6 +170,37 @@ describe('format utilities', () => {
         }
       }
     });
+
+    // A person on an Arabic or Persian keyboard types the digits and the separators of their own script.
+    it('reads Arabic-Indic and Persian digits and the Arabic separators', () => {
+      expect(parseNumber('١٢٣', 'ar-EG')).toBe(123);
+      expect(parseNumber('۱۲۳', 'fa')).toBe(123);
+      expect(parseNumber('-١٢٫٥', 'ar-EG')).toBe(-12.5);
+      expect(parseNumber('۱۲٫۵', 'fa')).toBe(12.5);
+      expect(parseNumber('١٬٢٣٤٫٥', 'ar-EG')).toBe(1234.5);
+      expect(parseNumber('1٫5', 'ar-EG'), 'Latin digits with the Arabic decimal separator').toBe(1.5);
+    });
+
+    it('ignores the direction marks a formatted number carries', () => {
+      expect(parseNumber('‎-1,234.5', 'en')).toBe(-1234.5);
+      expect(parseNumber('؜-١٢٫٥', 'ar-EG')).toBe(-12.5);
+      expect(parseNumber('‏12‏', 'en')).toBe(12);
+    });
+
+    it('NEGATIVE: text that is not a number stays null', () => {
+      expect(parseNumber('٫', 'ar-EG')).toBeNull();
+      expect(parseNumber('١٢٣abc', 'ar-EG')).toBeNull();
+      expect(parseNumber('٬١٢٣', 'ar-EG')).toBeNull();
+      expect(parseNumber('١٬٢٣', 'ar-EG')).toBeNull();
+    });
+
+    it('round-trips formatNumber in the locales that write their own digits', () => {
+      for (const locale of ['ar-EG', 'fa', 'ar']) {
+        for (const n of [0.5, 12.75, 1234.5, 1234567.25, -9876.125]) {
+          expect(parseNumber(formatNumber(n, { maximumFractionDigits: 3 }, locale), locale), `${locale} ${n}`).toBe(n);
+        }
+      }
+    });
   });
   describe('parseDate', () => {
     const ref = new Date(2026, 9, 3);

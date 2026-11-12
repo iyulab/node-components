@@ -20,6 +20,13 @@
   paragraph direction: `-1234.5` read `1234.5-`. The input is now left-to-right; only the alignment follows the page (the
   digits still sit at the page's start edge, and the placeholder with them). A left-to-right page renders exactly as before.
   `type="email"`, `url` and `tel` were measured and read correctly, so they are unchanged.
+- **`parseNumber` and `u-input type="number"` read Arabic and Persian digits and separators.** On an `ar-EG` or `fa` page
+  the field wrote its decimal separator (`٫`) on blur but could not read it back: the number was lost the next time the field was
+  focused and left (`value` went empty and the field showed its invalid state), and a person typing `١٢٫٥` on an Arabic keyboard
+  got the same. `parseNumber` now reads Arabic-Indic (`٠`–`٩`) and Persian (`۰`–`۹`) digits, the Arabic decimal separator `٫` and the
+  Arabic thousands separator `٬`, and ignores the direction marks a formatted number can carry (`formatNumber` in Arabic puts one
+  before the minus sign). `value` is still a dot-decimal string; text that is not a number is still `null`, and text without any
+  of these characters reads exactly as before.
 
 ## [3.1.0] - 2026-11-12
 
