@@ -245,6 +245,72 @@ describe('format utilities', () => {
       expect(dateTextPattern('locale', 'de')).toBe('DD.MM.YYYY');
     });
   });
+
+  // `formatDateText` is documented as «the way parseDate reads it back». That broke in the locales that write their own digits
+  // (`ar-EG` · `fa` · `bn`), put direction marks between the parts (`ar`), or prefer another calendar (`fa` writes the Persian
+  // year 1405, `th` the Buddhist 2569 — which read back as the wrong year, silently).
+  describe('dates in locales with their own digits, direction marks or calendar', () => {
+    const LOCALES = ['ar', 'ar-EG', 'ar-SA', 'fa', 'th', 'bn', 'he', 'hi-IN', 'my'];
+
+    it('NEGATIVE: text that is not a date stays null in any script', () => {
+      expect(parseDate('٢٠٢٦-٠٢-٣٠')).toBeNull();
+      expect(parseDate('٢٠٢٦-١٣-٠١')).toBeNull();
+      expect(parseDate('۱۴۰۵/۰۷/۱۰x')).toBeNull();
+      expect(parseDate('abc')).toBeNull();
+    });
+
+    it('the text field writes the Gregorian calendar, as the value and the calendar next to it do', () => {
+      expect(parseDate(formatDateText('2026-10-02', 'locale', 'th'), { format: 'locale', locale: 'th' }), 'Buddhist 2569').toBe('2026-10-02');
+      expect(parseDate(formatDateText('2026-10-02', 'locale', 'fa'), { format: 'locale', locale: 'fa' }), 'Persian 1405').toBe('2026-10-02');
+    });
+
+    it('round-trips through parseDate', () => {
+      for (const locale of LOCALES) {
+        for (const iso of ['2026-10-02', '2026-01-31', '2024-02-29', '2026-12-09']) {
+          expect(parseDate(formatDateText(iso, 'locale', locale), { format: 'locale', locale }), `${locale} ${iso}`).toBe(iso);
+        }
+      }
+    });
+
+    it('reads the digits of any script, in every shape of date', () => {
+      expect(parseDate('٢٠٢٦-١٠-٠٢')).toBe('2026-10-02');
+      expect(parseDate('۲۰۲۶/۱۰/۰۲')).toBe('2026-10-02');
+      expect(parseDate('২০২৬-১০-০২')).toBe('2026-10-02');
+      expect(parseDate('２０２６-１０-０２'), 'full-width digits from an IME').toBe('2026-10-02');
+      expect(parseDate('٢٠٢٦١٠٠٢'), 'eight digits').toBe('2026-10-02');
+      expect(parseDateTime('٢٠٢٦-١٠-٠٢ ٠٩:٠٥')).toBe('2026-10-02T09:05');
+      expect(parseDateRange('٢٠٢٦-١٠-٠١ ~ ٢٠٢٦-١٠-٣١')).toEqual({ start: '2026-10-01', end: '2026-10-31' });
+      expect(parseDateTimeRange('٢٠٢٦-١٠-٠١ ٠٩:٠٠ ~ ١٨:٠٠')).toEqual({ start: '2026-10-01T09:00', end: '2026-10-01T18:00' });
+    });
+
+    it('round-trips a period and a date with a time', () => {
+      for (const locale of LOCALES) {
+        const range = formatDateRangeText('2026-10-01', '2026-10-31', 'locale', locale);
+        expect(parseDateRange(range, { format: 'locale', locale }), `${locale} ${range}`).toEqual({ start: '2026-10-01', end: '2026-10-31' });
+        const stamp = formatDateTimeText('2026-10-02T09:05', 'locale', locale);
+        expect(parseDateTime(stamp, { format: 'locale', locale }), `${locale} ${stamp}`).toBe('2026-10-02T09:05');
+      }
+    });
+
+    it('names a pattern in the Gregorian order of the locale', () => {
+      expect(dateTextPattern('locale', 'th')).toBe('DD/MM/YYYY');
+      expect(dateTextPattern('locale', 'fa')).toBe('YYYY/MM/DD');
+    });
+  });
+
+  describe('digits of any script in numbers', () => {
+    it('reads Bengali, Devanagari and full-width digits', () => {
+      expect(parseNumber('১২৩', 'bn')).toBe(123);
+      expect(parseNumber('१२३', 'hi')).toBe(123);
+      expect(parseNumber('１２３', 'ja')).toBe(123);
+      expect(parseNumber('-１２.５', 'ja')).toBe(-12.5);
+    });
+    it('NEGATIVE: a digit-like symbol that is not a decimal digit is still text', () => {
+      expect(parseNumber('①②', 'ja')).toBeNull();
+      expect(parseNumber('½', 'en')).toBeNull();
+      expect(parseNumber('Ⅻ', 'en')).toBeNull();
+    });
+  });
   describe('parseDateTime / formatDateTimeText', () => {
     const ref = new Date(2026, 9, 3);
     it.each([

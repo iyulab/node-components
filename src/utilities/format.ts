@@ -105,17 +105,37 @@ const GROUP_MARKS = /[\s\u00A0\u202F\u2009'\u2019]/;
 /** The direction marks a formatted number can carry (`formatNumber` in Arabic and Hebrew puts one before the minus sign). */
 const DIRECTION_MARKS = /[‎‏؜‪-‮⁦-⁩]/g;
 
+const DECIMAL_DIGIT = /^\p{Nd}$/u;
+
 /**
- * Text as a person on an Arabic or Persian keyboard writes it, brought to the digits and separators the reader below knows:
- * Arabic-Indic (`٠`–`٩`) and Extended Arabic-Indic / Persian (`۰`–`۹`) digits become `0`–`9`, the Arabic decimal separator
- * `٫` becomes `.` and the Arabic thousands separator `٬` the apostrophe group mark (kept as a mark, so a leading one is still an error). Direction marks are dropped. Text without any of
- * these comes back unchanged.
+ * The value `0`–`9` of a decimal digit written in any script. Unicode lays every script's ten digits out in one run, zero
+ * first, and runs that touch are still whole multiples of ten, so the distance from the start of the run decides it — no
+ * table of scripts to keep.
+ */
+function digitValue(digit: string): string {
+  const code = digit.codePointAt(0)!;
+  if (code < 0x80) return digit;
+  let start = code;
+  while (start > 0 && DECIMAL_DIGIT.test(String.fromCodePoint(start - 1))) start--;
+  return String((code - start) % 10);
+}
+
+/**
+ * Text as a person types or pastes it, brought to the ASCII digits the readers below know: the digits of any script
+ * (Arabic-Indic `٠`–`٩`, Persian `۰`–`۹`, Bengali, Devanagari, full-width `０`–`９` from an IME …) become `0`–`9`, and the
+ * direction marks a formatted Arabic or Hebrew text carries are dropped. Text without any of these comes back unchanged.
+ */
+function asciiDigits(text: string): string {
+  return text.replace(DIRECTION_MARKS, '').replace(/\p{Nd}/gu, digitValue);
+}
+
+/**
+ * {@link asciiDigits}, and the separators of an Arabic keyboard brought to the ones the number reader below knows: the Arabic
+ * decimal separator `٫` becomes `.` and the Arabic thousands separator `٬` the apostrophe group mark (kept as a mark, so a
+ * leading one is still an error).
  */
 function readableDigits(text: string): string {
-  return text
-    .replace(DIRECTION_MARKS, '')
-    .replace(/[٠-٩]/g, (c) => String(c.charCodeAt(0) - 0x0660))
-    .replace(/[۰-۹]/g, (c) => String(c.charCodeAt(0) - 0x06f0))
+  return asciiDigits(text)
     .replace(/٫/g, '.')
     .replace(/٬/g, "'");
 }
@@ -188,9 +208,16 @@ export type DateTextFormat = 'iso' | 'locale';
 
 type DatePart = 'year' | 'month' | 'day';
 
+/**
+ * A date in a text field is always Gregorian, whatever calendar the locale prefers (`fa` writes the Persian year 1405, `th` the
+ * Buddhist 2569): the value is a Gregorian ISO date and the calendar next to the field is Gregorian, so a text in another
+ * calendar would read back as a different day.
+ */
+const TEXT_DATE_OPTIONS = { calendar: 'gregory', year: 'numeric', month: '2-digit', day: '2-digit' } as const;
+
 /** The year/month/day order and separator the locale's numeric date uses (`en-US` → month/day/year · `/`). */
 function numericDateLayout(locale: LocaleTag): { order: DatePart[]; separator: string } {
-  const parts = new Intl.DateTimeFormat(locale, { year: 'numeric', month: '2-digit', day: '2-digit' })
+  const parts = new Intl.DateTimeFormat(locale, TEXT_DATE_OPTIONS)
     .formatToParts(new Date(2026, 9, 2));
   const order = parts.filter(p => p.type === 'year' || p.type === 'month' || p.type === 'day').map(p => p.type as DatePart);
   const separator = parts.find(p => p.type === 'literal')?.value ?? '-';
@@ -205,7 +232,7 @@ function numericDateLayout(locale: LocaleTag): { order: DatePart[]; separator: s
 export function formatDateText(iso: string, format: DateTextFormat = 'iso', locale?: LocaleTag): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
   if (!m || format === 'iso') return iso;
-  return new Intl.DateTimeFormat(locale ?? Locale.get(), { year: 'numeric', month: '2-digit', day: '2-digit' })
+  return new Intl.DateTimeFormat(locale ?? Locale.get(), TEXT_DATE_OPTIONS)
     .format(new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
 }
 
@@ -232,7 +259,7 @@ export function parseDate(
   text: string,
   options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date } = {},
 ): string | null {
-  const t = text.trim().replace(/\.$/, '');
+  const t = asciiDigits(text).trim().replace(/\.$/, '');
   if (!t) return null;
   let y: number, mo: number, d: number;
   const compact = /^(\d{4})(\d{2})(\d{2})$/.exec(t);
@@ -272,7 +299,7 @@ export function parseDateTime(
   text: string,
   options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date; defaultTime?: string; seconds?: boolean } = {},
 ): string | null {
-  const t = text.trim();
+  const t = asciiDigits(text).trim();
   const words = meridiemWords(options.locale ?? Locale.get());
   // The time follows a space or `T` — or directly, when it opens with a word that is not Latin
   // letters (`2026-10-01午後3:00`; after a date, the `a` of `am` would read as text).
@@ -370,7 +397,7 @@ export function parseDateRange(
   text: string,
   options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date } = {},
 ): { start: string; end: string } | null {
-  const t = text.trim();
+  const t = asciiDigits(text).trim();
   if (!t) return null;
   let parts = t.split(RANGE_SEPARATOR);
   if (parts.length === 1) {
@@ -412,7 +439,7 @@ export function parseDateTimeRange(
   text: string,
   options: { format?: DateTextFormat; locale?: LocaleTag; referenceDate?: Date; startTime?: string; endTime?: string; seconds?: boolean } = {},
 ): { start: string; end: string } | null {
-  const t = text.trim();
+  const t = asciiDigits(text).trim();
   if (!t) return null;
   const startTime = options.startTime ?? '00:00';
   const endTime = options.endTime ?? '23:59';

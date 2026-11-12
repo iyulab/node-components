@@ -23,10 +23,21 @@
 - **`parseNumber` and `u-input type="number"` read Arabic and Persian digits and separators.** On an `ar-EG` or `fa` page
   the field wrote its decimal separator (`٫`) on blur but could not read it back: the number was lost the next time the field was
   focused and left (`value` went empty and the field showed its invalid state), and a person typing `١٢٫٥` on an Arabic keyboard
-  got the same. `parseNumber` now reads Arabic-Indic (`٠`–`٩`) and Persian (`۰`–`۹`) digits, the Arabic decimal separator `٫` and the
-  Arabic thousands separator `٬`, and ignores the direction marks a formatted number can carry (`formatNumber` in Arabic puts one
-  before the minus sign). `value` is still a dot-decimal string; text that is not a number is still `null`, and text without any
-  of these characters reads exactly as before.
+  got the same. `parseNumber` now reads the decimal digits of any script (Arabic-Indic `٠`–`٩`, Persian `۰`–`۹`, Bengali,
+  Devanagari, the full-width digits an East Asian IME types …), the Arabic decimal separator `٫` and the Arabic thousands
+  separator `٬`, and ignores the direction marks a formatted number can carry (`formatNumber` in Arabic puts one
+  before the minus sign). `value` is still a dot-decimal string; text that is not a number (including digit-like symbols such as
+  `①` or `½`) is still `null`, and text without any of these characters reads exactly as before.
+- **A date written in a text field can be read back in every locale.** `formatDateText` and its date-time and period
+  siblings are documented as «the way `parseDate` reads it back», and `u-date-picker` / `u-date-range-picker` with
+  `format="locale"` rely on it, but in several locales they did not hold. `ar` put a right-to-left mark between the parts and
+  `ar-EG`, `ar-SA`, `fa` and `bn` wrote their own digits — `parseDate` read none of it, so a person who edited the date they saw
+  got a bad-input field and an empty `value`. `fa` and `th` wrote the Persian (1405) and Buddhist (2569) year, which
+  read back as the wrong year or not at all. The parsers (`parseDate`, `parseDateTime`, `parseDateRange`,
+  `parseDateTimeRange`) now read the digits of any script and ignore direction marks, and the text field is always
+  Gregorian, as `value` and the calendar next to the field are — `th` now writes `02/10/2026`, `fa` `۲۰۲۶/۱۰/۰۲`. The ISO
+  format and every locale that already wrote Latin digits in the Gregorian calendar (`en`, `ko`, `de`, `ja`, `he` …) are
+  unchanged; `dateTextPattern` follows (`th` → `DD/MM/YYYY`).
 
 ## [3.1.0] - 2026-11-12
 
