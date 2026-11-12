@@ -140,6 +140,11 @@ export const styles = css`
     user-select: none;
     pointer-events: none;
   }
+  /* 값 격리 상자 — 슬롯의 아이콘과 글자는 이 줄의 형제 flex 아이템이었으므로 같은 가운데 정렬을 이어받는다. */
+  .content > bdi {
+    display: inline-flex;
+    align-items: center;
+  }
 
   @keyframes indeterminate-move {
     0% {

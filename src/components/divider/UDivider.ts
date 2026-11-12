@@ -37,7 +37,7 @@ export class UDivider extends UElement {
       <div class="base" part="base">
         <span class="line" part="line-start"></span>
         <span class="label" part="label">
-          <slot @slotchange=${this.handleSlotChange}></slot>
+          <bdi><slot @slotchange=${this.handleSlotChange}></slot></bdi>
         </span>
         <span class="line" part="line-end"></span>
       </div>

@@ -91,7 +91,7 @@ export class UProgressBar extends UElement {
       </div>
 
       <div class="content" part="content">
-        <slot></slot>
+        <bdi><slot></slot></bdi>
       </div>
     `;
   }

@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import '../../src/index.js';
 
 /**
- * A badge and a tab show their label slot inside a `bdi` (value isolation in a right-to-left page). Their host lays the slot
+ * A badge, a tab, a divider and a progress bar show their label slot inside a `bdi` (value isolation in a right-to-left page). Their host lays the slot
  * children out as flex items, so an icon and the text that follow each other in the slot keep their spacing and their
  * common centre line only when the wrapper is itself a flex row that carries the host's gap on. A bare inline `bdi` would
  * collapse the icon and the text into one inline line: the gap would vanish and the icon would sit on a text baseline.
@@ -63,6 +63,24 @@ describe('u-tab — icon and text in the label slot stay on one centre line', ()
       const text = textRect(tab, LABEL);
       // The tab sets no gap of its own: icon and text touch (the author spaces them with a margin or the prefix slot).
       expect(Math.abs(gap(dir, icon, text))).toBeLessThanOrEqual(1);
+      expect(Math.abs((icon.top + icon.height / 2) - (text.top + text.height / 2))).toBeLessThanOrEqual(2);
+    });
+  }
+});
+
+describe('u-divider and u-progress-bar — icon and text in the slot stay on one centre line', () => {
+  for (const dir of ['ltr', 'rtl'] as const) {
+    it(`${dir}: u-divider`, async () => {
+      await mount(dir, `<u-divider style="font-size:20px"><u-icon lib="internal" name="x"></u-icon>${LABEL}</u-divider>`);
+      const icon = host.querySelector('u-icon')!.getBoundingClientRect();
+      const text = textRect(host.querySelector('u-divider')!, LABEL);
+      expect(Math.abs((icon.top + icon.height / 2) - (text.top + text.height / 2))).toBeLessThanOrEqual(2);
+    });
+
+    it(`${dir}: u-progress-bar`, async () => {
+      await mount(dir, `<u-progress-bar value="40" style="font-size:40px;width:200px"><u-icon lib="internal" name="x"></u-icon>${LABEL}</u-progress-bar>`);
+      const icon = host.querySelector('u-icon')!.getBoundingClientRect();
+      const text = textRect(host.querySelector('u-progress-bar')!, LABEL);
       expect(Math.abs((icon.top + icon.height / 2) - (text.top + text.height / 2))).toBeLessThanOrEqual(2);
     });
   }
