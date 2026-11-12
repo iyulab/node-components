@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Added
+
+- **`compareText(a, b, locale?)` and `getCollator(locale?)` — one text order for tables and lists.** Digit runs
+  inside text compare as numbers (`A-2` before `A-10`, `9` before `10`), case and accents compare as the same letter (equal
+  rows keep their input order), and the locale is the app's `Locale.get()` (`<html lang>`, then the browser language, then
+  `en`) — not the browser default, so one app orders Hangul and Latin the same way for every user (`Locale.set('ko')` puts
+  Hangul first). One `Intl.Collator` is built per locale and reused; a malformed locale tag compares as English instead of
+  throwing. The table packages use it for their text columns.
+
 ### Fixed
 
 - **`u-radio` no longer passes its own host as the `setValidity` anchor.** `ElementInternals.setValidity(flags,

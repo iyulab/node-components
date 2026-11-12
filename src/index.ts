@@ -73,6 +73,7 @@ export * from './events/ShowEvent';
 // Utilities
 export * from './utilities/BrowserStorage.js';
 export * from './utilities/clipboard.js';
+export * from './utilities/collation.js';
 export * from './utilities/converters.js';
 export * from './utilities/dateValue.js';
 export * from './utilities/devWarning.js';
