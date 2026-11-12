@@ -166,6 +166,15 @@ export const styles = css`
   input[type="number"] {
     -moz-appearance: textfield;
   }
+  /* 숫자 값은 방향이 고정된 텍스트다 — 부호·소수점은 숫자의 왼쪽·사이에 선다(-1234.5). 오른쪽에서 왼쪽으로 쓰는 페이지의 문단 방향을
+     그대로 받으면 약한 문자인 «-» 가 줄 끝으로 가 «1234.5-» 로 읽힌다. 입력 자체를 왼쪽에서 오른쪽으로 두고(내부 입력은
+     type=text 라 브라우저 기본도 못 받는다), 정렬만 페이지를 따른다 — 입력의 방향이 ltr 이면 end 가 오른쪽이다. */
+  :host([type="number"]) input {
+    direction: ltr;
+  }
+  :host([type="number"]:dir(rtl)) input {
+    text-align: end;
+  }
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;

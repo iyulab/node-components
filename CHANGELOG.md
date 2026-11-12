@@ -15,6 +15,11 @@
   Only one-line labels are isolated; a content box (`u-card`, `u-panel`, `u-dialog`, `u-alert`, `u-expander`) holds
   sentences and arbitrary markup and keeps following the page.
   Migration: none — the extra `bdi` lives inside the shadow tree, so no consumer selector can reach it.
+- **A number typed into `u-input type="number"` keeps its sign in front in a right-to-left page.** The field's inner input is
+  a text input (so the browser's own number handling does not apply), and in a right-to-left page it took the page as its
+  paragraph direction: `-1234.5` read `1234.5-`. The input is now left-to-right; only the alignment follows the page (the
+  digits still sit at the page's start edge, and the placeholder with them). A left-to-right page renders exactly as before.
+  `type="email"`, `url` and `tel` were measured and read correctly, so they are unchanged.
 
 ## [3.1.0] - 2026-11-12
 
