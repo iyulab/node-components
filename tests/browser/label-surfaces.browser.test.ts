@@ -43,6 +43,9 @@ const FOLLOWS_PAGE: Record<string, string> = {
 
 const VALUE = 'Blue Harbor Co.';
 
+/** What the last probe of each tag measured — a failure names the geometry, so a one-off result can be diagnosed from the log. */
+const measured: Record<string, string> = {};
+
 async function probe(tag: string): Promise<'isolated' | 'reversed' | 'not-rendered'> {
   const host = document.createElement('div');
   host.setAttribute('dir', 'rtl');
@@ -65,6 +68,12 @@ async function probe(tag: string): Promise<'isolated' | 'reversed' | 'not-render
     range.setEnd(node, node.data.length);
     const last = range.getBoundingClientRect();
     if (first.width === 0 && last.width === 0) return 'not-rendered';
+    measured[tag] = `first(l=${Math.round(first.left)}, t=${Math.round(first.top)}) last(l=${Math.round(last.left)}, t=${Math.round(last.top)}) display=${getComputedStyle(el).display} visibility=${getComputedStyle(el).visibility}`;
+    // The oracle compares the x of the first and the last character, so it only means something for text on one line that
+    // is shown — a value that wrapped (the last character on a later line, to the left of the first) or an element that is
+    // hidden (a closed floating surface) is not judged here.
+    if (Math.abs(last.top - first.top) > first.height / 2) return 'not-rendered';
+    if (getComputedStyle(el).visibility === 'hidden' || getComputedStyle(el).display === 'none') return 'not-rendered';
     return last.left > first.left ? 'isolated' : 'reversed';
   } finally {
     host.remove();
@@ -86,7 +95,7 @@ describe('components — every label surface keeps its value\'s direction in a r
       if (tag in FOLLOWS_PAGE) continue;
       if ((await probe(tag)) === 'reversed') reversed.push(tag);
     }
-    expect(reversed).toEqual([]);
+    expect(reversed.map((t) => `${t}: ${measured[t]}`)).toEqual([]);
   });
 
   it('NEGATIVE: the probe does reverse a surface that does not isolate (u-card)', async () => {
