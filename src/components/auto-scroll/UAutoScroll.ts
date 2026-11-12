@@ -6,6 +6,12 @@ import { HostAria } from "../../utilities/hostAria.js";
 import { styles } from "./UAutoScroll.styles.js";
 import { UNATTENDED_IDLE_MS } from "../../utilities/unattended.js";
 
+/** `u-auto-scroll` 의 움직임 — `continuous` 흐름 · `item` 한 항목씩. */
+export type AutoScrollMode = 'continuous' | 'item';
+
+/** `item` 에서 다음 항목까지 미끄러지는 시간(ms) — 읽히는 것은 멈춘 동안이라 짧고 일정하게 둔다. */
+const ITEM_GLIDE_MS = 600;
+
 /**
  * 넘치는 내용을 스스로 천천히 굴리는 상자 — 아무도 손대지 않는 화면(벽걸이 보드, 키오스크)에서 한 화면보다 긴 목록을
  * 끝까지 보이게 한다.
@@ -26,12 +32,6 @@ import { UNATTENDED_IDLE_MS } from "../../utilities/unattended.js";
  *
  * @slot - 굴릴 내용
  */
-/** `u-auto-scroll` 의 움직임 — `continuous` 흐름 · `item` 한 항목씩. */
-export type AutoScrollMode = 'continuous' | 'item';
-
-/** `item` 에서 다음 항목까지 미끄러지는 시간(ms) — 읽히는 것은 멈춘 동안이라 짧고 일정하게 둔다. */
-const ITEM_GLIDE_MS = 600;
-
 @customElement('u-auto-scroll')
 export class UAutoScroll extends UElement {
   static styles = [super.styles, styles];

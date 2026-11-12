@@ -10,6 +10,8 @@
     // 소스가 유일한 진실로 남으면서 게시본도 동작한다.
     "noEmit": false,
     "declaration": true,
+    // `cem-*.js` 는 소스가 JS 라 같은 글롭으로 산출한다(`.d.ts` 는 JSDoc 타입에서 나온다).
+    "allowJs": true,
     "outDir": "../dist/plugins"
   }
 }

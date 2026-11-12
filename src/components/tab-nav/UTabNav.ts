@@ -5,6 +5,9 @@ import { UElement } from "../UElement.js";
 import { UTab } from "../tab/UTab.js";
 import { styles } from "./UTabNav.styles.js";
 
+/** 탭 띠의 외형 — `line`(기본 — 밑줄) · `tiles`(같은 폭의 칸 — 현재 칸은 채운 면). */
+export type TabNavAppearance = 'line' | 'tiles';
+
 /**
  * 이동 링크의 탭 띠 — 저장된 보기(«열림 · 내 것 · 이번 주») 처럼 탭마다 URL 이 있는 자리.
  *
@@ -23,9 +26,6 @@ import { styles } from "./UTabNav.styles.js";
  * @cssprop --tab-nav-contrast - `tiles` 의 현재 칸 글자색 (기본: --u-primary-txt-color)
  * @cssprop --tab-nav-tile-min - `tiles` 의 칸 최소 폭 (기본 7rem) — 이보다 좁아지면 다음 줄로 넘어간다
  */
-/** 탭 띠의 외형 — `line`(기본 — 밑줄) · `tiles`(같은 폭의 칸 — 현재 칸은 채운 면). */
-export type TabNavAppearance = 'line' | 'tiles';
-
 @customElement('u-tab-nav')
 export class UTabNav extends UElement {
   static styles = [super.styles, styles];

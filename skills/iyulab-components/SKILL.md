@@ -172,3 +172,7 @@ set on the host yourself always wins and is never overwritten.
 - [`UFormControlElement<T>`](./references/extensions/form-control.md) — Base for form-associated controls; handles `disabled`, `readonly`, `invalid`, validation lifecycle
 - [`UFloatingElement`](./references/extensions/floating.md) — Base for anchored floating UI (popover, tooltip); wraps `@floating-ui/dom`
 - [`UOverlayElement`](./references/extensions/overlay.md) — Base for full-screen overlays (dialog, drawer); manages focus-trap, scroll-lock, ESC/backdrop close
+
+## Machine-readable reference
+
+The element surface is also published as a Custom Elements Manifest: the file named by the `customElements` field of this package's `package.json` (`dist/custom-elements.json`). It lists every element's attributes, properties, events (with the type of their `detail`), slots, CSS parts and CSS custom properties, generated from the source at build time. Read it instead of parsing the source when you need the exact surface of an element.

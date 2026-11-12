@@ -25,6 +25,8 @@ node_modules
 dist
 plugins/*.js
 plugins/*.d.ts
+# Custom Elements Manifest 모듈은 JSDoc 타입을 단 JS 소스다(산출물은 dist/plugins/) — 위 무시 규칙(옛 컴파일 산출물)에서 뺀다.
+!plugins/cem-*.js
 pnpm-lock.yaml
 
 # vitest browser-mode failure artifacts (screenshots, attachments)

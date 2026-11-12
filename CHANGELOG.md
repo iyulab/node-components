@@ -2,7 +2,27 @@
 
 ## [Unreleased]
 
+### Added
+
+- **`custom-elements.json` — a Custom Elements Manifest for every element.** The package now ships
+  `dist/custom-elements.json` (reachable as `@iyulab/components/dist/custom-elements.json`, and declared in the
+  `customElements` field of `package.json`) so editors, documentation tools and AI agents can read each element's attributes,
+  properties, events, slots, CSS parts and CSS custom properties without parsing the source. It is generated from the source at
+  build time (`npm run analyze`) and covers all 54 elements. Events are listed whether an element raises them with
+  `this.fire()` or `dispatchEvent()` — including from an arrow-function field — with the type of their `detail`
+  (`CustomEvent<USelectQueryChangeDetail>`); events documented with `@fires` keep their description. The file adds about
+  230 kB to the compressed package.
+- **Build helpers for a package that publishes its own manifest** (`@iyulab/components/plugins/cem-config.js`,
+  `cem-events-plugin.js`, `cem-check.js`). `cemConfig()` is the analyzer configuration this package uses, so a package that
+  builds on these elements gets the same manifest with one line in `custom-elements-manifest.config.mjs`;
+  `checkManifest({ root, manifest })` returns what in a generated manifest disagrees with the source (an element that is not
+  registered, a missing description, an event the analyzer invented or missed) for a package's own test.
+
 ### Fixed
+
+- **The class descriptions of `u-auto-scroll` and `u-tab-nav` were attached to a neighbouring type alias.** The comment block
+  sat above `AutoScrollMode` / `TabNavAppearance` instead of the class, so editors showed no description for either element and
+  their `@slot`, `@csspart` and `@cssprop` entries did not reach the generated documentation. No behaviour changes.
 
 - **A label keeps its own direction in a right-to-left page.** The text an app puts in `u-tag`, `u-chip`, `u-option`,
   `u-breadcrumb-item`, the trigger of a `u-select`, `u-button`, `u-menu-item`, `u-tree-item`, `u-checkbox`,

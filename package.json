@@ -25,6 +25,7 @@
   ],
   "type": "module",
   "types": "./dist/index.d.ts",
+  "customElements": "./dist/custom-elements.json",
   "engines": {
     "node": ">=20"
   },
@@ -54,9 +55,10 @@
     "test:webkit": "vitest run --project=webkit",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
-    "build": "npm run typecheck && eslint && npm run typecheck:plugins && vite build && npm run build:plugins && npm run test:react-types",
+    "build": "npm run typecheck && eslint && npm run typecheck:plugins && vite build && npm run analyze && npm run build:plugins && npm run test:react-types",
     "test:react-types": "tsc -p tsconfig.react-smoke.json",
     "typecheck:plugins": "tsc -p plugins/tsconfig.json",
+    "analyze": "cem analyze",
     "docs:cssprops": "node scripts/cssprops-doc.mjs --write",
     "docs:react-events": "node scripts/react-events-doc.mjs --write",
     "docs:tokens": "node scripts/design-tokens-doc.mjs --write",
@@ -87,6 +89,7 @@
     }
   },
   "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.1.1",
     "@types/react": "^19.3.0",

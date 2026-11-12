@@ -15,7 +15,11 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    // Custom Elements Manifest 모듈(`cem-*.js`)은 JSDoc 타입을 단 JS 다 — 분석기 CLI 가 설정에서 소스 그대로 읽는다.
+    "allowJs": true,
+    "checkJs": false,
+    "types": ["node"]
   },
-  "include": ["./**/*.ts"]
+  "include": ["./**/*.ts", "./cem-*.js"]
 }
