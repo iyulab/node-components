@@ -101,6 +101,20 @@ Locale.registerSearch('tr', (text, query, options) =>
   text.toLocaleLowerCase('tr').includes(query.toLocaleLowerCase('tr')) || defaultSearchMatch(text, query, options));
 ```
 
+### Text order
+
+`compareText(a, b, locale?)` orders two texts the way a table column should (`getCollator(locale?)` is the
+`Intl.Collator` behind it, one per locale, reusable as `array.sort(collator.compare)`):
+
+- Digit runs inside text compare as numbers — `A-2` before `A-10`, `9` before `10`.
+- Case and accents compare as the same letter, so rows that are equal keep their input order.
+- The locale is the app's `Locale.get()` (`<html lang>` → browser language → `en`) unless you pass one — **not**
+  the browser's default. One app therefore puts Hangul before or after Latin letters the same way for every user:
+  `Locale.set('ko')` puts it first. A malformed tag compares as English instead of throwing.
+
+`u-rich-table` (client mode), `flex-table`, the chat table block, `uw-table` and the `dimension-timeline` row
+groups all order text this way — use it for your own sorted lists instead of `localeCompare`.
+
 ## Example
 
 ```ts

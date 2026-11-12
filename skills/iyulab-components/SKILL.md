@@ -150,7 +150,7 @@ set on the host yourself always wins and is never overwritten.
 - [`IconRegistry`](./references/utilities/icons.md) — Register and resolve icon libraries
 - [`BrowserStorage`](./references/utilities/browser-storage.md) — Unified localStorage / Cookie API
 - [`converters`](./references/utilities/converters.md) — Lit property attribute converters (array, JSON, date, url…)
-- [`Locale`](./references/utilities/locale.md) — Validation-message locale registry and lookup utility · search matching (`matchesSearch` — Hangul jamo and initials)
+- [`Locale`](./references/utilities/locale.md) — Validation-message locale registry and lookup utility · search matching (`matchesSearch` — Hangul jamo and initials) · text order (`compareText` — digit runs as numbers, the app locale)
 - [`elements`](./references/utilities/elements.md) — Shadow-DOM-aware DOM query helpers
 - [`format`](./references/utilities/format.md) — Locale-aware number, currency and date formatting
 - [`number-format`](./references/utilities/number-format.md) — One number format for tables, sheets and widgets: spreadsheet codes or `Intl` options
