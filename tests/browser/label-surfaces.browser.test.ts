@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import '../../src/index.js';
 
 /**
@@ -46,7 +47,24 @@ const VALUE = 'Blue Harbor Co.';
 /** What the last probe of each tag measured — a failure names the geometry, so a one-off result can be diagnosed from the log. */
 const measured: Record<string, string> = {};
 
+/**
+ * A floating surface (u-tooltip) is anchored to its parent and opens when the pointer is over it. The one failure this probe ever
+ * had (a full run, never alone) measured a tooltip that was open — `display: block`, visible — in the middle of its transition, so
+ * the first and last character sat 3px apart. The pointer stays where the previous test file left it, which is the likely way a
+ * bare mount ends up under it; that was not reproduced (hovering the mount area first did not open it), so this is a precaution,
+ * not a proven fix: every probe parks the pointer in a corner nothing is mounted in. If the probe fails again, the message
+ * carries the geometry.
+ */
+async function parkPointer() {
+  const away = document.createElement('button');
+  away.style.cssText = 'position:fixed;right:0;bottom:0;width:12px;height:12px;padding:0';
+  document.body.appendChild(away);
+  await userEvent.hover(away);
+  away.remove();
+}
+
 async function probe(tag: string): Promise<'isolated' | 'reversed' | 'not-rendered'> {
+  await parkPointer();
   const host = document.createElement('div');
   host.setAttribute('dir', 'rtl');
   host.style.cssText = 'width:300px;padding:8px';
