@@ -20,6 +20,11 @@
 
 ### Fixed
 
+- **The calendar names the month its grid shows in every locale.** `u-calendar`'s month title and the grid's accessible name were
+  written in the locale's own calendar, but the grid and `value` are Gregorian. In `fa` the title read the Persian month (`آبان ۱۴۰۵`)
+  above a grid of November 2026, so a person and a screen reader were told another month; in `th` the title carried the Buddhist year
+  (`2569`) while the field next to it wrote `2026`. The title (and the "range start chosen" announcement) now use the Gregorian
+  calendar, as the date text already did. Locales whose default calendar is Gregorian are unchanged.
 - **The class descriptions of `u-auto-scroll` and `u-tab-nav` were attached to a neighbouring type alias.** The comment block
   sat above `AutoScrollMode` / `TabNavAppearance` instead of the class, so editors showed no description for either element and
   their `@slot`, `@csspart` and `@cssprop` entries did not reach the generated documentation. No behaviour changes.

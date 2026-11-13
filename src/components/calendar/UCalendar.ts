@@ -157,13 +157,15 @@ export class UCalendar extends UElement {
         ${months.map((month, i) => this.renderMonth(month, weekdayLabels, i === 0, i === months.length - 1, range))}
       </div>
       <span class="status" role="status">${this.anchor
-        ? Locale.getValue('rangeStartChosen', { date: formatDate(this.anchor, { dateStyle: 'long' }) })
+        ? Locale.getValue('rangeStartChosen', { date: formatDate(this.anchor, { dateStyle: 'long', calendar: 'gregory' }) })
         : ''}</span>
     `;
   }
 
   private renderMonth(month: Date, weekdayLabels: string[], first: boolean, last: boolean, range?: [Date, Date]) {
-    const monthLabel = formatDate(month, { year: 'numeric', month: 'long' });
+    // 격자는 그레고리력이다(`value` 는 그레고리력 ISO) — 제목도 같은 달력으로 읽어야 한다. 로케일 기본 달력(`fa` 페르시아력 · `th` 불교력)이면
+    // 제목이 격자와 다른 달 · 다른 연도를 말한다(사람과 화면 낭독기 둘 다).
+    const monthLabel = formatDate(month, { year: 'numeric', month: 'long', calendar: 'gregory' });
     return html`
       <div class="month" part="calendar-month">
         <div class="calendar-header" part="calendar-header">
