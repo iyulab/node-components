@@ -96,6 +96,14 @@
   Gregorian, as `value` and the calendar next to the field are — `th` now writes `02/10/2026`, `fa` `۲۰۲۶/۱۰/۰۲`. The ISO
   format and every locale that already wrote Latin digits in the Gregorian calendar (`en`, `ko`, `de`, `ja`, `he` …) are
   unchanged; `dateTextPattern` follows (`th` → `DD/MM/YYYY`).
+- **Form controls, `u-command-palette` and `u-rating` no longer log Lit's «scheduled an update after an update completed» in a development build.**
+  Three ordinary paths drew the element a second time and logged the warning in the console of every app: opening the command palette,
+  a form control clearing its error once the value became valid, and a `u-rating` whose value changed after a hover. The rating now
+  resets its hover preview before it draws, so that path is one draw. The palette and the form controls draw a second time for a reason
+  (the search it starts when opened, and the validity that the inner native control reports only after it is drawn), which is the
+  warning's own stated exception — they turn it off, with the reason in a comment.
+
+
 
 ## [3.1.0] - 2026-11-12
 

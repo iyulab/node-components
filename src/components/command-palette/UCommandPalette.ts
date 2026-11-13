@@ -108,6 +108,14 @@ let nextId = 0;
 export class UCommandPalette extends UOverlayElement {
   static styles: CSSResultGroup = [super.styles, styles];
 
+  // Lit 개발 모드의 «갱신 뒤 갱신» 경고(`change-in-update`)를 이 요소에서 끈다 — 열리면 검색어를 비우고 모든 출처에 빈 검색어를 묻는데
+  // (`updated()` 의 `open` 분기), 그 «불러오는 중» 상태는 열림이 낳는 부수 효과이고 결과는 비동기로 도착한다. `willUpdate()` 로 옮기면 출처
+  // 검색(네트워크)이 첫 그림 앞으로 가 순서가 바뀐다. 경고 문구 자신이 «다음 갱신이 이전 갱신의 부수 효과로만 예약될 수 있으면 예외» 라고
+  // 적는 경우다. (개발 빌드에만 있는 정적 메서드라 옵셔널 호출.)
+  static {
+    this.disableWarning?.('change-in-update');
+  }
+
   /** 항목을 내는 곳들 — 묶음은 이 순서다. 프로퍼티로만 준다. */
   @property({ attribute: false }) sources: CommandSource[] = [];
   /** 검색 칸의 자리표시 글. */

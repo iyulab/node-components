@@ -13,6 +13,15 @@ export abstract class UFormControlElement<T> extends UElement {
   static styles: CSSResultGroup = [super.styles, styles];
   static formAssociated = true;
 
+  // Lit 개발 모드의 «갱신 뒤 갱신» 경고(`change-in-update`)를 폼 컨트롤 전체에서 끈다 — 오류가 보이는 동안 값이 유효해져 `invalid` 를 걷는
+  // 경로의 둘째 갱신이 본질이라서다: 몇 컨트롤은 판정 근거로 안쪽 네이티브 요소의 `validity` 를 읽는데 그 요소는 렌더가 값을 내려보낸 뒤에야
+  // 바뀐다(`updated()` 의 `quietCheck`). 경고 문구 자신이 «다음 갱신이 이전 갱신의 부수 효과로만 예약될 수 있으면 예외» 라고 적는 경우다.
+  // 하위 클래스가 상속하므로 컨트롤마다 따로 끄지 않는다 — 속성에서 도출되는 값은 컨트롤 쪽이 `willUpdate()` 에서 계산한다.
+  // (개발 빌드에만 있는 정적 메서드라 옵셔널 호출.)
+  static {
+    this.disableWarning?.('change-in-update');
+  }
+
   /** 비활성 상태 */
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
   /**

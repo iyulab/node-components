@@ -53,8 +53,12 @@ export class URating extends UFormControlElement<number> {
     return !this.effectivelyDisabled && !this.readonly;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  /**
+   * 값이 바뀌면 호버 미리보기를 되돌리고 폼 값을 내보낸다 — 값에서만 정해지는 상태라 그리기 **전에** 맞춘다. `updated()` 에서 하면
+   * 호버한 뒤 클릭할 때마다 갱신이 한 번 더 예약된다(Lit 개발 모드 «갱신 뒤 갱신» 경고).
+   */
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
     if (changedProperties.has('value')) {
       this.onChangeValue();
