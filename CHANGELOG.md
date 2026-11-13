@@ -25,6 +25,13 @@
   The day cells now use the digits of the active locale: `fa` `۵`, `ar-EG` `٥`, `bn` `৫`. Locales that write Latin digits (`en`, `ko`,
   `de`, `ja`, `he` …) are unchanged. The value, `data-iso`, and the events still carry ISO text — only the label of the cell changes.
 
+- **The calendar week starts on the locale's first day of the week.** `u-date-picker`, `u-date-range-picker` and the calendar inside them
+  always opened the week on Sunday, so a `fa` or `ar-EG` page showed a Sunday-first grid and a `de`, `fr` or `ru` page did too. The
+  weekday row, the empty cells before the 1st and the Home/End keys now start the week where the locale does (read from
+  `Intl.Locale`): Saturday in `fa` and `ar-EG`, Monday in `de`, `fr`, `ru`, `en-GB`, Sunday in `en`, `ko`, `ja` and `th`. The
+  `thisWeek` and `lastWeek` presets of `u-date-range-picker` follow the same day. A browser that reports no week information keeps Sunday.
+  Pages that set no region and use `en`, `ko` or `ja` are unchanged.
+
 ### Fixed
 
 - **The calendar names the month its grid shows in every locale.** `u-calendar`'s month title and the grid's accessible name were

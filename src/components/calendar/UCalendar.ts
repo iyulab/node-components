@@ -7,17 +7,17 @@ import { UElement } from "../UElement.js";
 import { Locale, type LocaleTag } from "../../utilities/Locale.js";
 import { formatDate } from "../../utilities/format.js";
 import {
-  addDays, addMonths, daysInMonth, isDayUnavailable, isSameDay, monthDiff, parseISODate,
-  startOfMonth, toISODate, type DateDisabledFn,
+  addDays, addMonths, dayOfWeekIndex, daysInMonth, isDayUnavailable, isSameDay, monthDiff, parseISODate,
+  startOfMonth, toISODate, weekStartDay, type DateDisabledFn,
 } from "./dates.js";
 import { styles } from "./UCalendar.styles.js";
 
 import { delegate } from "../../utilities/listenInShadow.js";
-/** Cells to render for one month — leading `null`s pad the previous month's weekday offset. */
-function buildMonthGrid(month: Date): (Date | null)[] {
+/** Cells to render for one month — leading `null`s pad the previous month's offset from the locale's first day of the week. */
+function buildMonthGrid(month: Date, weekStart: number): (Date | null)[] {
   const first = startOfMonth(month);
   const cells: (Date | null)[] = [];
-  for (let i = 0; i < first.getDay(); i++) cells.push(null);
+  for (let i = 0; i < dayOfWeekIndex(first, weekStart); i++) cells.push(null);
   for (let d = 1; d <= daysInMonth(month); d++) cells.push(new Date(month.getFullYear(), month.getMonth(), d));
   return cells;
 }
@@ -34,11 +34,11 @@ function ordered(a: Date, b: Date): [Date, Date] {
   return a.getTime() <= b.getTime() ? [a, b] : [b, a];
 }
 
-/** 2023-01-01 was a Sunday — a fixed reference date that always yields Sun..Sat order regardless of today. */
-function getWeekdayLabels(locale?: LocaleTag): string[] {
+/** 2023-01-01 was a Sunday — a fixed reference date, so the labels never depend on today; the row starts at the locale's first day. */
+function getWeekdayLabels(weekStart: number, locale?: LocaleTag): string[] {
   const formatter = new Intl.DateTimeFormat(locale ?? Locale.get(), { weekday: 'narrow' });
   const sunday = new Date(2023, 0, 1);
-  return Array.from({ length: 7 }, (_, i) => formatter.format(addDays(sunday, i)));
+  return Array.from({ length: 7 }, (_, i) => formatter.format(addDays(sunday, weekStart + i)));
 }
 
 export interface CalendarDaySelectDetail {
@@ -126,6 +126,8 @@ export class UCalendar extends UElement {
 
   /** Writes a day-of-month in the active locale's digits — rebuilt every render, so a locale change is picked up. */
   private dayNumber: Intl.NumberFormat = new Intl.NumberFormat(Locale.get(), { useGrouping: false });
+  /** 이 렌더에서 쓰는 주의 첫 요일(0 = 일 … 6 = 토) — 머리글 · 격자 앞 빈 칸 · Home/End 가 한 값을 읽는다. */
+  private weekStart = 0;
 
   /**
    * Shows the month containing `date` (ISO or `Date`) as the first visible month and makes
@@ -153,7 +155,9 @@ export class UCalendar extends UElement {
 
   render() {
     const months = Array.from({ length: Math.max(1, this.visibleMonths) }, (_, i) => addMonths(this.viewDate, i));
-    const weekdayLabels = getWeekdayLabels();
+    // 한 주는 로케일이 여는 요일에서 시작한다(`fa` 토 · `de` 월 · `en` 일) — 머리글 · 앞 빈 칸 · Home/End 가 같은 값을 읽는다.
+    this.weekStart = weekStartDay(Locale.get());
+    const weekdayLabels = getWeekdayLabels(this.weekStart);
     const range = this.shownRange();
     // 날짜 숫자는 로케일의 숫자 체계로 쓴다(`fa` ۵ · `ar-EG` ٥ · `bn` ৫) — 날짜 입력 칸이 이미 그 숫자로 쓰고 읽으므로 한 화면의 두 표기를 없앤다.
     // `Intl.DateTimeFormat` 의 `day` 는 `ko` 에서 «5일» 이 되므로 숫자만 내는 `NumberFormat` 으로. 한 번 만들어 모든 셀이 쓴다.
@@ -188,7 +192,7 @@ export class UCalendar extends UElement {
         </div>
         <div class="calendar-grid" part="calendar-grid" role="grid" aria-label=${monthLabel}
           aria-multiselectable=${ifDefined(this.selection === 'range' ? 'true' : undefined)}>
-          ${chunkWeeks(buildMonthGrid(month)).map(week => html`
+          ${chunkWeeks(buildMonthGrid(month, this.weekStart)).map(week => html`
             <div class="calendar-week" part="calendar-week" role="row">
               ${week.map(date => date ? this.renderDay(date, range) : html`<span class="day-empty" role="gridcell" aria-hidden="true"></span>`)}
             </div>
@@ -274,9 +278,10 @@ export class UCalendar extends UElement {
   private handleDayKeydown = (e: KeyboardEvent, date: Date) => {
     // 격자는 읽는 방향으로 흐른다 — RTL 은 «다음 날» 이 화면의 왼쪽이다.
     const forward = this.isRtl ? -1 : 1;
+    const column = dayOfWeekIndex(date, this.weekStart); // Home/End 는 «그 주»의 처음/끝 — 주가 여는 요일은 로케일이 정한다
     const deltas: Record<string, number> = {
       ArrowRight: forward, ArrowLeft: -forward, ArrowDown: 7, ArrowUp: -7,
-      Home: -date.getDay(), End: 6 - date.getDay(),
+      Home: -column, End: 6 - column,
     };
     if (e.key in deltas) {
       e.preventDefault();

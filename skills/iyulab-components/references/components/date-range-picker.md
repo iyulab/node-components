@@ -22,7 +22,7 @@ range is half picked drops the anchor; Escape again closes the calendar. When th
 picked, an off-screen status region announces it and asks for the end date. A reversed value set from
 code is put in order (no `change`).
 
-> The calendar week always starts on Sunday, regardless of locale.
+> The calendar week starts on the locale's first day of the week (Monday in `de` `fr` `ru`, Saturday in `fa` `ar-EG`, Sunday in `en` `ko` `ja`); a browser that reports no week information gets Sunday. `thisWeek` and `lastWeek` follow it.
 
 **Typing a range.** The field is a text box: type `2026-10-01 ~ 2026-10-31` (also `–`, ` - `, the ISO
 interval `2026-10-01/2026-10-31`, a short second day such as `10-31` — the first day's year, or the
@@ -101,8 +101,8 @@ so "Last 7 days" is always the last seven days.
 | `last30Days` | the 30 days ending today |
 | `last3Months` | the 3 months ending today (from the day after the same date 3 months back; a day the earlier month lacks clamps to its end) |
 | `last6Months` | the 6 months ending today, counted the same way |
-| `thisWeek` | Sunday–Saturday of this week |
-| `lastWeek` | Sunday–Saturday of last week |
+| `thisWeek` | the seven days of this week, from the locale's first day of the week |
+| `lastWeek` | the seven days of last week, counted the same way |
 | `thisMonth` | the whole of this month |
 | `lastMonth` | the whole of last month |
 | `thisYear` | January 1 – December 31 of this year |

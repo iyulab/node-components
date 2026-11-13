@@ -1,5 +1,5 @@
 import { Locale, type LocaleMessageKey } from "../../utilities/Locale.js";
-import { addDays, addMonths, daysInMonth, parseISODate, toISODate } from "../calendar/dates.js";
+import { addDays, addMonths, daysInMonth, parseISODate, startOfWeek, toISODate, weekStartDay } from "../calendar/dates.js";
 
 /** A built-in quick range, named so it can be listed in the `presets` attribute. */
 export type DateRangePresetName =
@@ -30,10 +30,9 @@ export interface ResolvedPreset {
   end: string;
 }
 
-type Builtin = { key: LocaleMessageKey; range: (today: Date) => [Date, Date] };
+/** `weekStart` is the locale's first day of the week (0 = Sunday … 6 = Saturday) — the same value the calendar grid draws. */
+type Builtin = { key: LocaleMessageKey; range: (today: Date, weekStart: number) => [Date, Date] };
 
-// Weeks start on Sunday — the same convention the calendar grid draws.
-const startOfWeek = (d: Date) => addDays(d, -d.getDay());
 const endOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), daysInMonth(d));
 /**
  * The first day of the `n` months ending `d`: the same day `n` months back, plus one. A day the earlier month lacks
@@ -52,8 +51,8 @@ export const BUILTIN_PRESETS: Record<DateRangePresetName, Builtin> = {
   last30Days: { key: 'last30Days', range: t => [addDays(t, -29), t] },
   last3Months: { key: 'last3Months', range: t => [monthsEnding(t, 3), t] },
   last6Months: { key: 'last6Months', range: t => [monthsEnding(t, 6), t] },
-  thisWeek: { key: 'thisWeek', range: t => [startOfWeek(t), addDays(startOfWeek(t), 6)] },
-  lastWeek: { key: 'lastWeek', range: t => [addDays(startOfWeek(t), -7), addDays(startOfWeek(t), -1)] },
+  thisWeek: { key: 'thisWeek', range: (t, w) => [startOfWeek(t, w), addDays(startOfWeek(t, w), 6)] },
+  lastWeek: { key: 'lastWeek', range: (t, w) => [addDays(startOfWeek(t, w), -7), addDays(startOfWeek(t, w), -1)] },
   thisMonth: { key: 'thisMonth', range: t => [addMonths(t, 0), endOfMonth(t)] },
   lastMonth: { key: 'lastMonth', range: t => [addMonths(t, -1), endOfMonth(addMonths(t, -1))] },
   thisYear: { key: 'thisYear', range: t => [new Date(t.getFullYear(), 0, 1), new Date(t.getFullYear(), 11, 31)] },
@@ -71,11 +70,12 @@ export function resolvePresets(
   onUnknown?: (name: string) => void,
 ): ResolvedPreset[] {
   const out: ResolvedPreset[] = [];
+  const weekStart = weekStartDay(Locale.get());
   for (const option of options) {
     if (typeof option === 'string') {
       const builtin = BUILTIN_PRESETS[option as DateRangePresetName];
       if (!builtin) { onUnknown?.(option); continue; }
-      const [a, b] = builtin.range(today);
+      const [a, b] = builtin.range(today, weekStart);
       out.push(ordered(Locale.getValue(builtin.key), toISODate(a), toISODate(b)));
     } else {
       const [a, b] = option.range();

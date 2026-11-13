@@ -16,7 +16,7 @@ time, so `2026-09-06T22:22:34Z` shows `2026-09-07 07:22` in Seoul and picking th
 same moment one day later. The value keeps the string it was given until the person changes it.
 Form-associated.
 
-> The calendar week always starts on Sunday, regardless of locale.
+> The calendar week starts on the locale's first day of the week (Monday in `de` `fr` `ru`, Saturday in `fa` `ar-EG`, Sunday in `en` `ko` `ja`); a browser that reports no week information gets Sunday.
 
 **Typing a date (`mode="date"`).** The field is a text box. Type `2026-10-02`, `2026/10/2`,
 `20261002`, or just `10-02` (this year), then press Enter or leave the field. The text shows as

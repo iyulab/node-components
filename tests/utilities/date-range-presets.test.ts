@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { resolvePresets, BUILTIN_PRESETS } from '../../src/components/date-range-picker/presets.js';
 import { Locale } from '../../src/utilities/Locale.js';
 
-// 2026-03-18 is a Wednesday. Weeks start on Sunday (the calendar grid's convention).
+// 2026-03-18 is a Wednesday. These run under `en`, whose week starts on Sunday (other locales: `week-start.test.ts`).
 const TODAY = new Date(2026, 2, 18);
 const iso = (name: keyof typeof BUILTIN_PRESETS) => resolvePresets([name], TODAY)[0];
 

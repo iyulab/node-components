@@ -54,11 +54,10 @@ export type { DateDisabledFn } from "../calendar/dates.js";
  * local UTC offset, so the value is unconditionally valid regardless of how coarse the time
  * input was.
  *
- * The calendar week always starts on Sunday, regardless of locale — harmless for the
- * locales this library currently ships (en/ko), but not correct for locales where Monday
- * (most of Europe) or Saturday is conventional. Fix when a consumer needs it: derive the
- * first day of week from `Intl.Locale(locale).weekInfo?.firstDay`, falling back to Sunday
- * where unsupported.
+ * The calendar week starts on the active locale's first day of the week — Monday for `de` `fr` `ru`,
+ * Saturday for `fa` `ar-EG`, Sunday for `en` `ko` `ja` — read from `Intl.Locale`. The weekday row, the
+ * empty cells before the 1st and the Home/End keys all follow it. A browser that does not report week
+ * information gets Sunday.
  *
  * Exposes a `:state(open)` custom state (via `ElementInternals.states`) while the calendar
  * popover is showing — style with `u-date-picker:state(open)::part(container)`. Unlike

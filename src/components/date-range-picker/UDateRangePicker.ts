@@ -84,8 +84,8 @@ const dayPart = (half: string) => splitDateTime(half).day;
  * whose range reaches outside `min`/`max` is disabled; the one equal to the current range is
  * marked `aria-pressed="true"`. Relative ranges are computed when drawn.
  *
- * The calendar week starts on Sunday regardless of locale (same as `u-date-picker`); `thisWeek` and
- * `lastWeek` follow it.
+ * The calendar week starts on the active locale's first day of the week (same as `u-date-picker`);
+ * `thisWeek` and `lastWeek` follow it.
  *
  * Exposes a `:state(open)` custom state while the calendar is showing.
  *

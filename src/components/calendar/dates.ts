@@ -36,6 +36,38 @@ export function daysInMonth(date: Date): number {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 }
 
+/** `Intl.Locale` 의 주 정보 — 표준은 `getWeekInfo()` 메서드이고, 먼저 나간 엔진은 `weekInfo` 접근자로 냈다. */
+interface LocaleWeekInfo { firstDay?: number }
+type LocaleWithWeekInfo = Intl.Locale & { getWeekInfo?: () => LocaleWeekInfo; weekInfo?: LocaleWeekInfo };
+
+/**
+ * 로케일이 한 주를 여는 요일 — `Date#getDay()` 와 같은 수(0 = 일 … 6 = 토).
+ *
+ * CLDR 의 지역 자료를 `Intl.Locale` 로 읽는다(`fa` `ar-EG` 는 토요일, `de` `fr` `ru` 는 월요일, `en` `ko` `ja` 는 일요일).
+ * 지역이 없는 태그(`en` · `ar`)는 엔진이 «가장 그럴듯한 지역»으로 채워 답한다. 엔진이 주 정보를 내지 않거나 태그를 읽지
+ * 못하면 일요일 — 이 달력이 로케일을 따르기 전까지 늘 그랬던 값이다.
+ */
+export function weekStartDay(locale: string): number {
+  try {
+    const loc = new Intl.Locale(locale) as LocaleWithWeekInfo;
+    const info = typeof loc.getWeekInfo === 'function' ? loc.getWeekInfo() : loc.weekInfo;
+    const first = info?.firstDay; // 1 = 월 … 7 = 일 (ISO 8601 요일 번호)
+    return typeof first === 'number' && first >= 1 && first <= 7 ? first % 7 : 0;
+  } catch {
+    return 0;
+  }
+}
+
+/** `date` 가 그 주의 몇 번째 칸인가(0 = 첫 칸) — `weekStart` 는 {@link weekStartDay} 의 값. */
+export function dayOfWeekIndex(date: Date, weekStart: number): number {
+  return (date.getDay() - weekStart + 7) % 7;
+}
+
+/** `date` 가 속한 주의 첫날. */
+export function startOfWeek(date: Date, weekStart: number): Date {
+  return addDays(date, -dayOfWeekIndex(date, weekStart));
+}
+
 /** 두 날의 달 차이(`b` 가 `a` 보다 몇 달 뒤인가). 일자는 무시한다. */
 export function monthDiff(a: Date, b: Date): number {
   return (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
