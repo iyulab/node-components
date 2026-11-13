@@ -34,6 +34,10 @@
 
 ### Fixed
 
+- **The keyboard focus ring on a calendar day is visible on all four sides inside a selected range.** In `u-date-range-picker` (and
+  the calendar inside `u-date-picker`), the day that holds focus draws a 2px ring outside its box, and the next day's range-band
+  background was painted over it, so the ring on the start day (or any day in the band) lost its trailing edge and read as a
+  partly missing outline. The focused day is now raised above its neighbours.
 - **The calendar names the month its grid shows in every locale.** `u-calendar`'s month title and the grid's accessible name were
   written in the locale's own calendar, but the grid and `value` are Gregorian. In `fa` the title read the Persian month (`آبان ۱۴۰۵`)
   above a grid of November 2026, so a person and a screen reader were told another month; in `th` the title carried the Buddhist year

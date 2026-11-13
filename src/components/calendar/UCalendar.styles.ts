@@ -86,6 +86,9 @@ export const styles = css`
   .day:focus-visible {
     outline: none;
     box-shadow: 0 0 0 2px var(--u-focus-ring-color, #1565C0);
+    /* 링은 상자 바깥에 그려지므로, 문서 순서에서 뒤에 오는 이웃 날(범위의 띠 배경 · 선택 원)이 링 한 변을 덮는다 — 초점 날을 이웃 위로 올린다. */
+    position: relative;
+    z-index: 1;
   }
   .day[data-today] {
     font-weight: 700;
