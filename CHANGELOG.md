@@ -31,6 +31,7 @@
   `Intl.Locale`): Saturday in `fa` and `ar-EG`, Monday in `de`, `fr`, `ru`, `en-GB`, Sunday in `en`, `ko`, `ja` and `th`. The
   `thisWeek` and `lastWeek` presets of `u-date-range-picker` follow the same day. A browser that reports no week information keeps Sunday.
   Pages that set no region and use `en`, `ko` or `ja` are unchanged.
+- **Runtime dependency ranges follow the current patch releases** (`focus-trap` `^8.2.4`, `tabbable` `^6.5.1`). No behaviour change.
 
 ### Fixed
 
