@@ -54,7 +54,7 @@ No drag-and-drop in this version — it is a minimal wrapper (trigger + status +
 | `label` | `string` | — | — | Label text |
 | `description` | `string` | — | — | Helper text below the control |
 | `descriptionDisplay` | `'inline' \| 'hint'` | — | — | Attribute `description-display`. This field only — `hint` puts the description in a tooltip beside the label, `inline` under the control. Empty: the app-wide `UField.descriptionDisplay` |
-| `validationMessage` | `string` | — | — | Custom validation message |
+| `validationMessage` | `string` | — | — | Error text shown while `invalid` — replaces the message the browser computed (`validation-message="…"` in a template). Text only: it does not make the value invalid; `setCustomValidity()` does that |
 
 ## Methods
 

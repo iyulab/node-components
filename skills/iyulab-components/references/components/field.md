@@ -35,6 +35,11 @@ is copied onto the slotted element as `aria-label` (and `description` as `aria-d
 label and the accessible name disagree (WCAG SC 2.5.3 Label in Name). Setting `label` on *both*
 renders the label twice; a development-mode console warning points at that spot.
 
+**Give the error text in one place too.** A `u-input`, `u-textarea`, `u-select` or date picker draws its own message when it is
+`invalid` — the one the browser computed (`This field is required`) or the one you gave it with `validation-message`. Put
+`validation-message` on a `u-field` around such a control and both lines show under it. Set the text on the control
+(`<u-input invalid validation-message="Already taken">`), or on the `u-field` around a plain native control, which draws none.
+
 **A label over several controls, or over one that names itself, names the group.** With two or more
 controls slotted (a row of choice buttons), or a single button, link, checkbox, switch or radio that
 has its own text, the field becomes a `group` named by the label (and described by `description`);

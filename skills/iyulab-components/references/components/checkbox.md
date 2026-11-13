@@ -42,7 +42,7 @@ Checkbox with `indeterminate` state support. Form-associated (`formAssociated = 
 | `name` | `string` | — | — | Form field name |
 | `value` | `string` | — | — | Submitted value |
 | `label` | `string` | — | — | Label (alternative to slot) |
-| `validationMessage` | `string` | — | — | Custom validation message |
+| `validationMessage` | `string` | — | — | Error text shown while `invalid` — replaces the message the browser computed (`validation-message="…"` in a template). Text only: it does not make the value invalid; `setCustomValidity()` does that |
 
 ## Methods
 

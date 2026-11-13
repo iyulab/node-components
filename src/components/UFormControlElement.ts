@@ -88,24 +88,48 @@ export abstract class UFormControlElement<T> extends UElement {
   }
 
   /**
-   * 지금 `internals`에 설정된 유효성 메시지입니다. `setValidity()`가 계산한 값을
-   * 그대로 반영하는 읽기 전용 파생값이며, 별도로 저장하지 않는다.
-   * ElementInternals를 지원하지 않는 브라우저에서는 빈 문자열을 반환한다.
+   * `invalid` 일 때 보이는 오류 문구 — `u-field` 의 `validation-message` 와 같은 뜻이다.
+   *
+   * **읽으면** 지금 보일 문구다: 직접 준 문구가 있으면 그것, 없으면 `internals` 에 `setValidity()` 가 적어 둔 문구
+   * (ElementInternals 가 없으면 빈 문자열). **쓰면** 그 문구가 브라우저·컨트롤이 계산한 문구를 **대신**한다 — 칸마다
+   * 서버가 준 오류를 템플릿에서 선언형으로 줄 때 쓴다(`invalid` 와 함께). 비우면 계산된 문구로 돌아간다.
+   *
+   * ⚠문구만 바꾼다 — **유효한지 아닌지는 건드리지 않는다**(제출을 막지도 `invalid` 를 켜지도 않는다). 값이 틀렸다고
+   * 폼에 알리려면 `setCustomValidity()` 를 쓴다.
    */
+  @property({ type: String, attribute: 'validation-message', noAccessor: true })
   get validationMessage(): string {
-    return this.internals?.validationMessage ?? '';
+    return this.messageOverride || this.internals?.validationMessage || '';
   }
+  set validationMessage(value: string | null | undefined) {
+    const old = this.messageOverride;
+    this.messageOverride = value ?? '';
+    this.requestUpdate('validationMessage', old);
+  }
+
+  /** 직접 준 오류 문구(`validationMessage` 에 쓴 값). 비어 있으면 계산된 문구를 쓴다. */
+  private messageOverride = '';
 
   /** `setCustomValidity()`로 주입된 커스텀 메시지. 비어있으면 커스텀 메시지가 없는 상태. */
   private customMessage = '';
+
+  /** 첫 렌더 전에 들어온 `setCustomValidity()` — 안쪽 컨트롤이 아직 없어 첫 렌더 뒤에 반영한다. */
+  private customMessagePending = false;
 
   /**
    * 네이티브 `HTMLInputElement.setCustomValidity()`와 동일한 API입니다.
    * 상태(및 `internals`)만 갱신할 뿐 화면은 건드리지 않는다 — UI 반영은 항상 `validate()`의 몫이다.
    * 빈 문자열을 넘기면 해제되어 원래 자동 계산된 메시지로 돌아간다.
+   *
+   * 첫 렌더 전에 불러도 된다(`connectedCallback` 앞이어도) — 검증이 참조하는 안쪽 컨트롤이 아직 없으므로 문구만 받아 두고
+   * 첫 렌더 직후에 반영한다.
    */
   public setCustomValidity(message: string): void {
     this.customMessage = message;
+    if (!this.hasUpdated) {
+      this.customMessagePending = true;
+      return;
+    }
     this.setValidity();
   }
 
@@ -231,6 +255,12 @@ export abstract class UFormControlElement<T> extends UElement {
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
+
+    // 첫 렌더 전에 받아 둔 `setCustomValidity()` 를 이제 반영한다 — 안쪽 컨트롤이 생겼다.
+    if (this.customMessagePending) {
+      this.customMessagePending = false;
+      this.setValidity();
+    }
 
     // internals.setValidity()는 갱신하되, 화면의 validationMessage 재렌더는 강제하지 않는다 —
     // 재렌더가 필요하면 validate()를 호출하는 쪽(blur 등)에서 명시적으로 처리한다.

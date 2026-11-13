@@ -34,6 +34,20 @@
 
 ### Fixed
 
+- **`validationMessage` on the form controls can be set, as the docs said.** The property tables of `u-input`, `u-textarea`, `u-select`,
+  `u-date-picker`, `u-date-range-picker`, `u-file-input` and `u-checkbox` listed `validationMessage` ("Custom validation message")
+  and `validation-message` worked on `u-field`, but the controls only had a getter, so `.validationMessage=${text}` in a template
+  threw `TypeError: Cannot set property validationMessage … which has only a getter` on every render. It is now a property with the
+  attribute `validation-message` on every form control, with the same meaning as on `u-field`: the text shown while the control is
+  `invalid`, replacing the message the browser computed. Set it to an empty string to go back to the computed message. It changes
+  the text only — it does not make the value invalid or block a form submit; `setCustomValidity()` is still the call that does.
+- **`setCustomValidity()` can be called before the control has rendered.** Called on an element that was just created (before it is
+  connected or has drawn once), it read the inner input too early and logged a development-mode `@query'd field … accessed before
+  the first update` warning. The message is now taken at once and applied right after the first render.
+- **The docs say where the error text goes.** A control that draws its own field box (`u-input`, `u-textarea`, `u-select`, the date
+  pickers) shows its own error line when it is `invalid`, so `validation-message` on both that control and a `u-field` around it shows
+  two lines. `u-field`'s docs now ask for the text in one place, like the label, and the property tables describe `validationMessage`
+  as it works.
 - **The keyboard focus ring on a calendar day is visible on all four sides inside a selected range.** In `u-date-range-picker` (and
   the calendar inside `u-date-picker`), the day that holds focus draws a 2px ring outside its box, and the next day's range-band
   background was painted over it, so the ring on the start day (or any day in the band) lost its trailing edge and read as a

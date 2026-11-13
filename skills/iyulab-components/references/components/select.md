@@ -58,7 +58,7 @@ Options of different kinds can be grouped under headings with [`u-option-group`]
 | `label` | `string` | — | — | Field label |
 | `description` | `string` | — | — | Helper text |
 | `descriptionDisplay` | `'inline' \| 'hint'` | — | — | Attribute `description-display`. This field only — `hint` puts the description in a tooltip beside the label, `inline` under the control. Empty: the app-wide `UField.descriptionDisplay` |
-| `validationMessage` | `string` | — | — | Custom validation message |
+| `validationMessage` | `string` | — | — | Error text shown while `invalid` — replaces the message the browser computed (`validation-message="…"` in a template). Text only: it does not make the value invalid; `setCustomValidity()` does that |
 
 ## Events
 
