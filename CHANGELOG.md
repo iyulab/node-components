@@ -18,6 +18,13 @@
   `checkManifest({ root, manifest })` returns what in a generated manifest disagrees with the source (an element that is not
   registered, a missing description, an event the analyzer invented or missed) for a package's own test.
 
+### Changed
+
+- **The calendar writes its day numbers in the locale's own digits.** `u-calendar` drew every day with Latin digits while the date
+  text field beside it already wrote the date in the locale's digits (`۲۰۲۶/۱۱/۰۵` in `fa`), so one picker showed two numeral systems.
+  The day cells now use the digits of the active locale: `fa` `۵`, `ar-EG` `٥`, `bn` `৫`. Locales that write Latin digits (`en`, `ko`,
+  `de`, `ja`, `he` …) are unchanged. The value, `data-iso`, and the events still carry ISO text — only the label of the cell changes.
+
 ### Fixed
 
 - **The calendar names the month its grid shows in every locale.** `u-calendar`'s month title and the grid's accessible name were

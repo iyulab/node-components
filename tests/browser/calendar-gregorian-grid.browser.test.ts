@@ -38,3 +38,37 @@ describe('UCalendar — the month title names the month the Gregorian grid shows
     expect(gridName(el), `${locale}: grid accessible name`).toBe(gregorianTitle(locale, '2026-11-05'));
   });
 });
+
+const dayTexts = (el: UCalendar) =>
+  [...el.shadowRoot!.querySelectorAll<HTMLElement>('.day[data-iso]')].map(b => b.textContent!.trim());
+
+describe('UCalendar — the day numbers use the locale\'s digits', () => {
+  afterEach(() => { Locale.set('en'); document.body.innerHTML = ''; });
+
+  // The date text field writes a date in the locale's digits (۲۰۲۶/۱۱/۰۵), so the grid beside it must not write the day in Latin ones.
+  // `ko` is here because `Intl.DateTimeFormat`'s `day` writes «5일» there: the cell must carry the number alone.
+  it.each(['fa', 'ar-EG', 'bn', 'ko', 'en'])('%s: every cell is the day number in that locale\'s digits', async (locale) => {
+    Locale.set(locale);
+    const el = await mount('2026-11-05');
+    const expected = Array.from({ length: 30 }, (_, i) => new Intl.NumberFormat(locale, { useGrouping: false }).format(i + 1));
+    expect(dayTexts(el), `${locale}: day cells`).toEqual(expected);
+  });
+
+  it('the Latin digits stay for a locale that writes them', async () => {
+    Locale.set('en');
+    const el = await mount('2026-11-05');
+    expect(dayTexts(el)[0]).toBe('1');
+    expect(dayTexts(el)[29]).toBe('30');
+  });
+
+  it('a locale change redraws the numbers', async () => {
+    Locale.set('en');
+    const el = await mount('2026-11-05');
+    expect(dayTexts(el)[4]).toBe('5');
+    Locale.set('fa');
+    el.requestUpdate();
+    await el.updateComplete;
+    expect(dayTexts(el)[4]).toBe(new Intl.NumberFormat('fa', { useGrouping: false }).format(5));
+    expect(dayTexts(el)[4]).not.toBe('5');
+  });
+});

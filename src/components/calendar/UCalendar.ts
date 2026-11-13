@@ -124,6 +124,9 @@ export class UCalendar extends UElement {
   // the header button the user just activated.
   private grabFocusOnUpdate = false;
 
+  /** Writes a day-of-month in the active locale's digits — rebuilt every render, so a locale change is picked up. */
+  private dayNumber: Intl.NumberFormat = new Intl.NumberFormat(Locale.get(), { useGrouping: false });
+
   /**
    * Shows the month containing `date` (ISO or `Date`) as the first visible month and makes
    * that day the roving-tabindex target. Does not move DOM focus — call `focusDay()` for that.
@@ -152,6 +155,9 @@ export class UCalendar extends UElement {
     const months = Array.from({ length: Math.max(1, this.visibleMonths) }, (_, i) => addMonths(this.viewDate, i));
     const weekdayLabels = getWeekdayLabels();
     const range = this.shownRange();
+    // 날짜 숫자는 로케일의 숫자 체계로 쓴다(`fa` ۵ · `ar-EG` ٥ · `bn` ৫) — 날짜 입력 칸이 이미 그 숫자로 쓰고 읽으므로 한 화면의 두 표기를 없앤다.
+    // `Intl.DateTimeFormat` 의 `day` 는 `ko` 에서 «5일» 이 되므로 숫자만 내는 `NumberFormat` 으로. 한 번 만들어 모든 셀이 쓴다.
+    this.dayNumber = new Intl.NumberFormat(Locale.get(), { useGrouping: false });
     return html`
       <div class="months" @pointerleave=${this.handlePointerLeave}>
         ${months.map((month, i) => this.renderMonth(month, weekdayLabels, i === 0, i === months.length - 1, range))}
@@ -223,7 +229,7 @@ export class UCalendar extends UElement {
         @keydown=${(e: KeyboardEvent) => this.handleDayKeydown(e, date)}
         @focus=${() => { this.focusedDate = date; }}
         @pointerenter=${() => { if (this.anchor) this.hoverDate = date; }}
-      >${date.getDate()}</button>
+      >${this.dayNumber.format(date.getDate())}</button>
     `;
   }
 
