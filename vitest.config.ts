@@ -15,6 +15,7 @@ const WEBKIT_AXIS = [
   'focus-ring-clipped', 'overlay-initial-focus', 'popover-autofocus-descendant', 'group-tab-stop', 'chip-tab-remove-keyboard',
   'chip-selectable-keyboard', 'date-picker-focus-hold', 'date-picker-keyboard', 'popover-scroll-dismiss', 'radio-select-keyboard',
   'select-change-semantics', 'auto-scroll', 'popover-contextmenu-key',
+  'calendar-week-start', 'calendar-range-focus-ring',
 ];
 
 export default defineConfig({
