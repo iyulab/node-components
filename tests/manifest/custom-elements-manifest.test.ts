@@ -48,6 +48,45 @@ describe('checkManifest', () => {
     modules: [{ path: 'src/components/select/USelect.ts', declarations: [{ kind: 'class', name: 'USelect', tagName: 'u-select', description, events }] }],
   });
 
+  describe('enumerated attributes — the accepted values are in the manifest', () => {
+    interface Member { kind?: string; name?: string; static?: boolean; type?: { text: string } }
+    interface ClassDecl extends Declaration { members?: Member[]; attributes?: { name?: string; fieldName?: string; type?: { text: string } }[] }
+    const classOf = (name: string) =>
+      manifest.modules.flatMap(m => (m.declarations ?? []) as ClassDecl[]).find(d => d.name === name)!;
+
+    it('spells the values of a closed list instead of the alias name, on the field and on the attribute', () => {
+      const button = classOf('UButton');
+      const appearance = '"solid" | "soft" | "outlined" | "plain" | "link"';
+      expect(button.members!.find(m => m.name === 'appearance')!.type!.text).toBe(appearance);
+      expect(button.attributes!.find(a => a.name === 'appearance')!.type!.text).toBe(appearance);
+      expect(button.members!.find(m => m.name === 'size')!.type!.text).toBe('"sm" | "md" | "lg"');
+    });
+
+    it('keeps `undefined` on an optional attribute', () => {
+      const color = classOf('UButton').members!.find(m => m.name === 'color')!.type!.text;
+      expect(color.startsWith('"neutral" | "primary"')).toBe(true);
+      expect(color.endsWith(' | undefined')).toBe(true);
+    });
+
+    it('puts the values on the class that declares the attribute (a base class the elements inherit from)', () => {
+      expect(classOf('UFormControlElement').members!.find(m => m.name === 'descriptionDisplay')!.type!.text).toBe('"inline" | "hint" | undefined');
+    });
+
+    it('leaves the implementation detail `static enumerated` out of every class', () => {
+      const withIt = manifest.modules
+        .flatMap(m => (m.declarations ?? []) as ClassDecl[])
+        .filter(d => d.members?.some(m => m.name === 'enumerated'))
+        .map(d => d.name);
+      expect(withIt).toEqual([]);
+    });
+
+    it('NEGATIVE: an attribute without a list keeps the type as written (an open vocabulary, a boolean)', () => {
+      const iconButton = classOf('UIconButton');
+      expect(iconButton.members!.find(m => m.name === 'tooltipPlacement')!.type!.text).toBe('Placement');
+      expect(classOf('UButton').members!.find(m => m.name === 'rounded')!.type!.text).toBe('boolean');
+    });
+  });
+
   it('NEGATIVE: reports an event invented from a variable name, a missing description, and a missing registration', () => {
     const problems = checkManifest({ root, manifest: sample([{ name: 'name' }, {}], '') });
     expect(problems.some(p => p.includes("event 'name'"))).toBe(true);

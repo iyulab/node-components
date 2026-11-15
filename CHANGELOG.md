@@ -21,7 +21,9 @@
   properties, events, slots, CSS parts and CSS custom properties without parsing the source. It is generated from the source at
   build time (`npm run analyze`) and covers all 54 elements. Events are listed whether an element raises them with
   `this.fire()` or `dispatchEvent()` — including from an arrow-function field — with the type of their `detail`
-  (`CustomEvent<USelectQueryChangeDetail>`); events documented with `@fires` keep their description. The file adds about
+  (`CustomEvent<USelectQueryChangeDetail>`); events documented with `@fires` keep their description. An attribute whose type is a closed list of strings
+  (`appearance`, `color`, `size`, …) is typed with its accepted values (`"solid" | "soft" | "outlined" | "plain" | "link"`)
+  instead of the alias name, so an editor or an agent can offer and check the values without reading the source. The file adds about
   230 kB to the compressed package.
 - **Build helpers for a package that publishes its own manifest** (`@iyulab/components/plugins/cem-config.js`,
   `cem-events-plugin.js`, `cem-check.js`). `cemConfig()` is the analyzer configuration this package uses, so a package that

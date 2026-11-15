@@ -1,5 +1,6 @@
 // @ts-check
 import eventsPlugin from './cem-events-plugin.js';
+import enumeratedPlugin from './cem-enumerated-plugin.js';
 
 /**
  * Custom Elements Manifest 분석기 설정의 공통 몸 — 컴포넌트 패키지마다 `custom-elements-manifest.config.mjs` 에서
@@ -17,6 +18,6 @@ export function cemConfig() {
     outdir: 'dist',
     litelement: true,
     packagejson: false,
-    plugins: [eventsPlugin()],
+    plugins: [eventsPlugin(), enumeratedPlugin()],
   };
 }
