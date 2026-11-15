@@ -12,6 +12,7 @@ import { devWarnOnce } from '../../utilities/devWarning.js';
 import { HostAria } from '../../utilities/hostAria.js';
 
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 /** 유효한 `u-alert` 상태 — 런타임 검증과 타입이 **같은 목록**을 보게 둔다. */
 export const ALERT_STATUSES = ["error", "warning", "success", "info", "notice"] as const;
 export type AlertStatus = (typeof ALERT_STATUSES)[number];
@@ -65,6 +66,12 @@ export type AlertAppearance = "soft" | "outlined";
  */
 @customElement('u-alert')
 export class UAlert extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<AlertAppearance>()(['soft', 'outlined']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 표시 여부 */

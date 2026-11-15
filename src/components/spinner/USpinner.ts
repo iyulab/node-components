@@ -6,6 +6,7 @@ import { styles } from './USpinner.styles.js';
 import { HostAria } from '../../utilities/hostAria.js';
 import { syncProgressbar } from '../../utilities/progressAria.js';
 import { Locale } from '../../utilities/Locale.js';
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 /** 역할 축(`primary`…`danger`, 의미 · 리브랜딩을 따라옴)과 장식 축(`blue`…, 색 자체 · 면역)이 병존한다. */
 export type SpinnerColor =
@@ -29,6 +30,12 @@ export type SpinnerColor =
  */
 @customElement('u-spinner')
 export class USpinner extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    color: enumeratedValues<SpinnerColor>()(['neutral', 'primary', 'secondary', 'info', 'success', 'warning', 'danger', 'blue', 'green', 'yellow', 'red', 'orange', 'teal', 'cyan', 'purple', 'pink']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 인디케이터 색상 */

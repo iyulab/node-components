@@ -4,13 +4,16 @@
 
 ### Added
 
-- **Development-mode warning for an unknown value of an enumerated attribute** (`u-button` `appearance`, `color`, `size`). A
-  template attribute string is not type-checked, and a value outside the list (`appearance="filled"`) matches no style rule, so
-  the button silently rendered as if the attribute were unset — nothing in the console. It now logs one `console.warn` per element,
-  attribute and value in development builds, naming the values that are accepted; rendering is unchanged and production builds
-  do nothing. Elements opt in through the new `UElement.enumerated` map, and `enumeratedValues<Union>()([...])` writes a list
-  the compiler checks against the type's union in both directions, so the two cannot drift. The other elements' enumerated
-  attributes follow in later releases.
+- **Development-mode warning for an unknown value of an enumerated attribute.** A template attribute string is not
+  type-checked, and a value outside the list (`appearance="filled"` on a button) matches no style rule, so the element silently
+  rendered as if the attribute were unset — nothing in the console. It now logs one `console.warn` per element, attribute and
+  value in development builds, naming the values that are accepted; rendering is unchanged and production builds do nothing.
+  Every element attribute whose type is a closed list of strings is covered (`appearance`, `color`, `size`, `tone`, `placement`,
+  `orientation`, `mode`, … on about forty elements; `u-alert` keeps its own `status` warning, which also suggests the nearest
+  valid name). Elements opt in through the new `UElement.enumerated` map, and `enumeratedValues<Union>()([...])`
+  (exported, also from `@iyulab/components/dist/utilities/enumerated.js`) writes a list the compiler checks against the type's
+  union in both directions, so the two cannot drift. A package that builds on `UElement` can use the same map for its own
+  elements.
 
 - **`custom-elements.json` — a Custom Elements Manifest for every element.** The package now ships
   `dist/custom-elements.json` (reachable as `@iyulab/components/dist/custom-elements.json`, and declared in the

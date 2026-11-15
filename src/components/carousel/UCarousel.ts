@@ -12,6 +12,7 @@ import { UNATTENDED_IDLE_MS } from "../../utilities/unattended.js";
 import { styles } from "./UCarousel.styles.js";
 
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 /**
  * 여러 슬라이드를 전환하며 표시하는 캐러셀 컴포넌트입니다.
  *
@@ -46,6 +47,12 @@ import { delegate } from "../../utilities/listenInShadow.js";
 @customElement('u-carousel')
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
 export class UCarousel extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    paginationStyle: enumeratedValues<'dots' | 'labels'>()(['dots', 'labels']),
+  };
+
   static styles = [super.styles, styles];
   
   /** 자동 재생 활성화 */

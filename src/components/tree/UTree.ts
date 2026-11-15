@@ -5,6 +5,7 @@ import { UElement } from "../UElement.js";
 import { UTreeItem, type TreeItemTrigger } from "../tree-item/UTreeItem.js";
 import { styles } from "./UTree.styles.js";
 import { isFromNestedControl } from "../../utilities/nestedControl.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 /**
  * 계층형 데이터 구조를 표시하는 트리 컴포넌트입니다.
@@ -27,6 +28,12 @@ import { isFromNestedControl } from "../../utilities/nestedControl.js";
  */
 @customElement('u-tree')
 export class UTree extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    trigger: enumeratedValues<TreeItemTrigger>()(['item', 'icon']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 아이템 선택 가능 여부 */

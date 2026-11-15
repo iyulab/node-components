@@ -5,6 +5,7 @@ import { UElement } from "../UElement.js";
 import { UMenuItem, type MenuItemIndicator, type MenuItemAlign } from "../menu-item/UMenuItem.js";
 import { styles } from "./UMenu.styles.js";
 import { isFromNestedControl } from "../../utilities/nestedControl.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 export type MenuSelection = 'none' | 'single' | 'multiple';
 export type MenuAppearance = 'outlined' | 'plain';
@@ -23,6 +24,15 @@ export type MenuAppearance = 'outlined' | 'plain';
  */
 @customElement('u-menu')
 export class UMenu extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<MenuAppearance>()(['outlined', 'plain']),
+    selection: enumeratedValues<MenuSelection>()(['none', 'single', 'multiple']),
+    indicator: enumeratedValues<MenuItemIndicator>()(['highlight', 'check']),
+    align: enumeratedValues<MenuItemAlign>()(['left', 'center', 'right']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 외형 정도 — `outlined`(기본) · `plain`(테두리·여백 없음 — 다른 표면 안에 넣을 때) */

@@ -3,6 +3,7 @@ import { html as staticHtml, literal, StaticValue } from "lit/static-html.js";
 
 import { UElement } from "../UElement.js";
 import { styles } from "./UText.styles.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 export type TextVariant =
   | "display" | "title" | "subtitle" | "body" | "label" | "caption" | "overline";
@@ -42,6 +43,13 @@ const HEADINGS: Record<TextLevel, StaticValue> = {
  */
 @customElement('u-text')
 export class UText extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    variant: enumeratedValues<TextVariant>()(['display', 'title', 'subtitle', 'body', 'label', 'caption', 'overline']),
+    tone: enumeratedValues<TextTone>()(['default', 'weak', 'strong', 'inverse']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 의미 타이포그래피 단계 */

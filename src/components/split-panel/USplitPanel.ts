@@ -7,6 +7,7 @@ import { devWarnOnce } from "../../utilities/devWarning.js";
 import { UElement } from "../UElement.js";
 import { styles } from "./USplitPanel.styles.js";
 import { type ShiftEventDetail } from "../../events/ShiftEvent.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 /**
  * 두 패널을 분할하고 크기를 조절할 수 있는 레이아웃 컴포넌트입니다.
@@ -33,6 +34,12 @@ import { type ShiftEventDetail } from "../../events/ShiftEvent.js";
  */
 @customElement('u-split-panel')
 export class USplitPanel extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    orientation: enumeratedValues<'horizontal' | 'vertical'>()(['horizontal', 'vertical']),
+  };
+
   static styles = [super.styles, styles];
 
   /** 리사이즈 비활성화 여부 */

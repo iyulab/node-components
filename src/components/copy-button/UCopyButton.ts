@@ -11,6 +11,7 @@ import { styles } from './UCopyButton.styles.js';
 import { Locale } from '../../utilities/Locale.js';
 
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 /**
  * 클릭 시 클립보드에 텍스트를 복사하는 버튼입니다. 복사 상태를 표시하기 위해 아이콘이 변경됩니다.
  *
@@ -30,6 +31,12 @@ import { delegate } from "../../utilities/listenInShadow.js";
  */
 @customElement('u-copy-button')
 export class UCopyButton extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<ButtonAppearance>()(['solid', 'soft', 'outlined', 'plain', 'link']),
+  };
+
   static styles = [ super.styles, styles ];
   /** 호스트의 `.focus()` 를 안쪽 컨트롤로 위임한다 — `UButton` 과 같은 계약(호스트는 포커스 가능하지 않다). */
   static shadowRootOptions: ShadowRootInit = { ...UElement.shadowRootOptions, delegatesFocus: true };

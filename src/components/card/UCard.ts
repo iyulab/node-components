@@ -4,6 +4,7 @@ import { ifDefined } from "lit/directives/if-defined.js";
 
 import { UElement } from "../UElement.js";
 import { styles } from "./UCard.styles.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 export type CardOrientation = 'vertical' | 'horizontal';
 export type CardAppearance = 'outlined' | 'plain';
@@ -34,6 +35,14 @@ export type CardTone = 'primary' | 'info' | 'success' | 'warning' | 'danger';
  */
 @customElement('u-card')
 export class UCard extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    orientation: enumeratedValues<CardOrientation>()(['vertical', 'horizontal']),
+    appearance: enumeratedValues<CardAppearance>()(['outlined', 'plain']),
+    tone: enumeratedValues<CardTone>()(['primary', 'info', 'success', 'warning', 'danger']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 카드 레이아웃 방향 */

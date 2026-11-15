@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { UElement } from "../UElement.js";
 import { UTab } from "../tab/UTab.js";
 import { styles } from "./UTabNav.styles.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 /** 탭 띠의 외형 — `line`(기본 — 밑줄) · `tiles`(같은 폭의 칸 — 현재 칸은 채운 면). */
 export type TabNavAppearance = 'line' | 'tiles';
@@ -28,6 +29,12 @@ export type TabNavAppearance = 'line' | 'tiles';
  */
 @customElement('u-tab-nav')
 export class UTabNav extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<TabNavAppearance>()(['line', 'tiles']),
+  };
+
   static styles = [super.styles, styles];
 
   /**

@@ -13,6 +13,7 @@ import { HostAria } from "../../utilities/hostAria.js";
 
 import { SlotPresence } from "../../utilities/slotPresence.js";
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 export type MenuItemIndicator = 'highlight' | 'check';
 export type MenuItemAlign = 'left' | 'center' | 'right';
 
@@ -35,6 +36,13 @@ export type MenuItemAlign = 'left' | 'center' | 'right';
  */
 @customElement('u-menu-item')
 export class UMenuItem extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    indicator: enumeratedValues<MenuItemIndicator>()(['highlight', 'check']),
+    align: enumeratedValues<MenuItemAlign>()(['left', 'center', 'right']),
+  };
+
   static styles = [ super.styles, styles ];
   /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
   private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);

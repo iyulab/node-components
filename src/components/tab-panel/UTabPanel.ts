@@ -6,6 +6,7 @@ import { UTab } from "../tab/UTab.js";
 import { UPanel } from "../panel/UPanel.js";
 import { styles } from "./UTabPanel.styles.js";
 import { isFromNestedControl } from "../../utilities/nestedControl.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 /** 탭 띠의 외형 — `line`(기본) · `card` · `pill` · `plain`(외형 없음 — 공통 어휘). */
 export type TabPanelAppearance = 'line' | 'card' | 'pill' | 'plain';
@@ -34,6 +35,13 @@ const nextId = (prefix: string) => `${prefix}-${++idSeq}`;
 @customElement('u-tab-panel')
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
 export class UTabPanel extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<TabPanelAppearance>()(['line', 'card', 'pill', 'plain']),
+    placement: enumeratedValues<TabPanelPlacement>()(['top', 'bottom', 'left', 'right']),
+  };
+
   static styles = [super.styles, styles];
 
   /** 탭 비활성화 여부 */

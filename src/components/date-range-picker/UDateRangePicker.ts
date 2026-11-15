@@ -27,6 +27,7 @@ import { resolvePresets, type DateRangePresetOption, type ResolvedPreset } from 
 import { styles } from "./UDateRangePicker.styles.js";
 
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 export type { DateRangePreset, DateRangePresetName, DateRangePresetOption } from "./presets.js";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -120,6 +121,14 @@ const dayPart = (half: string) => splitDateTime(half).day;
  */
 @customElement('u-date-range-picker')
 export class UDateRangePicker extends UFormControlElement<string> {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    size: enumeratedValues<FieldSize>()(['sm', 'md', 'lg']),
+    format: enumeratedValues<DateTextFormat>()(['iso', 'locale']),
+    mode: enumeratedValues<DatePickerMode>()(['date', 'datetime']),
+  };
+
   static styles = [super.styles, pickerStyles, styles];
   protected static override fieldBox = true;
 

@@ -12,6 +12,7 @@ import { type ButtonAppearance } from "../button/UButton.js";
 import { FORWARDED_ARIA, readForwardedAria } from "../button/forwarded-aria.js";
 import { type IconLibrary } from "../icon/UIcon.js";
 import { styles } from "./UIconButton.styles.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 /**
  * 아이콘만 표시하는 정사각형 버튼 컴포넌트입니다.
@@ -25,6 +26,12 @@ import { styles } from "./UIconButton.styles.js";
  */
 @customElement('u-icon-button')
 export class UIconButton extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<ButtonAppearance>()(['solid', 'soft', 'outlined', 'plain', 'link']),
+  };
+
   static styles = [ super.styles, styles ];
   /** 호스트의 `.focus()` 를 안쪽 컨트롤로 위임한다 — `UButton` 과 같은 계약(호스트는 포커스 가능하지 않다). */
   static shadowRootOptions: ShadowRootInit = { ...UElement.shadowRootOptions, delegatesFocus: true };

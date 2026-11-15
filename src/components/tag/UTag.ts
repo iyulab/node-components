@@ -5,6 +5,7 @@ import { UElement } from "../UElement.js";
 import { statusIcon } from "../../utilities/statusIcon.js";
 import { styles } from "./UTag.styles.js";
 import '../icon/UIcon.js';
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 /** 외형 정도 — `solid` 꽉 찬 면 · `soft` 옅은 틴트(기본) · `outlined` 테두리 · `plain` 글자만. */
 export type TagAppearance = "solid" | "soft" | "outlined" | "plain";
@@ -43,6 +44,14 @@ export type TagSize = "sm" | "md";
  */
 @customElement('u-tag')
 export class UTag extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<TagAppearance>()(['solid', 'soft', 'outlined', 'plain']),
+    color: enumeratedValues<TagColor>()(['neutral', 'primary', 'secondary', 'info', 'success', 'warning', 'danger', 'blue', 'green', 'yellow', 'red', 'orange', 'teal', 'cyan', 'purple', 'pink']),
+    size: enumeratedValues<TagSize>()(['sm', 'md']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 외형 정도 */

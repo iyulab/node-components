@@ -8,6 +8,7 @@ import { styles } from './UDrawer.styles.js';
 import { Locale } from '../../utilities/Locale.js';
 
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 export type DrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
 
 /**
@@ -29,6 +30,12 @@ export type DrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
  */
 @customElement('u-drawer')
 export class UDrawer extends UOverlayElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    placement: enumeratedValues<DrawerPlacement>()(['left', 'right', 'top', 'bottom']),
+  };
+
   static styles: CSSResultGroup = [super.styles, styles];
 
   /** 닫기 버튼 표시 여부 */

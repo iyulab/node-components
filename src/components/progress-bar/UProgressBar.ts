@@ -5,6 +5,7 @@ import { UElement } from '../UElement.js';
 import { HostAria } from '../../utilities/hostAria.js';
 import { syncProgressbar } from '../../utilities/progressAria.js';
 import { styles } from './UProgressBar.styles.js';
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 export type ProgressBarStatus = 'default' | 'success' | 'warning' | 'error' | 'info';
 
@@ -25,6 +26,12 @@ export type ProgressBarStatus = 'default' | 'success' | 'warning' | 'error' | 'i
  */
 @customElement('u-progress-bar')
 export class UProgressBar extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    status: enumeratedValues<ProgressBarStatus>()(['default', 'success', 'warning', 'error', 'info']),
+  };
+
   static styles = [super.styles, styles];
 
   /** 불확정 상태 (로딩 애니메이션 표시) */

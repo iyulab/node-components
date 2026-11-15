@@ -7,6 +7,7 @@ import '../icon/UIcon.js';
 import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import { styles } from "./UCheckbox.styles.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 /** 외형 정도 — `solid` 체크 칸을 색으로 채움(기본) · `outlined` 테두리와 체크 표시만 색. */
 export type CheckboxAppearance = "solid" | "outlined";
@@ -35,6 +36,13 @@ export type CheckboxColor =
  * */
 @customElement('u-checkbox')
 export class UCheckbox extends UFormControlElement<string> {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<CheckboxAppearance>()(['solid', 'outlined']),
+    color: enumeratedValues<CheckboxColor>()(['primary', 'secondary', 'info', 'success', 'warning', 'danger', 'blue', 'green', 'red', 'orange', 'teal', 'cyan', 'purple', 'pink', 'neutral']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 외형 정도 — `solid`(기본) · `outlined` */

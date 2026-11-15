@@ -10,6 +10,7 @@ import "../icon/UIcon.js";
 import "../tooltip/UTooltip.js";
 
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 /** 네이티브로 «폼 컨트롤이거나 포커스를 받도록 저작된» 태그 — 가시성과 무관한 구조 사실이다. */
 const NATIVE_CONTROL_TAGS = new Set(['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON']);
 /**
@@ -92,6 +93,12 @@ const tabNavigation = {
  */
 @customElement('u-field')
 export class UField extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    descriptionDisplay: enumeratedValues<FieldDescriptionDisplay>()(['inline', 'hint']),
+  };
+
   static styles = [super.styles, styles];
 
   private readonly fieldInternals?: ElementInternals =

@@ -7,6 +7,7 @@ import { styles } from "./UBadge.styles.js";
 import '../icon/UIcon.js';
 
 import { SlotPresence } from "../../utilities/slotPresence.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 export type BadgeShape = "pill" | "dot" | "square";
 /** 역할 축(`primary`…`danger`, 의미 · 리브랜딩을 따라옴)과 장식 축(`blue`…, 색 자체 · 면역)이 병존한다. */
 export type BadgeColor =
@@ -29,6 +30,14 @@ export type BadgeAnchor =
  */
 @customElement('u-badge')
 export class UBadge extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    shape: enumeratedValues<BadgeShape>()(['pill', 'dot', 'square']),
+    color: enumeratedValues<BadgeColor>()(['neutral', 'primary', 'secondary', 'info', 'success', 'warning', 'danger', 'blue', 'green', 'yellow', 'red', 'orange', 'teal', 'cyan', 'purple', 'pink']),
+    anchor: enumeratedValues<BadgeAnchor>()(['top-right', 'top-left', 'bottom-right', 'bottom-left']),
+  };
+
   static styles = [ super.styles, styles ];
   /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
   private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);

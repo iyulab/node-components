@@ -5,6 +5,7 @@ import { UElement } from "../UElement.js";
 import { HostAria } from "../../utilities/hostAria.js";
 import { styles } from "./UAutoScroll.styles.js";
 import { UNATTENDED_IDLE_MS } from "../../utilities/unattended.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 /** `u-auto-scroll` 의 움직임 — `continuous` 흐름 · `item` 한 항목씩. */
 export type AutoScrollMode = 'continuous' | 'item';
@@ -34,6 +35,12 @@ const ITEM_GLIDE_MS = 600;
  */
 @customElement('u-auto-scroll')
 export class UAutoScroll extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    mode: enumeratedValues<AutoScrollMode>()(['continuous', 'item']),
+  };
+
   static styles = [super.styles, styles];
 
   /** 움직임 — `continuous`(기본 — 끝까지 흐른다) · `item`(한 항목씩 넘기고 `pause` 만큼 멈춘다) */

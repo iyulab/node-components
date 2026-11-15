@@ -4,6 +4,7 @@ import { property, state } from 'lit/decorators.js';
 import { UElement } from './UElement.js';
 import { styles } from './UFormControlElement.styles.js';
 import type { FieldDescriptionDisplay } from './field/UField.js';
+import { enumeratedValues } from '../utilities/enumerated.js';
 
 /**
  * 폼 컨트롤 컴포넌트의 공통 기반 클래스입니다.
@@ -12,6 +13,11 @@ import type { FieldDescriptionDisplay } from './field/UField.js';
 export abstract class UFormControlElement<T> extends UElement {
   static styles: CSSResultGroup = [super.styles, styles];
   static formAssociated = true;
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). 하위 컨트롤이 물려받는다. */
+  static override enumerated = {
+    ...super.enumerated,
+    descriptionDisplay: enumeratedValues<FieldDescriptionDisplay>()(['inline', 'hint']),
+  };
 
   // Lit 개발 모드의 «갱신 뒤 갱신» 경고(`change-in-update`)를 폼 컨트롤 전체에서 끈다 — 오류가 보이는 동안 값이 유효해져 `invalid` 를 걷는
   // 경로의 둘째 갱신이 본질이라서다: 몇 컨트롤은 판정 근거로 안쪽 네이티브 요소의 `validity` 를 읽는데 그 요소는 렌더가 값을 내려보낸 뒤에야

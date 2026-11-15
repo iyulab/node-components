@@ -9,6 +9,7 @@ import { UElement } from './UElement.js';
 import { styles } from './UFloatingElement.styles.js';
 import { ShowEventDetail } from '../events/ShowEvent.js';
 import { HideEventDetail } from '../events/HideEvent.js';
+import { enumeratedValues } from "../utilities/enumerated.js";
 
 export type FloatingStrategy = 'absolute' | 'fixed';
 
@@ -25,6 +26,12 @@ export type FloatingStrategy = 'absolute' | 'fixed';
  *   스타일 훅으로 사용할 수 있습니다: `my-popover[anchor-hidden] { … }`
  */
 export class UFloatingElement extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    strategy: enumeratedValues<FloatingStrategy>()(['absolute', 'fixed']),
+  };
+
   static styles: CSSResultGroup = [ super.styles, styles ];
   
   /** 

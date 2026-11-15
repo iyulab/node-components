@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
 import { styles } from "./UDivider.styles.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 export type DividerLine = 'solid' | 'dashed' | 'dotted';
 export type DividerAlign = 'start' | 'center' | 'end';
@@ -23,6 +24,13 @@ export type DividerAlign = 'start' | 'center' | 'end';
  */
 @customElement('u-divider')
 export class UDivider extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    line: enumeratedValues<DividerLine>()(['solid', 'dashed', 'dotted']),
+    align: enumeratedValues<DividerAlign>()(['start', 'center', 'end']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 수직 방향 여부 (기본값 수평) */

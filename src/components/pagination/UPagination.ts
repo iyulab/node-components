@@ -10,6 +10,7 @@ import { Locale } from "../../utilities/Locale.js";
 import { styles } from "./UPagination.styles.js";
 
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 export type PaginationSize = 'sm' | 'md' | 'lg';
 
 /** `page-change` 의 detail — 0 기준 페이지와 그때의 페이지 크기. */
@@ -42,6 +43,12 @@ type PageCell = number | 'gap';
 @customElement('u-pagination')
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
 export class UPagination extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    size: enumeratedValues<PaginationSize>()(['sm', 'md', 'lg']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 현재 페이지 — 0 기준. 범위를 넘으면 마지막(또는 첫) 페이지로 보인다. */

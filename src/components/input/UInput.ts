@@ -20,6 +20,7 @@ import { isImeComposing } from '../../utilities/keyboard.js';
 
 import { SlotPresence } from "../../utilities/slotPresence.js";
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 export type InputType = 'text' | 'password' | 'email' | 'tel' | 'url' | 'search' | 'number' | 'date' | 'time' | 'datetime-local' | 'month' | 'week';
 export type InputModeOption = 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
 export type EnterKeyHint = 'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send';
@@ -73,6 +74,14 @@ export type FieldSize = 'sm' | 'md' | 'lg';
 @customElement('u-input')
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
 export class UInput extends UFormControlElement<string> {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<FieldAppearance>()(['outlined', 'soft', 'underlined', 'plain']),
+    type: enumeratedValues<InputType>()(['text', 'password', 'email', 'tel', 'url', 'search', 'number', 'date', 'time', 'datetime-local', 'month', 'week']),
+    size: enumeratedValues<FieldSize>()(['sm', 'md', 'lg']),
+  };
+
   static styles = [ super.styles, styles ];
   protected static override fieldBox = true;
   /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */

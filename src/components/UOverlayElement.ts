@@ -11,6 +11,7 @@ import { UElement } from './UElement.js';
 import { styles } from './UOverlayElement.styles.js';
 import { ShowEventDetail } from '../events/ShowEvent.js';
 import { HideEventDetail } from '../events/HideEvent.js';
+import { enumeratedValues } from "../utilities/enumerated.js";
 
 /** closeOn에 지정할 수 있는 닫기 트리거 */
 export type CloseOnPolicy = 'escape' | 'backdrop' | 'button';
@@ -24,6 +25,12 @@ export type OverlayMode = 'modal' | 'non-modal';
  * @event hide - 오버레이가 숨겨지기 직전 발생합니다. 핸들러에서 취소하면 닫히지 않습니다.
  */
 export abstract class UOverlayElement extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    mode: enumeratedValues<OverlayMode>()(['modal', 'non-modal']),
+  };
+
   static styles: CSSResultGroup = [super.styles, styles];
 
   /** 

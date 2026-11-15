@@ -8,6 +8,7 @@ import { styles } from './UDialog.styles.js';
 import { Locale } from '../../utilities/Locale.js';
 
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 export type DialogPlacement =
   | 'top-start' | 'top' | 'top-end'
   | 'start' | 'center' | 'end'
@@ -29,6 +30,12 @@ export type DialogPlacement =
  */
 @customElement('u-dialog')
 export class UDialog extends UOverlayElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    placement: enumeratedValues<DialogPlacement>()(['top-start', 'top', 'top-end', 'start', 'center', 'end', 'bottom-start', 'bottom', 'bottom-end']),
+  };
+
   static styles: CSSResultGroup = [super.styles, styles];
 
   /** 닫기 버튼 표시 여부 */

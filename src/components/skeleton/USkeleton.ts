@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 
 import { UElement } from '../UElement.js';
 import { styles } from './USkeleton.styles.js';
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 export type SkeletonShape = 'rectangle' | 'circle' | 'rounded';
 export type SkeletonEffect = 'none' | 'pulse' | 'shimmer';
@@ -19,6 +20,13 @@ export type SkeletonEffect = 'none' | 'pulse' | 'shimmer';
  */
 @customElement('u-skeleton')
 export class USkeleton extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    shape: enumeratedValues<SkeletonShape>()(['rectangle', 'circle', 'rounded']),
+    effect: enumeratedValues<SkeletonEffect>()(['none', 'pulse', 'shimmer']),
+  };
+
   static styles = [super.styles, styles];
 
   /** 모양 */

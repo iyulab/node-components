@@ -9,6 +9,7 @@ import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import type { AutoCapitalize, EnterKeyHint, InputModeOption } from "../input/UInput.js";
 import { styles } from "./UTextarea.styles.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 type TextareaResize = 'none' | 'vertical' | 'horizontal' | 'both' | 'auto';
 
@@ -30,6 +31,14 @@ type TextareaResize = 'none' | 'vertical' | 'horizontal' | 'both' | 'auto';
  */
 @customElement('u-textarea')
 export class UTextarea extends UFormControlElement<string> {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<FieldAppearance>()(['outlined', 'soft', 'underlined', 'plain']),
+    size: enumeratedValues<FieldSize>()(['sm', 'md', 'lg']),
+    resize: enumeratedValues<TextareaResize>()(['none', 'vertical', 'horizontal', 'both', 'auto']),
+  };
+
   static styles = [ super.styles, styles ];
   protected static override fieldBox = true;
 

@@ -24,6 +24,7 @@ import { styles } from "./USelect.styles.js";
 
 import { SlotPresence } from "../../utilities/slotPresence.js";
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 /**
  * 드롭다운 목록에서 값을 선택하는 폼 컨트롤 컴포넌트입니다.
  * 단일 선택 및 다중 선택, 검색 기능을 지원합니다.
@@ -66,6 +67,14 @@ import { delegate } from "../../utilities/listenInShadow.js";
 @customElement('u-select')
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging -- typed event listeners (the DOM's own `HTMLMediaElementEventMap` pattern): the merged addEventListener/removeEventListener overloads are implemented by EventTarget
 export class USelect extends UFormControlElement<string | string[]> {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<FieldAppearance>()(['outlined', 'soft', 'underlined', 'plain']),
+    size: enumeratedValues<FieldSize>()(['sm', 'md', 'lg']),
+    filter: enumeratedValues<'local' | 'none'>()(['local', 'none']),
+  };
+
   static styles = [ super.styles, styles ];
   protected static override fieldBox = true;
   /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */

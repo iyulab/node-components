@@ -12,6 +12,7 @@ import { formatNumber } from '../../utilities/format.js';
 
 import { SlotPresence } from "../../utilities/slotPresence.js";
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 /**
  * `u-tab` 개수의 모양 — `badge` 는 알약 면(눈을 끈다), `plain` 은 면 없는 보조 숫자(정보), `figure` 는 레이블 아래의 큰 숫자
  * (칸형 탭 띠 — 공정마다 쌓인 일처럼 숫자가 탭을 고르는 이유일 때).
@@ -37,6 +38,12 @@ export type TabCountAppearance = 'badge' | 'plain' | 'figure';
  */
 @customElement('u-tab')
 export class UTab extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    countAppearance: enumeratedValues<TabCountAppearance>()(['badge', 'plain', 'figure']),
+  };
+
   static styles = [super.styles, styles];
   /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
   private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);

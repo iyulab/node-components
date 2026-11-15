@@ -21,6 +21,7 @@ import { styles as pickerStyles } from "../calendar/picker.styles.js";
 import { styles } from "./UDatePicker.styles.js";
 
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 /** Builds the `value` for the given mode — `datetime` always emits seconds + local offset so
  *  the result is unconditionally a valid, unambiguous ISO-8601 `DateTimeOffset` regardless of
  *  how coarse the UI input was (this is the guarantee the datetime mode request asked for). */
@@ -94,6 +95,14 @@ export type { DateDisabledFn } from "../calendar/dates.js";
  */
 @customElement('u-date-picker')
 export class UDatePicker extends UFormControlElement<string> {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    size: enumeratedValues<FieldSize>()(['sm', 'md', 'lg']),
+    mode: enumeratedValues<DatePickerMode>()(['date', 'datetime']),
+    format: enumeratedValues<DateTextFormat>()(['iso', 'locale']),
+  };
+
   static styles = [super.styles, pickerStyles, styles];
   protected static override fieldBox = true;
 

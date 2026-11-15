@@ -5,6 +5,7 @@ import { UElement } from "../UElement.js";
 import { UButton, type ButtonAppearance } from "../button/UButton.js";
 import { UIconButton } from "../icon-button/UIconButton.js";
 import { styles } from "./UButtonGroup.styles.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 /**
  * 여러 버튼을 묶어 그룹으로 표시하는 컴포넌트입니다.
@@ -14,6 +15,12 @@ import { styles } from "./UButtonGroup.styles.js";
  */
 @customElement('u-button-group')
 export class UButtonGroup extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<ButtonAppearance>()(['solid', 'soft', 'outlined', 'plain', 'link']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 하위 버튼에 자동 적용할 외형 */

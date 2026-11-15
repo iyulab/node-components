@@ -6,6 +6,7 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import { UElement } from "../UElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import { styles } from "./USteps.styles.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 /**
  * 단계의 상태.
@@ -69,6 +70,12 @@ export interface StepItem {
  */
 @customElement('u-steps')
 export class USteps extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<StepsAppearance>()(['line', 'bars', 'compact']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 단계 목록 */

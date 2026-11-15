@@ -13,6 +13,7 @@ import { type RemoveEventDetail } from "../../events/RemoveEvent.js";
 import { Locale } from '../../utilities/Locale.js';
 
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 /**
  * 태그 상태 표시 또는 선택 UI와 인터랙션(선택, 삭제)을 지원하는 칩 컴포넌트입니다.
  *
@@ -31,6 +32,13 @@ import { delegate } from "../../utilities/listenInShadow.js";
  */
 @customElement('u-chip')
 export class UChip extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    appearance: enumeratedValues<TagAppearance>()(['solid', 'soft', 'outlined', 'plain']),
+    color: enumeratedValues<TagColor>()(['neutral', 'primary', 'secondary', 'info', 'success', 'warning', 'danger', 'blue', 'green', 'yellow', 'red', 'orange', 'teal', 'cyan', 'purple', 'pink']),
+  };
+
   static styles = [super.styles, styles];
 
   /** 칩의 스타일 변형 */

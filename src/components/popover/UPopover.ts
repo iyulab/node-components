@@ -6,6 +6,7 @@ import { isCoarsePointer } from "../../utilities/elements.js";
 import { UFloatingElement } from "../UFloatingElement.js";
 import { OverlayManager } from "../../utilities/OverlayManager.js";
 import { styles } from "./UPopover.styles.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 const FOCUSABLE = 'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
@@ -41,6 +42,12 @@ export type PopoverDismiss = 'click' | 'escape' | 'scroll' | 'resize';
  */
 @customElement('u-popover')
 export class UPopover extends UFloatingElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    trigger: enumeratedValues<PopoverTrigger>()(['click', 'contextmenu', 'hover', 'focus', 'manual']),
+  };
+
   static styles = [ super.styles, styles ];
 
   private static readonly SAFE_TIMER_DELAY = 200;

@@ -13,6 +13,7 @@ import {
 import { styles } from "./UCalendar.styles.js";
 
 import { delegate } from "../../utilities/listenInShadow.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 /** Cells to render for one month — leading `null`s pad the previous month's offset from the locale's first day of the week. */
 function buildMonthGrid(month: Date, weekStart: number): (Date | null)[] {
   const first = startOfMonth(month);
@@ -89,6 +90,12 @@ export type CalendarSelection = 'single' | 'range';
  */
 @customElement('u-calendar')
 export class UCalendar extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    selection: enumeratedValues<CalendarSelection>()(['single', 'range']),
+  };
+
   static styles = [super.styles, styles];
 
   /** `single` picks one day (`value`); `range` picks two (`start`/`end`). */

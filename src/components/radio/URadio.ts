@@ -7,6 +7,7 @@ import { UFormControlElement } from "../UFormControlElement.js";
 import { Locale } from "../../utilities/Locale.js";
 import { UOption } from "../option/UOption.js";
 import { styles } from "./URadio.styles.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 export type RadioType = "default" | "button";
 /** 외형 정도 — `solid` 선택 칸 채움(기본) · `outlined` · `soft`(버튼형 전용 — 세그먼트 컨트롤). */
@@ -29,6 +30,14 @@ export type RadioOrientation = "vertical" | "horizontal";
  */
 @customElement('u-radio')
 export class URadio extends UFormControlElement<string> {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    type: enumeratedValues<RadioType>()(['default', 'button']),
+    appearance: enumeratedValues<RadioAppearance>()(['solid', 'outlined', 'soft']),
+    orientation: enumeratedValues<RadioOrientation>()(['vertical', 'horizontal']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 라디오 유형 */

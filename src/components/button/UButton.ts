@@ -95,6 +95,7 @@ export class UButton extends UElement {
       'blue', 'green', 'red', 'orange', 'teal', 'cyan', 'purple', 'pink',
     ]),
     size: enumeratedValues<ButtonSize>()(['sm', 'md', 'lg']),
+    type: enumeratedValues<ButtonType>()(['button', 'submit', 'reset']),
   };
 
   /** 외형 정도 — `solid`(기본) · `soft` · `outlined` · `plain` · `link` */

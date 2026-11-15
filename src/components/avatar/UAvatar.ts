@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
 import { styles } from "./UAvatar.styles.js";
+import { enumeratedValues } from "../../utilities/enumerated.js";
 
 export type AvatarShape = "circle" | "square" | "rounded";
 
@@ -16,6 +17,12 @@ export type AvatarShape = "circle" | "square" | "rounded";
  */
 @customElement('u-avatar')
 export class UAvatar extends UElement {
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...super.enumerated,
+    shape: enumeratedValues<AvatarShape>()(['circle', 'square', 'rounded']),
+  };
+
   static styles = [ super.styles, styles ];
 
   /** 아바타 형태 */
