@@ -77,6 +77,7 @@ export * from './utilities/collation.js';
 export * from './utilities/converters.js';
 export * from './utilities/dateValue.js';
 export * from './utilities/devWarning.js';
+export * from './utilities/enumerated.js';
 export * from './utilities/Dialog.js';
 export * from './utilities/elements.js';
 export * from './utilities/listenInShadow.js';

@@ -1,6 +1,7 @@
 import { LitElement, CSSResultGroup, render, RenderOptions } from 'lit';
 import { styles } from './UElement.styles.js';
 import { Locale } from '../utilities/Locale.js';
+import { devWarnOnce } from '../utilities/devWarning.js';
 
 /**
  * 모든 UI 컴포넌트의 기반 클래스.
@@ -55,6 +56,29 @@ export class UElement extends LitElement {
     return [...super.observedAttributes, ...this.forwardedAttributes];
   }
 
+  /**
+   * **열거형 속성의 허용 값** — 속성 이름 → 허용하는 문자열 값 목록. 선언한 속성이 목록 밖의 값을 받으면 개발 모드에서
+   * 값(요소·속성·값 조합)당 한 번 `console.warn` 한다. 렌더 결과는 바꾸지 않는다.
+   *
+   * 템플릿의 속성 문자열은 타입 검사를 받지 않고, 목록 밖의 값은 어떤 스타일 규칙에도 안 걸려 **에러 없이 기본 모양으로
+   * 떨어진다**. 목록은 `enumeratedValues<유니온>()([...])` 로 적으면 유니온과의 일치를 컴파일러가 잰다. 비어 있거나(`undefined`
+   * · `null` · `''`) 문자열이 아닌 값은 판정하지 않는다. 하위 클래스가 더하려면 부모 것을 펼쳐 적는다(`{ ...super.enumerated, x }`).
+   */
+  static enumerated: Readonly<Record<string, readonly string[]>> = {};
+
+  /** 선언한 열거형 속성의 현재 값이 목록 안인가 — 개발 모드에서만 부른다. */
+  private warnUnknownEnumerated(): void {
+    const ctor = this.constructor as typeof UElement;
+    for (const [prop, allowed] of Object.entries(ctor.enumerated)) {
+      const value = (this as unknown as Record<string, unknown>)[prop];
+      if (typeof value !== 'string' || value === '' || allowed.includes(value)) continue;
+      devWarnOnce(
+        `enum:${this.localName}:${prop}:${value}`,
+        `<${this.localName} ${prop}="${value}"> — "${value}" is not a value of ${prop}, so no style rule matches it and the element renders as if ${prop} were unset. Use one of: ${allowed.join(', ')}.`,
+      );
+    }
+  }
+
   override attributeChangedCallback(name: string, old: string | null, value: string | null): void {
     super.attributeChangedCallback(name, old, value);
     if ((this.constructor as typeof UElement).forwardedAttributes.includes(name)) this.requestUpdate();
@@ -84,6 +108,7 @@ export class UElement extends LitElement {
   private updating = false;
 
   protected override performUpdate(): void {
+    if (process.env.NODE_ENV !== 'production') this.warnUnknownEnumerated();
     this.updating = true;
     try {
       super.performUpdate();

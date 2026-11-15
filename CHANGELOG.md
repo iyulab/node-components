@@ -4,6 +4,14 @@
 
 ### Added
 
+- **Development-mode warning for an unknown value of an enumerated attribute** (`u-button` `appearance`, `color`, `size`). A
+  template attribute string is not type-checked, and a value outside the list (`appearance="filled"`) matches no style rule, so
+  the button silently rendered as if the attribute were unset — nothing in the console. It now logs one `console.warn` per element,
+  attribute and value in development builds, naming the values that are accepted; rendering is unchanged and production builds
+  do nothing. Elements opt in through the new `UElement.enumerated` map, and `enumeratedValues<Union>()([...])` writes a list
+  the compiler checks against the type's union in both directions, so the two cannot drift. The other elements' enumerated
+  attributes follow in later releases.
+
 - **`custom-elements.json` — a Custom Elements Manifest for every element.** The package now ships
   `dist/custom-elements.json` (reachable as `@iyulab/components/dist/custom-elements.json`, and declared in the
   `customElements` field of `package.json`) so editors, documentation tools and AI agents can read each element's attributes,

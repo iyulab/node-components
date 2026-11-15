@@ -8,6 +8,7 @@ import { styles } from "./UButton.styles.js";
 import { FORWARDED_ARIA, readForwardedAria } from "./forwarded-aria.js";
 
 
+import { enumeratedValues } from "../../utilities/enumerated.js";
 import { SlotPresence } from "../../utilities/slotPresence.js";
 import { HostAria } from "../../utilities/hostAria.js";
 /**
@@ -85,6 +86,16 @@ export class UButton extends UElement {
    * 네이티브 버튼을 대체하는 요소가 잃으면 안 되는 계약이다.
    */
   static shadowRootOptions: ShadowRootInit = { ...UElement.shadowRootOptions, delegatesFocus: true };
+  /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
+  static override enumerated = {
+    ...UElement.enumerated,
+    appearance: enumeratedValues<ButtonAppearance>()(['solid', 'soft', 'outlined', 'plain', 'link']),
+    color: enumeratedValues<ButtonColor>()([
+      'neutral', 'primary', 'secondary', 'info', 'success', 'warning', 'danger',
+      'blue', 'green', 'red', 'orange', 'teal', 'cyan', 'purple', 'pink',
+    ]),
+    size: enumeratedValues<ButtonSize>()(['sm', 'md', 'lg']),
+  };
 
   /** 외형 정도 — `solid`(기본) · `soft` · `outlined` · `plain` · `link` */
   @property({ type: String, reflect: true }) appearance: ButtonAppearance = "solid";
