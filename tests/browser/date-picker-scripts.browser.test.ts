@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { MOD } from './modifier';
 import { userEvent } from 'vitest/browser';
 import '../../src/components/date-picker/UDatePicker.js';
 import type { UDatePicker } from '../../src/components/date-picker/UDatePicker.js';
@@ -32,7 +33,7 @@ const input = (el: UDatePicker) => el.shadowRoot!.querySelector<HTMLInputElement
 
 async function typeDate(el: UDatePicker, text: string) {
   await userEvent.click(input(el));
-  await userEvent.keyboard('{Control>}a{/Control}');
+  await userEvent.keyboard(`{${MOD}>}a{/${MOD}}`);
   await userEvent.keyboard(text);
   await userEvent.keyboard('{Enter}');
   await settle(el);

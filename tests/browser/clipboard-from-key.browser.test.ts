@@ -1,4 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { MOD } from './modifier';
 import { userEvent } from 'vitest/browser';
 import { copyFromKey, isTextEntry, pasteFromKey } from '../../src/utilities/clipboard.js';
 
@@ -45,7 +46,7 @@ describe('copyFromKey', () => {
     document.addEventListener('copy', (e) => seen.push(`${e.defaultPrevented}:${e.clipboardData?.getData('text/plain')}`));
     let result!: Promise<boolean>;
     mountGrid((p) => (result = p), () => {});
-    await userEvent.keyboard('{Control>}c{/Control}');
+    await userEvent.keyboard(`{${MOD}>}c{/${MOD}}`);
     expect(await result).toBe(true);
     expect(seen).toEqual(['true:a\tb']);
   });
@@ -71,9 +72,9 @@ describe('pasteFromKey', () => {
     let copied!: Promise<boolean>;
     let pasted!: Promise<string>;
     mountGrid((p) => (copied = p), (p) => (pasted = p));
-    await userEvent.keyboard('{Control>}c{/Control}');
+    await userEvent.keyboard(`{${MOD}>}c{/${MOD}}`);
     expect(await copied).toBe(true);
-    await userEvent.keyboard('{Control>}v{/Control}');
+    await userEvent.keyboard(`{${MOD}>}v{/${MOD}}`);
     expect(await pasted).toBe('a\tb');
     expect(reads).toBe(0);
   });
