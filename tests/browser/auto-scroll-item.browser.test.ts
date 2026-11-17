@@ -24,18 +24,20 @@ describe('u-auto-scroll item mode', () => {
     return el;
   }
 
-  // 멈춘 자리 — 같은 값이 `pause` 의 절반 넘게 이어진 곳. 미끄러짐의 감속 끝은 1px 안에서 100ms 넘게 머물러(반올림한
+  // 멈춘 자리 — 같은 값이 `pause` 의 절반 넘게(**시간으로**) 이어진 곳. 미끄러짐의 감속 끝은 1px 안에서 100ms 넘게 머물러(반올림한
   // 값이 그대로다) «연달아 셋» 으로 세면 꼬리를 멈춤으로 잘못 센다.
+  // 🔴**표본 수가 아니라 경과 시간으로 잰다** — 포커스 없는 창(macOS 헤드리스)에서 `setTimeout(25)` 는 25ms 보다 훨씬 늦게 돌아와, «연달아 열둘»
+  //   을 요구하면 600ms 멈춤이 열둘에 못 미쳐 멈춤을 놓쳤다(150px 건너뜀 · 멈춤 1개).
   const PAUSE = 600;
-  async function stops(el: UAutoScroll, samples = 160, every = 25): Promise<number[]> {
-    const seen: number[] = [];
-    for (let i = 0; i < samples; i++) { seen.push(Math.round(el.scrollTop)); await wait(every); }
-    const minRun = Math.ceil(PAUSE / 2 / every);
+  async function stops(el: UAutoScroll, window = 4000, every = 25): Promise<number[]> {
+    const seen: Array<[t: number, v: number]> = [];
+    const t0 = performance.now();
+    while (performance.now() - t0 < window) { seen.push([performance.now(), Math.round(el.scrollTop)]); await wait(every); }
     const held: number[] = [];
-    let run = 1;
+    let from = 0;
     for (let i = 1; i < seen.length; i++) {
-      run = seen[i] === seen[i - 1] ? run + 1 : 1;
-      if (run === minRun && held[held.length - 1] !== seen[i]) held.push(seen[i]);
+      if (seen[i][1] !== seen[i - 1][1]) { from = i; continue; }
+      if (seen[i][0] - seen[from][0] >= PAUSE / 2 && held[held.length - 1] !== seen[i][1]) held.push(seen[i][1]);
     }
     return held;
   }
