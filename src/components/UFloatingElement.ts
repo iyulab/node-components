@@ -142,6 +142,8 @@ export class UFloatingElement extends UElement {
   private cleanup: (() => void) | null = null;
   // 진행 중인 track() 을 무효화하기 위한 세대 번호
   private trackSeq = 0;
+  // `anchor-hidden` 이 선 동안 다음 프레임 재측정을 기다리는 rAF 핸들(0 = 없음)
+  private hiddenFrame = 0;
   // 딜레이 타이머
   private showTimer?: number;
   private hideTimer?: number;
@@ -232,10 +234,27 @@ export class UFloatingElement extends UElement {
   /** 자동 위치 추적을 끊고, 계산 중인 track() 이 뒤늦게 추적을 걸지 못하게 한다. */
   private untrack() {
     this.trackSeq++;
+    if (this.hiddenFrame) {
+      cancelAnimationFrame(this.hiddenFrame);
+      this.hiddenFrame = 0;
+    }
     if (this.cleanup !== null) {
       this.cleanup();
       this.cleanup = null;
     }
+  }
+
+  /** `anchor-hidden` 이 서 있는 동안 다음 프레임에 다시 잰다. 추적이 끊기거나 속성이 풀리면 멈춘다. */
+  private recheckWhileHidden(target: Element | VirtualElement) {
+    if (this.hiddenFrame) return;
+    const seq = this.trackSeq;
+    this.hiddenFrame = requestAnimationFrame(() => {
+      this.hiddenFrame = 0;
+      if (seq !== this.trackSeq || !this.hasAttribute('anchor-hidden')) return;
+      // 열려 있지도, 열리길 기다리지도 않는 채 불린 재배치(추적 없이 외부에서 부른 경우)는 이어 재지 않는다.
+      if (!this.open && !this.showTimer) return;
+      void this.reposition(target);
+    });
   }
 
   /** 타겟 기준으로 위치를 계산하고, 스크롤·리사이즈를 따라 재배치하도록 추적을 건다. */
@@ -410,7 +429,11 @@ export class UFloatingElement extends UElement {
     // 다시 보이면 autoUpdate 의 다음 재배치에서 속성이 해제되어 그대로 복귀한다).
     // `scroll` dismiss 가 실앵커를 더 이상 닫지 않게 된 뒤 드러난 케이스로, 특히
     // strategy="fixed" 는 overflow 조상에 클립되지 않아 팝오버만 남는다.
-    this.toggleAttribute('anchor-hidden', !!position.middlewareData.hide?.referenceHidden);
+    const anchorHidden = !!position.middlewareData.hide?.referenceHidden;
+    this.toggleAttribute('anchor-hidden', anchorHidden);
+    // 가려졌다는 판정은 «그 순간의 측정» 이라, 이후 신호가 없으면(조상 크기도 앵커 크기도 불변인 채 앵커만 위쪽 내용이
+    // 줄어 들어오는 경우 — 라우트 직후 절이 채워지는 중) 열린 팝업이 보이지 않은 채 남는다. 가려진 동안만 프레임마다 다시 잰다.
+    if (anchorHidden) this.recheckWhileHidden(target);
 
     const arrowData = position.middlewareData.arrow;
     if (!this.arrowEl || !arrowData) return;

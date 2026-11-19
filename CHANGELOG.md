@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Open floating elements (`u-select`, `u-popover`, `u-tooltip`, menus, pickers) no longer stay `visibility: hidden` after
+  their anchor comes back into view without any ancestor or anchor resizing. The anchor-hidden judgement is a snapshot, and
+  when the content above an anchor shrinks (a section still filling in right after a route change) only the anchor moves, so
+  nothing re-ran the check and an open popup stayed invisible until something else triggered a re-measure. While an open
+  floating element is marked `anchor-hidden` it is now re-measured every animation frame, and the polling stops as soon as the
+  anchor is visible again or the element closes. Runtime behaviour is otherwise unchanged.
+
 ## [3.2.0] - 2026-11-16
 
 ### Added
