@@ -22,6 +22,7 @@ import { styles } from "./UDatePicker.styles.js";
 
 import { delegate } from "../../utilities/listenInShadow.js";
 import { enumeratedValues } from "../../utilities/enumerated.js";
+import { setCustomState } from "../../utilities/customState.js";
 /** Builds the `value` for the given mode — `datetime` always emits seconds + local offset so
  *  the result is unconditionally a valid, unambiguous ISO-8601 `DateTimeOffset` regardless of
  *  how coarse the UI input was (this is the guarantee the datetime mode request asked for). */
@@ -208,7 +209,7 @@ export class UDatePicker extends UFormControlElement<string> {
     // 노출한다. 캘린더가 열려 있을 때 트리거를 다르게 그리고 싶은 소비자는
     // `u-date-picker:state(open)::part(container)` 형태로 훅을 건다.
     if (changed.has('open')) {
-      this.internals?.states[this.open ? 'add' : 'delete']('open');
+      setCustomState(this.internals, 'open', this.open);
     }
     if (changed.has('open') && this.open) {
       // The calendar only renders while open, so it exists from this update on. The popover's

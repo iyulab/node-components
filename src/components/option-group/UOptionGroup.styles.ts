@@ -6,7 +6,8 @@ export const styles = css`
   }
 
   /* 보이는 선택지가 없으면(검색이 다 걸렀거나 비었으면) 제목째 숨는다. */
-  :host(:state(empty)) {
+  /* :is() 안의 두 형 — 125 이전 Chromium 은 접두 없는 이름 대신 --empty 를 싣는다(utilities/customState). */
+  :host(:is(:state(empty), :--empty)) {
     display: none;
   }
 

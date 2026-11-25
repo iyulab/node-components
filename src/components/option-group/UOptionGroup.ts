@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 
 import { UElement } from "../UElement.js";
 import { HostAria } from "../../utilities/hostAria.js";
+import { setCustomState } from "../../utilities/customState.js";
 import { UOption } from "../option/UOption.js";
 import { styles } from "./UOptionGroup.styles.js";
 
@@ -58,8 +59,7 @@ export class UOptionGroup extends UElement {
 
   private syncEmpty(): void {
     const empty = !this.options.some((option) => !option.hidden);
-    if (empty) this.internals.states.add('empty');
-    else this.internals.states.delete('empty');
+    setCustomState(this.internals, 'empty', empty);
   }
 
   render() {

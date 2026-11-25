@@ -25,6 +25,7 @@ import { styles } from "./USelect.styles.js";
 import { SlotPresence } from "../../utilities/slotPresence.js";
 import { delegate } from "../../utilities/listenInShadow.js";
 import { enumeratedValues } from "../../utilities/enumerated.js";
+import { setCustomState } from "../../utilities/customState.js";
 /**
  * 드롭다운 목록에서 값을 선택하는 폼 컨트롤 컴포넌트입니다.
  * 단일 선택 및 다중 선택, 검색 기능을 지원합니다.
@@ -212,7 +213,7 @@ export class USelect extends UFormControlElement<string | string[]> {
     // 노출한다. 팝오버가 열려 있을 때 트리거를 다르게 그리고 싶은 소비자는
     // `u-select:state(open)::part(container)` 형태로 훅을 건다.
     if (changedProperties.has('open')) {
-      this.internals?.states[this.open ? 'add' : 'delete']('open');
+      setCustomState(this.internals, 'open', this.open);
     }
   }
 

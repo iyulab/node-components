@@ -12,10 +12,16 @@ npm install @iyulab/components
 
 ## Browser support
 
-지원 하한은 **`CustomStateSet` 의 `:state()` 를 `--` 접두 없이 지원하는 판**입니다 — Chrome · Edge 125, Firefox 126,
-Safari 17.4 이상. 폼 컨트롤은 `:state(field)` 같은 상태를 `ElementInternals.states` 에 싣고 시트가 그 선택자로 모양을
-정하므로, 그 아래 판(예: Chromium 120)에서는 `states.add('field')` 가 `--` 접두를 요구하며 던지고 스타일도 어긋납니다.
-호환 shim 은 두지 않습니다 — 하한을 올리거나, 하한 아래가 꼭 필요하면 알려 주세요.
+지원 하한은 **`ElementInternals.states`(`CustomStateSet`)를 가진 판**입니다 — Chrome · Edge 90, Firefox 126, Safari 17.4 이상.
+컴포넌트는 `:state(field)` · `:state(open)` 같은 상태를 거기에 싣고 시트가 그 선택자로 모양을 정합니다. Chrome · Edge
+125 미만은 `:state()` 를 `--` 접두 없이는 받지 못하므로, 컴포넌트가 접두 없는 이름을 먼저 시도하고 거부당하면 `--이름`
+으로 싣습니다(던지지 않습니다) — 내부 시트는 `:is(:state(x), :--x)` 로 두 형을 함께 읽습니다. 하한 아래(Chrome · Edge 90
+미만, Firefox 126 미만, Safari 17.4 미만)에서는 상태 자체가 없어 상태에 기대는 모양(필드 칸 표시 · 닫힌 떠 있는 요소의
+레이아웃 제외 등)이 적용되지 않을 뿐 동작은 같습니다.
+
+공개 상태(`u-select:state(open)` 등)에 손잡이를 거는 앱 시트가 125 미만도 덮어야 하면 같은 두 형을 씁니다 —
+`u-select:is(:state(open), :--open)`. 선택자 목록에 그냥 섞지 마세요(모르는 선택자 하나가 규칙 전체를 죽입니다).
+같은 두 형 읽기는 `hasCustomState(el, name)`, 상태 싣기는 `setCustomState(internals, name, on)` 으로 내보냅니다.
 
 ## Quick Start
 

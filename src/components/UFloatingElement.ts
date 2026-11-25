@@ -10,6 +10,7 @@ import { styles } from './UFloatingElement.styles.js';
 import { ShowEventDetail } from '../events/ShowEvent.js';
 import { HideEventDetail } from '../events/HideEvent.js';
 import { enumeratedValues } from "../utilities/enumerated.js";
+import { setCustomState } from "../utilities/customState.js";
 
 export type FloatingStrategy = 'absolute' | 'fixed';
 
@@ -210,12 +211,8 @@ export class UFloatingElement extends UElement {
    * 만들었다. 닫힘 전환이 끝난 뒤에 빼고(페이드는 그대로), 열거나 재기 전에 꺼낸다.
    */
   private setParked(parked: boolean) {
-    const states = this.floatingInternals?.states;
-    if (!states) return;
-    try {
-      if (parked) states.add('parked');
-      else states.delete('parked');
-    } catch { /* CustomStateSet 이 없는 엔진 — 종전처럼 상자를 남긴다 */ }
+    // `states` 가 없는 엔진에서는 아무것도 하지 않는다 — 종전처럼 상자를 남긴다.
+    setCustomState(this.floatingInternals, 'parked', parked);
   }
 
   private unpark() {

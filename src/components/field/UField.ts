@@ -11,6 +11,7 @@ import "../tooltip/UTooltip.js";
 
 import { delegate } from "../../utilities/listenInShadow.js";
 import { enumeratedValues } from "../../utilities/enumerated.js";
+import { setCustomState } from "../../utilities/customState.js";
 /** 네이티브로 «폼 컨트롤이거나 포커스를 받도록 저작된» 태그 — 가시성과 무관한 구조 사실이다. */
 const NATIVE_CONTROL_TAGS = new Set(['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON']);
 /**
@@ -257,7 +258,7 @@ export class UField extends UElement {
   connectedCallback(): void {
     super.connectedCallback();
     tabNavigation.install();
-    this.fieldInternals?.states.add("field");
+    setCustomState(this.fieldInternals, "field", true);
     this.addEventListener('pointerdown', this.handleHostPointerDown, true);
     this.addEventListener('focusin', this.handleFocusIn);
     this.addEventListener('focusout', this.handleFocusOut);

@@ -28,6 +28,7 @@ import { styles } from "./UDateRangePicker.styles.js";
 
 import { delegate } from "../../utilities/listenInShadow.js";
 import { enumeratedValues } from "../../utilities/enumerated.js";
+import { setCustomState } from "../../utilities/customState.js";
 export type { DateRangePreset, DateRangePresetName, DateRangePresetOption } from "./presets.js";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -319,7 +320,7 @@ export class UDateRangePicker extends UFormControlElement<string> {
       this.internals?.setFormValue(this.value ?? '');
     }
     if (changed.has('open')) {
-      this.internals?.states[this.open ? 'add' : 'delete']('open');
+      setCustomState(this.internals, 'open', this.open);
     }
     if (changed.has('open') && this.open) {
       // The calendar renders only while open, so a stale half-picked range never survives a

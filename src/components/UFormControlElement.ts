@@ -5,6 +5,7 @@ import { UElement } from './UElement.js';
 import { styles } from './UFormControlElement.styles.js';
 import type { FieldDescriptionDisplay } from './field/UField.js';
 import { enumeratedValues } from '../utilities/enumerated.js';
+import { setCustomState } from '../utilities/customState.js';
 
 /**
  * 폼 컨트롤 컴포넌트의 공통 기반 클래스입니다.
@@ -186,7 +187,7 @@ export abstract class UFormControlElement<T> extends UElement {
     if (!this.internals && 'attachInternals' in this) {
       this.internals = this.attachInternals();
     }
-    if ((this.constructor as typeof UFormControlElement).fieldBox) this.internals?.states.add('field');
+    if ((this.constructor as typeof UFormControlElement).fieldBox) setCustomState(this.internals, 'field', true);
   }
 
   /** 자기 `validate()` 가 `internals.checkValidity()` 를 부르는 동안 — 그때 오는 `invalid` 는 보고가 아니다. */

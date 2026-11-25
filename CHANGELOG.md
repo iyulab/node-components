@@ -1,5 +1,25 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- `setCustomState(internals, name, on)` and `hasCustomState(element, name)` (exported, also from
+  `@iyulab/components/dist/utilities/customState.js`): publish and read a custom state on engines that only accept
+  `--`-prefixed names. `setCustomState` tries the plain name and falls back to `--name`; both do nothing on an engine without
+  `ElementInternals.states`.
+
+### Fixed
+
+- Chrome and Edge 90–124 no longer throw `SyntaxError: ... The specified value 'field' must start with '--'` while a form
+  control connects. Those engines refuse a plain custom-state name, and every unprefixed `states.add()` threw: the `field`
+  state of `u-input`, `u-select`, `u-textarea`, `u-date-picker`, `u-date-range-picker`, `u-file-input` and `u-field`, the
+  `open` state of `u-select` and the two pickers, `empty` on `u-option-group` and `parked` on every floating element. The
+  state is now published as `--name` there, and the built-in stylesheets read both forms (`:is(:state(x), :--x)`), so a
+  closed floating element leaves the layout and an empty option group hides on those engines as it does elsewhere.
+  Behaviour on Chrome and Edge 125+, Firefox and Safari is unchanged. The browser-support notes in the README and the skill
+  overview are rewritten to match.
+
 ## [3.2.1] - 2026-11-25
 
 ### Fixed
