@@ -37,6 +37,7 @@ const FOLLOWS_PAGE: Record<string, string> = {
   'u-breadcrumb': 'default slot takes breadcrumb items',
   'u-button-group': 'default slot takes buttons',
   'u-menu': 'default slot takes menu items',
+  'u-radio': 'default slot takes options (each isolates its own label — `rtl-content-bidi`)',
   'u-tab-nav': 'default slot takes tabs',
   'u-tab-panel': 'default slot takes tabs and panels',
   'u-tree': 'default slot takes tree items',
