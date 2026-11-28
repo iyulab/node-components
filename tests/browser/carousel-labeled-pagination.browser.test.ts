@@ -50,13 +50,14 @@ describe('u-carousel labeled pagination', () => {
   it('fills the current tab over the interval, and the passed tab stays full', async () => {
     const el = await mount('pagination pagination-style="labels" autoplay');
     const track = tabs(el)[0].querySelector<HTMLElement>('[part~="dot-track"]')!.getBoundingClientRect().width;
-    await wait(INTERVAL / 2);
-    const half = fillWidth(tabs(el)[0]);
-    expect(half).toBeGreaterThan(track * 0.2);
-    expect(half).toBeLessThan(track * 0.9);
-    await wait(INTERVAL / 2 + 150);
+    // The fill is read at a set point of its animation, not after a wall-clock wait: a late timer put it near the end.
+    const [fill] = tabs(el)[0].querySelector<HTMLElement>('[part~="dot-progress"]')!.getAnimations();
+    expect(fill.effect!.getTiming().duration, 'the fill runs for the interval').toBe(INTERVAL);
+    fill.pause();
+    fill.currentTime = INTERVAL / 2;
+    expect(Math.abs(fillWidth(tabs(el)[0]) - track / 2), 'half the interval fills half the track').toBeLessThanOrEqual(2);
+    await expect.poll(() => el.index, { timeout: INTERVAL * 4, interval: 20 }).toBe(1);
     await el.updateComplete;
-    expect(el.index).toBe(1);
     expect(tabs(el)[1].getAttribute('aria-current')).toBe('true');
     expect(Math.round(fillWidth(tabs(el)[0]))).toBe(Math.round(track));
   });

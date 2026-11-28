@@ -123,9 +123,9 @@ describe('custom states on an engine that only takes `--`-prefixed names (Chromi
   it('a floating element parks while closed (`parked`), so it does not stay in the layout', async () => {
     const box = await mount('<button id="a">anchor</button><u-tooltip>tip</u-tooltip>');
     const tip = box.querySelector('u-tooltip') as HTMLElement;
-    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    // Parking waits for the element's closing transitions, which can outlast two frames on a loaded machine.
+    await expect.poll(() => tip.matches(':state(--parked)'), { timeout: 2000 }).toBe(true);
     expect(errors).toEqual([]);
-    expect(tip.matches(':state(--parked)')).toBe(true);
   });
 });
 
