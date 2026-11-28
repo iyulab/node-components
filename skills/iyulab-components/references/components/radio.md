@@ -23,6 +23,14 @@ Radio group built from `u-option` children. Form-associated.
   <u-option value="enterprise">Enterprise</u-option>
 </u-radio>
 
+<!-- Cards: one candidate per bordered card, with a description and a figure -->
+<u-radio name="transport" type="card" value="rail" label="Transport">
+  <u-option value="rail">Rail<span slot="description">Two hours, one change</span><span slot="suffix">$42</span></u-option>
+  <u-option value="air">Air<span slot="description">One hour</span><span slot="suffix">$118</span></u-option>
+  <u-divider>or</u-divider>
+  <u-option value="car">Own car<span slot="description">Mileage is claimed afterwards</span></u-option>
+</u-radio>
+
 <!-- Segmented control -->
 <u-radio name="view" type="button" orientation="horizontal" appearance="soft" value="list">
   <u-option value="list">List</u-option>
@@ -36,14 +44,14 @@ Radio group built from `u-option` children. Form-associated.
 
 | Name | Description |
 |------|-------------|
-| *(default)* | `u-option` elements |
+| *(default)* | `u-option` elements. Anything else placed between them (a `u-divider`) is laid out with the same gap and is not part of the choice |
 
 ## Properties
 
 | Property | Type | Default | Reflect | Description |
 |----------|------|---------|---------|-------------|
 | `value` | `string` | — | — | Currently selected value |
-| `type` | `'default'\|'button'` | `'default'` | ✓ | `button` renders options as toggle buttons |
+| `type` | `'default'\|'button'\|'card'` | `'default'` | ✓ | `button` renders options as toggle buttons · `card` one bordered card per option: the mark, the label with its `description` slot under it, the `suffix` at the far end; the picked card takes the accent border. Horizontal cards share the row in equal widths and wrap when each cannot have 12em. `appearance` has no effect on `card` |
 | `appearance` | `'solid'\|'outlined'\|'soft'` | `'solid'` | ✓ | `solid` fills the picked option · `outlined` · `soft` (`type="button"` only) a segmented control — a quiet track where the picked segment rises onto the surface |
 | `orientation` | `'vertical'\|'horizontal'` | `'vertical'` | ✓ | Layout direction |
 | `disabled` | `boolean` | `false` | ✓ | Disable all options |

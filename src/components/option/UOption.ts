@@ -14,11 +14,13 @@ export type OptionMarker = 'radio' | 'check';
  * USelect, URadio, UInput(combobox)의 자식으로 사용됩니다.
  *
  * @slot - 옵션 라벨 텍스트
+ * @slot description - 라벨 아래에 놓이는 한 줄 설명. 선택된 값을 보여 줄 때(`getText()` · `u-select` 의 칩)는 담기지 않는다
  * @slot prefix - 라벨 앞에 표시되는 아이콘 등
  * @slot suffix - 라벨 뒤에 표시되는 추가 콘텐츠
  *
  * @csspart base - 옵션 항목 바깥 상자
  * @csspart content - 콘텐츠 영역
+ * @csspart description - 설명 줄(`description` slot 이 찼을 때만)
  * @csspart radio-marker - 단일 선택 모드의 라디오 표식
  * @csspart check-marker - 다중 선택 모드의 체크 표식
  * 
@@ -45,8 +47,8 @@ export class UOption extends UElement {
   };
 
   static styles = [ super.styles, styles ];
-  /** 접두 · 접미 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
-  private readonly affixes = new SlotPresence(this, ['prefix', 'suffix']);
+  /** 접두 · 접미 · 설명 슬롯이 찼는가 — 그 옆 간격은 섀도 안 상자가 갖는다(`::slotted` 여백은 문서의 전역 리셋에 진다). */
+  private readonly filled = new SlotPresence(this, ['prefix', 'suffix', 'description']);
 
   /** 비활성화 여부 */
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
@@ -94,11 +96,12 @@ export class UOption extends UElement {
     return html`
       <div class="base" part="base">
         ${this.renderMarker()}
-        <span class="affix affix-prefix" ?hidden=${!this.affixes.has('prefix')}><slot name="prefix"></slot></span>
+        <span class="affix affix-prefix" ?hidden=${!this.filled.has('prefix')}><slot name="prefix"></slot></span>
         <div class="content" part="content">
           <bdi><slot></slot></bdi>
+          <div class="description" part="description" ?hidden=${!this.filled.has('description')}><bdi><slot name="description"></slot></bdi></div>
         </div>
-        <span class="affix affix-suffix" ?hidden=${!this.affixes.has('suffix')}><slot name="suffix"></slot></span>
+        <span class="affix affix-suffix" ?hidden=${!this.filled.has('suffix')}><slot name="suffix"></slot></span>
       </div>
     `;
   }

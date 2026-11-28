@@ -46,6 +46,57 @@ export const styles = css`
     padding: 0;
   }
 
+  /* Type: card — 틀은 옵션의 섀도 안 상자가 그린다(::slotted 로 준 테두리는 문서의 전역 리셋에 진다). */
+  :host([type="card"]) {
+    display: flex;
+  }
+  /* 가로 카드는 폭이 같고, 한 줄에 12em 씩 설 자리가 없으면 다음 줄로 넘어간다(글이 낱말 중간에서 쪼개지지 않게). */
+  :host([type="card"][orientation="horizontal"]) .container {
+    flex-wrap: wrap;
+  }
+  :host([type="card"][orientation="horizontal"]) ::slotted(u-option) {
+    flex: 1 1 12em;
+    min-width: 0;
+  }
+  :host([type="card"]) ::slotted(u-option) {
+    border-radius: var(--u-radius-lg, 6px);
+    --option-padding-block: 0.75em;
+    --option-padding-inline: 0.875em;
+    --option-color-active: #fff;
+    --option-border-color-active: var(--radio-color);
+    --option-background-color-active: var(--radio-color);
+    --option-color-active-interactive: #fff;
+    --option-border-color-active-interactive: var(--radio-color-active);
+    --option-background-color-active-interactive: var(--radio-color-active);
+    --_option-frame-width: 1px;
+    --_option-frame-color: var(--u-border-color, #E0E0E0);
+    --_option-frame-background: var(--u-bg-color, #FFFFFF);
+    --_option-content-grow: 1;
+    --_option-title-weight: 600;
+    --_option-suffix-gap: 0.75em;
+    --_option-suffix-numeric: tabular-nums;
+  }
+  :host([type="card"]) ::slotted(u-option:not([disabled]):hover) {
+    --_option-frame-color: var(--u-border-color-hover, #BDBDBD);
+    --_option-frame-background: var(--u-bg-color-hover, #F5F5F5);
+  }
+  :host([type="card"][invalid]) ::slotted(u-option) {
+    --_option-frame-color: var(--u-danger-color, #D32F2F);
+  }
+  :host([type="card"]) ::slotted(u-option[selected]) {
+    --_option-frame-color: var(--radio-color);
+    --_option-frame-background: color-mix(in srgb, var(--radio-color) 8%, var(--u-bg-color, #FFFFFF));
+    --_option-frame-ring: 1px;
+  }
+  :host([type="card"]) ::slotted(u-option:focus-visible) {
+    --_option-frame-outline: 2px solid var(--u-focus-ring-color, #1565C0);
+  }
+  @media (forced-colors: active) {
+    :host([type="card"]) ::slotted(u-option[selected]) {
+      --_option-frame-color: Highlight;
+    }
+  }
+
   /* Default + Solid */
   :host([type="default"][appearance="solid"]) ::slotted(u-option) {
     --option-color-active: #fff;

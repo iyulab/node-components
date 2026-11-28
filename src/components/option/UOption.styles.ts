@@ -40,11 +40,16 @@ export const styles = css`
     /* 단추형 라디오의 칸 구분선 — 담는 쪽(u-radio)이 폭 · 색을 넘기고 여기서 그린다(꽂힌 옵션에 ::slotted 로 준 테두리는 문서의 전역
        리셋에 진다). */
     border-style: solid;
-    border-width: 0;
+    border-width: var(--_option-frame-width, 0);
     /* 가로 묶음은 칸의 끝 쪽(RTL 에서는 왼쪽), 세로 묶음은 아래쪽에 선을 긋는다 — 담는 쪽이 어느 쪽인지만 고른다. */
-    border-inline-end-width: var(--_option-divider-inline-end, 0);
-    border-block-end-width: var(--_option-divider-block-end, 0);
-    border-color: var(--_option-divider-color, transparent);
+    border-inline-end-width: var(--_option-divider-inline-end, var(--_option-frame-width, 0));
+    border-block-end-width: var(--_option-divider-block-end, var(--_option-frame-width, 0));
+    border-color: var(--_option-frame-color, var(--_option-divider-color, transparent));
+    /* 카드형 라디오의 틀 — 담는 쪽(u-radio)이 면 · 고리 · 포커스 고리를 넘기고 여기서 그린다. */
+    background-color: var(--_option-frame-background, transparent);
+    box-shadow: inset 0 0 0 var(--_option-frame-ring, 0) var(--_option-frame-color, transparent);
+    outline: var(--_option-frame-outline, none);
+    outline-offset: 2px;
   }
   :host(:focus-visible) {
     outline: none;
@@ -95,9 +100,19 @@ export const styles = css`
   }
 
   .content {
+    flex-grow: var(--_option-content-grow, 0);
     line-height: 1.5;
     min-width: 0;
     overflow-wrap: anywhere;
+  }
+  /* 정의되지 않으면 상속(상속 속성의 계산 시점 무효값) — 담는 쪽이 라벨만 굵게 할 때 넘긴다. */
+  .content > bdi {
+    font-weight: var(--_option-title-weight);
+  }
+  .description {
+    color: var(--u-txt-color-weak, #616161);
+    font-size: 0.875em;
+    font-weight: 400;
   }
 
   /* 라디오 마커 (원형) */
@@ -164,6 +179,7 @@ export const styles = css`
     margin-inline-end: 0.25em;
   }
   .affix-suffix {
-    margin-inline-start: 0.25em;
+    margin-inline-start: var(--_option-suffix-gap, 0.25em);
+    font-variant-numeric: var(--_option-suffix-numeric, normal);
   }
 `;

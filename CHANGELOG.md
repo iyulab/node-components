@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **`u-radio type="card"`** — one bordered card per option, for picking among candidates that carry a description and a
+  figure: the radio mark, the label (bold) with its description under it, and the `suffix` at the far end with tabular
+  figures; the picked card takes the accent border, an inner ring and a light accent surface, and keyboard focus rings the
+  card. Horizontal cards share a row in equal widths and wrap in a narrow place. An application style sheet that turned
+  options into cards can be removed.
+- **`u-option` `description` slot** — a line under the label (part `description`). It is not part of the label a closed
+  `u-select` shows or `getText()` returns.
+
 ## [3.3.1] - 2026-11-28
 
 ### Fixed

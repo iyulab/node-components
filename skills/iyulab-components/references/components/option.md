@@ -22,6 +22,13 @@ Selectable option item. Used inside `u-select`, `u-radio`, and `u-input` (combob
   Admin
 </u-option>
 
+<!-- With a description under the label (not part of the value a select shows) -->
+<u-option value="rail">
+  Rail
+  <span slot="description">Two hours, one change</span>
+  <span slot="suffix">$42</span>
+</u-option>
+
 <!-- With marker -->
 <u-option value="check" marker="check">With checkmark</u-option>
 <u-option value="radio" marker="radio">Radio style</u-option>
@@ -35,6 +42,7 @@ Selectable option item. Used inside `u-select`, `u-radio`, and `u-input` (combob
 |------|-------------|
 | `prefix` | Leading content |
 | *(default)* | Option label |
+| `description` | A line under the label, smaller and quieter. `getText()` and the closed `u-select` show the label only |
 | `suffix` | Trailing content |
 
 ## Properties
@@ -62,6 +70,7 @@ Selectable option item. Used inside `u-select`, `u-radio`, and `u-input` (combob
 | `radio-marker` | Single-select marker |
 | `check-marker` | Multi-select marker |
 | `content` | Main content wrapper |
+| `description` | The description line (only when the slot is filled) |
 
 ## CSS Custom Properties
 

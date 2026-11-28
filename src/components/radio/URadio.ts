@@ -9,7 +9,7 @@ import { UOption } from "../option/UOption.js";
 import { styles } from "./URadio.styles.js";
 import { enumeratedValues } from "../../utilities/enumerated.js";
 
-export type RadioType = "default" | "button";
+export type RadioType = "default" | "button" | "card";
 /** 외형 정도 — `solid` 선택 칸 채움(기본) · `outlined` · `soft`(버튼형 전용 — 세그먼트 컨트롤). */
 export type RadioAppearance = "solid" | "outlined" | "soft";
 export type RadioOrientation = "vertical" | "horizontal";
@@ -33,14 +33,17 @@ export class URadio extends UFormControlElement<string> {
   /** 목록 밖의 값은 어떤 규칙에도 안 걸려 조용히 기본 모양이 된다 — 개발 모드에서 한 번 알린다(`UElement.enumerated`). */
   static override enumerated = {
     ...super.enumerated,
-    type: enumeratedValues<RadioType>()(['default', 'button']),
+    type: enumeratedValues<RadioType>()(['default', 'button', 'card']),
     appearance: enumeratedValues<RadioAppearance>()(['solid', 'outlined', 'soft']),
     orientation: enumeratedValues<RadioOrientation>()(['vertical', 'horizontal']),
   };
 
   static styles = [ super.styles, styles ];
 
-  /** 라디오 유형 */
+  /**
+   * 라디오 유형. `card` 는 보기마다 테두리 카드 하나 — 표식 · 라벨과 설명(`u-option` 의 `description` slot) · 끝 쪽의 `suffix`.
+   * 설명이나 수치가 붙은 후보 가운데 하나를 고를 때(요금제 · 배송 방법 · 템플릿) 쓴다. `appearance` 는 `card` 에 영향이 없다.
+   */
   @property({ type: String, reflect: true }) type: RadioType = "default";
   /**
    * 외형 정도. `soft` 는 `type="button"` 전용 — 옅은 트랙 위에서 선택된 칸만 표면으로 떠오르는
