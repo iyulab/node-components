@@ -49,4 +49,12 @@ export const styles = css`
   .affix-suffix {
     margin-inline-start: 0.2em;
   }
+
+  /* The label wrapper stands where the slot did in the row, so it lays its content out as the row does. */
+  :host > bdi,
+  a > bdi {
+    display: inline-flex;
+    align-items: center;
+    gap: inherit;
+  }
 `;

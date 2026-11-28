@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **`u-radio` lays its options out again.** Since 3.2.0 a wrapper around the group's slot took the options' place in the
+  group: with `orientation="horizontal"` (both `type="default"` and `type="button"`) they stacked vertically, and in a
+  vertical group the gap between them was gone — also for anything else placed between the options. The options are the
+  group's items again; each one still keeps its own text direction. A margin an app added between options to restore the
+  gap now adds to it and can be removed.
+- An icon and a text placed together in a `u-breadcrumb-item` label stand 0.2em apart and centred again (the same wrapper,
+  since 3.2.0).
+
 ## [3.3.0] - 2026-11-28
 
 ### Added

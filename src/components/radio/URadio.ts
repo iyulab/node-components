@@ -102,7 +102,7 @@ export class URadio extends UFormControlElement<string> {
           aria-disabled=${ifDefined(this.effectivelyDisabled ? 'true' : undefined)}
           aria-label=${ifDefined(this.resolvedAriaLabel)}
           aria-description=${ifDefined(this.resolvedAriaDescription)}>
-          <bdi><slot @slotchange=${this.handleSlotChange}></slot></bdi>
+          <slot @slotchange=${this.handleSlotChange}></slot>
         </div>
       </u-field>
     `;
