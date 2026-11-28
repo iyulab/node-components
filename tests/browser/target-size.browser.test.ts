@@ -313,6 +313,40 @@ const UNDERSIZED_PINS = new Set<string>([]);
  */
 const POINTER_ORPHAN_PINS = new Set<string>([]);
 
+/**
+ * A popup opens with a transition, and its content is in the DOM before it has come to rest — a hit-test then can answer
+ * `null` for an edge. Waits until the targets exist, stop moving and the on-screen ones answer at their centre. It only
+ * waits (2s at most) and judges nothing: a target that stays unreachable still fails the assertions below.
+ */
+async function untilSettled(targets: () => Element[]): Promise<void> {
+  let last = '';
+  let same = 0;
+  for (let i = 0; i < 100 && same < 5; i++) {
+    await new Promise((r) => setTimeout(r, 20));
+    const els = targets();
+    const boxes = els.map((el) => el.getBoundingClientRect());
+    const answering = els.length > 0 && els.every((el, k) => {
+      const x = boxes[k].left + boxes[k].width / 2;
+      const y = boxes[k].top + boxes[k].height / 2;
+      if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) return true;
+      const found = (el.getRootNode() as Document | ShadowRoot).elementFromPoint(x, y);
+      return !!found && (found === el || el.contains(found));
+    });
+    const now = JSON.stringify(boxes);
+    same = answering && now === last ? same + 1 : 0;
+    last = now;
+  }
+}
+
+const presetButtons = (): Element[] => Array.from(
+  document.querySelector('u-date-range-picker')!.shadowRoot!.querySelectorAll('.presets .preset'),
+);
+
+const calendarButtons = (tag: 'u-date-picker' | 'u-date-range-picker'): Element[] => Array.from(
+  document.querySelector(tag)!.shadowRoot!.querySelector('u-calendar')?.shadowRoot
+    ?.querySelectorAll('button.day, .calendar-header u-icon-button') ?? [],
+);
+
 interface Fixture {
   html: string;
   /** 이 픽스처 안의 «타깃»들. 생략하면 태그 자신. */
@@ -514,32 +548,20 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
       // 달력 옆 빠른 선택 목록 — 좁은 뷰포트에서는 달력 위로 올라가 가로로 흐른다.
       html: '<u-date-range-picker presets="today yesterday last7Days last30Days thisWeek lastWeek thisMonth lastMonth thisYear"></u-date-range-picker>',
       prepare: async (host) => {
-        const root = host.shadowRoot!;
-        (root.querySelector('.container') as HTMLElement).click();
-        for (let i = 0; i < 50 && !root.querySelector('.presets .preset'); i++) {
-          await new Promise((r) => setTimeout(r, 20));
-        }
+        (host.shadowRoot!.querySelector('.container') as HTMLElement).click();
+        await untilSettled(presetButtons);
       },
-      targets: () => Array.from(
-        document.querySelector('u-date-range-picker')!.shadowRoot!.querySelectorAll('.presets .preset'),
-      ),
+      targets: presetButtons,
     },
     {
       state: '달력',
       // 두 달 팝오버 — 날짜 칸은 내부 `u-calendar` 의 섀도 안에 있다. 열림이 비동기라 칸이 나타날 때까지 기다린다.
       html: '<u-date-range-picker value="2026-03-06/2026-03-12"></u-date-range-picker>',
       prepare: async (host) => {
-        const root = host.shadowRoot!;
-        (root.querySelector('.container') as HTMLElement).click();
-        const grid = () => root.querySelector('u-calendar')?.shadowRoot;
-        for (let i = 0; i < 50 && !grid()?.querySelector('button.day'); i++) {
-          await new Promise((r) => setTimeout(r, 20));
-        }
+        (host.shadowRoot!.querySelector('.container') as HTMLElement).click();
+        await untilSettled(() => calendarButtons('u-date-range-picker'));
       },
-      targets: () => Array.from(
-        document.querySelector('u-date-range-picker')!.shadowRoot!.querySelector('u-calendar')?.shadowRoot
-          ?.querySelectorAll('button.day, .calendar-header u-icon-button') ?? [],
-      ),
+      targets: () => calendarButtons('u-date-range-picker'),
     },
   ],
   'u-date-picker': [
@@ -560,18 +582,11 @@ const FIXTURES: Record<string, Fixture | Fixture[]> = {
       //   그쪽 픽스처의 상태로 재야 한다. 여기서 재면 `u-button` 한 곳의 미달이 달력 전체를 핀에 묶는다.
       html: '<u-date-picker></u-date-picker>',
       prepare: async (host) => {
-        const root = host.shadowRoot!;
-        (root.querySelector('.container') as HTMLElement).click();
         // 날짜 칸은 내부 `u-calendar` 의 섀도 안에 있다.
-        const grid = () => root.querySelector('u-calendar')?.shadowRoot;
-        for (let i = 0; i < 50 && !grid()?.querySelector('button.day'); i++) {
-          await new Promise((r) => setTimeout(r, 20));
-        }
+        (host.shadowRoot!.querySelector('.container') as HTMLElement).click();
+        await untilSettled(() => calendarButtons('u-date-picker'));
       },
-      targets: () => Array.from(
-        document.querySelector('u-date-picker')!.shadowRoot!.querySelector('u-calendar')?.shadowRoot
-          ?.querySelectorAll('button.day, .calendar-header u-icon-button') ?? [],
-      ),
+      targets: () => calendarButtons('u-date-picker'),
     },
     {
       state: '시간',
